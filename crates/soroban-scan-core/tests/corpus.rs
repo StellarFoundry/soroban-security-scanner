@@ -25,8 +25,6 @@ fn positive_and_negative_fixtures_match_expectations() {
         let dir = base.join(meta.id);
         let positive = std::fs::read_to_string(dir.join("positive.rs"))
             .unwrap_or_else(|_| panic!("missing positive fixture for {}", meta.id));
-        let negative = std::fs::read_to_string(dir.join("negative.rs"))
-            .unwrap_or_else(|_| panic!("missing negative fixture for {}", meta.id));
 
         let pos = engine::scan_source_str(&positive, "positive.rs", &config, &registry);
         let pos_hits: Vec<_> = pos
@@ -40,18 +38,49 @@ fn positive_and_negative_fixtures_match_expectations() {
             meta.id
         );
 
-        let neg = engine::scan_source_str(&negative, "negative.rs", &config, &registry);
-        let neg_hits: Vec<_> = neg
-            .findings
-            .iter()
-            .filter(|f| f.rule_id == meta.id)
+        // Every `negative*.rs` fixture in the rule's directory must not
+        // trigger the rule. This allows adding extra negatives (negative2.rs,
+        // negative3.rs, …) without touching the test.
+        let negatives: Vec<std::path::PathBuf> = std::fs::read_dir(&dir)
+            .unwrap_or_else(|_| panic!("missing corpus dir for {}", meta.id))
+            .filter_map(|entry| entry.ok())
+            .map(|entry| entry.path())
+            .filter(|path| {
+                path.file_name()
+                    .and_then(|name| name.to_str())
+                    .is_some_and(|name| name.starts_with("negative") && name.ends_with(".rs"))
+            })
             .collect();
+
         assert!(
-            neg_hits.is_empty(),
-            "{}: negative fixture triggered the rule: {:?}",
-            meta.id,
-            neg_hits.iter().map(|f| &f.evidence).collect::<Vec<_>>()
+            !negatives.is_empty(),
+            "{}: at least one negative fixture is required",
+            meta.id
         );
+        for negative_path in negatives {
+            let negative_name = negative_path
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .to_string();
+            let negative = std::fs::read_to_string(&negative_path).unwrap_or_else(|_| {
+                panic!("missing negative fixture {} for {}", negative_name, meta.id)
+            });
+
+            let neg = engine::scan_source_str(&negative, &negative_name, &config, &registry);
+            let neg_hits: Vec<_> = neg
+                .findings
+                .iter()
+                .filter(|f| f.rule_id == meta.id)
+                .collect();
+            assert!(
+                neg_hits.is_empty(),
+                "{}: negative fixture {} triggered the rule: {:?}",
+                meta.id,
+                negative_name,
+                neg_hits.iter().map(|f| &f.evidence).collect::<Vec<_>>()
+            );
+        }
 
         checked += 1;
     }
