@@ -91,9 +91,46 @@ mod tests {
     }
 
     #[test]
-    fn parses_names() {
-        assert_eq!("HIGH".parse::<Severity>().unwrap(), Severity::High);
-        assert_eq!("crit".parse::<Severity>().unwrap(), Severity::Critical);
-        assert!("nope".parse::<Severity>().is_err());
+    fn parses_every_accepted_alias() {
+        // Full alias table for Severity::from_str.
+        let cases: &[(&str, Severity)] = &[
+            ("info", Severity::Info),
+            ("low", Severity::Low),
+            ("medium", Severity::Medium),
+            ("med", Severity::Medium),
+            ("high", Severity::High),
+            ("critical", Severity::Critical),
+            ("crit", Severity::Critical),
+        ];
+        for (alias, expected) in cases {
+            let parsed = alias
+                .parse::<Severity>()
+                .unwrap_or_else(|e| panic!("{alias:?} -> {e}"));
+            assert_eq!(parsed, *expected, "alias {alias:?}");
+        }
+    }
+
+    #[test]
+    fn parsing_is_case_insensitive_and_trims_whitespace() {
+        assert_eq!("MEDIUM".parse::<Severity>().unwrap(), Severity::Medium);
+        assert_eq!("  CRIT  ".parse::<Severity>().unwrap(), Severity::Critical);
+        assert_eq!("Med".parse::<Severity>().unwrap(), Severity::Medium);
+    }
+
+    #[test]
+    fn rejects_unknown_severity_values() {
+        // Each value remains unknown after `from_str` trims and lowercases it.
+        for bad in [
+            "",
+            "severe",
+            "critical2",
+            "moderate",
+            "urgent",
+            "warn",
+            "medium-level",
+            "infore",
+        ] {
+            assert!(bad.parse::<Severity>().is_err(), "{bad:?} must be rejected");
+        }
     }
 }
