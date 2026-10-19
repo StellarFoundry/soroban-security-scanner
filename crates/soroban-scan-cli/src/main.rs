@@ -210,6 +210,11 @@ struct ScanArgs {
     #[arg(long, value_name = "LEVEL")]
     min_confidence: Option<Confidence>,
 
+    /// Report at most N findings, after sorting. The exit gate still considers
+    /// every finding, and the report states how many were omitted.
+    #[arg(long, value_name = "N")]
+    max_findings: Option<usize>,
+
     /// Exclude a glob (relative to the scan root). Repeatable.
     #[arg(long = "exclude", value_name = "GLOB")]
     exclude: Vec<String>,
@@ -530,6 +535,11 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
                 .collect();
         }
     }
+
+    // Truncate only after the gate has been evaluated against every finding and
+    // after `--new-only` has selected the report's rows. Findings are already
+    // sorted, so the retained prefix is deterministic.
+    outcome.truncate_findings(args.max_findings);
 
     let color = report::TerminalColor::new(resolve_color(
         args.color,

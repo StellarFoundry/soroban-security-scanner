@@ -45,6 +45,41 @@ soroban-scan scan ./changed/src/lib.rs \
   --incremental
 ```
 
+## CI policy matrix
+
+`--baseline`, `--new-only`, `--incremental`, and `--fail-on` have deliberately
+separate jobs:
+
+- `--baseline` changes **what the gate evaluates**: only findings whose
+  fingerprints are absent from the baseline ("new" findings).
+- `--new-only` changes **what the report prints**: only new findings. It never
+  changes which findings the gate evaluates.
+- `--incremental` only suppresses the "resolved" count, because a partial scan
+  cannot prove that an unscanned file no longer contains a finding.
+- `--fail-on` sets the severity threshold; `none` always exits `0`.
+
+The table assumes a baseline was written from the same scan path. "New" means a
+finding that is not in the baseline.
+
+| `--baseline` | `--new-only` | `--fail-on` | Findings reported | Gate evaluates | Exit code |
+| ------------ | ------------ | ----------- | ----------------- | -------------- | --------- |
+| no  | not allowed (usage error) | any | all | — | `2` |
+| no  | — | `none` | all | nothing | `0` |
+| no  | — | `high` | all | all findings | `1` if any finding is high or critical |
+| yes | no | `none` | all (new and known) | nothing | `0` |
+| yes | no | `high` | all (new and known) | new findings only | `1` if any **new** finding is high or critical; known high findings exit `0` |
+| yes | yes | `none` | new only | nothing | `0` |
+| yes | yes | `high` | new only | new findings only | `1` if any **new** finding is high or critical |
+| yes | yes/no | `critical` | as above | new findings only | `1` only if a **new** finding is critical |
+| yes + `--incremental` | yes/no | as above | as above | new findings only | unchanged; the resolved count is omitted |
+
+Two consequences are easy to get wrong:
+
+- A clean run against a baseline reports known findings (unless `--new-only` is
+  set) but still exits `0`, because the gate ignores them.
+- `--max-findings` is applied after the gate: truncating the report can never
+  hide the finding that caused a non-zero exit.
+
 ## Fingerprints
 
 Fingerprints are computed from the **rule id**, the **scan-relative file path**,

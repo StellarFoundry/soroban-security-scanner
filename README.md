@@ -50,7 +50,7 @@ Requires a stable Rust toolchain. See [`docs/development/setup.md`](docs/develop
 
 ## What it detects
 
-Twelve Soroban-aware detectors ship today (from `SS-001` to `SS-029`). Severity
+Thirteen Soroban-aware detectors ship today (from `SS-001` to `SS-029`). Severity
 and confidence are independent and always reported honestly.
 
 | Rule | Title | Severity | Confidence | Category |
@@ -66,6 +66,7 @@ and confidence are independent and always reported honestly.
 | [SS-009](docs/rules/detectors/SS-009.md) | Insecure randomness derived from ledger state | medium | low | arithmetic |
 | [SS-011](docs/rules/detectors/SS-011.md) | Initialization entry point without a re-initialization guard | high | low | access-control |
 | [SS-013](docs/rules/detectors/SS-013.md) | Cross-contract call before state update | high | low | cross-contract |
+| [SS-014](docs/rules/detectors/SS-014.md) | Token transfer amount without validation | medium | low | token |
 | [SS-029](docs/rules/detectors/SS-029.md) | Public test or debug hook in a contract entry point | medium | medium | access-control |
 
 Rule identifiers are stable (never reused or renumbered). See
@@ -91,7 +92,7 @@ Rule identifiers are stable (never reused or renumbered). See
 
 - Deterministic project discovery and Soroban classification.
 - `syn`-based Rust parsing with source locations.
-- Twelve security detectors (from `SS-001` to `SS-029`) with fixtures and documentation.
+- Thirteen security detectors (from `SS-001` to `SS-029`) with fixtures and documentation.
 - CLI: `scan`, `rules`, `explain`, `version`, `init`, `config`.
 - Output formats: terminal, JSON, SARIF 2.1.0, Markdown, and GitHub workflow annotations.
 - Configurable rule selection, thresholds, and excludes.

@@ -38,6 +38,22 @@ pub struct ScanStats {
     pub findings_suppressed: usize,
 }
 
+/// How many findings were shown after an explicit report limit.
+///
+/// Truncation only affects presentation: the failure gate is evaluated against
+/// every finding before this record is attached. The counts make the omitted
+/// findings machine-readable, so a bounded report can never hide that it was
+/// truncated.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+pub struct FindingTruncation {
+    /// Number of findings included in the report.
+    pub shown: usize,
+    /// Number of findings before truncation.
+    pub total: usize,
+    /// Number of findings omitted from the report.
+    pub omitted: usize,
+}
+
 /// The full result of a scan.
 #[derive(Debug, Clone)]
 pub struct ScanOutcome {
@@ -64,6 +80,33 @@ pub struct ScanOutcome {
     pub suppressions: Vec<Suppression>,
     /// Findings excluded from the gate by an inline suppression directive.
     pub suppressed: Vec<SuppressedFinding>,
+    /// Set when the caller bounded the number of reported findings.
+    ///
+    /// `None` means the report contains every finding. The gate is always
+    /// evaluated before truncation, so this field never changes the exit code.
+    pub truncation: Option<FindingTruncation>,
+}
+
+impl ScanOutcome {
+    /// Bounds the reported findings to `max`, preserving their sorted order.
+    ///
+    /// The exit gate must be computed before calling this method. A limit that
+    /// is absent or not smaller than the finding count leaves the outcome
+    /// unchanged and clears any previous truncation record.
+    pub fn truncate_findings(&mut self, max: Option<usize>) {
+        self.truncation = None;
+        let total = self.findings.len();
+        if let Some(max) = max {
+            if total > max {
+                self.findings.truncate(max);
+                self.truncation = Some(FindingTruncation {
+                    shown: max,
+                    total,
+                    omitted: total - max,
+                });
+            }
+        }
+    }
 }
 
 /// The directive that suppressed a finding, as reported for auditability.
@@ -250,6 +293,7 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
         config: config.clone(),
         suppressions,
         suppressed,
+        truncation: None,
     }
 }
 
@@ -327,6 +371,7 @@ pub fn merge(outcomes: Vec<ScanOutcome>, labels: &[String]) -> ScanOutcome {
         config,
         suppressions,
         suppressed,
+        truncation: None,
     }
 }
 

@@ -33,6 +33,7 @@ roots in one run.
 | `--output <FILE>` | Write the report to a file instead of stdout. |
 | `--min-severity <LEVEL>` | Only report findings at or above this severity. |
 | `--min-confidence <LEVEL>` | Only report findings at or above this confidence. |
+| `--max-findings <N>` | Report at most N findings after sorting; the exit gate is unaffected and the report states how many were omitted. |
 | `--exclude <GLOB>` | Exclude a glob relative to the scan root (repeatable). |
 | `--exclude-tests` | Skip items gated behind `#[cfg(test)]` and files in test directories. |
 | `--config <FILE>` | Use a specific configuration file. |
@@ -104,6 +105,24 @@ soroban-scan scan contracts/alpha contracts/beta --format json
 - Each path must live inside the current directory; a path that escapes it
   (including one containing `..`) is a usage error (exit code `2`).
 - `--files-from` accepts exactly one `PATH`.
+
+### Bounding report size
+
+Large scans can produce thousands of findings. `--max-findings N` keeps the
+first N findings **after the deterministic sort** and adds an explicit notice
+with the number omitted:
+
+```bash
+soroban-scan scan ./contracts --max-findings 50
+```
+
+- Truncation is explicit in every format: terminal and Markdown print
+  `N more finding(s) not shown`, GitHub emits a `::notice::`, and JSON/SARIF
+  include a `truncation` object with `shown`, `total`, and `omitted`.
+- The `--fail-on` gate is evaluated against **all** findings before truncation,
+  so a bounded report cannot turn a failing scan into a passing one.
+- `--write-baseline` always records every finding; the limit only affects
+  rendered reports.
 
 ### Long output and paging
 
@@ -261,8 +280,10 @@ network access.
 
 - **terminal** — human-readable, grouped listing with remediation.
 - **json** — stable structured report (tool, project, stats, effective config,
-  findings, diagnostics). The `effective_config` object records the settings
-  used for the scan, excluding environment data and secrets.
+  findings, diagnostics). `schema_version` identifies the report contract and is
+  independent of the tool version. The `effective_config` object records the
+  settings used for the scan, excluding environment data and secrets. When
+  `--max-findings` omits findings, a `truncation` object reports the counts.
 - **sarif** — SARIF 2.1.0 for GitHub code scanning and compatible tools.
 - **markdown** — report suitable for pull requests and documentation.
 - **github** — GitHub Actions workflow-command annotations (`::error`,

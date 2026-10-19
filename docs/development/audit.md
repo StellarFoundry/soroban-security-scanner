@@ -67,7 +67,7 @@ exercised; **Planned** means tracked as future work.
 
 ## Known limitations
 
-- Twelve detectors; several are heuristic and intentionally low-confidence.
+- Thirteen detectors; several are heuristic and intentionally low-confidence.
 - No type resolution or cross-function data flow.
 - MSRV is not pinned or CI-tested.
 - Prebuilt release binaries are not yet produced.

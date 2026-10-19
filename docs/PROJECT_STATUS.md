@@ -86,7 +86,7 @@ without ambiguity.
 
 ### Phase 4 — Initial Soroban Security Detectors (complete)
 
-Twelve detectors, each with metadata, remediation, positive/negative fixtures,
+Thirteen detectors, each with metadata, remediation, positive/negative fixtures,
 tests, and documentation under `docs/rules/detectors/`:
 
 - [x] SS-001 State-changing entry point without caller authorization (high/medium).
@@ -100,6 +100,7 @@ tests, and documentation under `docs/rules/detectors/`:
 - [x] SS-009 Insecure randomness derived from ledger state (medium/low).
 - [x] SS-011 Initialization entry point without a re-initialization guard (high/low).
 - [x] SS-013 Cross-contract call before state update (high/low).
+- [x] SS-014 Token transfer amount without validation (medium/low).
 - [x] SS-029 Public test or debug hook in a contract entry point (medium/medium).
 
 Supporting work:
@@ -260,11 +261,11 @@ Release throughput on a developer machine: ~2,500-2,800 entry points/s
 - Detectors are syntactic; no type resolution. SS-001 and SS-006 follow
   intra-file helper functions (bounded depth) but there is no whole-program or
   cross-file data flow.
-- SS-002, SS-003, SS-006, SS-007, SS-008, SS-009, SS-011, SS-013, SS-029 are
+- SS-002, SS-003, SS-006, SS-007, SS-008, SS-009, SS-011, SS-013, SS-014, SS-029 are
   heuristic and low/medium confidence.
 - The `PR Security Scan` workflow has not yet run (no pull request has been
   opened); its underlying commands are covered by local tests.
-- Only twelve detectors exist; the roadmap covers many more.
+- Only thirteen detectors exist; the roadmap covers many more.
 
 ## Architecture decisions
 

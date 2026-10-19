@@ -73,6 +73,11 @@ and absolute user paths are never included.
 
 A machine-readable [JSON Schema](report.schema.json) accompanies this document.
 
+When a report is bounded with `--max-findings`, an optional top-level
+`truncation` object records `shown`, `total`, and `omitted`. The failure gate is
+always evaluated before truncation, so consumers can trust the exit code even
+when `findings` is shorter than `truncation.total`.
+
 ## Top-level shape
 
 ```jsonc

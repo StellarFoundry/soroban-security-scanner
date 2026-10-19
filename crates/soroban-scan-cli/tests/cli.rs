@@ -1145,6 +1145,294 @@ fn scan_machine_formats_never_contain_ansi_even_with_color_always() {
 }
 
 #[test]
+fn scan_json_includes_the_report_schema_version() {
+    let out = run(&[
+        "scan",
+        fixture("corpus/SS-001").to_str().unwrap(),
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+    let value: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
+    assert_eq!(
+        value["schema_version"],
+        soroban_scan_core::report::REPORT_SCHEMA_VERSION
+    );
+    assert_eq!(value["schema_version"], "1");
+}
+
+#[test]
+fn max_findings_truncates_deterministically_without_changing_the_gate() {
+    let corpus = fixture("corpus");
+    let corpus = corpus.to_str().unwrap();
+
+    let full = run(&[
+        "scan",
+        corpus,
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+        "--no-config",
+    ]);
+    assert_eq!(full.code, 0, "stderr: {}", full.stderr);
+    let full_value: serde_json::Value = serde_json::from_str(&full.stdout).unwrap();
+    let total = full_value["findings"].as_array().unwrap().len();
+    assert!(total > 2, "need several findings to truncate, got {total}");
+    assert!(full_value.get("truncation").is_none());
+
+    let limited = run(&[
+        "scan",
+        corpus,
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+        "--max-findings",
+        "2",
+        "--no-config",
+    ]);
+    assert_eq!(limited.code, 0, "stderr: {}", limited.stderr);
+    let limited_value: serde_json::Value = serde_json::from_str(&limited.stdout).unwrap();
+    let findings = limited_value["findings"].as_array().unwrap();
+    assert_eq!(findings.len(), 2, "{}", limited.stdout);
+    assert_eq!(limited_value["truncation"]["shown"], 2);
+    assert_eq!(limited_value["truncation"]["total"], total);
+    assert_eq!(limited_value["truncation"]["omitted"], total - 2);
+    // Truncation keeps the first rows of the already-sorted report.
+    for (shown, original) in findings
+        .iter()
+        .zip(full_value["findings"].as_array().unwrap())
+    {
+        assert_eq!(shown["fingerprint"], original["fingerprint"]);
+    }
+
+    // The gate considers every finding, even when none is displayed.
+    let gated = run(&[
+        "scan",
+        corpus,
+        "--max-findings",
+        "0",
+        "--quiet",
+        "--no-config",
+    ]);
+    assert_eq!(
+        gated.code, 1,
+        "--max-findings must not change the exit gate: {}",
+        gated.stdout
+    );
+    assert!(
+        gated
+            .stdout
+            .contains(&format!("{total} more finding(s) not shown")),
+        "the terminal report must state what it omitted: {}",
+        gated.stdout
+    );
+
+    let markdown = run(&[
+        "scan",
+        corpus,
+        "--format",
+        "markdown",
+        "--fail-on",
+        "none",
+        "--max-findings",
+        "1",
+        "--no-config",
+    ]);
+    assert!(
+        markdown
+            .stdout
+            .contains(&format!("{} more finding(s)", total - 1)),
+        "markdown must state what it omitted: {}",
+        markdown.stdout
+    );
+
+    let github = run(&[
+        "scan",
+        corpus,
+        "--format",
+        "github",
+        "--fail-on",
+        "none",
+        "--max-findings",
+        "1",
+        "--no-config",
+    ]);
+    assert!(
+        github.stdout.contains("::notice::") && github.stdout.contains("more finding(s)"),
+        "github output must state what it omitted: {}",
+        github.stdout
+    );
+}
+
+fn write_policy_project(dir: &Path, with_new_finding: bool) {
+    let _ = std::fs::remove_dir_all(dir);
+    std::fs::create_dir_all(dir.join("src")).unwrap();
+    std::fs::write(
+        dir.join("Cargo.toml"),
+        "[package]\nname = \"policy-demo\"\nversion = \"0.1.0\"\n\n[dependencies]\nsoroban-sdk = \"21.0.0\"\n",
+    )
+    .unwrap();
+
+    let mut src = String::from(
+        "use soroban_sdk::{contractimpl, symbol_short, Address, Env};\n\n#[contractimpl]\nimpl Vault {\n",
+    );
+    src.push_str("    pub fn set_admin(env: Env, admin: Address) {\n");
+    src.push_str("        env.storage().persistent().set(&symbol_short!(\"ADMIN\"), &admin);\n");
+    src.push_str("    }\n");
+    if with_new_finding {
+        src.push_str("    pub fn set_owner(env: Env, owner: Address) {\n");
+        src.push_str(
+            "        env.storage().persistent().set(&symbol_short!(\"OWNER\"), &owner);\n",
+        );
+        src.push_str("    }\n");
+    }
+    src.push_str("}\n");
+    std::fs::write(dir.join("src/lib.rs"), src).unwrap();
+}
+
+fn run_policy_scan(dir: &Path, extra: &[&str]) -> Output {
+    let mut args = vec![
+        "scan".to_string(),
+        dir.to_string_lossy().into_owned(),
+        "--format".to_string(),
+        "json".to_string(),
+        "--rule".to_string(),
+        "SS-001".to_string(),
+        "--no-config".to_string(),
+    ];
+    args.extend(extra.iter().map(|arg| arg.to_string()));
+    let refs: Vec<&str> = args.iter().map(String::as_str).collect();
+    run(&refs)
+}
+
+fn reported_findings(out: &Output) -> usize {
+    let value: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
+    value["findings"].as_array().unwrap().len()
+}
+
+#[test]
+fn baseline_new_only_fail_on_policy_matrix() {
+    let root = std::env::temp_dir().join(format!(
+        "soroban-scan-cli-policy-matrix-{}",
+        std::process::id()
+    ));
+    let dir = root.join("project");
+    let baseline = root.join("baseline.json");
+    std::fs::create_dir_all(&root).unwrap();
+    write_policy_project(&dir, false);
+
+    let write = run_policy_scan(
+        &dir,
+        &[
+            "--write-baseline",
+            baseline.to_str().unwrap(),
+            "--fail-on",
+            "none",
+        ],
+    );
+    assert_eq!(write.code, 0, "stderr: {}", write.stderr);
+
+    // The baseline has one known high finding. Without new findings, the gate
+    // ignores it even though the report still lists it.
+    let known = run_policy_scan(
+        &dir,
+        &[
+            "--baseline",
+            baseline.to_str().unwrap(),
+            "--fail-on",
+            "high",
+        ],
+    );
+    assert_eq!(
+        known.code, 0,
+        "known findings must not fail: {}",
+        known.stdout
+    );
+    assert_eq!(reported_findings(&known), 1);
+
+    let known_new_only = run_policy_scan(
+        &dir,
+        &[
+            "--baseline",
+            baseline.to_str().unwrap(),
+            "--new-only",
+            "--fail-on",
+            "high",
+        ],
+    );
+    assert_eq!(known_new_only.code, 0);
+    assert_eq!(reported_findings(&known_new_only), 0);
+
+    // Without a baseline, every finding is gated and --new-only is a usage error.
+    let no_baseline_high = run_policy_scan(&dir, &["--fail-on", "high"]);
+    assert_eq!(no_baseline_high.code, 1);
+    assert_eq!(reported_findings(&no_baseline_high), 1);
+
+    let no_baseline_new_only = run_policy_scan(&dir, &["--new-only", "--fail-on", "high"]);
+    assert_eq!(no_baseline_new_only.code, 2);
+
+    // Add a second high finding that is not in the baseline.
+    write_policy_project(&dir, true);
+
+    let cases: &[(&[&str], i32, usize)] = &[
+        // Known + new are reported; only the new one is gated.
+        (&["--baseline", "BASE", "--fail-on", "high"], 1, 2),
+        // --new-only changes the report but not the gate.
+        (
+            &["--baseline", "BASE", "--new-only", "--fail-on", "high"],
+            1,
+            1,
+        ),
+        // A higher threshold ignores both high findings, known or new.
+        (&["--baseline", "BASE", "--fail-on", "critical"], 0, 2),
+        (
+            &["--baseline", "BASE", "--new-only", "--fail-on", "critical"],
+            0,
+            1,
+        ),
+        // --fail-on none always exits successfully.
+        (&["--baseline", "BASE", "--fail-on", "none"], 0, 2),
+        (
+            &["--baseline", "BASE", "--new-only", "--fail-on", "none"],
+            0,
+            1,
+        ),
+        // --incremental only suppresses resolved reporting; the gate is unchanged.
+        (
+            &["--baseline", "BASE", "--incremental", "--fail-on", "high"],
+            1,
+            2,
+        ),
+    ];
+
+    let baseline = baseline.to_str().unwrap();
+    for (extra, expected_code, expected_findings) in cases {
+        let resolved: Vec<&str> = extra
+            .iter()
+            .map(|arg| if *arg == "BASE" { baseline } else { *arg })
+            .collect();
+        let out = run_policy_scan(&dir, &resolved);
+        assert_eq!(
+            out.code, *expected_code,
+            "args {resolved:?} produced the wrong exit code: {}",
+            out.stdout
+        );
+        assert_eq!(
+            reported_findings(&out),
+            *expected_findings,
+            "args {resolved:?} reported the wrong number of findings: {}",
+            out.stdout
+        );
+    }
+
+    let _ = std::fs::remove_dir_all(&root);
+}
+
+#[test]
 fn scan_github_format_emits_one_annotation_per_finding() {
     let out = run(&[
         "scan",

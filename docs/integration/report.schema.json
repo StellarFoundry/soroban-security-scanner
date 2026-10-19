@@ -182,6 +182,17 @@
         "additionalProperties": true
       }
     },
+    "truncation": {
+      "description": "Present only when the report was bounded with `--max-findings`. The failure gate is evaluated before truncation.",
+      "type": "object",
+      "required": ["shown", "total", "omitted"],
+      "properties": {
+        "shown": { "type": "integer", "minimum": 0 },
+        "total": { "type": "integer", "minimum": 0 },
+        "omitted": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": true
+    },
     "suppressed": {
       "description": "Findings excluded from the gate by an inline suppression directive. Never silently dropped: each entry carries the finding plus the directive that suppressed it and, when given, the reason.",
       "type": "array",

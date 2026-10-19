@@ -552,6 +552,25 @@ pub struct ContractFn<'a> {
     pub block: &'a syn::Block,
     /// Whether the function is `pub`.
     pub is_public: bool,
+    /// Names of the function's parameters, in declaration order.
+    ///
+    /// Only plain identifier patterns are recorded; destructuring patterns are
+    /// deliberately omitted because they cannot be matched to a single name.
+    pub params: Vec<String>,
+}
+
+/// Collects the simple identifier parameter names of a function signature.
+fn parameter_names(sig: &syn::Signature) -> Vec<String> {
+    sig.inputs
+        .iter()
+        .filter_map(|arg| match arg {
+            syn::FnArg::Typed(pat_type) => match &*pat_type.pat {
+                syn::Pat::Ident(pat_ident) => Some(pat_ident.ident.to_string()),
+                _ => None,
+            },
+            syn::FnArg::Receiver(_) => None,
+        })
+        .collect()
 }
 
 /// Collects exported contract entry points (`pub fn` in `#[contractimpl]`).
@@ -586,6 +605,7 @@ fn collect_contract_fns<'a>(items: &'a [syn::Item], out: &mut Vec<ContractFn<'a>
                             column,
                             block: &f.block,
                             is_public: matches!(f.vis, syn::Visibility::Public(_)),
+                            params: parameter_names(&f.sig),
                         });
                     }
                 }

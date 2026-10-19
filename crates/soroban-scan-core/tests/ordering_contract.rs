@@ -89,6 +89,7 @@ fn outcome_with(findings: Vec<Finding>) -> ScanOutcome {
         config: ScanConfig::default(),
         suppressions: vec![],
         suppressed: vec![],
+        truncation: None,
     }
 }
 

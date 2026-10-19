@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `--max-findings N` for `scan`: bounds the rendered report after the
+  deterministic sort, prints an explicit omitted-findings notice in every
+  format, and exposes `truncation` (`shown`, `total`, `omitted`) in JSON and
+  SARIF. The `--fail-on` gate still considers every finding.
+- SS-014 "Token transfer amount without validation" (medium/low): flags
+  `transfer`/`transfer_from` calls whose amount parameter is not compared
+  against zero, with documentation, corpus fixtures, and unit tests.
 - GitHub pull-request integration now maintains a single sticky scanner comment.
   A hidden HTML marker identifies the comment, so later pushes update it in place
   instead of adding another comment; duplicate marked comments are removed.

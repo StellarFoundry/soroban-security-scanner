@@ -6,7 +6,7 @@
 use serde::Serialize;
 
 use crate::config::ScanConfig;
-use crate::engine::{ScanOutcome, SuppressedFinding, SuppressionInfo};
+use crate::engine::{FindingTruncation, ScanOutcome, SuppressedFinding, SuppressionInfo};
 use crate::finding::Finding;
 use crate::model::Diagnostic;
 use crate::registry::RuleRegistry;
@@ -179,7 +179,9 @@ pub fn render_terminal_with_color(outcome: &ScanOutcome, color: TerminalColor) -
     ));
 
     if outcome.findings.is_empty() {
-        out.push_str("No security findings.\n");
+        if outcome.truncation.is_none() {
+            out.push_str("No security findings.\n");
+        }
     } else {
         for finding in &outcome.findings {
             let label = format!("{:<8}", finding.severity.as_str().to_ascii_uppercase());
@@ -197,6 +199,7 @@ pub fn render_terminal_with_color(outcome: &ScanOutcome, color: TerminalColor) -
         out.push_str(&summary_line(&outcome.findings));
         out.push('\n');
     }
+    append_truncation_notice(outcome, &mut out);
     if !outcome.suppressed.is_empty() {
         out.push_str(&format!(
             "\n{} suppressed finding(s):\n",
@@ -266,8 +269,24 @@ pub fn render_terminal_compact_with_color(outcome: &ScanOutcome, color: Terminal
             outcome.stats.findings_suppressed
         ));
     }
+    if let Some(truncation) = outcome.truncation {
+        out.push_str(&format!(
+            " — {} more finding(s) not shown (--max-findings {})",
+            truncation.omitted, truncation.shown
+        ));
+    }
     out.push('\n');
     out
+}
+
+/// Appends the explicit truncation notice used by human-readable reports.
+fn append_truncation_notice(outcome: &ScanOutcome, out: &mut String) {
+    if let Some(truncation) = outcome.truncation {
+        out.push_str(&format!(
+            "\n{} more finding(s) not shown (truncated by --max-findings {}).\n",
+            truncation.omitted, truncation.shown
+        ));
+    }
 }
 
 /// A serializable JSON report.
@@ -286,6 +305,9 @@ struct JsonReport<'a> {
     suppressed: &'a [SuppressedFinding],
     suppressions: Vec<SuppressionJson>,
     diagnostics: &'a [Diagnostic],
+    /// Present only when the caller bounded the number of reported findings.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    truncation: Option<FindingTruncation>,
 }
 
 /// Tool identity in JSON reports.
@@ -385,6 +407,7 @@ pub fn render_json(outcome: &ScanOutcome) -> Result<String, serde_json::Error> {
         suppressed: &outcome.suppressed,
         suppressions: suppression_reports(outcome),
         diagnostics: &outcome.diagnostics,
+        truncation: outcome.truncation,
     };
     serde_json::to_string_pretty(&report)
 }
@@ -469,6 +492,12 @@ pub fn render_github(outcome: &ScanOutcome) -> String {
     for finding in &outcome.findings {
         out.push_str(&github_annotation(finding));
         out.push('\n');
+    }
+    if let Some(truncation) = outcome.truncation {
+        out.push_str(&format!(
+            "::notice::{} more finding(s) not shown (--max-findings {})\n",
+            truncation.omitted, truncation.shown
+        ));
     }
     out
 }
@@ -568,20 +597,38 @@ pub fn render_sarif(outcome: &ScanOutcome, registry: &RuleRegistry) -> String {
             .map(|suppressed| sarif_result(&suppressed.finding, Some(&suppressed.suppression))),
     );
 
+    let mut run = json!({
+        "tool": {
+            "driver": {
+                "name": TOOL_NAME,
+                "version": crate::VERSION,
+                "informationUri": TOOL_URL,
+                "rules": rules
+            }
+        },
+        "results": results
+    });
+
+    if let Some(truncation) = outcome.truncation {
+        run["properties"] = json!({ "truncation": truncation });
+        run["invocations"] = json!([{
+            "executionSuccessful": true,
+            "toolExecutionNotifications": [{
+                "level": "note",
+                "message": {
+                    "text": format!(
+                        "{} more finding(s) not shown (--max-findings {})",
+                        truncation.omitted, truncation.shown
+                    )
+                }
+            }]
+        }]);
+    }
+
     let document = json!({
         "$schema": SARIF_SCHEMA,
         "version": "2.1.0",
-        "runs": [{
-            "tool": {
-                "driver": {
-                    "name": TOOL_NAME,
-                    "version": crate::VERSION,
-                    "informationUri": TOOL_URL,
-                    "rules": rules
-                }
-            },
-            "results": results
-        }]
+        "runs": [run]
     });
 
     serde_json::to_string_pretty(&document).unwrap_or_else(|_| "{}".to_string())
@@ -626,12 +673,16 @@ pub fn render_markdown(outcome: &ScanOutcome) -> String {
     out.push('\n');
 
     if outcome.findings.is_empty() {
-        out.push_str("No security findings.\n");
+        if outcome.truncation.is_none() {
+            out.push_str("No security findings.\n");
+        }
+        append_markdown_truncation(outcome, &mut out);
         append_markdown_suppressed(outcome, &mut out);
         return out;
     }
 
     out.push_str("## Findings\n\n");
+    append_markdown_truncation(outcome, &mut out);
     for finding in &outcome.findings {
         out.push_str(&format!("### {} — {}\n\n", finding.rule_id, finding.title));
         out.push_str(&format!("- **Severity:** {}\n", finding.severity));
@@ -653,6 +704,17 @@ pub fn render_markdown(outcome: &ScanOutcome) -> String {
     }
     append_markdown_suppressed(outcome, &mut out);
     out
+}
+
+/// Appends the explicit truncation notice to a Markdown report.
+fn append_markdown_truncation(outcome: &ScanOutcome, out: &mut String) {
+    if let Some(truncation) = outcome.truncation {
+        out.push_str(&format!(
+            "> **Truncated:** {} more finding(s) not shown \
+             (`--max-findings {}`).\n\n",
+            truncation.omitted, truncation.shown
+        ));
+    }
 }
 
 /// Appends the suppressed-findings section to a Markdown report.
@@ -1094,6 +1156,48 @@ mod tests {
 
         let colored = render_terminal_compact_with_color(&outcome, TerminalColor::new(true));
         assert!(colored.contains('\u{1b}'));
+    }
+
+    #[test]
+    fn truncation_is_explicit_in_every_format() {
+        let (mut outcome, registry) = sample();
+        let total = outcome.findings.len();
+        assert!(total > 1, "fixture needs multiple findings, got {total}");
+        outcome.truncate_findings(Some(1));
+
+        let terminal = render_terminal(&outcome);
+        assert!(terminal.contains(&format!("{} more finding(s) not shown", total - 1)));
+
+        let compact = render_terminal_compact(&outcome);
+        assert!(compact.contains(&format!("{} more finding(s) not shown", total - 1)));
+
+        let value: serde_json::Value =
+            serde_json::from_str(&render_json(&outcome).unwrap()).unwrap();
+        assert_eq!(value["findings"].as_array().unwrap().len(), 1);
+        assert_eq!(value["truncation"]["shown"], 1);
+        assert_eq!(value["truncation"]["total"], total);
+        assert_eq!(value["truncation"]["omitted"], total - 1);
+
+        let markdown = render_markdown(&outcome);
+        assert!(markdown.contains(&format!("{} more finding(s)", total - 1)));
+
+        let github = render_github(&outcome);
+        assert!(github.contains("::notice::"));
+        assert!(github.contains(&format!("{} more finding(s)", total - 1)));
+
+        let sarif: serde_json::Value =
+            serde_json::from_str(&render_sarif(&outcome, &registry)).unwrap();
+        assert_eq!(sarif["runs"][0]["results"].as_array().unwrap().len(), 1);
+        assert_eq!(
+            sarif["runs"][0]["properties"]["truncation"]["omitted"],
+            total - 1
+        );
+        assert!(
+            sarif["runs"][0]["invocations"][0]["toolExecutionNotifications"][0]["message"]["text"]
+                .as_str()
+                .unwrap()
+                .contains(&format!("{} more finding(s)", total - 1))
+        );
     }
 
     #[test]

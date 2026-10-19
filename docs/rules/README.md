@@ -62,6 +62,7 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-009](detectors/SS-009.md) | Insecure randomness derived from ledger state | medium | low | arithmetic |
 | [SS-011](detectors/SS-011.md) | Initialization entry point without a re-initialization guard | high | low | access-control |
 | [SS-013](detectors/SS-013.md) | Cross-contract call before state update | high | low | cross-contract |
+| [SS-014](detectors/SS-014.md) | Token transfer amount without validation | medium | low | token |
 | [SS-029](detectors/SS-029.md) | Public test or debug hook in a contract entry point | medium | medium | access-control |
 
 Each detector has a positive and negative fixture under

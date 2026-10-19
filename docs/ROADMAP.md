@@ -5,7 +5,7 @@ lives in the issue backlog ([`ISSUE_BACKLOG.md`](ISSUE_BACKLOG.md)) and on GitHu
 
 ## Now (v0.1.x)
 
-The scanner is an MVP: deterministic analysis, twelve detectors, CLI with
+The scanner is an MVP: deterministic analysis, thirteen detectors, CLI with
 terminal/JSON/SARIF/Markdown output, baselines, CI integration, and a compilable
 example suite.
 
