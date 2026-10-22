@@ -92,6 +92,7 @@ Dependencies are intentionally minimal and justified. See
 [ADR-0001](adr/0001-rust-core-python-tooling.md),
 [ADR-0002](adr/0002-severity-and-confidence.md),
 [ADR-0003](adr/0003-determinism-contract.md),
+[ADR-0004](adr/0004-error-handling-strategy.md),
 [ADR-0005](adr/0005-dependency-justification-policy.md), and `deny.toml`.
 Lockfiles are committed for reproducible builds.
 
