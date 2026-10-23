@@ -1155,7 +1155,11 @@ pub fn synthetic_loaded_with_config(
     file_name: &str,
     config: &ScanConfig,
 ) -> LoadedProject {
-    let mut loaded = synthetic_loaded_with_options(src, file_name, config.exclude_tests);
+    let mut loaded = synthetic_loaded_with_options(
+        src,
+        file_name,
+        config.exclude_tests || !config.include_cfg_test,
+    );
     if config.exclude_generated && loaded.sources.iter().any(|source| source.is_generated()) {
         let path = std::path::PathBuf::from(file_name);
         loaded.sources.clear();

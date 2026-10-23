@@ -45,6 +45,9 @@ exclude = ["vendor/**", "target/**"]
 # Skip #[cfg(test)] items and test directories
 exclude_tests = false
 
+# Analyze #[cfg(test)] items too (they are skipped by default)
+include_cfg_test = false
+
 # Follow symbolic links during discovery (disabled by default for safety)
 follow_symlinks = false
 
@@ -103,6 +106,7 @@ max_output_tokens = 1024
 | `min_confidence` | confidence | `low` | Minimum confidence to report. |
 | `exclude` | array of globs | `[]` | Paths excluded from discovery. |
 | `exclude_tests` | bool | `false` | Skip `#[cfg(test)]` items and directories named `tests`. |
+| `include_cfg_test` | bool | `false` | Analyze items gated behind `#[cfg(test)]`. They are skipped by default. |
 | `follow_symlinks` | bool | `false` | Follow symlinks (off by default for safety). |
 | `minimum_soroban_sdk` | string | `21.0.0` | Minimum supported `soroban-sdk` version for SS-015. |
 | `rules.disabled` | array of ids | `[]` | Rules never run. |

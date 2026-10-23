@@ -8,6 +8,11 @@ how to contribute effectively.
 By participating, you agree to abide by our
 [Code of Conduct](CODE_OF_CONDUCT.md).
 
+## Governance
+
+Roles, the ADR process, and how contentious changes are decided are described
+in [`GOVERNANCE.md`](GOVERNANCE.md).
+
 ## Ways to contribute
 
 - **Report a bug** — open an issue using the bug report template.

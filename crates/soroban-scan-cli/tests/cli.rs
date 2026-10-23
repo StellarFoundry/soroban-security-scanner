@@ -1527,9 +1527,29 @@ impl T {
     let value: serde_json::Value = serde_json::from_str(&plain.stdout).unwrap();
     assert_eq!(
         rule_ids(&value["findings"]).len(),
-        4,
-        "test-only code must be scanned by default: {}",
+        2,
+        "cfg(test) items are skipped by default, test directories are not: {}",
         plain.stdout
+    );
+
+    let included = run(&[
+        "scan",
+        dir.to_str().unwrap(),
+        "--rule",
+        "SS-001",
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+        "--include-cfg-test",
+    ]);
+    assert_eq!(included.code, 0, "stderr: {}", included.stderr);
+    let value: serde_json::Value = serde_json::from_str(&included.stdout).unwrap();
+    assert_eq!(
+        rule_ids(&value["findings"]).len(),
+        4,
+        "--include-cfg-test must restore cfg(test) items: {}",
+        included.stdout
     );
 
     let excluded = run(&[
@@ -2225,4 +2245,30 @@ fn json_report_matches_the_published_schema() {
         errors.is_empty(),
         "report does not match schema: {errors:#?}"
     );
+}
+
+#[test]
+fn completions_emit_a_script_naming_the_binary_for_each_shell() {
+    for shell in ["bash", "zsh", "fish", "powershell"] {
+        let out = run(&["completions", shell]);
+        assert_eq!(out.code, 0, "{shell}: {}", out.stderr);
+        assert!(!out.stdout.trim().is_empty(), "{shell}: empty output");
+        assert!(
+            out.stdout.contains("soroban-scan"),
+            "{shell}: script must contain the binary name"
+        );
+    }
+}
+
+#[test]
+fn completions_command_is_hidden_from_help() {
+    let out = run(&["--help"]);
+    assert_eq!(out.code, 0, "{}", out.stderr);
+    assert!(!out.stdout.contains("completions"), "{}", out.stdout);
+}
+
+#[test]
+fn completions_rejects_an_unknown_shell() {
+    let out = run(&["completions", "tcsh"]);
+    assert_eq!(out.code, 2, "{}", out.stderr);
 }

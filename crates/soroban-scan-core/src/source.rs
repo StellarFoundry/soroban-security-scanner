@@ -204,6 +204,9 @@ pub struct FunctionSummary {
     /// True when the function is an exported contract entry point
     /// (`pub fn` inside a `#[contractimpl]` block).
     pub is_contract_entry_point: bool,
+    /// Raw token text of each `#[cfg(...)]` predicate on the function, for
+    /// example `test` or `feature = "x"`. Recorded, never evaluated.
+    pub cfg_attrs: Vec<String>,
 }
 
 /// Summary of a non-function item.
@@ -228,6 +231,9 @@ pub struct ItemSummary {
     /// Joined doc-comment text attached to this item (`///`, `/** ... */`, or
     /// `#[doc = "..."]`), if any.
     pub doc: String,
+    /// Raw token text of each `#[cfg(...)]` predicate on the item. Recorded,
+    /// never evaluated.
+    pub cfg_attrs: Vec<String>,
 }
 
 /// A `macro_rules!` definition found in a source file.
@@ -412,6 +418,20 @@ pub fn attribute_path(attr: &syn::Attribute) -> String {
         .join("::")
 }
 
+/// Extracts the raw predicate tokens of every `#[cfg(...)]` attribute.
+///
+/// The tokens are recorded verbatim; the expression is never evaluated.
+fn cfg_attr_tokens(attrs: &[syn::Attribute]) -> Vec<String> {
+    attrs
+        .iter()
+        .filter(|attr| attribute_path(attr) == "cfg")
+        .filter_map(|attr| match &attr.meta {
+            syn::Meta::List(list) => Some(list.tokens.to_string()),
+            _ => None,
+        })
+        .collect()
+}
+
 fn attribute_paths(attrs: &[syn::Attribute]) -> Vec<String> {
     attrs.iter().map(attribute_path).collect()
 }
@@ -593,6 +613,7 @@ fn make_function(
         impl_attributes,
         is_const: sig.constness.is_some(),
         is_contract_entry_point,
+        cfg_attrs: cfg_attr_tokens(attrs),
     }
 }
 
@@ -979,6 +1000,7 @@ fn item_summary(
         trait_path: None,
         attributes: attribute_paths(attrs),
         doc: doc_comments(attrs),
+        cfg_attrs: cfg_attr_tokens(attrs),
     }
 }
 
