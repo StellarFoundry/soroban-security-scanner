@@ -62,6 +62,31 @@ fixtures/corpus/authorization/missing-auth-positive/
 Exact formats are defined in Phase 5. Until then, fixtures are plain source
 samples.
 
+## Golden report snapshots
+
+`crates/soroban-scan-core/tests/report_snapshots.rs` scans the full regression
+corpus and compares the JSON and SARIF renderings with committed golden files
+under `crates/soroban-scan-core/tests/snapshots/`. The project root is
+normalized to `fixtures/corpus`, so the snapshots do not contain absolute paths,
+timestamps, or timings.
+
+Update the snapshots only when a machine-format change is intentional:
+
+```bash
+UPDATE_SNAPSHOTS=1 cargo test -p soroban-scan-core --test report_snapshots
+```
+
+PowerShell:
+
+```powershell
+$env:UPDATE_SNAPSHOTS="1"; cargo test -p soroban-scan-core --test report_snapshots
+```
+
+Review the diff under `crates/soroban-scan-core/tests/snapshots/` before
+committing it. Never update a snapshot merely to make an unrelated test pass;
+explain the format change in the pull request and update the changelog when the
+report contract changes.
+
 ## Determinism
 
 Tests assert that scanning the same fixture twice produces byte-identical
