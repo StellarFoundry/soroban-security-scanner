@@ -131,6 +131,12 @@ in `CHANGELOG.md`.
    deterministic engine has produced findings.
 5. New dependencies must satisfy [ADR-0005](adr/0005-dependency-justification-policy.md).
 
+Rules 1, 3 and 4 are enforced by
+[`crates/soroban-scan-core/tests/dependency_boundaries.rs`](../../crates/soroban-scan-core/tests/dependency_boundaries.rs).
+The test parses the `Cargo.toml` manifests and every `use crate::...` path in
+the core crate, and fails on a forbidden edge such as `engine -> report` or a
+core reference to `soroban_scan_cli`.
+
 ## Further reading
 
 - [Architecture overview](overview.md)
