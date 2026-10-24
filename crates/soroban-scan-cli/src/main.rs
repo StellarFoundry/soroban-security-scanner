@@ -51,6 +51,10 @@ exclude = []
 # Skip #[cfg(test)] items and test directories.
 exclude_tests = false
 
+# Analyze items gated behind #[cfg(test)]. They are skipped by default.
+# Attributes are recorded as tokens, never evaluated; see docs/configuration.md.
+include_cfg_test = false
+
 # Exclude files marked generated (`// @generated` or `include!`) instead of
 # marking them. Defaults to false: generated files are always reported.
 exclude_generated = false
@@ -273,6 +277,16 @@ enum Command {
     Config(ConfigArgs),
     /// Diagnose project classification, exclusions, and effective configuration.
     Doctor(DoctorArgs),
+    /// Generate a shell completion script (bash, zsh, fish, powershell).
+    #[command(hide = true)]
+    Completions(CompletionsArgs),
+}
+
+#[derive(Debug, Args)]
+struct CompletionsArgs {
+    /// Target shell.
+    #[arg(value_enum)]
+    shell: clap_complete::Shell,
 }
 
 #[derive(Debug, Args)]
@@ -325,6 +339,10 @@ struct ScanArgs {
     /// Skip items gated behind `#[cfg(test)]` and test directories.
     #[arg(long)]
     exclude_tests: bool,
+
+    /// Also analyze items gated behind `#[cfg(test)]` (skipped by default).
+    #[arg(long)]
+    include_cfg_test: bool,
 
     /// Best-effort per-rule execution budget in milliseconds. A rule that
     /// overruns is reported and its findings are discarded. Disabled by default.
@@ -557,6 +575,12 @@ fn run(cli: Cli) -> CliResult<u8> {
         Command::Init(args) => run_init(args),
         Command::Config(args) => run_config(args),
         Command::Doctor(args) => run_doctor(args, &registry),
+        Command::Completions(args) => {
+            let mut command = <Cli as clap::CommandFactory>::command();
+            let name = command.get_name().to_string();
+            clap_complete::generate(args.shell, &mut command, name, &mut std::io::stdout());
+            Ok(EXIT_SUCCESS)
+        }
     }
 }
 
@@ -593,6 +617,7 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
     }
     config.exclude.extend(args.exclude.iter().cloned());
     config.exclude_tests |= args.exclude_tests;
+    config.include_cfg_test |= args.include_cfg_test;
     config.rules.disabled.extend(args.disable.iter().cloned());
     config.rules.enabled.extend(args.rule.iter().cloned());
     if let Some(budget) = args.rule_time_budget_ms {
@@ -1257,6 +1282,7 @@ fn run_doctor(args: DoctorArgs, registry: &RuleRegistry) -> CliResult<u8> {
                 "sources_loaded": loaded.sources.len(),
                 "exclude": &config.exclude,
                 "exclude_tests": config.exclude_tests,
+                "include_cfg_test": config.include_cfg_test,
                 "follow_symlinks": config.follow_symlinks,
                 "effective_config": &config,
                 "enabled_rules": enabled_rules,
@@ -1299,6 +1325,7 @@ fn run_doctor(args: DoctorArgs, registry: &RuleRegistry) -> CliResult<u8> {
                 }
             );
             println!("Exclude tests: {}", config.exclude_tests);
+            println!("Include cfg(test): {}", config.include_cfg_test);
             println!("Follow symlinks: {}", config.follow_symlinks);
             println!("Enabled rules: {}", enabled_rules.join(", "));
             let effective = toml::to_string_pretty(&config)

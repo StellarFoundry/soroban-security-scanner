@@ -174,6 +174,9 @@ pub struct ScanConfig {
     pub exclude: Vec<String>,
     /// Skip items gated behind `#[cfg(test)]` and test directories.
     pub exclude_tests: bool,
+    /// Keep items gated behind `#[cfg(test)]` (they are skipped by default).
+    /// Has no effect when `exclude_tests` is set.
+    pub include_cfg_test: bool,
     /// Exclude files carrying generated-code markers instead of marking them.
     pub exclude_generated: bool,
     /// Whether to follow symbolic links during discovery.
@@ -195,6 +198,7 @@ impl Default for ScanConfig {
             min_confidence: Confidence::Low,
             exclude: Vec::new(),
             exclude_tests: false,
+            include_cfg_test: false,
             exclude_generated: false,
             follow_symlinks: false,
             minimum_soroban_sdk: "21.0.0".to_string(),
@@ -212,6 +216,7 @@ impl ScanConfig {
             follow_symlinks: self.follow_symlinks,
             exclude: self.exclude.clone(),
             exclude_tests: self.exclude_tests,
+            include_cfg_test: self.include_cfg_test,
             exclude_generated: self.exclude_generated,
         }
     }

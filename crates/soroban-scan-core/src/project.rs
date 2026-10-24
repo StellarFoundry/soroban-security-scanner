@@ -53,7 +53,7 @@ pub fn load(root: &Path, opts: &DiscoveryOptions) -> Result<LoadedProject, ScanE
         &manifests,
         root,
         source::SourceOptions {
-            exclude_tests: opts.exclude_tests,
+            exclude_tests: opts.exclude_tests || !opts.include_cfg_test,
             exclude_generated: opts.exclude_generated,
         },
     );
@@ -122,7 +122,7 @@ pub fn load_files_with_options(
         &manifests,
         root,
         source::SourceOptions {
-            exclude_tests: opts.exclude_tests,
+            exclude_tests: opts.exclude_tests || !opts.include_cfg_test,
             exclude_generated: opts.exclude_generated,
         },
     );

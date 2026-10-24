@@ -244,6 +244,9 @@ Contributions are welcome. Start with [`CONTRIBUTING.md`](CONTRIBUTING.md) and t
 [contributor roadmap](docs/contributors/roadmap.md). Issues labelled
 `good first issue` and `help wanted` are a good place to begin.
 
+How the project is run, how decisions are recorded as ADRs, and how contentious
+changes are decided is described in [`GOVERNANCE.md`](GOVERNANCE.md).
+
 ## License
 
 [MIT](LICENSE) © 2026 AyinkxLab

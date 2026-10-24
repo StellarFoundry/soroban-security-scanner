@@ -37,6 +37,7 @@ roots in one run.
 | `--max-findings <N>` | Report at most N findings after sorting; the exit gate is unaffected and the report states how many were omitted. |
 | `--exclude <GLOB>` | Exclude a glob relative to the scan root (repeatable). |
 | `--exclude-tests` | Skip items gated behind `#[cfg(test)]` and files in test directories. |
+| `--include-cfg-test` | Also analyze items gated behind `#[cfg(test)]`, which are skipped by default. |
 | `--config <FILE>` | Use a specific configuration file. |
 | `--no-config` | Ignore discovered configuration and use built-in defaults (mutually exclusive with `--config`). |
 | `--files-from <FILE>` | Read a newline-separated list of files to scan (relative to `PATH`). |
@@ -108,6 +109,26 @@ suppressed them. See [Inline Suppressions](suppressions.md).
 ```bash
 soroban-scan scan ./contracts --exclude-tests
 ```
+
+### `cfg` attributes and test-gated items
+
+The parser records the raw tokens of every `#[cfg(...)]` attribute on items and
+functions (`cfg_attrs` in the inventory), for example `test` or
+`feature = "extras"`. Expressions are **not evaluated**: the scanner does not
+know which features or targets you build with.
+
+By default, items gated behind `#[cfg(test)]` (including functions inside
+`#[cfg(test)] mod tests`) are skipped by every detector, because they are not
+shipped in the contract. Only the built-in `test` predicate counts:
+`#[cfg(not(test))]` and `#[cfg(feature = "test")]` are treated as production
+code, and all other `cfg` code (features, targets) is scanned as usual.
+Predicates that merely mention `test` inside `all(...)`/`any(...)` are treated
+as test-gated.
+
+Pass `--include-cfg-test` (or set `include_cfg_test = true`) to analyze
+test-gated items too. `--exclude-tests` additionally skips `tests` directories
+and wins if both are given. Because skipped items are removed before analysis,
+they do not appear in the inventory unless `--include-cfg-test` is set.
 
 ### GitHub workflow annotations
 
@@ -297,6 +318,22 @@ soroban-scan doctor [PATH] [--format terminal|json] [--config FILE] [--no-config
 Prints the discovered manifests, classification and evidence, source file count,
 excludes, effective configuration, and enabled rule ids. See
 [Doctor](doctor.md).
+
+## `completions`
+
+```text
+soroban-scan completions <bash|zsh|fish|powershell>
+```
+
+Prints a shell completion script to stdout. The command is hidden from
+`--help`. Examples:
+
+```bash
+soroban-scan completions bash > ~/.local/share/bash-completion/completions/soroban-scan
+soroban-scan completions zsh  > ~/.zfunc/_soroban-scan
+soroban-scan completions fish > ~/.config/fish/completions/soroban-scan.fish
+soroban-scan completions powershell >> $PROFILE
+```
 
 ## `config`
 

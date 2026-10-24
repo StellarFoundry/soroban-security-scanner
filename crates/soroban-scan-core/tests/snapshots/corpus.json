@@ -48,6 +48,7 @@
     "min_confidence": "low",
     "exclude": [],
     "exclude_tests": false,
+    "include_cfg_test": false,
     "exclude_generated": false,
     "follow_symlinks": false,
     "minimum_soroban_sdk": "21.0.0",

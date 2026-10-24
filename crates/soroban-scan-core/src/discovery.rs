@@ -34,6 +34,9 @@ pub struct DiscoveryOptions {
     pub exclude: Vec<String>,
     /// Skip test directories (any directory named `tests`).
     pub exclude_tests: bool,
+    /// Keep items gated behind `#[cfg(test)]` instead of skipping them.
+    /// Defaults to `false`: cfg(test) items are skipped.
+    pub include_cfg_test: bool,
     /// Exclude source files marked as generated instead of marking them.
     pub exclude_generated: bool,
 }
@@ -198,6 +201,7 @@ mod tests {
             follow_symlinks: false,
             exclude: vec!["tests/**".to_string()],
             exclude_tests: false,
+            include_cfg_test: false,
             exclude_generated: false,
         };
         let found = discover(&root, &opts).unwrap();
@@ -231,6 +235,7 @@ mod tests {
             follow_symlinks: false,
             exclude: vec!["[".to_string()],
             exclude_tests: false,
+            include_cfg_test: false,
             exclude_generated: false,
         };
         assert!(matches!(discover(&root, &opts), Err(ScanError::Config(_))));

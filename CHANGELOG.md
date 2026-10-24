@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `GOVERNANCE.md` describing roles, the ADR process, and how contentious
+  changes are decided, linked from the README and `CONTRIBUTING.md` (`#80`).
+- The parser records `#[cfg(...)]` attribute tokens on items and functions
+  (`cfg_attrs`) without evaluating them. Detectors now skip `#[cfg(test)]` items
+  by default; `--include-cfg-test` / `include_cfg_test = true` restores the
+  previous behavior (`#42`). `effective_config` gains `include_cfg_test`.
+- Hidden `completions <SHELL>` command (bash, zsh, fish, PowerShell) built on
+  `clap_complete` (`#5`).
+
 - Parsed files now expose a best-effort `use` import map
   (`ParsedSource::resolve_path`) with support for aliases, grouped imports, and
   globs. SS-016 uses it to detect aliased instance-storage calls, and the
