@@ -24,4 +24,4 @@ clap_complete.workspace = true
 anyhow.workspace = true
 
 [dev-dependencies]
-jsonschema = "0.26"
+jsonschema = "0.60"
