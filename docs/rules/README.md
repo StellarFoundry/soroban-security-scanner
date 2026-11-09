@@ -68,6 +68,7 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-015](detectors/SS-015.md) | Deprecated Soroban SDK version | low | medium | dependencies |
 | [SS-016](detectors/SS-016.md) | Unbounded data stored in instance storage | medium | low | storage |
 | [SS-017](detectors/SS-017.md) | Authorization after state mutation | medium | medium | authorization |
+| [SS-021](detectors/SS-021.md) | Durable state stored in temporary storage | high | medium | storage |
 | [SS-029](detectors/SS-029.md) | Public test or debug hook in a contract entry point | medium | medium | access-control |
 | [SS-033](detectors/SS-033.md) | Wildcard import from the Soroban SDK | low | high | dependencies |
 

@@ -3832,6 +3832,35 @@
           "ruleId": "SS-017"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-021/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable state stored in temporary storage — durable state key `& symbol_short ! (\"balance\")` written to temporary storage in `record_balance`: env . storage () . temporary () . set (& symbol_short ! (\"balance\") , & balance)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "5c6501e009a6752789af5098171dc1ac"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "medium",
+            "remediation": "Store administrative configuration in `storage().instance()` or `storage().persistent()`, and store per-user balances, allowances, and positions in `storage().persistent()` so they can be restored if archived.",
+            "severity": "high"
+          },
+          "ruleId": "SS-021"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -4359,6 +4388,33 @@
               },
               "shortDescription": {
                 "text": "Authorization after state mutation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A contract entry point writes a key that represents durable state (such as admin, owner, balance, allowance, or reserve) into `storage().temporary()`. Temporary storage entries are permanently deleted when their TTL expires and cannot be restored from the ledger archive, which can brick access control or erase user balances."
+              },
+              "help": {
+                "markdown": "## Durable state stored in temporary storage\n\nA contract entry point writes a key that represents durable state (such as admin, owner, balance, allowance, or reserve) into `storage().temporary()`. Temporary storage entries are permanently deleted when their TTL expires and cannot be restored from the ledger archive, which can brick access control or erase user balances.\n\n### Remediation\n\nStore administrative configuration in `storage().instance()` or `storage().persistent()`, and store per-user balances, allowances, and positions in `storage().persistent()` so they can be restored if archived.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                "text": "A contract entry point writes a key that represents durable state (such as admin, owner, balance, allowance, or reserve) into `storage().temporary()`. Temporary storage entries are permanently deleted when their TTL expires and cannot be restored from the ledger archive, which can brick access control or erase user balances.\n\nRemediation: Store administrative configuration in `storage().instance()` or `storage().persistent()`, and store per-user balances, allowances, and positions in `storage().persistent()` so they can be restored if archived."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-021",
+              "name": "Durable state stored in temporary storage",
+              "properties": {
+                "category": "storage",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+                ],
+                "remediation": "Store administrative configuration in `storage().instance()` or `storage().persistent()`, and store per-user balances, allowances, and positions in `storage().persistent()` so they can be restored if archived.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Durable state stored in temporary storage"
               }
             },
             {
