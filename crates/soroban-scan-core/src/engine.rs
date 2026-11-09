@@ -109,6 +109,101 @@ impl RuleTiming {
     }
 }
 
+/// Ordered stages of the scanner pipeline.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PipelineStage {
+    /// File and manifest discovery.
+    Discovery,
+    /// Rust and manifest parsing.
+    Parse,
+    /// Building the immutable [`AnalysisContext`] and initial inventory.
+    BuildContext,
+    /// Executing enabled rules against the context.
+    RunRules,
+    /// Validating, overriding, deduplicating, and suppressing findings.
+    FilterFindings,
+    /// Computing final statistics and assembling [`ScanOutcome`].
+    Finalize,
+}
+
+impl PipelineStage {
+    /// All pipeline stages in execution order.
+    pub const ALL: &'static [PipelineStage] = &[
+        PipelineStage::Discovery,
+        PipelineStage::Parse,
+        PipelineStage::BuildContext,
+        PipelineStage::RunRules,
+        PipelineStage::FilterFindings,
+        PipelineStage::Finalize,
+    ];
+
+    /// Stable lowercase identifier.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            PipelineStage::Discovery => "discovery",
+            PipelineStage::Parse => "parse",
+            PipelineStage::BuildContext => "build_context",
+            PipelineStage::RunRules => "run_rules",
+            PipelineStage::FilterFindings => "filter_findings",
+            PipelineStage::Finalize => "finalize",
+        }
+    }
+}
+
+/// Wall-clock timing for a single pipeline stage.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct StageTiming {
+    /// Stage identifier.
+    pub stage: PipelineStage,
+    /// Elapsed microseconds.
+    pub elapsed_micros: u128,
+}
+
+impl StageTiming {
+    /// Elapsed time in milliseconds.
+    pub fn elapsed_ms(&self) -> f64 {
+        self.elapsed_micros as f64 / 1_000.0
+    }
+}
+
+/// Observer hooks invoked around each [`PipelineStage`].
+pub trait PipelineHooks {
+    /// Called immediately before `stage` starts.
+    fn on_stage_start(&mut self, _stage: PipelineStage) {}
+
+    /// Called immediately after `stage` finishes with its elapsed duration.
+    fn on_stage_end(&mut self, _stage: PipelineStage, _elapsed: Duration) {}
+}
+
+/// Default no-op [`PipelineHooks`] implementation.
+#[derive(Debug, Default, Clone, Copy)]
+pub struct NoopPipelineHooks;
+
+impl PipelineHooks for NoopPipelineHooks {}
+
+/// Built-in [`PipelineHooks`] recorder that collects stage execution order and timings.
+#[derive(Debug, Default, Clone)]
+pub struct StageTimerHooks {
+    /// Stages started, in invocation order.
+    pub started: Vec<PipelineStage>,
+    /// Completed stage timings, in completion order.
+    pub timings: Vec<StageTiming>,
+}
+
+impl PipelineHooks for StageTimerHooks {
+    fn on_stage_start(&mut self, stage: PipelineStage) {
+        self.started.push(stage);
+    }
+
+    fn on_stage_end(&mut self, stage: PipelineStage, elapsed: Duration) {
+        self.timings.push(StageTiming {
+            stage,
+            elapsed_micros: elapsed.as_micros(),
+        });
+    }
+}
+
 /// How many findings were shown after an explicit report limit.
 ///
 /// Truncation only affects presentation: the failure gate is evaluated against
@@ -500,6 +595,19 @@ fn compile_config_suppressions(
 
 /// Runs the scanner over a loaded project.
 pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig) -> ScanOutcome {
+    let mut hooks = NoopPipelineHooks;
+    scan_with_hooks(loaded, registry, config, &mut hooks)
+}
+
+/// Runs the scanner over a loaded project, notifying `hooks` around each stage.
+pub fn scan_with_hooks<H: PipelineHooks + ?Sized>(
+    loaded: &LoadedProject,
+    registry: &RuleRegistry,
+    config: &ScanConfig,
+    hooks: &mut H,
+) -> ScanOutcome {
+    hooks.on_stage_start(PipelineStage::BuildContext);
+    let build_ctx_started = Instant::now();
     let ctx = AnalysisContext::new(
         &loaded.project,
         &loaded.sources,
@@ -541,7 +649,10 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
         ..ScanStats::default()
     };
     stats.files_failed = stats.files_analyzed - stats.files_parsed;
+    hooks.on_stage_end(PipelineStage::BuildContext, build_ctx_started.elapsed());
 
+    hooks.on_stage_start(PipelineStage::RunRules);
+    let run_rules_started = Instant::now();
     let budget = config.rules.rule_time_budget_ms.map(Duration::from_millis);
     let mut rule_timings: Vec<RuleTiming> = Vec::new();
 
@@ -613,7 +724,10 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
             }
         }
     }
+    hooks.on_stage_end(PipelineStage::RunRules, run_rules_started.elapsed());
 
+    hooks.on_stage_start(PipelineStage::FilterFindings);
+    let filter_started = Instant::now();
     stats.findings_raw = findings.len();
     let mut rejected = 0usize;
 
@@ -753,7 +867,10 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
         });
         false
     });
+    hooks.on_stage_end(PipelineStage::FilterFindings, filter_started.elapsed());
 
+    hooks.on_stage_start(PipelineStage::Finalize);
+    let finalize_started = Instant::now();
     let config_suppressions: Vec<ConfigSuppressionReport> = compiled
         .into_iter()
         .map(|suppression| suppression.report)
@@ -786,7 +903,7 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
             counts
         });
 
-    ScanOutcome {
+    let outcome = ScanOutcome {
         project: loaded.project.clone(),
         findings,
         diagnostics,
@@ -797,7 +914,9 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
         config_suppressions,
         truncation: None,
         rule_timings,
-    }
+    };
+    hooks.on_stage_end(PipelineStage::Finalize, finalize_started.elapsed());
+    outcome
 }
 
 /// Loads and scans a directory in one step.
@@ -806,8 +925,28 @@ pub fn run_scan(
     config: &ScanConfig,
     registry: &RuleRegistry,
 ) -> Result<ScanOutcome, ScanError> {
-    let loaded = project::load(root, &config.discovery_options())?;
-    Ok(scan(&loaded, registry, config))
+    let mut hooks = NoopPipelineHooks;
+    run_scan_with_hooks(root, config, registry, &mut hooks)
+}
+
+/// Loads and scans a directory in one step, notifying `hooks` around each stage.
+pub fn run_scan_with_hooks<H: PipelineHooks + ?Sized>(
+    root: &Path,
+    config: &ScanConfig,
+    registry: &RuleRegistry,
+    hooks: &mut H,
+) -> Result<ScanOutcome, ScanError> {
+    hooks.on_stage_start(PipelineStage::Discovery);
+    let discovery_started = Instant::now();
+    let options = config.discovery_options();
+    hooks.on_stage_end(PipelineStage::Discovery, discovery_started.elapsed());
+
+    hooks.on_stage_start(PipelineStage::Parse);
+    let parse_started = Instant::now();
+    let loaded = project::load(root, &options)?;
+    hooks.on_stage_end(PipelineStage::Parse, parse_started.elapsed());
+
+    Ok(scan_with_hooks(&loaded, registry, config, hooks))
 }
 
 /// Merges the outcomes of scanning several roots into one deterministic report.
@@ -2213,5 +2352,43 @@ mod path_normalization_tests {
         assert!(!is_safe_relative(Path::new("src/../../secret.rs")));
         assert!(!is_safe_relative(Path::new("/etc/passwd")));
         assert!(!is_safe_relative(Path::new("")));
+    }
+
+    #[test]
+    fn pipeline_hooks_observe_deterministic_stage_order() {
+        use super::{
+            scan_with_hooks, synthetic_loaded, PipelineStage, RuleRegistry, ScanConfig,
+            StageTimerHooks,
+        };
+
+        let loaded = synthetic_loaded(
+            r#"
+            #[contractimpl]
+            impl Demo {
+                pub fn set(env: Env, v: u32) {
+                    env.storage().persistent().set(&Key::V, &v);
+                }
+            }
+            "#,
+            "src/lib.rs",
+        );
+        let registry = RuleRegistry::with_default_rules();
+        let config = ScanConfig::default();
+        let mut hooks = StageTimerHooks::default();
+
+        let outcome = scan_with_hooks(&loaded, &registry, &config, &mut hooks);
+        assert!(!outcome.findings.is_empty());
+        assert_eq!(
+            hooks.started,
+            vec![
+                PipelineStage::BuildContext,
+                PipelineStage::RunRules,
+                PipelineStage::FilterFindings,
+                PipelineStage::Finalize,
+            ]
+        );
+        let ended: Vec<_> = hooks.timings.iter().map(|t| t.stage).collect();
+        assert_eq!(ended, hooks.started);
+        assert_eq!(PipelineStage::ALL.len(), 6);
     }
 }
