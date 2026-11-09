@@ -3837,6 +3837,35 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-025/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unbounded String or Bytes parameter persisted to storage — unbounded parameter `metadata_uri` persisted without length check in `set_metadata`: env . storage () . persistent () . set (& key , & metadata_uri)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e69ef7eede5b108bcf3d4b3c686b35b6"
+          },
+          "properties": {
+            "category": "resource-usage",
+            "confidence": "low",
+            "remediation": "Enforce an explicit maximum byte/character length on `String` and `Bytes` parameters (for example `if memo.len() > MAX_LEN { return Err(...); }`) before writing them to contract storage.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-025"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-029/positive.rs"
                 },
                 "region": {
@@ -4359,6 +4388,33 @@
               },
               "shortDescription": {
                 "text": "Authorization after state mutation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A public contract entry point accepts a dynamically sized `String` or `Bytes` parameter and writes it to persistent or instance storage without checking `.len()`. Storing unbounded variable-length payloads inflates ledger rent fees and can push entry size past Soroban host limits."
+              },
+              "help": {
+                "markdown": "## Unbounded String or Bytes parameter persisted to storage\n\nA public contract entry point accepts a dynamically sized `String` or `Bytes` parameter and writes it to persistent or instance storage without checking `.len()`. Storing unbounded variable-length payloads inflates ledger rent fees and can push entry size past Soroban host limits.\n\n### Remediation\n\nEnforce an explicit maximum byte/character length on `String` and `Bytes` parameters (for example `if memo.len() > MAX_LEN { return Err(...); }`) before writing them to contract storage.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                "text": "A public contract entry point accepts a dynamically sized `String` or `Bytes` parameter and writes it to persistent or instance storage without checking `.len()`. Storing unbounded variable-length payloads inflates ledger rent fees and can push entry size past Soroban host limits.\n\nRemediation: Enforce an explicit maximum byte/character length on `String` and `Bytes` parameters (for example `if memo.len() > MAX_LEN { return Err(...); }`) before writing them to contract storage."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-025",
+              "name": "Unbounded String or Bytes parameter persisted to storage",
+              "properties": {
+                "category": "resource-usage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+                ],
+                "remediation": "Enforce an explicit maximum byte/character length on `String` and `Bytes` parameters (for example `if memo.len() > MAX_LEN { return Err(...); }`) before writing them to contract storage.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unbounded String or Bytes parameter persisted to storage"
               }
             },
             {

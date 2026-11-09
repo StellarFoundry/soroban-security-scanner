@@ -8,17 +8,17 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 74,
+    "source_files": 78,
     "soroban_sdk_versions": []
   },
   "stats": {
-    "files_analyzed": 74,
-    "files_parsed": 74,
+    "files_analyzed": 78,
+    "files_parsed": 78,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 19,
+    "rules_run": 20,
     "rules_skipped": 0,
-    "findings_raw": 134,
+    "findings_raw": 135,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -37,7 +37,7 @@
       "dependencies": 2,
       "error-handling": 11,
       "events": 13,
-      "resource-usage": 2,
+      "resource-usage": 3,
       "storage": 42,
       "token": 11,
       "unsafe": 1
@@ -2616,6 +2616,25 @@
       "fingerprint": "fbf6d16b047d6733f4408c670b9ca2ee"
     },
     {
+      "rule_id": "SS-025",
+      "title": "Unbounded String or Bytes parameter persisted to storage",
+      "description": "A public contract entry point accepts a dynamically sized `String` or `Bytes` parameter and writes it to persistent or instance storage without checking `.len()`. Storing unbounded variable-length payloads inflates ledger rent fees and can push entry size past Soroban host limits.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "resource-usage",
+      "location": {
+        "file": "SS-025/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "unbounded parameter `metadata_uri` persisted without length check in `set_metadata`: env . storage () . persistent () . set (& key , & metadata_uri)",
+      "remediation": "Enforce an explicit maximum byte/character length on `String` and `Bytes` parameters (for example `if memo.len() > MAX_LEN { return Err(...); }`) before writing them to contract storage.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "e69ef7eede5b108bcf3d4b3c686b35b6"
+    },
+    {
       "rule_id": "SS-029",
       "title": "Public test or debug hook in a contract entry point",
       "description": "A public contract entry point is named like a test or debug backdoor (a `test`, `debug`, `dev`, `mock`, or `dummy` name segment). Backdoor entry points that remain callable in a production deployment let anyone invoke privileged behavior, and are a well-known way on-chain contracts are compromised. This is a name-based heuristic and may flag a legitimately named function.",
@@ -2783,6 +2802,34 @@
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: panic",
       "path": "SS-014/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-025/negative.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-025/negative2.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-025/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-025/positive.rs",
       "line": null
     },
     {

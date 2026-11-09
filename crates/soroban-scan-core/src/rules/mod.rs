@@ -23,6 +23,7 @@ mod public_test_hooks;
 mod token_transfer_amount;
 mod ttl_management;
 mod unbounded_iteration;
+mod unbounded_string_bytes_persistence;
 mod unbounded_vec_growth;
 mod unchecked_arithmetic;
 mod unprotected_initializer;
@@ -60,6 +61,9 @@ pub fn register_all(registry: &mut RuleRegistry) -> Result<(), RegistryError> {
     registry.register(Box::new(
         authorization_after_mutation::AuthorizationAfterMutation,
     ))?;
+    registry.register(Box::new(
+        unbounded_string_bytes_persistence::UnboundedStringBytesPersistence,
+    ))?;
     registry.register(Box::new(wildcard_sdk_import::WildcardSdkImport))?;
     Ok(())
 }
@@ -77,7 +81,7 @@ mod tests {
             vec![
                 "SS-001", "SS-002", "SS-003", "SS-004", "SS-005", "SS-006", "SS-007", "SS-008",
                 "SS-009", "SS-010", "SS-011", "SS-012", "SS-013", "SS-014", "SS-015", "SS-016",
-                "SS-017", "SS-029", "SS-033"
+                "SS-017", "SS-025", "SS-029", "SS-033"
             ]
         );
     }
