@@ -3832,6 +3832,35 @@
           "ruleId": "SS-017"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-022/positive.rs"
+                },
+                "region": {
+                  "startColumn": 1,
+                  "startLine": 5
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Duplicate or invalid symbol_short! storage key — constant `PENALTY_KEY` reuses `symbol_short!(\"POOL_KEY\")` already assigned to `REWARD_KEY`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "0e952e7c77b13b2295645b0fb234abd5"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "high",
+            "remediation": "Assign a unique `symbol_short!` literal (at most 9 ASCII alphanumeric/underscore characters) to each storage key constant, or use a typed `#[contracttype] enum DataKey` so the compiler enforces distinct keys.",
+            "severity": "high"
+          },
+          "ruleId": "SS-022"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -4359,6 +4388,33 @@
               },
               "shortDescription": {
                 "text": "Authorization after state mutation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "Two distinct `Symbol` constants in the same contract file resolve to the same `symbol_short!` literal, or a `symbol_short!` invocation uses a literal longer than 9 characters or outside `[a-zA-Z0-9_]`. Duplicate key constants cause unrelated contract state to overwrite the same storage slot."
+              },
+              "help": {
+                "markdown": "## Duplicate or invalid symbol_short! storage key\n\nTwo distinct `Symbol` constants in the same contract file resolve to the same `symbol_short!` literal, or a `symbol_short!` invocation uses a literal longer than 9 characters or outside `[a-zA-Z0-9_]`. Duplicate key constants cause unrelated contract state to overwrite the same storage slot.\n\n### Remediation\n\nAssign a unique `symbol_short!` literal (at most 9 ASCII alphanumeric/underscore characters) to each storage key constant, or use a typed `#[contracttype] enum DataKey` so the compiler enforces distinct keys.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                "text": "Two distinct `Symbol` constants in the same contract file resolve to the same `symbol_short!` literal, or a `symbol_short!` invocation uses a literal longer than 9 characters or outside `[a-zA-Z0-9_]`. Duplicate key constants cause unrelated contract state to overwrite the same storage slot.\n\nRemediation: Assign a unique `symbol_short!` literal (at most 9 ASCII alphanumeric/underscore characters) to each storage key constant, or use a typed `#[contracttype] enum DataKey` so the compiler enforces distinct keys."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-022",
+              "name": "Duplicate or invalid symbol_short! storage key",
+              "properties": {
+                "category": "storage",
+                "confidence": "high",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+                ],
+                "remediation": "Assign a unique `symbol_short!` literal (at most 9 ASCII alphanumeric/underscore characters) to each storage key constant, or use a typed `#[contracttype] enum DataKey` so the compiler enforces distinct keys.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Duplicate or invalid symbol_short! storage key"
               }
             },
             {

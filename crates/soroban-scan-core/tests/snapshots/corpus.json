@@ -8,17 +8,17 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 74,
+    "source_files": 78,
     "soroban_sdk_versions": []
   },
   "stats": {
-    "files_analyzed": 74,
-    "files_parsed": 74,
+    "files_analyzed": 78,
+    "files_parsed": 78,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 19,
+    "rules_run": 20,
     "rules_skipped": 0,
-    "findings_raw": 134,
+    "findings_raw": 135,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -38,7 +38,7 @@
       "error-handling": 11,
       "events": 13,
       "resource-usage": 2,
-      "storage": 42,
+      "storage": 43,
       "token": 11,
       "unsafe": 1
     }
@@ -2616,6 +2616,25 @@
       "fingerprint": "fbf6d16b047d6733f4408c670b9ca2ee"
     },
     {
+      "rule_id": "SS-022",
+      "title": "Duplicate or invalid symbol_short! storage key",
+      "description": "Two distinct `Symbol` constants in the same contract file resolve to the same `symbol_short!` literal, or a `symbol_short!` invocation uses a literal longer than 9 characters or outside `[a-zA-Z0-9_]`. Duplicate key constants cause unrelated contract state to overwrite the same storage slot.",
+      "severity": "high",
+      "confidence": "high",
+      "category": "storage",
+      "location": {
+        "file": "SS-022/positive.rs",
+        "line": 5,
+        "column": 1
+      },
+      "evidence": "constant `PENALTY_KEY` reuses `symbol_short!(\"POOL_KEY\")` already assigned to `REWARD_KEY`",
+      "remediation": "Assign a unique `symbol_short!` literal (at most 9 ASCII alphanumeric/underscore characters) to each storage key constant, or use a typed `#[contracttype] enum DataKey` so the compiler enforces distinct keys.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "0e952e7c77b13b2295645b0fb234abd5"
+    },
+    {
       "rule_id": "SS-029",
       "title": "Public test or debug hook in a contract entry point",
       "description": "A public contract entry point is named like a test or debug backdoor (a `test`, `debug`, `dev`, `mock`, or `dummy` name segment). Backdoor entry points that remain callable in a production deployment let anyone invoke privileged behavior, and are a well-known way on-chain contracts are compromised. This is a name-based heuristic and may flag a legitimately named function.",
@@ -2783,6 +2802,27 @@
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: panic",
       "path": "SS-014/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "2 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-022/negative.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-022/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "2 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-022/positive.rs",
       "line": null
     },
     {
