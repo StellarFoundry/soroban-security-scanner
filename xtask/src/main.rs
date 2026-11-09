@@ -8,6 +8,7 @@
 
 mod backlog;
 mod cli;
+mod corpus;
 mod docs;
 mod fixtures;
 
@@ -51,6 +52,18 @@ fn run(cli: Cli) -> Result<(), String> {
                     .unwrap_or_else(|| backlog::default_output(&root));
                 let count = backlog::write_all(&root, &output)?;
                 println!("Wrote {count} issue bodies to {}", output.display());
+            }
+        }
+        Command::Corpus(args) => {
+            let root = args.root.unwrap_or_else(workspace_root);
+            let report = corpus::analyze(&root)?;
+            print!("{}", report.render(args.format));
+            if args.check && !report.is_complete() {
+                return Err(format!(
+                    "corpus coverage is incomplete: {}/{} rules complete",
+                    report.valid_count(),
+                    report.rows.len()
+                ));
             }
         }
     }

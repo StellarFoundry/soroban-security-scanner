@@ -15,6 +15,7 @@ Commands:
   docs      Check relative links in every Markdown file
   fixtures  Scaffold a project fixture under fixtures/projects/
   backlog   Render the contributor backlog from tools/backlog/*.json
+  corpus    Report per-rule corpus fixture counts, docs presence, and validation status [aliases: coverage]
 ```
 
 The alias is defined in `.cargo/config.toml`:
@@ -71,6 +72,24 @@ rejects duplicate titles. It does not write anything and does not contact
 GitHub. Creating labels and issues still requires `gh`, so that step remains in
 `tools/create_backlog.py` until xtask reaches parity.
 
+## `cargo xtask corpus`
+
+Summarizes per-rule corpus coverage across all discovered rules (`fixtures/corpus/`,
+`docs/rules/detectors/`, and `crates/soroban-scan-core/src/rules/`):
+
+```bash
+cargo xtask corpus                      # aligned terminal table
+cargo xtask corpus --format markdown    # GitHub-flavored Markdown table
+cargo xtask corpus --check              # fail if any rule has a corpus or docs gap
+```
+
+For each rule, the report lists:
+
+- Rule ID (`SS-NNN`).
+- Number of positive (`positive*.rs` / `positive*.toml`), negative (`negative*.rs` / `negative*.toml`), and must-trigger (`must_trigger*` / `must-trigger*`) fixtures under `fixtures/corpus/<ID>/`.
+- Presence of `docs/rules/detectors/<ID>.md`.
+- Validation status (`ok` or gap summary when a rule is missing a positive fixture, has fewer than 3 negative fixtures, or lacks documentation).
+
 ## Relationship to the Python tools
 
 The Python helpers under `tools/` remain supported and unchanged:
@@ -80,6 +99,7 @@ The Python helpers under `tools/` remain supported and unchanged:
 | Markdown link check | `python tools/check_docs.py` | `cargo xtask docs` |
 | Fixture scaffolding | — | `cargo xtask fixtures <name>` |
 | Render backlog bodies | `python tools/create_backlog.py` (creates issues) | `cargo xtask backlog` (offline render) |
+| Corpus coverage report | — | `cargo xtask corpus` |
 
 xtask only replaces read-only and local-generation work. Anything that needs
 credentials or the network stays opt-in in the Python tooling.

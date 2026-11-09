@@ -4,6 +4,8 @@ use std::path::PathBuf;
 
 use clap::{Args, Parser, Subcommand};
 
+use crate::corpus::ReportFormat;
+
 /// Repository automation for the Soroban Security Scanner.
 ///
 /// Every command is offline and non-destructive by default.
@@ -23,6 +25,9 @@ pub enum Command {
     Fixtures(FixturesArgs),
     /// Render the contributor backlog from tools/backlog/*.json.
     Backlog(BacklogArgs),
+    /// Report per-rule corpus fixture counts, docs presence, and validation status.
+    #[command(visible_alias = "coverage")]
+    Corpus(CorpusArgs),
 }
 
 /// Arguments for `xtask docs`.
@@ -60,9 +65,47 @@ pub struct BacklogArgs {
     pub check: bool,
 }
 
+/// Arguments for `xtask corpus`.
+#[derive(Debug, Args, PartialEq, Eq)]
+pub struct CorpusArgs {
+    /// Repository root (defaults to the workspace root).
+    #[arg(long, value_name = "DIR")]
+    pub root: Option<PathBuf>,
+    /// Output format (`terminal` or `markdown`).
+    #[arg(long, value_enum, default_value_t = ReportFormat::Terminal)]
+    pub format: ReportFormat,
+    /// Fail with a non-zero exit code if any rule has a corpus or docs gap.
+    #[arg(long)]
+    pub check: bool,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn parses_corpus_with_defaults_and_markdown() {
+        let cli = Cli::try_parse_from(["xtask", "corpus"]).unwrap();
+        assert_eq!(
+            cli.command,
+            Command::Corpus(CorpusArgs {
+                root: None,
+                format: ReportFormat::Terminal,
+                check: false,
+            })
+        );
+
+        let md =
+            Cli::try_parse_from(["xtask", "corpus", "--format", "markdown", "--check"]).unwrap();
+        assert_eq!(
+            md.command,
+            Command::Corpus(CorpusArgs {
+                root: None,
+                format: ReportFormat::Markdown,
+                check: true,
+            })
+        );
+    }
 
     #[test]
     fn parses_docs_with_defaults() {

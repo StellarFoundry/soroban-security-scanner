@@ -62,6 +62,22 @@ fixtures/corpus/authorization/missing-auth-positive/
 Exact formats are defined in Phase 5. Until then, fixtures are plain source
 samples.
 
+## Corpus coverage report
+
+To inspect per-rule regression corpus coverage (positive, negative, and
+must-trigger fixture counts, detector documentation presence, and validation
+status), run:
+
+```bash
+cargo xtask corpus
+cargo xtask corpus --format markdown
+cargo xtask corpus --check
+```
+
+`--check` exits with a non-zero status if any discovered rule is missing a
+positive fixture, has fewer than three negative fixtures, or is missing a
+documentation page under `docs/rules/detectors/`.
+
 ## Golden report snapshots
 
 `crates/soroban-scan-core/tests/report_snapshots.rs` scans the full regression
