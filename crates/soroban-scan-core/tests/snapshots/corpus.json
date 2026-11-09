@@ -8,17 +8,17 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 74,
+    "source_files": 78,
     "soroban_sdk_versions": []
   },
   "stats": {
-    "files_analyzed": 74,
-    "files_parsed": 74,
+    "files_analyzed": 78,
+    "files_parsed": 78,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 19,
+    "rules_run": 20,
     "rules_skipped": 0,
-    "findings_raw": 134,
+    "findings_raw": 140,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -35,11 +35,11 @@
       "configuration": 2,
       "cross-contract": 6,
       "dependencies": 2,
-      "error-handling": 11,
+      "error-handling": 13,
       "events": 13,
       "resource-usage": 2,
       "storage": 42,
-      "token": 11,
+      "token": 15,
       "unsafe": 1
     }
   },
@@ -1733,6 +1733,25 @@
       "fingerprint": "28fd1b7c89283ed13d151e50de739072"
     },
     {
+      "rule_id": "SS-030",
+      "title": "Token client constructed from unvalidated Address parameter",
+      "description": "A state-changing contract entry point constructs a token client (`token::Client::new` or `TokenClient::new`) from a caller-supplied `Address` parameter without comparing it against a stored token address or allowlist. An attacker can pass a malicious or worthless token contract to credit real protocol balances or hijack execution via a fake token.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-013/negative.rs",
+        "line": 6,
+        "column": 22
+      },
+      "evidence": "token client constructed from unvalidated parameter `to` in `withdraw`: TokenClient :: new (& env , & to)",
+      "remediation": "Load the accepted token contract `Address` from contract storage (or verify membership in an allowlist) before constructing `token::Client::new` in state-changing entry points.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "6129acdcaa5c90b5f7563b20862cb7a5"
+    },
+    {
       "rule_id": "SS-014",
       "title": "Token transfer amount without validation",
       "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
@@ -1829,6 +1848,25 @@
       "fingerprint": "627c340067eaeb267b1fd346c78dda42"
     },
     {
+      "rule_id": "SS-030",
+      "title": "Token client constructed from unvalidated Address parameter",
+      "description": "A state-changing contract entry point constructs a token client (`token::Client::new` or `TokenClient::new`) from a caller-supplied `Address` parameter without comparing it against a stored token address or allowlist. An attacker can pass a malicious or worthless token contract to credit real protocol balances or hijack execution via a fake token.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-013/negative3.rs",
+        "line": 6,
+        "column": 22
+      },
+      "evidence": "token client constructed from unvalidated parameter `to` in `withdraw`: TokenClient :: new (& env , & to)",
+      "remediation": "Load the accepted token contract `Address` from contract storage (or verify membership in an allowlist) before constructing `token::Client::new` in state-changing entry points.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "3e3b12355ef5a39766f0d19b2cfea5a6"
+    },
+    {
       "rule_id": "SS-014",
       "title": "Token transfer amount without validation",
       "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
@@ -1866,6 +1904,25 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
       "fingerprint": "f76644376aad7f3084b884153534e79e"
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client constructed from unvalidated Address parameter",
+      "description": "A state-changing contract entry point constructs a token client (`token::Client::new` or `TokenClient::new`) from a caller-supplied `Address` parameter without comparing it against a stored token address or allowlist. An attacker can pass a malicious or worthless token contract to credit real protocol balances or hijack execution via a fake token.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-013/positive.rs",
+        "line": 4,
+        "column": 22
+      },
+      "evidence": "token client constructed from unvalidated parameter `to` in `withdraw`: TokenClient :: new (& env , & to)",
+      "remediation": "Load the accepted token contract `Address` from contract storage (or verify membership in an allowlist) before constructing `token::Client::new` in state-changing entry points.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "4cdb96e712bf08fda01ed26a7ab65764"
     },
     {
       "rule_id": "SS-013",
@@ -2635,6 +2692,65 @@
       "fingerprint": "c2c7192fdfffc7b7c5fc6951261f5cb4"
     },
     {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-030/negative.rs",
+        "line": 11,
+        "column": 33
+      },
+      "evidence": "`unwrap` in `deposit` can panic: env . storage () . instance () . get (& symbol_short ! (\"ASSET\")) . unwrap ()",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "cb9ae27278ba1dc0e9917a50a5efc19b"
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-030/negative2.rs",
+        "line": 14,
+        "column": 30
+      },
+      "evidence": "`unwrap` in `deposit_stored_token` can panic: env . storage () . instance () . get (& symbol_short ! (\"ASSET\")) . unwrap ()",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "da0fb260207860848a1c1cd1935db359"
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client constructed from unvalidated Address parameter",
+      "description": "A state-changing contract entry point constructs a token client (`token::Client::new` or `TokenClient::new`) from a caller-supplied `Address` parameter without comparing it against a stored token address or allowlist. An attacker can pass a malicious or worthless token contract to credit real protocol balances or hijack execution via a fake token.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-030/positive.rs",
+        "line": 17,
+        "column": 22
+      },
+      "evidence": "token client constructed from unvalidated parameter `asset` in `deposit`: token :: Client :: new (& env , & asset)",
+      "remediation": "Load the accepted token contract `Address` from contract storage (or verify membership in an allowlist) before constructing `token::Client::new` in state-changing entry points.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "093fb07b745407588ee928607288088b"
+    },
+    {
       "rule_id": "SS-033",
       "title": "Wildcard import from the Soroban SDK",
       "description": "A source file imports everything from `soroban_sdk` with a glob (`use soroban_sdk::*;` or a nested glob). Wildcard imports obscure which SDK items are used and can silently include deprecated or unsafe APIs when the SDK changes. This is a readability and reviewability signal, not proof of a security defect.",
@@ -2783,6 +2899,27 @@
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: panic",
       "path": "SS-014/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "2 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-030/negative.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "2 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-030/negative2.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-030/positive.rs",
       "line": null
     },
     {

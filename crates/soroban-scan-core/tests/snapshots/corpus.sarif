@@ -2498,6 +2498,35 @@
           "ruleId": "SS-002"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/negative.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 6
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client constructed from unvalidated Address parameter — token client constructed from unvalidated parameter `to` in `withdraw`: TokenClient :: new (& env , & to)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6129acdcaa5c90b5f7563b20862cb7a5"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Load the accepted token contract `Address` from contract storage (or verify membership in an allowlist) before constructing `token::Client::new` in state-changing entry points.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -2643,6 +2672,35 @@
           "ruleId": "SS-002"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 6
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client constructed from unvalidated Address parameter — token client constructed from unvalidated parameter `to` in `withdraw`: TokenClient :: new (& env , & to)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "3e3b12355ef5a39766f0d19b2cfea5a6"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Load the accepted token contract `Address` from contract storage (or verify membership in an allowlist) before constructing `token::Client::new` in state-changing entry points.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -2699,6 +2757,35 @@
             "severity": "high"
           },
           "ruleId": "SS-002"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/positive.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 4
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client constructed from unvalidated Address parameter — token client constructed from unvalidated parameter `to` in `withdraw`: TokenClient :: new (& env , & to)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "4cdb96e712bf08fda01ed26a7ab65764"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Load the accepted token contract `Address` from contract storage (or verify membership in an allowlist) before constructing `token::Client::new` in state-changing entry points.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
         },
         {
           "level": "error",
@@ -3866,6 +3953,93 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-030/negative.rs"
+                },
+                "region": {
+                  "startColumn": 33,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `deposit` can panic: env . storage () . instance () . get (& symbol_short ! (\"ASSET\")) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "cb9ae27278ba1dc0e9917a50a5efc19b"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 30,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `deposit_stored_token` can panic: env . storage () . instance () . get (& symbol_short ! (\"ASSET\")) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "da0fb260207860848a1c1cd1935db359"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/positive.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client constructed from unvalidated Address parameter — token client constructed from unvalidated parameter `asset` in `deposit`: token :: Client :: new (& env , & asset)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "093fb07b745407588ee928607288088b"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Load the accepted token contract `Address` from contract storage (or verify membership in an allowlist) before constructing `token::Client::new` in state-changing entry points.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-033/positive.rs"
                 },
                 "region": {
@@ -4386,6 +4560,33 @@
               },
               "shortDescription": {
                 "text": "Public test or debug hook in a contract entry point"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A state-changing contract entry point constructs a token client (`token::Client::new` or `TokenClient::new`) from a caller-supplied `Address` parameter without comparing it against a stored token address or allowlist. An attacker can pass a malicious or worthless token contract to credit real protocol balances or hijack execution via a fake token."
+              },
+              "help": {
+                "markdown": "## Token client constructed from unvalidated Address parameter\n\nA state-changing contract entry point constructs a token client (`token::Client::new` or `TokenClient::new`) from a caller-supplied `Address` parameter without comparing it against a stored token address or allowlist. An attacker can pass a malicious or worthless token contract to credit real protocol balances or hijack execution via a fake token.\n\n### Remediation\n\nLoad the accepted token contract `Address` from contract storage (or verify membership in an allowlist) before constructing `token::Client::new` in state-changing entry points.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A state-changing contract entry point constructs a token client (`token::Client::new` or `TokenClient::new`) from a caller-supplied `Address` parameter without comparing it against a stored token address or allowlist. An attacker can pass a malicious or worthless token contract to credit real protocol balances or hijack execution via a fake token.\n\nRemediation: Load the accepted token contract `Address` from contract storage (or verify membership in an allowlist) before constructing `token::Client::new` in state-changing entry points."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-030",
+              "name": "Token client constructed from unvalidated Address parameter",
+              "properties": {
+                "category": "token",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Load the accepted token contract `Address` from contract storage (or verify membership in an allowlist) before constructing `token::Client::new` in state-changing entry points.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Token client constructed from unvalidated Address parameter"
               }
             },
             {
