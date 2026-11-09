@@ -7,9 +7,14 @@ corpus. They are **not** production code.
 
 ```
 fixtures/
-  projects/   # whole mini-projects: Cargo.toml + src/
-  corpus/     # regression fixtures grouped by rule/category
+  projects/     # whole mini-projects: Cargo.toml + src/
+  corpus/       # regression fixtures grouped by rule/category
+  adversarial/  # per-rule adversarial fixtures (aliases, macros, unusual syntax)
 ```
+
+Each `fixtures/adversarial/<RULE-ID>/` sample documents the evasion/syntax
+`Technique:` it exercises and its `Expected: trigger` or `Expected: no-trigger`
+behavior, enforced by `crates/soroban-scan-core/tests/adversarial.rs`.
 
 ## Rules for fixtures
 
