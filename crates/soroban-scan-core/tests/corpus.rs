@@ -184,3 +184,69 @@ fn malformed_source_does_not_panic() {
         .iter()
         .any(|d| d.message.contains("failed to parse")));
 }
+
+#[test]
+fn every_detector_has_documented_must_trigger_recall_fixture() {
+    let registry = RuleRegistry::with_default_rules();
+    let config = ScanConfig::default();
+    let base = corpus_dir();
+
+    for meta in registry.metadata_sorted() {
+        let dir = base.join(meta.id);
+        let expected_ext = if meta.id == "SS-015" { ".toml" } else { ".rs" };
+        let mut must_triggers: Vec<PathBuf> = std::fs::read_dir(&dir)
+            .unwrap_or_else(|_| panic!("missing corpus dir for {}", meta.id))
+            .filter_map(|entry| entry.ok())
+            .map(|entry| entry.path())
+            .filter(|path| {
+                path.file_name()
+                    .and_then(|name| name.to_str())
+                    .is_some_and(|name| {
+                        (name.starts_with("must-trigger") || name.starts_with("must_trigger"))
+                            && name.ends_with(expected_ext)
+                    })
+            })
+            .collect();
+        must_triggers.sort();
+        assert!(
+            !must_triggers.is_empty(),
+            "{}: missing must-trigger recall fixture in {}",
+            meta.id,
+            dir.display()
+        );
+
+        for fixture_path in must_triggers {
+            let fixture_name = fixture_path
+                .file_name()
+                .unwrap()
+                .to_string_lossy()
+                .to_string();
+            let content = std::fs::read_to_string(&fixture_path).unwrap_or_else(|_| {
+                panic!(
+                    "cannot read must-trigger fixture {} for {}",
+                    fixture_name, meta.id
+                )
+            });
+            assert!(
+                content.contains("Rationale:"),
+                "{}: must-trigger fixture {} must document its true-positive Rationale",
+                meta.id,
+                fixture_name
+            );
+
+            let outcome = if meta.id == "SS-015" {
+                engine::scan_manifest_str("Cargo.toml", &content, &config, &registry)
+                    .expect("must-trigger manifest fixture must parse")
+            } else {
+                engine::scan_source_str(&content, &fixture_name, &config, &registry)
+            };
+
+            assert!(
+                outcome.findings.iter().any(|f| f.rule_id == meta.id),
+                "{}: must-trigger recall fixture {} failed to trigger detector (false negative!)",
+                meta.id,
+                fixture_name
+            );
+        }
+    }
+}

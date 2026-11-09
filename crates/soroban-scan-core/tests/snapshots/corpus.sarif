@@ -4,6 +4,93 @@
     {
       "results": [
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-001/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `update_treasury`: env . storage () . persistent () . set (& symbol_short ! (\"TREASURY\") , & new_recipient)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "93f46a6c6e6c8fa03611c18e521b328c"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-001/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `update_treasury`: env . storage () . persistent () . set (& symbol_short ! (\"TREASURY\") , & new_recipient)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6abdd3bd98545bdc86384d693cadcfbd"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-001/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `update_treasury`: env . storage () . persistent () . set (& symbol_short ! (\"TREASURY\") , & new_recipient)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ca41ffa8e0bf445a3a3095ac7bc7bddb"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
+        },
+        {
           "level": "note",
           "locations": [
             {
@@ -526,6 +613,64 @@
           "ruleId": "SS-006"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call without caller authorization — cross-contract client constructed with no authorization in `drain_vault`: TokenClient :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "8f09b92d2d9f64fb507ebc186ba04549"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+            "severity": "high"
+          },
+          "ruleId": "SS-002"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token transfer amount without validation — `transfer` transfers unchecked amount `amount` in entry point `drain_vault`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "066fbe5dae405cd3f4c70234e2d3cad2"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-014"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -821,6 +966,35 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-003/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 21,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unbounded storage iteration in an entry point — storage iteration in `sum_all_values`: env . storage () . persistent () . values ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "0a11b0354f4e6346b55dee48150d53a9"
+          },
+          "properties": {
+            "category": "resource-usage",
+            "confidence": "low",
+            "remediation": "Bound the amount of work performed per invocation: paginate with an explicit limit, maintain aggregate values instead of scanning, or cap the number of entries processed and return partial results. Ensure any loop over storage is bounded by a value the contract controls.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-003"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-003/positive.rs"
                 },
                 "region": {
@@ -843,6 +1017,64 @@
             "severity": "medium"
           },
           "ruleId": "SS-003"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-004/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 26,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `force_read` can panic: env . storage () . instance () . get (& symbol_short ! (\"LIMIT\")) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c89038767de4f9f4673d01bfe258d691"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-004/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `panic` in `force_read` can panic: panic ! (\"zero limit\")"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "1bcfe252ff0f13e881b007836bafbc03"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
         },
         {
           "level": "note",
@@ -901,6 +1133,35 @@
             "severity": "low"
           },
           "ruleId": "SS-004"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-005/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unsafe code in a Soroban contract — unsafe block/expression in SS-005/must-trigger.rs"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "a44e3a15475cfb1b504cd294d857b39f"
+          },
+          "properties": {
+            "category": "unsafe",
+            "confidence": "high",
+            "remediation": "Remove the `unsafe` block if possible. If it is genuinely required, isolate it in a small, well-documented function, prove its invariants, and cover it with targeted tests. Document why safe alternatives are insufficient.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-005"
         },
         {
           "level": "warning",
@@ -1017,6 +1278,35 @@
             "severity": "medium"
           },
           "ruleId": "SS-005"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-006/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `store_record`: env . storage () . persistent () . set (& symbol_short ! (\"RECORD\") , & balance)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2f1d1805b60a26dc8d07712d15b10ca5"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
         },
         {
           "level": "note",
@@ -1169,6 +1459,35 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-007/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Hardcoded Stellar account or contract address — hardcoded Stellar address literal: GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6e4ef4e68fd7e928984223952ed8d6de"
+          },
+          "properties": {
+            "category": "configuration",
+            "confidence": "low",
+            "remediation": "Store addresses in contract storage or pass them as parameters, and validate them against stored configuration. If an address must be a compile-time constant, document the operational plan for rotation and key compromise.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-007"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-007/positive.rs"
                 },
                 "region": {
@@ -1198,6 +1517,64 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-008/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 20
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked arithmetic in a contract entry point — unchecked `+` arithmetic in entry point `credit_account`: current + (principal * rate) (use `checked_add` and handle `None`)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "cd499df03e807959b4eade23c2d15f20"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "remediation": "Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-008"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-008/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 20,
+                  "startLine": 20
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked arithmetic in a contract entry point — unchecked `*` arithmetic in entry point `credit_account`: principal * rate (use `checked_mul` and handle `None`)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "96d964975e25c26bc8a1e5c8001dec19"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "remediation": "Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-008"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-008/positive.rs"
                 },
                 "region": {
@@ -1220,6 +1597,35 @@
             "severity": "medium"
           },
           "ruleId": "SS-008"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-009/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Insecure randomness derived from ledger state — ledger `timestamp` may be predictable and is used in an outcome-selecting modulo in entry point `pick_winner`: env . ledger () . timestamp () % 50"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "db9d7e0eb09883f31787b471d54e46b6"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "remediation": "Do not derive randomness from `ledger().timestamp()` or `ledger().sequence()`. Use a commitment/reveal scheme, a verifiable randomness source, or another design that does not depend on ledger values the submitter can observe or influence. If the value is only used for an expiry check against a stored deadline, document the use and suppress this rule.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-009"
         },
         {
           "level": "note",
@@ -1423,6 +1829,93 @@
             "severity": "medium"
           },
           "ruleId": "SS-009"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-010/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `rotate_admin`: env . storage () . persistent () . set (& DataKey :: Admin , & next_admin)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "26c41dd03366d78f09a6c85f82b77b17"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-010/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `rotate_admin`: env . storage () . persistent () . set (& DataKey :: Admin , & next_admin)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "438552dd01d6583b2f5a034823963bce"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-010/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `rotate_admin`: env . storage () . persistent () . set (& DataKey :: Admin , & next_admin)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "237396294e5422115f656a8ea9c36624"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
         },
         {
           "level": "error",
@@ -1684,6 +2177,122 @@
             "severity": "low"
           },
           "ruleId": "SS-010"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-011/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `initialize`: env . storage () . persistent () . set (& DataKey :: Admin , & admin)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e3414ee9de3eb63fdf8477aeb8c8136b"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-011/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `initialize`: env . storage () . persistent () . set (& DataKey :: Admin , & admin)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "d4824d017dca68c6d05d00d768017694"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-011/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `initialize`: env . storage () . persistent () . set (& DataKey :: Admin , & admin)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "3b31c390830ba22776583adb8a928996"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-011/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Initialization entry point without a re-initialization guard — initializer `initialize` writes storage without a re-initialization guard: env . storage () . persistent () . set (& DataKey :: Admin , & admin)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "304b8e71f995131d0aa2aa89b1e0433d"
+          },
+          "properties": {
+            "category": "access-control",
+            "confidence": "low",
+            "remediation": "Guard initialization by checking that the contract is not already initialized before writing (for example `if env.storage().instance().has(&KEY) { return Err(Error::AlreadyInitialized) }`), or perform initialization in a constructor (`__constructor`) so it runs only at deploy time.",
+            "severity": "high"
+          },
+          "ruleId": "SS-011"
         },
         {
           "level": "error",
@@ -2063,6 +2672,64 @@
           "ruleId": "SS-011"
         },
         {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-012/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 20
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unbounded collection growth in an entry point — unbounded collection growth in `append_member`: members . push_back (member)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "f4d22350a8d631e3b00b3997e267bea7"
+          },
+          "properties": {
+            "category": "resource-usage",
+            "confidence": "low",
+            "remediation": "Cap the collection size before growing it: read the current length and reject the operation at a documented maximum, or store a bounded aggregate instead. Return a typed contract error when the cap is reached.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-012"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-012/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `append_member`: env . storage () . persistent () . set (& DataKey :: Members , & members)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b1fbc3300ff449621e0d68cd12271627"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
           "level": "note",
           "locations": [
             {
@@ -2401,6 +3068,93 @@
           },
           "partialFingerprints": {
             "sorobanScanFingerprint": "1b817a9cf8e8c6fcce93cb968585a84d"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call before state update — cross-contract call in `claim_reward` at line 16 (byte 545) precedes the first storage write `set` at line 17 (byte 623)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c8f10ee1f2e4fa2f62cb303640749dcd"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "remediation": "Follow checks-effects-interactions: validate inputs, update all relevant contract state, and only then invoke another contract. If an external call must happen first, add an explicit reentrancy guard and document why the intermediate state is safe to observe.",
+            "severity": "high"
+          },
+          "ruleId": "SS-013"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token transfer amount without validation — `transfer` transfers unchecked amount `amount` in entry point `claim_reward`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "d3cb296344d768ca6d74720193c6a84b"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-014"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `claim_reward`: env . storage () . persistent () . set (& Key :: Claimed , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "18f42ffad69f206a442c0741c46ebe92"
           },
           "properties": {
             "category": "storage",
@@ -2817,6 +3571,35 @@
           "ruleId": "SS-006"
         },
         {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-014/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token transfer amount without validation — `transfer` transfers unchecked amount `amount` in entry point `forward_payment`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "901154fa8c39544d53eecb546fc6fc66"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-014"
+        },
+        {
           "level": "note",
           "locations": [
             {
@@ -2931,6 +3714,122 @@
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-016/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `record_entries`: env . storage () . instance () . set (& DataKey :: First , & first)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "f4d9dbfdfbacbdfcb56b4171e95a3890"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-016/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unbounded data stored in instance storage — repeated instance-storage keys in `record_entries`: env . storage () . instance () . set (& DataKey :: First , & first)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c1f742da371a38639ea8206564eb4e65"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Keep instance storage for small, fixed configuration. Store growing collections in persistent storage, and bound their size explicitly.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-016"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-016/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `record_entries`: env . storage () . instance () . set (& DataKey :: Second , & second)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "cec5ca731c23889b352273fdd8904f1b"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-016/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unbounded data stored in instance storage — repeated instance-storage keys in `record_entries`: env . storage () . instance () . set (& DataKey :: Second , & second)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "78c83ea6c8231eb34a60ac1a3d992768"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Keep instance storage for small, fixed configuration. Store growing collections in persistent storage, and bound their size explicitly.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-016"
         },
         {
           "level": "error",
@@ -3692,6 +4591,64 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-017/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `update_limit`: env . storage () . persistent () . set (& DataKey :: Limit , & limit)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "5067be3ebc0c191f187f0b12c8eeb028"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-017/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Authorization after state mutation — storage mutation before authorization in `update_limit`: env . storage () . persistent () . set (& DataKey :: Limit , & limit)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "8887aaee2afaa036b69c0864b752646a"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Authorize the caller at the start of the entry point, before any storage read or write that depends on the caller. Call `require_auth` or `require_auth_for_args` first, then perform the state change.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-017"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-017/negative.rs"
                 },
                 "region": {
@@ -3837,6 +4794,35 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-029/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Public test or debug hook in a contract entry point — public entry point `test_reset_state` looks like a test/debug hook"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "caf8c65ba70d300b5177473ac211fbbd"
+          },
+          "properties": {
+            "category": "access-control",
+            "confidence": "medium",
+            "remediation": "Remove test/debug entry points before deployment, or gate them behind `#[cfg(test)]` or a compile-time feature so they cannot be called from a production build. Never ship a privileged function intended only for testing.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-029"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-029/positive.rs"
                 },
                 "region": {
@@ -3859,6 +4845,35 @@
             "severity": "medium"
           },
           "ruleId": "SS-029"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-033/must-trigger.rs"
+                },
+                "region": {
+                  "startColumn": 0,
+                  "startLine": 6
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Wildcard import from the Soroban SDK — wildcard import `use soroban_sdk::*` hides which Soroban SDK items are used"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "4104032f6640b79699246b9343a88935"
+          },
+          "properties": {
+            "category": "dependencies",
+            "confidence": "high",
+            "remediation": "Replace the glob with the specific `soroban_sdk` items the contract uses (for example `use soroban_sdk::{Address, Env};`). Nested module imports should likewise name each item instead of ending in `*`.",
+            "severity": "low"
+          },
+          "ruleId": "SS-033"
         },
         {
           "level": "note",

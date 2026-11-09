@@ -1,0 +1,11 @@
+# Must-trigger recall fixture (SS-015)
+# Rationale: True positive because `soroban-sdk = "20.0.0"` is below the
+# configured minimum supported SDK version (21.0.0) and lacks newer protocol
+# safety improvements.
+
+[package]
+name = "legacy-soroban-contract"
+version = "0.1.0"
+
+[dependencies]
+soroban-sdk = "20.0.0"
