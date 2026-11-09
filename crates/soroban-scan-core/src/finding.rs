@@ -120,7 +120,13 @@ impl Finding {
 
     /// Recomputes the fingerprint (after mutating location/evidence).
     pub fn refresh_fingerprint(&mut self) {
-        self.fingerprint = fingerprint_of(&self.rule_id, &self.location.file, &self.evidence);
+        self.refresh_fingerprint_with_mode(FingerprintMode::IncludePath);
+    }
+
+    /// Recomputes the fingerprint under the configured [`FingerprintMode`].
+    pub fn refresh_fingerprint_with_mode(&mut self, mode: FingerprintMode) {
+        self.fingerprint =
+            fingerprint_of_with_mode(&self.rule_id, &self.location.file, &self.evidence, mode);
     }
 
     /// Deterministic sort key: file, line, column, rule id, fingerprint.
@@ -159,16 +165,83 @@ pub fn normalize_evidence(evidence: &str) -> String {
     evidence.split_whitespace().collect::<Vec<_>>().join(" ")
 }
 
+/// Controls whether finding fingerprints include the relative source path.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum FingerprintMode {
+    /// Default: hash `rule_id \0 file \0 normalized_evidence`.
+    #[default]
+    #[serde(alias = "include_path", alias = "default")]
+    IncludePath,
+    /// Opt-in: hash `rule_id \0 normalized_evidence` so findings survive file renames.
+    #[serde(alias = "path_independent", alias = "omit-path", alias = "omit_path")]
+    PathIndependent,
+}
+
+impl FingerprintMode {
+    /// Returns true when this mode is the default (`IncludePath`).
+    pub fn is_default(&self) -> bool {
+        *self == FingerprintMode::IncludePath
+    }
+
+    /// Stable kebab-case name used in configuration and diagnostics.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            FingerprintMode::IncludePath => "include-path",
+            FingerprintMode::PathIndependent => "path-independent",
+        }
+    }
+}
+
+impl std::fmt::Display for FingerprintMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+impl std::str::FromStr for FingerprintMode {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.trim().to_ascii_lowercase().as_str() {
+            "include-path" | "include_path" | "default" => Ok(FingerprintMode::IncludePath),
+            "path-independent" | "path_independent" | "omit-path" | "omit_path" => {
+                Ok(FingerprintMode::PathIndependent)
+            }
+            other => Err(format!(
+                "unknown fingerprint mode '{other}' (expected 'include-path' or 'path-independent')"
+            )),
+        }
+    }
+}
+
 /// Computes a stable fingerprint for a rule/file/evidence triple.
 ///
 /// The line number is intentionally excluded so that findings survive
 /// unrelated line shifts (important for baselines).
 pub fn fingerprint_of(rule_id: &str, file: &Path, evidence: &str) -> String {
+    fingerprint_of_with_mode(rule_id, file, evidence, FingerprintMode::IncludePath)
+}
+
+/// Computes a stable fingerprint under the given [`FingerprintMode`].
+///
+/// In [`FingerprintMode::IncludePath`] (the default), the fingerprint hashes
+/// `rule_id \0 file \0 normalized_evidence`. In
+/// [`FingerprintMode::PathIndependent`], the relative file path is omitted so
+/// findings retain their fingerprint across file renames or moves.
+pub fn fingerprint_of_with_mode(
+    rule_id: &str,
+    file: &Path,
+    evidence: &str,
+    mode: FingerprintMode,
+) -> String {
     let mut hasher = Sha256::new();
     hasher.update(rule_id.as_bytes());
     hasher.update(b"\0");
-    hasher.update(file.to_string_lossy().replace('\\', "/").as_bytes());
-    hasher.update(b"\0");
+    if mode == FingerprintMode::IncludePath {
+        hasher.update(file.to_string_lossy().replace('\\', "/").as_bytes());
+        hasher.update(b"\0");
+    }
     hasher.update(normalize_evidence(evidence).as_bytes());
     let digest = hasher.finalize();
     hex::encode(&digest[..16])
@@ -195,6 +268,31 @@ mod tests {
         let base = fingerprint_of("SS-001", Path::new("src/lib.rs"), "x");
         assert_ne!(base, fingerprint_of("SS-002", Path::new("src/lib.rs"), "x"));
         assert_ne!(base, fingerprint_of("SS-001", Path::new("src/a.rs"), "x"));
+    }
+
+    #[test]
+    fn path_independent_fingerprint_survives_file_rename() {
+        let before = fingerprint_of_with_mode(
+            "SS-001",
+            Path::new("src/old_name.rs"),
+            "env.storage().instance().set(&k, &v)",
+            FingerprintMode::PathIndependent,
+        );
+        let after = fingerprint_of_with_mode(
+            "SS-001",
+            Path::new("contracts/v2/new_name.rs"),
+            "env.storage().instance().set(&k, &v)",
+            FingerprintMode::PathIndependent,
+        );
+        assert_eq!(before, after);
+        assert_ne!(
+            before,
+            fingerprint_of(
+                "SS-001",
+                Path::new("src/old_name.rs"),
+                "env.storage().instance().set(&k, &v)",
+            )
+        );
     }
 
     #[test]

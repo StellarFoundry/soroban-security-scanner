@@ -151,6 +151,39 @@ movement does not resurrect known findings or create false "new" findings.
 Editing the evidence (for example, changing the flagged call) produces a new
 fingerprint, which is intentional.
 
+### Path-independent fingerprints for renamed files
+
+By default (`fingerprint_mode = "include-path"`), moving or renaming a file
+changes the relative path input to the fingerprint hash, so findings in the
+renamed file appear as new until the baseline is refreshed.
+
+During large workspace refactors or directory reorganizations, you can opt in to
+path-independent fingerprints via configuration or CLI:
+
+```toml
+# soroban-scan.toml
+fingerprint_mode = "path-independent"
+```
+
+```bash
+soroban-scan scan ./contracts \
+  --baseline .soroban-scan-baseline.json \
+  --fingerprint-mode path-independent
+```
+
+Under `path-independent`, the fingerprint hashes only `rule_id \0 normalized_evidence`
+(omitting the relative file path), so findings retain their fingerprints when
+files are moved or renamed.
+
+**Collision trade-off:** Two identical code snippets flagged by the same rule in
+different files produce the **same** fingerprint under `path-independent`. If
+one occurrence is accepted in the baseline, an identical snippet introduced in
+another file will also match that baseline entry. Because of this collision
+risk, the scanner always emits a `BASELINE-002` warning diagnostic when
+`path-independent` mode is active (and notes how many fingerprints matched
+findings across multiple files). Both `--write-baseline` and `--baseline` must
+use the same `fingerprint_mode`.
+
 ## Baseline file format
 
 ```json

@@ -20,6 +20,7 @@ use soroban_scan_core::category::Category;
 use soroban_scan_core::confidence::Confidence;
 use soroban_scan_core::config::ScanConfig;
 use soroban_scan_core::engine;
+use soroban_scan_core::finding::FingerprintMode;
 use soroban_scan_core::model::DiagnosticCode;
 use soroban_scan_core::project;
 use soroban_scan_core::registry::RuleRegistry;
@@ -217,6 +218,24 @@ enum BaselineFormatArg {
     Toml,
 }
 
+/// Argument value for `--fingerprint-mode`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+enum FingerprintModeArg {
+    /// Include the relative file path in the fingerprint (default).
+    IncludePath,
+    /// Omit the file path so findings keep their fingerprint across file renames.
+    PathIndependent,
+}
+
+impl From<FingerprintModeArg> for FingerprintMode {
+    fn from(value: FingerprintModeArg) -> Self {
+        match value {
+            FingerprintModeArg::IncludePath => FingerprintMode::IncludePath,
+            FingerprintModeArg::PathIndependent => FingerprintMode::PathIndependent,
+        }
+    }
+}
+
 impl BaselineFormatArg {
     fn from_path(path: &Path) -> Self {
         if path
@@ -388,6 +407,11 @@ struct ScanArgs {
     /// Baseline file format (JSON is the default; reads auto-detect).
     #[arg(long, value_enum)]
     baseline_format: Option<BaselineFormatArg>,
+
+    /// Fingerprint mode (`include-path` by default, or `path-independent` to
+    /// omit the file path so findings survive file renames).
+    #[arg(long, value_enum)]
+    fingerprint_mode: Option<FingerprintModeArg>,
 
     /// With --baseline, report only findings that are new.
     #[arg(long, requires = "baseline")]
@@ -622,6 +646,9 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
     config.rules.enabled.extend(args.rule.iter().cloned());
     if let Some(budget) = args.rule_time_budget_ms {
         config.rules.rule_time_budget_ms = Some(budget);
+    }
+    if let Some(mode) = args.fingerprint_mode {
+        config.fingerprint_mode = mode.into();
     }
 
     validate_rule_ids(&config, registry)?;

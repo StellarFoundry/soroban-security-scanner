@@ -666,7 +666,7 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
             return false;
         }
 
-        finding.refresh_fingerprint();
+        finding.refresh_fingerprint_with_mode(config.fingerprint_mode);
         finding.severity.meets(config.min_severity) && finding.confidence >= config.min_confidence
     });
 
@@ -675,6 +675,32 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
     // Deterministic ordering, then overlap-aware de-duplication.
     findings.sort_by_key(Finding::sort_key);
     deduplicate_overlapping(&mut findings);
+
+    if config.fingerprint_mode == crate::finding::FingerprintMode::PathIndependent {
+        let mut by_fp: BTreeMap<&str, BTreeSet<String>> = BTreeMap::new();
+        for finding in &findings {
+            by_fp
+                .entry(finding.fingerprint.as_str())
+                .or_default()
+                .insert(normalize_rel(&finding.location.file));
+        }
+        let collisions = by_fp.values().filter(|files| files.len() > 1).count();
+        let detail = if collisions > 0 {
+            format!(
+                "; {collisions} fingerprint(s) matched identical findings across multiple files"
+            )
+        } else {
+            String::new()
+        };
+        diagnostics.push(Diagnostic::warning(
+            DiagnosticCode::FingerprintCollisionRisk,
+            format!(
+                "fingerprint_mode is 'path-independent': file paths are omitted from finding \
+                 fingerprints so identical snippets in different files share a fingerprint{detail}"
+            ),
+            None,
+        ));
+    }
 
     // Apply inline suppression directives. Suppressed findings leave the gate
     // but are always reported with the directive and reason that removed them.
@@ -839,10 +865,10 @@ pub fn merge(outcomes: Vec<ScanOutcome>, labels: &[String]) -> ScanOutcome {
     for (mut outcome, label) in outcomes.into_iter().zip(labels.iter()) {
         if let Some(prefix) = prefix_for(label) {
             for finding in &mut outcome.findings {
-                prepend_location(finding, &prefix);
+                prepend_location(finding, &prefix, config.fingerprint_mode);
             }
             for entry in &mut outcome.suppressed {
-                prepend_location(&mut entry.finding, &prefix);
+                prepend_location(&mut entry.finding, &prefix, config.fingerprint_mode);
                 entry.suppression.file = prefix_path(&entry.suppression.file, &prefix);
             }
             for suppression in &mut outcome.suppressions {
@@ -898,7 +924,7 @@ pub fn merge(outcomes: Vec<ScanOutcome>, labels: &[String]) -> ScanOutcome {
         .collect();
 
     findings.sort_by_key(|finding| finding.sort_key());
-    findings.dedup_by(|a, b| a.fingerprint == b.fingerprint);
+    findings.dedup_by(|a, b| a.location.file == b.location.file && a.fingerprint == b.fingerprint);
 
     ScanOutcome {
         project: merge_projects(projects),
@@ -947,10 +973,10 @@ fn prefix_path(path: &str, prefix: &str) -> String {
 }
 
 /// Rewrites a finding's location to sit under `prefix` and refreshes its hash.
-fn prepend_location(finding: &mut Finding, prefix: &str) {
+fn prepend_location(finding: &mut Finding, prefix: &str, mode: crate::finding::FingerprintMode) {
     let file = finding.location.file.to_string_lossy().into_owned();
     finding.location.file = PathBuf::from(prefix_path(&file, prefix));
-    finding.refresh_fingerprint();
+    finding.refresh_fingerprint_with_mode(mode);
 }
 
 /// Merges identical configured suppression audit entries across roots.
@@ -2158,6 +2184,49 @@ mod tests {
             .diagnostics
             .iter()
             .any(|diagnostic| diagnostic.code == DiagnosticCode::GeneratedFileExcluded));
+    }
+
+    #[test]
+    fn path_independent_mode_preserves_fingerprints_across_renames_and_warns() {
+        let src = r#"
+use soroban_sdk::{contract, contractimpl, Env};
+
+#[contract]
+pub struct Vault;
+
+#[contractimpl]
+impl Vault {
+    pub fn set_rate(env: Env, rate: u64) {
+        env.storage().instance().set(&"rate", &rate);
+    }
+}
+"#;
+        let registry = RuleRegistry::with_default_rules();
+        let config = ScanConfig {
+            fingerprint_mode: crate::finding::FingerprintMode::PathIndependent,
+            ..ScanConfig::default()
+        };
+
+        let before = scan_source_str(src, "src/old_vault.rs", &config, &registry);
+        let after = scan_source_str(src, "contracts/v2/new_vault.rs", &config, &registry);
+
+        assert!(!before.findings.is_empty());
+        assert_eq!(before.findings.len(), after.findings.len());
+        let before_fps: Vec<&str> = before
+            .findings
+            .iter()
+            .map(|f| f.fingerprint.as_str())
+            .collect();
+        let after_fps: Vec<&str> = after
+            .findings
+            .iter()
+            .map(|f| f.fingerprint.as_str())
+            .collect();
+        assert_eq!(before_fps, after_fps);
+        assert!(before
+            .diagnostics
+            .iter()
+            .any(|d| d.code == DiagnosticCode::FingerprintCollisionRisk));
     }
 }
 

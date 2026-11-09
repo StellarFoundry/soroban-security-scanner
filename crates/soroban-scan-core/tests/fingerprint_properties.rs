@@ -12,7 +12,9 @@ use std::path::Path;
 use proptest::prelude::*;
 use soroban_scan_core::category::Category;
 use soroban_scan_core::confidence::Confidence;
-use soroban_scan_core::finding::{fingerprint_of, Finding, SourceLocation};
+use soroban_scan_core::finding::{
+    fingerprint_of, fingerprint_of_with_mode, Finding, FingerprintMode, SourceLocation,
+};
 use soroban_scan_core::severity::Severity;
 
 /// Builds a finding with an explicit line and the fingerprint implied by its
@@ -126,5 +128,52 @@ proptest! {
         let other_file = format!("{file}/alt.rs");
         prop_assert_ne!(&base, &fingerprint_of(&other_rule, Path::new(&file), &evidence));
         prop_assert_ne!(&base, &fingerprint_of(&rule_id, Path::new(&other_file), &evidence));
+    }
+
+    #[test]
+    fn include_path_mode_is_bit_for_bit_identical_to_default(
+        rule_id in rule_id(),
+        file in file_path(),
+        evidence in evidence(),
+    ) {
+        let default_fp = fingerprint_of(&rule_id, Path::new(&file), &evidence);
+        let explicit_fp = fingerprint_of_with_mode(
+            &rule_id,
+            Path::new(&file),
+            &evidence,
+            FingerprintMode::IncludePath,
+        );
+        prop_assert_eq!(default_fp, explicit_fp);
+    }
+
+    #[test]
+    fn path_independent_mode_preserves_fingerprint_across_file_renames(
+        rule_id in rule_id(),
+        file_a in file_path(),
+        file_b in file_path(),
+        evidence in evidence(),
+    ) {
+        let fp_a = fingerprint_of_with_mode(
+            &rule_id,
+            Path::new(&file_a),
+            &evidence,
+            FingerprintMode::PathIndependent,
+        );
+        let fp_b = fingerprint_of_with_mode(
+            &rule_id,
+            Path::new(&file_b),
+            &evidence,
+            FingerprintMode::PathIndependent,
+        );
+        prop_assert_eq!(&fp_a, &fp_b);
+
+        let other_rule = format!("{rule_id}-ALT");
+        let fp_other_rule = fingerprint_of_with_mode(
+            &other_rule,
+            Path::new(&file_a),
+            &evidence,
+            FingerprintMode::PathIndependent,
+        );
+        prop_assert_ne!(&fp_a, &fp_other_rule);
     }
 }

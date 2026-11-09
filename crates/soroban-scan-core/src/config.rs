@@ -12,6 +12,7 @@ use serde::{Deserialize, Deserializer, Serialize};
 use crate::ai::AiConfig;
 use crate::category::Category;
 use crate::confidence::Confidence;
+use crate::finding::FingerprintMode;
 use crate::severity::Severity;
 
 /// Deserializes category names, accepting both kebab-case and snake_case.
@@ -183,6 +184,9 @@ pub struct ScanConfig {
     pub follow_symlinks: bool,
     /// Minimum supported `soroban-sdk` version for the SS-015 policy check.
     pub minimum_soroban_sdk: String,
+    /// Fingerprint mode (`include-path` by default, or `path-independent`).
+    #[serde(default, skip_serializing_if = "FingerprintMode::is_default")]
+    pub fingerprint_mode: FingerprintMode,
     /// Path- and rule-scoped suppressions.
     pub suppressions: Vec<SuppressionRule>,
     /// Rule selection and overrides.
@@ -202,6 +206,7 @@ impl Default for ScanConfig {
             exclude_generated: false,
             follow_symlinks: false,
             minimum_soroban_sdk: "21.0.0".to_string(),
+            fingerprint_mode: FingerprintMode::IncludePath,
             suppressions: Vec::new(),
             rules: RulesConfig::default(),
             ai: AiConfig::default(),
@@ -509,5 +514,19 @@ rule = ""
             ..ScanConfig::default()
         };
         assert!(config.discovery_options().exclude_generated);
+    }
+
+    #[test]
+    fn parses_fingerprint_mode_and_defaults_to_include_path() {
+        let default_config = ScanConfig::default();
+        assert_eq!(default_config.fingerprint_mode, FingerprintMode::IncludePath);
+
+        let config = ScanConfig::from_toml(r#"fingerprint_mode = "path-independent""#).unwrap();
+        assert_eq!(config.fingerprint_mode, FingerprintMode::PathIndependent);
+
+        let snake = ScanConfig::from_toml(r#"fingerprint_mode = "path_independent""#).unwrap();
+        assert_eq!(snake.fingerprint_mode, FingerprintMode::PathIndependent);
+
+        assert!(ScanConfig::from_toml(r#"fingerprint_mode = "unknown""#).is_err());
     }
 }
