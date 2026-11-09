@@ -12,6 +12,7 @@ use serde::{Deserialize, Deserializer, Serialize};
 use crate::ai::AiConfig;
 use crate::category::Category;
 use crate::confidence::Confidence;
+use crate::finding::FingerprintStrategy;
 use crate::severity::Severity;
 
 /// Deserializes category names, accepting both kebab-case and snake_case.
@@ -189,6 +190,9 @@ pub struct ScanConfig {
     pub rules: RulesConfig,
     /// Optional assistance layer configuration (disabled by default).
     pub ai: AiConfig,
+    /// Strategy used to compute finding fingerprints.
+    #[serde(default, skip_serializing_if = "FingerprintStrategy::is_default")]
+    pub fingerprint_strategy: FingerprintStrategy,
 }
 
 impl Default for ScanConfig {
@@ -205,6 +209,7 @@ impl Default for ScanConfig {
             suppressions: Vec::new(),
             rules: RulesConfig::default(),
             ai: AiConfig::default(),
+            fingerprint_strategy: FingerprintStrategy::default(),
         }
     }
 }
@@ -509,5 +514,23 @@ rule = ""
             ..ScanConfig::default()
         };
         assert!(config.discovery_options().exclude_generated);
+    }
+
+    #[test]
+    fn parses_fingerprint_strategy() {
+        assert_eq!(
+            ScanConfig::default().fingerprint_strategy,
+            FingerprintStrategy::FileRelative
+        );
+        let fn_scoped = ScanConfig::from_toml(r#"fingerprint_strategy = "function-scoped""#).unwrap();
+        assert_eq!(
+            fn_scoped.fingerprint_strategy,
+            FingerprintStrategy::FunctionScoped
+        );
+        let content_hash = ScanConfig::from_toml(r#"fingerprint_strategy = "content_hash""#).unwrap();
+        assert_eq!(
+            content_hash.fingerprint_strategy,
+            FingerprintStrategy::ContentHash
+        );
     }
 }

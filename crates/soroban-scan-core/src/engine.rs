@@ -666,7 +666,18 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
             return false;
         }
 
-        finding.refresh_fingerprint();
+        let function_scope = loaded
+            .sources
+            .iter()
+            .find(|s| normalize_rel(&ctx.relative_path(&s.path)) == rel)
+            .and_then(|source| {
+                source
+                    .functions
+                    .iter()
+                    .find(|f| f.line <= finding.location.line && finding.location.line <= f.end_line)
+                    .map(|f| f.qualified_name.as_str())
+            });
+        finding.refresh_fingerprint_with(config.fingerprint_strategy, function_scope);
         finding.severity.meets(config.min_severity) && finding.confidence >= config.min_confidence
     });
 

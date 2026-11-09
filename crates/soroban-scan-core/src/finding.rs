@@ -10,6 +10,38 @@ use crate::confidence::Confidence;
 use crate::rule::RuleMetadata;
 use crate::severity::Severity;
 
+/// Strategy used to compute finding fingerprints for baseline matching.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum FingerprintStrategy {
+    /// Default strategy: hashes `(rule_id, file, normalized_evidence)`.
+    #[default]
+    #[serde(alias = "file_relative")]
+    FileRelative,
+    /// Hashes `(rule_id, file, function_scope, normalized_evidence)`.
+    #[serde(alias = "function_scoped")]
+    FunctionScoped,
+    /// Hashes `(rule_id, normalized_evidence)` independent of the file path.
+    #[serde(alias = "content_hash")]
+    ContentHash,
+}
+
+impl FingerprintStrategy {
+    /// Returns true when the strategy is the default (`FileRelative`).
+    pub fn is_default(&self) -> bool {
+        matches!(self, FingerprintStrategy::FileRelative)
+    }
+
+    /// Stable lowercase identifier.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            FingerprintStrategy::FileRelative => "file-relative",
+            FingerprintStrategy::FunctionScoped => "function-scoped",
+            FingerprintStrategy::ContentHash => "content-hash",
+        }
+    }
+}
+
 /// A precise location in the scanned source.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SourceLocation {
@@ -123,6 +155,21 @@ impl Finding {
         self.fingerprint = fingerprint_of(&self.rule_id, &self.location.file, &self.evidence);
     }
 
+    /// Recomputes the fingerprint using the configured [`FingerprintStrategy`].
+    pub fn refresh_fingerprint_with(
+        &mut self,
+        strategy: FingerprintStrategy,
+        function_scope: Option<&str>,
+    ) {
+        self.fingerprint = fingerprint_with_strategy(
+            strategy,
+            &self.rule_id,
+            &self.location.file,
+            function_scope,
+            &self.evidence,
+        );
+    }
+
     /// Deterministic sort key: file, line, column, rule id, fingerprint.
     pub fn sort_key(&self) -> (String, usize, usize, String, String) {
         (
@@ -174,6 +221,39 @@ pub fn fingerprint_of(rule_id: &str, file: &Path, evidence: &str) -> String {
     hex::encode(&digest[..16])
 }
 
+/// Computes a finding fingerprint using the given [`FingerprintStrategy`].
+pub fn fingerprint_with_strategy(
+    strategy: FingerprintStrategy,
+    rule_id: &str,
+    file: &Path,
+    function_scope: Option<&str>,
+    evidence: &str,
+) -> String {
+    match strategy {
+        FingerprintStrategy::FileRelative => fingerprint_of(rule_id, file, evidence),
+        FingerprintStrategy::FunctionScoped => {
+            let mut hasher = Sha256::new();
+            hasher.update(rule_id.as_bytes());
+            hasher.update(b"\0");
+            hasher.update(file.to_string_lossy().replace('\\', "/").as_bytes());
+            hasher.update(b"\0");
+            hasher.update(function_scope.unwrap_or_default().trim().as_bytes());
+            hasher.update(b"\0");
+            hasher.update(normalize_evidence(evidence).as_bytes());
+            let digest = hasher.finalize();
+            hex::encode(&digest[..16])
+        }
+        FingerprintStrategy::ContentHash => {
+            let mut hasher = Sha256::new();
+            hasher.update(rule_id.as_bytes());
+            hasher.update(b"\0");
+            hasher.update(normalize_evidence(evidence).as_bytes());
+            let digest = hasher.finalize();
+            hex::encode(&digest[..16])
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -211,5 +291,51 @@ mod tests {
         let json = serde_json::to_string(&loc).unwrap();
         assert!(json.contains("src/nested/lib.rs"), "got: {json}");
         assert!(!json.contains('\\'), "got: {json}");
+    }
+
+    #[test]
+    fn fingerprint_strategies_have_distinct_semantics() {
+        let f_rel = fingerprint_with_strategy(
+            FingerprintStrategy::FileRelative,
+            "SS-001",
+            Path::new("src/a.rs"),
+            Some("Contract::deposit"),
+            "missing auth",
+        );
+        assert_eq!(f_rel, fingerprint_of("SS-001", Path::new("src/a.rs"), "missing auth"));
+
+        let fn_a = fingerprint_with_strategy(
+            FingerprintStrategy::FunctionScoped,
+            "SS-001",
+            Path::new("src/a.rs"),
+            Some("Contract::deposit"),
+            "missing auth",
+        );
+        let fn_b = fingerprint_with_strategy(
+            FingerprintStrategy::FunctionScoped,
+            "SS-001",
+            Path::new("src/a.rs"),
+            Some("Contract::withdraw"),
+            "missing auth",
+        );
+        assert_ne!(fn_a, fn_b);
+        assert_ne!(fn_a, f_rel);
+
+        let content_a = fingerprint_with_strategy(
+            FingerprintStrategy::ContentHash,
+            "SS-001",
+            Path::new("src/a.rs"),
+            Some("Contract::deposit"),
+            "missing auth",
+        );
+        let content_b = fingerprint_with_strategy(
+            FingerprintStrategy::ContentHash,
+            "SS-001",
+            Path::new("src/moved/b.rs"),
+            Some("Contract::other"),
+            "  missing\n auth ",
+        );
+        assert_eq!(content_a, content_b);
+        assert_ne!(content_a, f_rel);
     }
 }
