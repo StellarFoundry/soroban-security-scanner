@@ -8,17 +8,17 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 74,
+    "source_files": 78,
     "soroban_sdk_versions": []
   },
   "stats": {
-    "files_analyzed": 74,
-    "files_parsed": 74,
+    "files_analyzed": 78,
+    "files_parsed": 78,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 19,
+    "rules_run": 20,
     "rules_skipped": 0,
-    "findings_raw": 134,
+    "findings_raw": 135,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -32,7 +32,7 @@
       "access-control": 10,
       "arithmetic": 6,
       "authorization": 28,
-      "configuration": 2,
+      "configuration": 3,
       "cross-contract": 6,
       "dependencies": 2,
       "error-handling": 11,
@@ -2614,6 +2614,25 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
       "fingerprint": "fbf6d16b047d6733f4408c670b9ca2ee"
+    },
+    {
+      "rule_id": "SS-024",
+      "title": "Missing #[contracttype] on boundary struct or enum",
+      "description": "A user-defined `struct` or `enum` appears in the parameter or return type of a public `#[contractimpl]` entry point, or in a storage write, without being annotated with `#[contracttype]` or `#[contracterror]`. Types that cross the Soroban host boundary without `#[contracttype]` lack generated `Val` conversion implementations and fail host serialization.",
+      "severity": "medium",
+      "confidence": "high",
+      "category": "configuration",
+      "location": {
+        "file": "SS-024/positive.rs",
+        "line": 4,
+        "column": 1
+      },
+      "evidence": "struct `OrderRequest` used in entry point `submit_order` without `#[contracttype]`",
+      "remediation": "Annotate every custom struct or enum that crosses the contract boundary or is persisted in contract storage with `#[contracttype]` (or `#[contracterror]` for error enums).",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/contract-development/types/custom-types"
+      ],
+      "fingerprint": "03a96e2c3f0f6ed5e9c31b0639a9460d"
     },
     {
       "rule_id": "SS-029",

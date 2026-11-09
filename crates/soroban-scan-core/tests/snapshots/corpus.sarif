@@ -3837,6 +3837,35 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-024/positive.rs"
+                },
+                "region": {
+                  "startColumn": 1,
+                  "startLine": 4
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Missing #[contracttype] on boundary struct or enum — struct `OrderRequest` used in entry point `submit_order` without `#[contracttype]`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "03a96e2c3f0f6ed5e9c31b0639a9460d"
+          },
+          "properties": {
+            "category": "configuration",
+            "confidence": "high",
+            "remediation": "Annotate every custom struct or enum that crosses the contract boundary or is persisted in contract storage with `#[contracttype]` (or `#[contracterror]` for error enums).",
+            "severity": "medium"
+          },
+          "ruleId": "SS-024"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-029/positive.rs"
                 },
                 "region": {
@@ -4359,6 +4388,33 @@
               },
               "shortDescription": {
                 "text": "Authorization after state mutation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A user-defined `struct` or `enum` appears in the parameter or return type of a public `#[contractimpl]` entry point, or in a storage write, without being annotated with `#[contracttype]` or `#[contracterror]`. Types that cross the Soroban host boundary without `#[contracttype]` lack generated `Val` conversion implementations and fail host serialization."
+              },
+              "help": {
+                "markdown": "## Missing #[contracttype] on boundary struct or enum\n\nA user-defined `struct` or `enum` appears in the parameter or return type of a public `#[contractimpl]` entry point, or in a storage write, without being annotated with `#[contracttype]` or `#[contracterror]`. Types that cross the Soroban host boundary without `#[contracttype]` lack generated `Val` conversion implementations and fail host serialization.\n\n### Remediation\n\nAnnotate every custom struct or enum that crosses the contract boundary or is persisted in contract storage with `#[contracttype]` (or `#[contracterror]` for error enums).\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/contract-development/types/custom-types",
+                "text": "A user-defined `struct` or `enum` appears in the parameter or return type of a public `#[contractimpl]` entry point, or in a storage write, without being annotated with `#[contracttype]` or `#[contracterror]`. Types that cross the Soroban host boundary without `#[contracttype]` lack generated `Val` conversion implementations and fail host serialization.\n\nRemediation: Annotate every custom struct or enum that crosses the contract boundary or is persisted in contract storage with `#[contracttype]` (or `#[contracterror]` for error enums)."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/contract-development/types/custom-types",
+              "id": "SS-024",
+              "name": "Missing #[contracttype] on boundary struct or enum",
+              "properties": {
+                "category": "configuration",
+                "confidence": "high",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/contract-development/types/custom-types"
+                ],
+                "remediation": "Annotate every custom struct or enum that crosses the contract boundary or is persisted in contract storage with `#[contracttype]` (or `#[contracterror]` for error enums).",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Missing #[contracttype] on boundary struct or enum"
               }
             },
             {
