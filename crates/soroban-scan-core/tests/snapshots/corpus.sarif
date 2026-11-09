@@ -3888,6 +3888,122 @@
             "severity": "low"
           },
           "ruleId": "SS-033"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-036/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `extend_ttl` storage mutation with no authorization in `touch`: env . storage () . persistent () . extend_ttl (& key , 100 , 1000)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "cfaea34e64e5ceede7f37a579dff0630"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-036/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `bump` storage mutation with no authorization in `touch`: env . storage () . persistent () . bump (& key , 100 , 1000)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "78771f3063e070ad984d71b0a8f2674d"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-036/positive.rs"
+                },
+                "region": {
+                  "startColumn": 36,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Deprecated Soroban SDK API usage — deprecated SDK API `storage().<tier>().bump` (deprecated since soroban-sdk 20.0.0, use `storage().<tier>().extend_ttl(threshold, extend_to)` instead): env . storage () . persistent () . bump (& key , 100 , 1000)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "1db6b33007e4f0ac9e0aef403c82e8fd"
+          },
+          "properties": {
+            "category": "dependencies",
+            "confidence": "medium",
+            "remediation": "Replace deprecated Soroban SDK calls with their modern equivalents documented for your target SDK release (for example, use `extend_ttl(threshold, extend_to)` instead of `bump`, `env.current_contract_address()` instead of `env.current_contract_id()`, `deployer().deploy_v2(...)` instead of `deploy(...)`, and `env.register(...)` instead of `env.register_contract(...)`).",
+            "severity": "low"
+          },
+          "ruleId": "SS-036"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-036/positive.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Deprecated Soroban SDK API usage — deprecated SDK API `Env::current_contract_id` (deprecated since soroban-sdk 20.0.0, use `Env::current_contract_address` instead): env . current_contract_id ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6347b3d71763af333e0073a20470e832"
+          },
+          "properties": {
+            "category": "dependencies",
+            "confidence": "medium",
+            "remediation": "Replace deprecated Soroban SDK calls with their modern equivalents documented for your target SDK release (for example, use `extend_ttl(threshold, extend_to)` instead of `bump`, `env.current_contract_address()` instead of `env.current_contract_id()`, `deployer().deploy_v2(...)` instead of `deploy(...)`, and `env.register(...)` instead of `env.register_contract(...)`).",
+            "severity": "low"
+          },
+          "ruleId": "SS-036"
         }
       ],
       "tool": {
@@ -4414,6 +4530,34 @@
               },
               "shortDescription": {
                 "text": "Wildcard import from the Soroban SDK"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "fullDescription": {
+                "text": "Contract source code invokes a Soroban SDK method or associated function that was deprecated or replaced across SDK releases (such as `storage().bump`, `env.current_contract_id()`, `Address::from_contract_id`, `deployer().with_source_account`, `deployer().deploy`, or `env.register_contract`). Relying on deprecated SDK APIs risks build failures on SDK upgrades and can mask stale security assumptions around TTL extension, contract identity, or constructor initialization."
+              },
+              "help": {
+                "markdown": "## Deprecated Soroban SDK API usage\n\nContract source code invokes a Soroban SDK method or associated function that was deprecated or replaced across SDK releases (such as `storage().bump`, `env.current_contract_id()`, `Address::from_contract_id`, `deployer().with_source_account`, `deployer().deploy`, or `env.register_contract`). Relying on deprecated SDK APIs risks build failures on SDK upgrades and can mask stale security assumptions around TTL extension, contract identity, or constructor initialization.\n\n### Remediation\n\nReplace deprecated Soroban SDK calls with their modern equivalents documented for your target SDK release (for example, use `extend_ttl(threshold, extend_to)` instead of `bump`, `env.current_contract_address()` instead of `env.current_contract_id()`, `deployer().deploy_v2(...)` instead of `deploy(...)`, and `env.register(...)` instead of `env.register_contract(...)`).\n\n### References\n\n- https://developers.stellar.org/docs/build/smart-contracts\n- https://docs.rs/soroban-sdk/latest/soroban_sdk/",
+                "text": "Contract source code invokes a Soroban SDK method or associated function that was deprecated or replaced across SDK releases (such as `storage().bump`, `env.current_contract_id()`, `Address::from_contract_id`, `deployer().with_source_account`, `deployer().deploy`, or `env.register_contract`). Relying on deprecated SDK APIs risks build failures on SDK upgrades and can mask stale security assumptions around TTL extension, contract identity, or constructor initialization.\n\nRemediation: Replace deprecated Soroban SDK calls with their modern equivalents documented for your target SDK release (for example, use `extend_ttl(threshold, extend_to)` instead of `bump`, `env.current_contract_address()` instead of `env.current_contract_id()`, `deployer().deploy_v2(...)` instead of `deploy(...)`, and `env.register(...)` instead of `env.register_contract(...)`)."
+              },
+              "helpUri": "https://developers.stellar.org/docs/build/smart-contracts",
+              "id": "SS-036",
+              "name": "Deprecated Soroban SDK API usage",
+              "properties": {
+                "category": "dependencies",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/build/smart-contracts",
+                  "https://docs.rs/soroban-sdk/latest/soroban_sdk/"
+                ],
+                "remediation": "Replace deprecated Soroban SDK calls with their modern equivalents documented for your target SDK release (for example, use `extend_ttl(threshold, extend_to)` instead of `bump`, `env.current_contract_address()` instead of `env.current_contract_id()`, `deployer().deploy_v2(...)` instead of `deploy(...)`, and `env.register(...)` instead of `env.register_contract(...)`).",
+                "severity": "low"
+              },
+              "shortDescription": {
+                "text": "Deprecated Soroban SDK API usage"
               }
             }
           ],

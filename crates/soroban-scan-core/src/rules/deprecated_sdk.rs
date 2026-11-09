@@ -68,7 +68,7 @@ impl Rule for DeprecatedSdkVersion {
 /// Parses the first numeric version in a Cargo requirement.
 ///
 /// Handles `20`, `20.1`, `20.1.2`, `^20.1.2`, `>=20.1.2`, and similar forms.
-fn parse_version(requirement: &str) -> Option<(u64, u64, u64)> {
+pub(crate) fn parse_version(requirement: &str) -> Option<(u64, u64, u64)> {
     let start = requirement.find(|c: char| c.is_ascii_digit())?;
     let rest = &requirement[start..];
     let mut parts = rest.split(|c: char| !c.is_ascii_digit());

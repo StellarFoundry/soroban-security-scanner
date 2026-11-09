@@ -8,17 +8,17 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 74,
+    "source_files": 78,
     "soroban_sdk_versions": []
   },
   "stats": {
-    "files_analyzed": 74,
-    "files_parsed": 74,
+    "files_analyzed": 78,
+    "files_parsed": 78,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 19,
+    "rules_run": 20,
     "rules_skipped": 0,
-    "findings_raw": 134,
+    "findings_raw": 138,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -31,10 +31,10 @@
     "findings_by_category": {
       "access-control": 10,
       "arithmetic": 6,
-      "authorization": 28,
+      "authorization": 30,
       "configuration": 2,
       "cross-contract": 6,
-      "dependencies": 2,
+      "dependencies": 4,
       "error-handling": 11,
       "events": 13,
       "resource-usage": 2,
@@ -2653,6 +2653,84 @@
         "https://developers.stellar.org/docs"
       ],
       "fingerprint": "f3f0a4aadf0de5b0abe020564befef9a"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-036/negative.rs",
+        "line": 11,
+        "column": 9
+      },
+      "evidence": "`extend_ttl` storage mutation with no authorization in `touch`: env . storage () . persistent () . extend_ttl (& key , 100 , 1000)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "cfaea34e64e5ceede7f37a579dff0630"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-036/positive.rs",
+        "line": 11,
+        "column": 9
+      },
+      "evidence": "`bump` storage mutation with no authorization in `touch`: env . storage () . persistent () . bump (& key , 100 , 1000)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "78771f3063e070ad984d71b0a8f2674d"
+    },
+    {
+      "rule_id": "SS-036",
+      "title": "Deprecated Soroban SDK API usage",
+      "description": "Contract source code invokes a Soroban SDK method or associated function that was deprecated or replaced across SDK releases (such as `storage().bump`, `env.current_contract_id()`, `Address::from_contract_id`, `deployer().with_source_account`, `deployer().deploy`, or `env.register_contract`). Relying on deprecated SDK APIs risks build failures on SDK upgrades and can mask stale security assumptions around TTL extension, contract identity, or constructor initialization.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "dependencies",
+      "location": {
+        "file": "SS-036/positive.rs",
+        "line": 11,
+        "column": 36
+      },
+      "evidence": "deprecated SDK API `storage().<tier>().bump` (deprecated since soroban-sdk 20.0.0, use `storage().<tier>().extend_ttl(threshold, extend_to)` instead): env . storage () . persistent () . bump (& key , 100 , 1000)",
+      "remediation": "Replace deprecated Soroban SDK calls with their modern equivalents documented for your target SDK release (for example, use `extend_ttl(threshold, extend_to)` instead of `bump`, `env.current_contract_address()` instead of `env.current_contract_id()`, `deployer().deploy_v2(...)` instead of `deploy(...)`, and `env.register(...)` instead of `env.register_contract(...)`).",
+      "references": [
+        "https://developers.stellar.org/docs/build/smart-contracts",
+        "https://docs.rs/soroban-sdk/latest/soroban_sdk/"
+      ],
+      "fingerprint": "1db6b33007e4f0ac9e0aef403c82e8fd"
+    },
+    {
+      "rule_id": "SS-036",
+      "title": "Deprecated Soroban SDK API usage",
+      "description": "Contract source code invokes a Soroban SDK method or associated function that was deprecated or replaced across SDK releases (such as `storage().bump`, `env.current_contract_id()`, `Address::from_contract_id`, `deployer().with_source_account`, `deployer().deploy`, or `env.register_contract`). Relying on deprecated SDK APIs risks build failures on SDK upgrades and can mask stale security assumptions around TTL extension, contract identity, or constructor initialization.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "dependencies",
+      "location": {
+        "file": "SS-036/positive.rs",
+        "line": 12,
+        "column": 13
+      },
+      "evidence": "deprecated SDK API `Env::current_contract_id` (deprecated since soroban-sdk 20.0.0, use `Env::current_contract_address` instead): env . current_contract_id ()",
+      "remediation": "Replace deprecated Soroban SDK calls with their modern equivalents documented for your target SDK release (for example, use `extend_ttl(threshold, extend_to)` instead of `bump`, `env.current_contract_address()` instead of `env.current_contract_id()`, `deployer().deploy_v2(...)` instead of `deploy(...)`, and `env.register(...)` instead of `env.register_contract(...)`).",
+      "references": [
+        "https://developers.stellar.org/docs/build/smart-contracts",
+        "https://docs.rs/soroban-sdk/latest/soroban_sdk/"
+      ],
+      "fingerprint": "6347b3d71763af333e0073a20470e832"
     }
   ],
   "suppressed": [],
@@ -2804,6 +2882,20 @@
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: symbol_short",
       "path": "SS-033/positive.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-036/negative.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-036/positive.rs",
       "line": null
     }
   ]

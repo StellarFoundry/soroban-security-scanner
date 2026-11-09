@@ -70,6 +70,7 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-017](detectors/SS-017.md) | Authorization after state mutation | medium | medium | authorization |
 | [SS-029](detectors/SS-029.md) | Public test or debug hook in a contract entry point | medium | medium | access-control |
 | [SS-033](detectors/SS-033.md) | Wildcard import from the Soroban SDK | low | high | dependencies |
+| [SS-036](detectors/SS-036.md) | Deprecated Soroban SDK API usage | low | medium | dependencies |
 
 Each detector has a positive and negative fixture under
 `fixtures/corpus/<RULE-ID>/`.
