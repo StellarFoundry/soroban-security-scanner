@@ -3837,6 +3837,35 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-018/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked integer cast in a contract entry point — unchecked integer cast from `i128` (parameter) to `u64` in entry point `deposit`: amount as u64 (use `try_into()` or `u64::try_from`)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "622acf45c6f26f60254d65e6afe12b4d"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "remediation": "Replace narrowing or sign-changing `as` casts with fallible conversions using `core::convert::TryFrom` / `TryInto` (`u64::try_from(value)` or `value.try_into()`) and handle the `Err` branch with a typed contract error.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-018"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-029/positive.rs"
                 },
                 "region": {
@@ -4359,6 +4388,34 @@
               },
               "shortDescription": {
                 "text": "Authorization after state mutation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A public contract entry point uses an `as` cast to narrow or change the signedness of an integer value derived from a function parameter or contract storage. In Rust, `as` casts between integer types never panic: narrowing casts silently truncate high-order bits and signed/unsigned casts reinterpret two's-complement bit patterns, which can turn negative or oversized inputs into corrupted balances, amounts, or counters. This is a heuristic with low confidence because prior bounds checks may make the cast safe in context."
+              },
+              "help": {
+                "markdown": "## Unchecked integer cast in a contract entry point\n\nA public contract entry point uses an `as` cast to narrow or change the signedness of an integer value derived from a function parameter or contract storage. In Rust, `as` casts between integer types never panic: narrowing casts silently truncate high-order bits and signed/unsigned casts reinterpret two's-complement bit patterns, which can turn negative or oversized inputs into corrupted balances, amounts, or counters. This is a heuristic with low confidence because prior bounds checks may make the cast safe in context.\n\n### Remediation\n\nReplace narrowing or sign-changing `as` casts with fallible conversions using `core::convert::TryFrom` / `TryInto` (`u64::try_from(value)` or `value.try_into()`) and handle the `Err` branch with a typed contract error.\n\n### References\n\n- https://doc.rust-lang.org/reference/expressions/operator-expr.html#type-cast-expressions\n- https://doc.rust-lang.org/core/convert/trait.TryFrom.html",
+                "text": "A public contract entry point uses an `as` cast to narrow or change the signedness of an integer value derived from a function parameter or contract storage. In Rust, `as` casts between integer types never panic: narrowing casts silently truncate high-order bits and signed/unsigned casts reinterpret two's-complement bit patterns, which can turn negative or oversized inputs into corrupted balances, amounts, or counters. This is a heuristic with low confidence because prior bounds checks may make the cast safe in context.\n\nRemediation: Replace narrowing or sign-changing `as` casts with fallible conversions using `core::convert::TryFrom` / `TryInto` (`u64::try_from(value)` or `value.try_into()`) and handle the `Err` branch with a typed contract error."
+              },
+              "helpUri": "https://doc.rust-lang.org/reference/expressions/operator-expr.html#type-cast-expressions",
+              "id": "SS-018",
+              "name": "Unchecked integer cast in a contract entry point",
+              "properties": {
+                "category": "arithmetic",
+                "confidence": "low",
+                "references": [
+                  "https://doc.rust-lang.org/reference/expressions/operator-expr.html#type-cast-expressions",
+                  "https://doc.rust-lang.org/core/convert/trait.TryFrom.html"
+                ],
+                "remediation": "Replace narrowing or sign-changing `as` casts with fallible conversions using `core::convert::TryFrom` / `TryInto` (`u64::try_from(value)` or `value.try_into()`) and handle the `Err` branch with a typed contract error.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unchecked integer cast in a contract entry point"
               }
             },
             {

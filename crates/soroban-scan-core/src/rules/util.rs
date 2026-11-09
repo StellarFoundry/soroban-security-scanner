@@ -119,6 +119,23 @@ pub struct ComparisonFact {
     pub text: String,
 }
 
+/// An explicit type cast (`expr as Ty`) fact.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CastFact {
+    /// Rendered operand expression being cast.
+    pub expr: String,
+    /// Inferred source type text when known from bindings or literal suffixes.
+    pub source_type: Option<String>,
+    /// Rendered target type (`Ty` in `expr as Ty`).
+    pub target_type: String,
+    /// 1-based line.
+    pub line: usize,
+    /// 1-based column.
+    pub column: usize,
+    /// Rendered cast expression text (may be truncated).
+    pub text: String,
+}
+
 /// Facts extracted from a function body or file.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Facts {
@@ -136,10 +153,14 @@ pub struct Facts {
     pub modulo: Vec<ArithFact>,
     /// Binary comparison operations.
     pub comparisons: Vec<ComparisonFact>,
+    /// Explicit `as` cast expressions.
+    pub casts: Vec<CastFact>,
     /// Method calls on a local cross-contract client variable.
     pub client_calls: Vec<CallFact>,
     /// Local variables initialized from a storage read.
     pub storage_vars: BTreeSet<String>,
+    /// Known identifier types (`let x: Ty` or function parameter types).
+    pub local_types: BTreeMap<String, String>,
     /// Whether the code contains `unsafe`.
     pub has_unsafe: bool,
     /// Locations of `unsafe` constructs.
@@ -246,6 +267,88 @@ impl Facts {
     pub fn arithmetic_ops(&self) -> &[ArithFact] {
         &self.arith
     }
+
+    /// Explicit `as` cast operations in source order.
+    pub fn cast_ops(&self) -> &[CastFact] {
+        &self.casts
+    }
+}
+
+/// Normalizes a `syn::Type` into a compact type name (stripping `&` and parentheses).
+pub fn clean_type_text(ty: &syn::Type) -> String {
+    match ty {
+        syn::Type::Reference(reference) => clean_type_text(&reference.elem),
+        syn::Type::Paren(paren) => clean_type_text(&paren.elem),
+        syn::Type::Group(group) => clean_type_text(&group.elem),
+        syn::Type::Path(type_path) if type_path.qself.is_none() => type_path
+            .path
+            .segments
+            .last()
+            .map(|seg| seg.ident.to_string())
+            .unwrap_or_else(|| ty.to_token_stream().to_string().replace(' ', "")),
+        _ => ty.to_token_stream().to_string().replace(' ', ""),
+    }
+}
+
+/// Infers the static type name of `expr` from `known_types`, literal suffixes, or turbofish args.
+pub fn infer_expr_type(expr: &syn::Expr, known_types: &BTreeMap<String, String>) -> Option<String> {
+    match expr {
+        syn::Expr::Paren(paren) => infer_expr_type(&paren.expr, known_types),
+        syn::Expr::Group(group) => infer_expr_type(&group.expr, known_types),
+        syn::Expr::Reference(reference) => infer_expr_type(&reference.expr, known_types),
+        syn::Expr::Unary(unary) => infer_expr_type(&unary.expr, known_types),
+        syn::Expr::Path(path) if path.qself.is_none() && path.path.segments.len() == 1 => {
+            let ident = path.path.segments[0].ident.to_string();
+            known_types.get(&ident).cloned()
+        }
+        syn::Expr::Lit(lit) => match &lit.lit {
+            syn::Lit::Int(int_lit) if !int_lit.suffix().is_empty() => {
+                Some(int_lit.suffix().to_string())
+            }
+            _ => None,
+        },
+        syn::Expr::Binary(bin) => infer_expr_type(&bin.left, known_types)
+            .or_else(|| infer_expr_type(&bin.right, known_types)),
+        syn::Expr::MethodCall(mc) => {
+            let method = mc.method.to_string();
+            if method == "get" {
+                if let Some(turbo) = &mc.turbofish {
+                    if let Some(syn::GenericArgument::Type(ty)) = turbo.args.last() {
+                        return Some(clean_type_text(ty));
+                    }
+                }
+            }
+            if method == "unwrap_or" {
+                return infer_expr_type(&mc.receiver, known_types).or_else(|| {
+                    mc.args
+                        .first()
+                        .and_then(|arg| infer_expr_type(arg, known_types))
+                });
+            }
+            if matches!(
+                method.as_str(),
+                "unwrap" | "expect" | "unwrap_or_default" | "unwrap_or_else"
+            ) {
+                return infer_expr_type(&mc.receiver, known_types);
+            }
+            None
+        }
+        _ => None,
+    }
+}
+
+fn extract_local_binding(pat: &syn::Pat) -> Option<(String, Option<String>)> {
+    match pat {
+        syn::Pat::Ident(pattern) => Some((pattern.ident.to_string(), None)),
+        syn::Pat::Type(pat_type) => match &*pat_type.pat {
+            syn::Pat::Ident(pattern) => Some((
+                pattern.ident.to_string(),
+                Some(clean_type_text(&pat_type.ty)),
+            )),
+            _ => None,
+        },
+        _ => None,
+    }
 }
 
 struct FactsVisitor<'a> {
@@ -338,29 +441,53 @@ impl<'ast, 'a> Visit<'ast> for FactsVisitor<'a> {
     }
 
     fn visit_local(&mut self, node: &'ast syn::Local) {
-        if let (syn::Pat::Ident(pattern), Some(init)) = (&node.pat, &node.init) {
-            if let syn::Expr::Call(call) = &*init.expr {
-                if let syn::Expr::Path(path) = &*call.func {
-                    let name = path
-                        .path
-                        .segments
-                        .last()
-                        .map(|segment| segment.ident.to_string())
-                        .unwrap_or_default();
-                    let context = self
-                        .imports
-                        .canonicalize(&path.path.to_token_stream().to_string());
-                    if name == "new" && context.contains("Client") {
-                        self.client_vars.insert(pattern.ident.to_string());
+        if let Some((ident_name, explicit_ty)) = extract_local_binding(&node.pat) {
+            if let Some(ty) = explicit_ty {
+                self.facts.local_types.insert(ident_name.clone(), ty);
+            }
+            if let Some(init) = &node.init {
+                if let syn::Expr::Call(call) = &*init.expr {
+                    if let syn::Expr::Path(path) = &*call.func {
+                        let name = path
+                            .path
+                            .segments
+                            .last()
+                            .map(|segment| segment.ident.to_string())
+                            .unwrap_or_default();
+                        let context = self
+                            .imports
+                            .canonicalize(&path.path.to_token_stream().to_string());
+                        if name == "new" && context.contains("Client") {
+                            self.client_vars.insert(ident_name.clone());
+                        }
+                    }
+                }
+                let init_text = init.expr.to_token_stream().to_string().to_ascii_lowercase();
+                if init_text.contains("storage") && init_text.contains("get") {
+                    self.facts.storage_vars.insert(ident_name.clone());
+                }
+                if !self.facts.local_types.contains_key(&ident_name) {
+                    if let Some(inferred) = infer_expr_type(&init.expr, &self.facts.local_types) {
+                        self.facts.local_types.insert(ident_name, inferred);
                     }
                 }
             }
-            let init_text = init.expr.to_token_stream().to_string().to_ascii_lowercase();
-            if init_text.contains("storage") && init_text.contains("get") {
-                self.facts.storage_vars.insert(pattern.ident.to_string());
-            }
         }
         visit::visit_local(self, node);
+    }
+
+    fn visit_item_fn(&mut self, node: &'ast syn::ItemFn) {
+        for (name, ty) in parameter_types(&node.sig) {
+            self.facts.local_types.insert(name, ty);
+        }
+        visit::visit_item_fn(self, node);
+    }
+
+    fn visit_impl_item_fn(&mut self, node: &'ast syn::ImplItemFn) {
+        for (name, ty) in parameter_types(&node.sig) {
+            self.facts.local_types.insert(name, ty);
+        }
+        visit::visit_impl_item_fn(self, node);
     }
 
     fn visit_expr_call(&mut self, node: &'ast syn::ExprCall) {
@@ -491,6 +618,23 @@ impl<'ast, 'a> Visit<'ast> for FactsVisitor<'a> {
             });
         }
         visit::visit_expr_binary(self, node);
+    }
+
+    fn visit_expr_cast(&mut self, node: &'ast syn::ExprCast) {
+        let (line, column) = span_line_col(node);
+        let expr = truncate(&node.expr.to_token_stream().to_string(), 120);
+        let source_type = infer_expr_type(&node.expr, &self.facts.local_types);
+        let target_type = clean_type_text(&node.ty);
+        let text = truncate(&node.to_token_stream().to_string(), 160);
+        self.facts.casts.push(CastFact {
+            expr,
+            source_type,
+            target_type,
+            line,
+            column,
+            text,
+        });
+        visit::visit_expr_cast(self, node);
     }
 
     fn visit_expr_unsafe(&mut self, node: &'ast syn::ExprUnsafe) {
@@ -676,7 +820,14 @@ fn merge_facts(dst: &mut Facts, src: &Facts) {
     dst.arith.extend(src.arith.iter().cloned());
     dst.modulo.extend(src.modulo.iter().cloned());
     dst.comparisons.extend(src.comparisons.iter().cloned());
+    dst.casts.extend(src.casts.iter().cloned());
     dst.client_calls.extend(src.client_calls.iter().cloned());
+    dst.storage_vars.extend(src.storage_vars.iter().cloned());
+    for (k, v) in &src.local_types {
+        dst.local_types
+            .entry(k.clone())
+            .or_insert_with(|| v.clone());
+    }
     dst.has_unsafe |= src.has_unsafe;
     dst.unsafe_locations
         .extend(src.unsafe_locations.iter().copied());
@@ -699,6 +850,8 @@ pub struct ContractFn<'a> {
     /// Only plain identifier patterns are recorded; destructuring patterns are
     /// deliberately omitted because they cannot be matched to a single name.
     pub params: Vec<String>,
+    /// Declared parameter types keyed by parameter name.
+    pub param_types: BTreeMap<String, String>,
 }
 
 /// Collects the simple identifier parameter names of a function signature.
@@ -708,6 +861,22 @@ fn parameter_names(sig: &syn::Signature) -> Vec<String> {
         .filter_map(|arg| match arg {
             syn::FnArg::Typed(pat_type) => match &*pat_type.pat {
                 syn::Pat::Ident(pat_ident) => Some(pat_ident.ident.to_string()),
+                _ => None,
+            },
+            syn::FnArg::Receiver(_) => None,
+        })
+        .collect()
+}
+
+/// Collects declared parameter types keyed by parameter name.
+fn parameter_types(sig: &syn::Signature) -> BTreeMap<String, String> {
+    sig.inputs
+        .iter()
+        .filter_map(|arg| match arg {
+            syn::FnArg::Typed(pat_type) => match &*pat_type.pat {
+                syn::Pat::Ident(pat_ident) => {
+                    Some((pat_ident.ident.to_string(), clean_type_text(&pat_type.ty)))
+                }
                 _ => None,
             },
             syn::FnArg::Receiver(_) => None,
@@ -748,6 +917,7 @@ fn collect_contract_fns<'a>(items: &'a [syn::Item], out: &mut Vec<ContractFn<'a>
                             block: &f.block,
                             is_public: matches!(f.vis, syn::Visibility::Public(_)),
                             params: parameter_names(&f.sig),
+                            param_types: parameter_types(&f.sig),
                         });
                     }
                 }
@@ -979,5 +1149,21 @@ mod tests {
         assert!(names.contains(&"entry"));
         assert!(names.contains(&"private"));
         assert!(!names.contains(&"helper"));
+    }
+
+    #[test]
+    fn captures_cast_facts_with_source_and_target_types() {
+        let facts = facts_of(
+            "fn f(env: Env, amount: i128) -> u64 { let stored: u128 = env.storage().persistent().get(&0).unwrap_or(0); (amount as u64) + (stored as u64) }",
+        );
+        assert!(facts.storage_vars.contains("stored"));
+        let casts = facts.cast_ops();
+        assert_eq!(casts.len(), 2);
+        assert_eq!(casts[0].expr, "amount");
+        assert_eq!(casts[0].source_type.as_deref(), Some("i128"));
+        assert_eq!(casts[0].target_type, "u64");
+        assert_eq!(casts[1].expr, "stored");
+        assert_eq!(casts[1].source_type.as_deref(), Some("u128"));
+        assert_eq!(casts[1].target_type, "u64");
     }
 }

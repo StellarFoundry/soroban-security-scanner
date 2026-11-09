@@ -8,17 +8,17 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 74,
+    "source_files": 78,
     "soroban_sdk_versions": []
   },
   "stats": {
-    "files_analyzed": 74,
-    "files_parsed": 74,
+    "files_analyzed": 78,
+    "files_parsed": 78,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 19,
+    "rules_run": 20,
     "rules_skipped": 0,
-    "findings_raw": 134,
+    "findings_raw": 135,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -30,7 +30,7 @@
     "generated_files_excluded": 0,
     "findings_by_category": {
       "access-control": 10,
-      "arithmetic": 6,
+      "arithmetic": 7,
       "authorization": 28,
       "configuration": 2,
       "cross-contract": 6,
@@ -2614,6 +2614,26 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
       "fingerprint": "fbf6d16b047d6733f4408c670b9ca2ee"
+    },
+    {
+      "rule_id": "SS-018",
+      "title": "Unchecked integer cast in a contract entry point",
+      "description": "A public contract entry point uses an `as` cast to narrow or change the signedness of an integer value derived from a function parameter or contract storage. In Rust, `as` casts between integer types never panic: narrowing casts silently truncate high-order bits and signed/unsigned casts reinterpret two's-complement bit patterns, which can turn negative or oversized inputs into corrupted balances, amounts, or counters. This is a heuristic with low confidence because prior bounds checks may make the cast safe in context.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "arithmetic",
+      "location": {
+        "file": "SS-018/positive.rs",
+        "line": 16,
+        "column": 9
+      },
+      "evidence": "unchecked integer cast from `i128` (parameter) to `u64` in entry point `deposit`: amount as u64 (use `try_into()` or `u64::try_from`)",
+      "remediation": "Replace narrowing or sign-changing `as` casts with fallible conversions using `core::convert::TryFrom` / `TryInto` (`u64::try_from(value)` or `value.try_into()`) and handle the `Err` branch with a typed contract error.",
+      "references": [
+        "https://doc.rust-lang.org/reference/expressions/operator-expr.html#type-cast-expressions",
+        "https://doc.rust-lang.org/core/convert/trait.TryFrom.html"
+      ],
+      "fingerprint": "622acf45c6f26f60254d65e6afe12b4d"
     },
     {
       "rule_id": "SS-029",
