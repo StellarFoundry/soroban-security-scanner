@@ -3888,6 +3888,35 @@
             "severity": "low"
           },
           "ruleId": "SS-033"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-034/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 10
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unvalidated deployer usage without caller authorization — unvalidated deployer call without prior authorization in `deploy_child`: env . deployer () . with_current_contract (salt) . deploy (wasm_hash)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "8778b34c88016d6159702ef0d7087a4b"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "low",
+            "remediation": "Validate and authorize the caller or administrator with `admin.require_auth()` (or `require_auth_for_args`) before invoking `env.deployer()` deployment or WASM registration methods, and verify the deployer identity and resulting address where applicable.",
+            "severity": "high"
+          },
+          "ruleId": "SS-034"
         }
       ],
       "tool": {
@@ -4414,6 +4443,34 @@
               },
               "shortDescription": {
                 "text": "Wildcard import from the Soroban SDK"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A public contract entry point uses `env.deployer()` to deploy a contract, upload contract WASM, or update the current contract WASM without a prior `require_auth` check in its body or in the intra-file helper functions it calls. Unvalidated deployment or WASM registration can allow arbitrary callers to deploy malicious contracts under the factory's identity, consume deterministic salts, or upgrade contract code without authorization."
+              },
+              "help": {
+                "markdown": "## Unvalidated deployer usage without caller authorization\n\nA public contract entry point uses `env.deployer()` to deploy a contract, upload contract WASM, or update the current contract WASM without a prior `require_auth` check in its body or in the intra-file helper functions it calls. Unvalidated deployment or WASM registration can allow arbitrary callers to deploy malicious contracts under the factory's identity, consume deterministic salts, or upgrade contract code without authorization.\n\n### Remediation\n\nValidate and authorize the caller or administrator with `admin.require_auth()` (or `require_auth_for_args`) before invoking `env.deployer()` deployment or WASM registration methods, and verify the deployer identity and resulting address where applicable.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization\n- https://docs.rs/soroban-sdk/latest/soroban_sdk/deploy/struct.Deployer.html",
+                "text": "A public contract entry point uses `env.deployer()` to deploy a contract, upload contract WASM, or update the current contract WASM without a prior `require_auth` check in its body or in the intra-file helper functions it calls. Unvalidated deployment or WASM registration can allow arbitrary callers to deploy malicious contracts under the factory's identity, consume deterministic salts, or upgrade contract code without authorization.\n\nRemediation: Validate and authorize the caller or administrator with `admin.require_auth()` (or `require_auth_for_args`) before invoking `env.deployer()` deployment or WASM registration methods, and verify the deployer identity and resulting address where applicable."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-034",
+              "name": "Unvalidated deployer usage without caller authorization",
+              "properties": {
+                "category": "authorization",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                  "https://docs.rs/soroban-sdk/latest/soroban_sdk/deploy/struct.Deployer.html"
+                ],
+                "remediation": "Validate and authorize the caller or administrator with `admin.require_auth()` (or `require_auth_for_args`) before invoking `env.deployer()` deployment or WASM registration methods, and verify the deployer identity and resulting address where applicable.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Unvalidated deployer usage without caller authorization"
               }
             }
           ],

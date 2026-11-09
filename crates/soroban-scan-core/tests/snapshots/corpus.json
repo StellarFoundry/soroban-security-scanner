@@ -8,17 +8,17 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 74,
+    "source_files": 78,
     "soroban_sdk_versions": []
   },
   "stats": {
-    "files_analyzed": 74,
-    "files_parsed": 74,
+    "files_analyzed": 78,
+    "files_parsed": 78,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 19,
+    "rules_run": 20,
     "rules_skipped": 0,
-    "findings_raw": 134,
+    "findings_raw": 135,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -31,7 +31,7 @@
     "findings_by_category": {
       "access-control": 10,
       "arithmetic": 6,
-      "authorization": 28,
+      "authorization": 29,
       "configuration": 2,
       "cross-contract": 6,
       "dependencies": 2,
@@ -2653,6 +2653,26 @@
         "https://developers.stellar.org/docs"
       ],
       "fingerprint": "f3f0a4aadf0de5b0abe020564befef9a"
+    },
+    {
+      "rule_id": "SS-034",
+      "title": "Unvalidated deployer usage without caller authorization",
+      "description": "A public contract entry point uses `env.deployer()` to deploy a contract, upload contract WASM, or update the current contract WASM without a prior `require_auth` check in its body or in the intra-file helper functions it calls. Unvalidated deployment or WASM registration can allow arbitrary callers to deploy malicious contracts under the factory's identity, consume deterministic salts, or upgrade contract code without authorization.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "authorization",
+      "location": {
+        "file": "SS-034/positive.rs",
+        "line": 10,
+        "column": 9
+      },
+      "evidence": "unvalidated deployer call without prior authorization in `deploy_child`: env . deployer () . with_current_contract (salt) . deploy (wasm_hash)",
+      "remediation": "Validate and authorize the caller or administrator with `admin.require_auth()` (or `require_auth_for_args`) before invoking `env.deployer()` deployment or WASM registration methods, and verify the deployer identity and resulting address where applicable.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://docs.rs/soroban-sdk/latest/soroban_sdk/deploy/struct.Deployer.html"
+      ],
+      "fingerprint": "8778b34c88016d6159702ef0d7087a4b"
     }
   ],
   "suppressed": [],
