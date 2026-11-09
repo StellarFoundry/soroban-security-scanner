@@ -8,17 +8,17 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 74,
+    "source_files": 78,
     "soroban_sdk_versions": []
   },
   "stats": {
-    "files_analyzed": 74,
-    "files_parsed": 74,
+    "files_analyzed": 78,
+    "files_parsed": 78,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 19,
+    "rules_run": 20,
     "rules_skipped": 0,
-    "findings_raw": 134,
+    "findings_raw": 135,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -31,7 +31,7 @@
     "findings_by_category": {
       "access-control": 10,
       "arithmetic": 6,
-      "authorization": 28,
+      "authorization": 29,
       "configuration": 2,
       "cross-contract": 6,
       "dependencies": 2,
@@ -2616,6 +2616,25 @@
       "fingerprint": "fbf6d16b047d6733f4408c670b9ca2ee"
     },
     {
+      "rule_id": "SS-027",
+      "title": "current_contract_address() used as require_auth subject",
+      "description": "A contract entry point calls `require_auth` or `require_auth_for_args` on `env.current_contract_address()` (either directly or through a local binding). In the Soroban host, the currently executing contract is implicitly authorized for its own frame, so this check succeeds unconditionally and provides zero caller access control.",
+      "severity": "high",
+      "confidence": "high",
+      "category": "authorization",
+      "location": {
+        "file": "SS-027/positive.rs",
+        "line": 11,
+        "column": 9
+      },
+      "evidence": "`current_contract_address()` used as authorization subject in `set_quota`: self_addr . require_auth ()",
+      "remediation": "Call `require_auth()` on the external caller or stored administrator `Address` that must approve the invocation, never on `env.current_contract_address()`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "65bd380c0b252234c25ca7ee167bcb5a"
+    },
+    {
       "rule_id": "SS-029",
       "title": "Public test or debug hook in a contract entry point",
       "description": "A public contract entry point is named like a test or debug backdoor (a `test`, `debug`, `dev`, `mock`, or `dummy` name segment). Backdoor entry points that remain callable in a production deployment let anyone invoke privileged behavior, and are a well-known way on-chain contracts are compromised. This is a name-based heuristic and may flag a legitimately named function.",
@@ -2783,6 +2802,20 @@
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: panic",
       "path": "SS-014/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-027/negative.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-027/positive.rs",
       "line": null
     },
     {

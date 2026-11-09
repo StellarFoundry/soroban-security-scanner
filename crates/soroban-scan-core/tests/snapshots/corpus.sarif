@@ -3832,6 +3832,35 @@
           "ruleId": "SS-017"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-027/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "current_contract_address() used as require_auth subject — `current_contract_address()` used as authorization subject in `set_quota`: self_addr . require_auth ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "65bd380c0b252234c25ca7ee167bcb5a"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "high",
+            "remediation": "Call `require_auth()` on the external caller or stored administrator `Address` that must approve the invocation, never on `env.current_contract_address()`.",
+            "severity": "high"
+          },
+          "ruleId": "SS-027"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -4359,6 +4388,33 @@
               },
               "shortDescription": {
                 "text": "Authorization after state mutation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A contract entry point calls `require_auth` or `require_auth_for_args` on `env.current_contract_address()` (either directly or through a local binding). In the Soroban host, the currently executing contract is implicitly authorized for its own frame, so this check succeeds unconditionally and provides zero caller access control."
+              },
+              "help": {
+                "markdown": "## current_contract_address() used as require_auth subject\n\nA contract entry point calls `require_auth` or `require_auth_for_args` on `env.current_contract_address()` (either directly or through a local binding). In the Soroban host, the currently executing contract is implicitly authorized for its own frame, so this check succeeds unconditionally and provides zero caller access control.\n\n### Remediation\n\nCall `require_auth()` on the external caller or stored administrator `Address` that must approve the invocation, never on `env.current_contract_address()`.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                "text": "A contract entry point calls `require_auth` or `require_auth_for_args` on `env.current_contract_address()` (either directly or through a local binding). In the Soroban host, the currently executing contract is implicitly authorized for its own frame, so this check succeeds unconditionally and provides zero caller access control.\n\nRemediation: Call `require_auth()` on the external caller or stored administrator `Address` that must approve the invocation, never on `env.current_contract_address()`."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-027",
+              "name": "current_contract_address() used as require_auth subject",
+              "properties": {
+                "category": "authorization",
+                "confidence": "high",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+                ],
+                "remediation": "Call `require_auth()` on the external caller or stored administrator `Address` that must approve the invocation, never on `env.current_contract_address()`.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "current_contract_address() used as require_auth subject"
               }
             },
             {
