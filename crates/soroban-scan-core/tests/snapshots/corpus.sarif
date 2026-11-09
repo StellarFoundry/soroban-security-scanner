@@ -3837,6 +3837,35 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-020/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unvalidated XDR or Bytes deserialization — unbounded `from_xdr` deserialization of parameter `raw_payload` in `ingest`: u64 :: from_xdr (& env , & raw_payload)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "a030c705e7658da98c23fd8e0a4d5510"
+          },
+          "properties": {
+            "category": "resource-usage",
+            "confidence": "low",
+            "remediation": "Validate the input `Bytes` length against an explicit upper bound (for example `if payload.len() > MAX_XDR_BYTES { return Err(...); }`) before calling `from_xdr`, and handle deserialization errors gracefully.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-020"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-029/positive.rs"
                 },
                 "region": {
@@ -4359,6 +4388,33 @@
               },
               "shortDescription": {
                 "text": "Authorization after state mutation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A public contract entry point deserializes an untrusted parameter via `from_xdr` without first bounding its byte length or validating the payload. Unbounded XDR deserialization on attacker-controlled `Bytes` can exhaust Soroban CPU/memory budgets or panic on malformed input."
+              },
+              "help": {
+                "markdown": "## Unvalidated XDR or Bytes deserialization\n\nA public contract entry point deserializes an untrusted parameter via `from_xdr` without first bounding its byte length or validating the payload. Unbounded XDR deserialization on attacker-controlled `Bytes` can exhaust Soroban CPU/memory budgets or panic on malformed input.\n\n### Remediation\n\nValidate the input `Bytes` length against an explicit upper bound (for example `if payload.len() > MAX_XDR_BYTES { return Err(...); }`) before calling `from_xdr`, and handle deserialization errors gracefully.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A public contract entry point deserializes an untrusted parameter via `from_xdr` without first bounding its byte length or validating the payload. Unbounded XDR deserialization on attacker-controlled `Bytes` can exhaust Soroban CPU/memory budgets or panic on malformed input.\n\nRemediation: Validate the input `Bytes` length against an explicit upper bound (for example `if payload.len() > MAX_XDR_BYTES { return Err(...); }`) before calling `from_xdr`, and handle deserialization errors gracefully."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-020",
+              "name": "Unvalidated XDR or Bytes deserialization",
+              "properties": {
+                "category": "resource-usage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Validate the input `Bytes` length against an explicit upper bound (for example `if payload.len() > MAX_XDR_BYTES { return Err(...); }`) before calling `from_xdr`, and handle deserialization errors gracefully.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unvalidated XDR or Bytes deserialization"
               }
             },
             {

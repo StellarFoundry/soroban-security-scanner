@@ -8,17 +8,17 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 74,
+    "source_files": 78,
     "soroban_sdk_versions": []
   },
   "stats": {
-    "files_analyzed": 74,
-    "files_parsed": 74,
+    "files_analyzed": 78,
+    "files_parsed": 78,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 19,
+    "rules_run": 20,
     "rules_skipped": 0,
-    "findings_raw": 134,
+    "findings_raw": 135,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -37,7 +37,7 @@
       "dependencies": 2,
       "error-handling": 11,
       "events": 13,
-      "resource-usage": 2,
+      "resource-usage": 3,
       "storage": 42,
       "token": 11,
       "unsafe": 1
@@ -2614,6 +2614,25 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
       "fingerprint": "fbf6d16b047d6733f4408c670b9ca2ee"
+    },
+    {
+      "rule_id": "SS-020",
+      "title": "Unvalidated XDR or Bytes deserialization",
+      "description": "A public contract entry point deserializes an untrusted parameter via `from_xdr` without first bounding its byte length or validating the payload. Unbounded XDR deserialization on attacker-controlled `Bytes` can exhaust Soroban CPU/memory budgets or panic on malformed input.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "resource-usage",
+      "location": {
+        "file": "SS-020/positive.rs",
+        "line": 11,
+        "column": 9
+      },
+      "evidence": "unbounded `from_xdr` deserialization of parameter `raw_payload` in `ingest`: u64 :: from_xdr (& env , & raw_payload)",
+      "remediation": "Validate the input `Bytes` length against an explicit upper bound (for example `if payload.len() > MAX_XDR_BYTES { return Err(...); }`) before calling `from_xdr`, and handle deserialization errors gracefully.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "a030c705e7658da98c23fd8e0a4d5510"
     },
     {
       "rule_id": "SS-029",
