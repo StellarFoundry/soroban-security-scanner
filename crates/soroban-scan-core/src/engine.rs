@@ -8,6 +8,8 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use globset::Glob;
@@ -63,6 +65,58 @@ pub struct ScanStats {
     pub generated_files_excluded: usize,
     /// Gate findings grouped by stable category name, sorted deterministically.
     pub findings_by_category: BTreeMap<String, usize>,
+    /// True when the scan was stopped early by cancellation or a deadline.
+    pub partial: bool,
+}
+
+/// Cooperative cancellation token for aborting long-running scans between rules.
+#[derive(Debug, Default, Clone)]
+pub struct CancellationToken {
+    cancelled: Arc<AtomicBool>,
+}
+
+impl CancellationToken {
+    /// Creates an uncancelled token.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Requests cancellation.
+    pub fn cancel(&self) {
+        self.cancelled.store(true, Ordering::SeqCst);
+    }
+
+    /// Returns true if cancellation has been requested.
+    pub fn is_cancelled(&self) -> bool {
+        self.cancelled.load(Ordering::SeqCst)
+    }
+}
+
+/// Execution controls for cancellation and wall-clock deadlines.
+#[derive(Debug, Default, Clone)]
+pub struct ScanOptions {
+    /// Optional cooperative cancellation token.
+    pub cancellation_token: Option<CancellationToken>,
+    /// Optional wall-clock deadline after which remaining rules are skipped.
+    pub deadline: Option<Instant>,
+}
+
+impl ScanOptions {
+    /// Creates options with a cooperative [`CancellationToken`].
+    pub fn with_cancellation(token: CancellationToken) -> Self {
+        ScanOptions {
+            cancellation_token: Some(token),
+            deadline: None,
+        }
+    }
+
+    /// Creates options with an explicit wall-clock deadline.
+    pub fn with_deadline(deadline: Instant) -> Self {
+        ScanOptions {
+            cancellation_token: None,
+            deadline: Some(deadline),
+        }
+    }
 }
 
 /// Outcome of one rule execution for the opt-in timing breakdown.
@@ -164,6 +218,11 @@ pub struct ScanOutcome {
 }
 
 impl ScanOutcome {
+    /// Returns true when the scan terminated early due to cancellation or a deadline.
+    pub fn is_partial(&self) -> bool {
+        self.stats.partial
+    }
+
     /// Bounds the reported findings to `max`, preserving their sorted order.
     ///
     /// The exit gate must be computed before calling this method. A limit that
@@ -500,6 +559,28 @@ fn compile_config_suppressions(
 
 /// Runs the scanner over a loaded project.
 pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig) -> ScanOutcome {
+    let deadline = config
+        .rules
+        .scan_timeout_ms
+        .map(|ms| Instant::now() + Duration::from_millis(ms));
+    scan_with_options(
+        loaded,
+        registry,
+        config,
+        &ScanOptions {
+            cancellation_token: None,
+            deadline,
+        },
+    )
+}
+
+/// Runs the scanner with cooperative cancellation and/or a wall-clock deadline.
+pub fn scan_with_options(
+    loaded: &LoadedProject,
+    registry: &RuleRegistry,
+    config: &ScanConfig,
+    options: &ScanOptions,
+) -> ScanOutcome {
     let ctx = AnalysisContext::new(
         &loaded.project,
         &loaded.sources,
@@ -543,6 +624,12 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
     stats.files_failed = stats.files_analyzed - stats.files_parsed;
 
     let budget = config.rules.rule_time_budget_ms.map(Duration::from_millis);
+    let effective_deadline = options.deadline.or_else(|| {
+        config
+            .rules
+            .scan_timeout_ms
+            .map(|ms| Instant::now() + Duration::from_millis(ms))
+    });
     let mut rule_timings: Vec<RuleTiming> = Vec::new();
 
     // Execution order is explicitly by rule id, independent of registration
@@ -552,7 +639,31 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
         registry.rules().iter().map(|rule| rule.as_ref()).collect();
     rules.sort_by_key(|rule| rule.metadata().id);
 
-    for rule in rules {
+    for (idx, rule) in rules.iter().enumerate() {
+        if options
+            .cancellation_token
+            .as_ref()
+            .is_some_and(CancellationToken::is_cancelled)
+        {
+            stats.partial = true;
+            stats.rules_skipped += rules.len() - idx;
+            diagnostics.push(Diagnostic::warning(
+                DiagnosticCode::RuleTimeBudgetExceeded,
+                "scan cancelled before all rules completed; returning partial results",
+                None,
+            ));
+            break;
+        }
+        if effective_deadline.is_some_and(|dl| Instant::now() >= dl) {
+            stats.partial = true;
+            stats.rules_skipped += rules.len() - idx;
+            diagnostics.push(Diagnostic::warning(
+                DiagnosticCode::RuleTimeBudgetExceeded,
+                "scan deadline exceeded before all rules completed; returning partial results",
+                None,
+            ));
+            break;
+        }
         let meta = rule.metadata();
         if !rule.enabled_by_default() || !config.rules.is_rule_enabled(meta.id, meta.category) {
             stats.rules_skipped += 1;
@@ -998,6 +1109,7 @@ fn merge_stats(stats: &mut ScanStats, other: &ScanStats) {
     stats.findings_raw += other.findings_raw;
     stats.findings_rejected += other.findings_rejected;
     stats.suppressions_detected += other.suppressions_detected;
+    stats.partial |= other.partial;
     stats.findings_suppressed += other.findings_suppressed;
     stats.findings_suppressed_by_config += other.findings_suppressed_by_config;
     stats.config_suppressions_detected += other.config_suppressions_detected;
@@ -2213,5 +2325,57 @@ mod path_normalization_tests {
         assert!(!is_safe_relative(Path::new("src/../../secret.rs")));
         assert!(!is_safe_relative(Path::new("/etc/passwd")));
         assert!(!is_safe_relative(Path::new("")));
+    }
+
+    #[test]
+    fn cancellation_and_deadlines_produce_partial_outcomes() {
+        use super::{
+            scan_with_options, synthetic_loaded, CancellationToken, RuleRegistry, ScanConfig,
+            ScanOptions,
+        };
+        use std::time::{Duration, Instant};
+
+        let loaded = synthetic_loaded(
+            r#"
+            #[contractimpl]
+            impl Demo {
+                pub fn set(env: Env, v: u32) {
+                    env.storage().persistent().set(&Key::V, &v);
+                }
+            }
+            "#,
+            "src/lib.rs",
+        );
+        let registry = RuleRegistry::with_default_rules();
+        let config = ScanConfig::default();
+
+        let token = CancellationToken::new();
+        token.cancel();
+        let cancelled = scan_with_options(
+            &loaded,
+            &registry,
+            &config,
+            &ScanOptions::with_cancellation(token),
+        );
+        assert!(cancelled.is_partial());
+        assert_eq!(cancelled.stats.rules_run, 0);
+        assert_eq!(cancelled.stats.rules_skipped, registry.len());
+        assert!(cancelled
+            .diagnostics
+            .iter()
+            .any(|d| d.message.contains("cancelled")));
+
+        let expired = scan_with_options(
+            &loaded,
+            &registry,
+            &config,
+            &ScanOptions::with_deadline(Instant::now() - Duration::from_millis(10)),
+        );
+        assert!(expired.is_partial());
+        assert_eq!(expired.stats.rules_run, 0);
+        assert!(expired
+            .diagnostics
+            .iter()
+            .any(|d| d.message.contains("deadline exceeded")));
     }
 }

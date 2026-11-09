@@ -56,6 +56,9 @@ pub struct RulesConfig {
     /// returns, but its findings are discarded.
     #[serde(rename = "time_budget_ms", alias = "rule_time_budget_ms")]
     pub rule_time_budget_ms: Option<u64>,
+    /// Optional total scan wall-clock timeout in milliseconds.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scan_timeout_ms: Option<u64>,
 }
 
 impl RulesConfig {
