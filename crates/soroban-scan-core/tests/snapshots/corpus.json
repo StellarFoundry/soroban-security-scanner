@@ -8,17 +8,17 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 74,
+    "source_files": 78,
     "soroban_sdk_versions": []
   },
   "stats": {
-    "files_analyzed": 74,
-    "files_parsed": 74,
+    "files_analyzed": 78,
+    "files_parsed": 78,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 19,
+    "rules_run": 20,
     "rules_skipped": 0,
-    "findings_raw": 134,
+    "findings_raw": 135,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -33,7 +33,7 @@
       "arithmetic": 6,
       "authorization": 28,
       "configuration": 2,
-      "cross-contract": 6,
+      "cross-contract": 7,
       "dependencies": 2,
       "error-handling": 11,
       "events": 13,
@@ -2614,6 +2614,25 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
       "fingerprint": "fbf6d16b047d6733f4408c670b9ca2ee"
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A contract entry point invokes a cross-contract client method and explicitly discards its return value (`let _ = client.call(...)` or an unhandled `client.try_*(...);` statement). Ignoring a `try_*` result or discarding a cross-contract return value can allow execution to continue after the remote contract failed or returned a status that must be checked.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-019/positive.rs",
+        "line": 12,
+        "column": 17
+      },
+      "evidence": "ignored cross-contract call result in `execute_hook`: let _ = client . try_notify (& caller , & amount) ;",
+      "remediation": "Handle the result of every cross-contract call explicitly. When using `try_*` client methods, propagate or match on the outer and inner `Result` values instead of discarding them with `let _ =` or a bare statement.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/contract-development/contract-interactions/cross-contract-calls"
+      ],
+      "fingerprint": "0a98f89818344f3426d64144c73b81e2"
     },
     {
       "rule_id": "SS-029",

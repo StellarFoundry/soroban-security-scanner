@@ -3837,6 +3837,35 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-019/positive.rs"
+                },
+                "region": {
+                  "startColumn": 17,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — ignored cross-contract call result in `execute_hook`: let _ = client . try_notify (& caller , & amount) ;"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "0a98f89818344f3426d64144c73b81e2"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "remediation": "Handle the result of every cross-contract call explicitly. When using `try_*` client methods, propagate or match on the outer and inner `Result` values instead of discarding them with `let _ =` or a bare statement.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-029/positive.rs"
                 },
                 "region": {
@@ -4359,6 +4388,33 @@
               },
               "shortDescription": {
                 "text": "Authorization after state mutation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract entry point invokes a cross-contract client method and explicitly discards its return value (`let _ = client.call(...)` or an unhandled `client.try_*(...);` statement). Ignoring a `try_*` result or discarding a cross-contract return value can allow execution to continue after the remote contract failed or returned a status that must be checked."
+              },
+              "help": {
+                "markdown": "## Ignored cross-contract call result\n\nA contract entry point invokes a cross-contract client method and explicitly discards its return value (`let _ = client.call(...)` or an unhandled `client.try_*(...);` statement). Ignoring a `try_*` result or discarding a cross-contract return value can allow execution to continue after the remote contract failed or returned a status that must be checked.\n\n### Remediation\n\nHandle the result of every cross-contract call explicitly. When using `try_*` client methods, propagate or match on the outer and inner `Result` values instead of discarding them with `let _ =` or a bare statement.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/contract-development/contract-interactions/cross-contract-calls",
+                "text": "A contract entry point invokes a cross-contract client method and explicitly discards its return value (`let _ = client.call(...)` or an unhandled `client.try_*(...);` statement). Ignoring a `try_*` result or discarding a cross-contract return value can allow execution to continue after the remote contract failed or returned a status that must be checked.\n\nRemediation: Handle the result of every cross-contract call explicitly. When using `try_*` client methods, propagate or match on the outer and inner `Result` values instead of discarding them with `let _ =` or a bare statement."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/contract-development/contract-interactions/cross-contract-calls",
+              "id": "SS-019",
+              "name": "Ignored cross-contract call result",
+              "properties": {
+                "category": "cross-contract",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/contract-development/contract-interactions/cross-contract-calls"
+                ],
+                "remediation": "Handle the result of every cross-contract call explicitly. When using `try_*` client methods, propagate or match on the outer and inner `Result` values instead of discarding them with `let _ =` or a bare statement.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Ignored cross-contract call result"
               }
             },
             {
