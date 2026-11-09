@@ -3866,6 +3866,151 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-032/negative.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `distribute`: env . storage () . persistent () . set (& recipient , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "48002c3dac629460c35da01ac042c472"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-032/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `transfer`: env . storage () . persistent () . set (& recipient , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "a8a3442e468a606c22c703e707632dfb"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-032/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `reset_and_count`: env . storage () . instance () . set (& admin , & i)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "901347faf95d4de685351dff2d70aaae"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-032/positive.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Redundant require_auth call inside a loop — `require_auth` invoked inside loop body in `distribute`: admin . require_auth ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c605a991fa5cd420226feb841f53f940"
+          },
+          "properties": {
+            "category": "resource-usage",
+            "confidence": "low",
+            "remediation": "Hoist `require_auth()` or `require_auth_for_args(...)` out of the loop so caller authorization is verified once before iterating. When authorizing distinct addresses supplied in a batch, deduplicate the addresses or validate batch size before invoking `require_auth`.",
+            "severity": "low"
+          },
+          "ruleId": "SS-032"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-032/positive.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `distribute`: env . storage () . persistent () . set (& recipient , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "4d1c90cc1f0e4cfdd5a5e0dae8c4a5b9"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-033/positive.rs"
                 },
                 "region": {
@@ -4386,6 +4531,34 @@
               },
               "shortDescription": {
                 "text": "Public test or debug hook in a contract entry point"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "fullDescription": {
+                "text": "A contract entry point invokes `require_auth` or `require_auth_for_args` inside a `for`, `while`, or `loop` body. Repeating authorization on every iteration wastes Soroban CPU/host-call budget and typically indicates that caller authorization should be hoisted before the loop and bound to the full batch of arguments once."
+              },
+              "help": {
+                "markdown": "## Redundant require_auth call inside a loop\n\nA contract entry point invokes `require_auth` or `require_auth_for_args` inside a `for`, `while`, or `loop` body. Repeating authorization on every iteration wastes Soroban CPU/host-call budget and typically indicates that caller authorization should be hoisted before the loop and bound to the full batch of arguments once.\n\n### Remediation\n\nHoist `require_auth()` or `require_auth_for_args(...)` out of the loop so caller authorization is verified once before iterating. When authorizing distinct addresses supplied in a batch, deduplicate the addresses or validate batch size before invoking `require_auth`.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization\n- https://developers.stellar.org/docs/learn/fundamentals/fees-resource-limits-metering",
+                "text": "A contract entry point invokes `require_auth` or `require_auth_for_args` inside a `for`, `while`, or `loop` body. Repeating authorization on every iteration wastes Soroban CPU/host-call budget and typically indicates that caller authorization should be hoisted before the loop and bound to the full batch of arguments once.\n\nRemediation: Hoist `require_auth()` or `require_auth_for_args(...)` out of the loop so caller authorization is verified once before iterating. When authorizing distinct addresses supplied in a batch, deduplicate the addresses or validate batch size before invoking `require_auth`."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-032",
+              "name": "Redundant require_auth call inside a loop",
+              "properties": {
+                "category": "resource-usage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                  "https://developers.stellar.org/docs/learn/fundamentals/fees-resource-limits-metering"
+                ],
+                "remediation": "Hoist `require_auth()` or `require_auth_for_args(...)` out of the loop so caller authorization is verified once before iterating. When authorizing distinct addresses supplied in a batch, deduplicate the addresses or validate batch size before invoking `require_auth`.",
+                "severity": "low"
+              },
+              "shortDescription": {
+                "text": "Redundant require_auth call inside a loop"
               }
             },
             {

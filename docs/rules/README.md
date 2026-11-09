@@ -69,6 +69,7 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-016](detectors/SS-016.md) | Unbounded data stored in instance storage | medium | low | storage |
 | [SS-017](detectors/SS-017.md) | Authorization after state mutation | medium | medium | authorization |
 | [SS-029](detectors/SS-029.md) | Public test or debug hook in a contract entry point | medium | medium | access-control |
+| [SS-032](detectors/SS-032.md) | Redundant require_auth call inside a loop | low | low | resource-usage |
 | [SS-033](detectors/SS-033.md) | Wildcard import from the Soroban SDK | low | high | dependencies |
 
 Each detector has a positive and negative fixture under

@@ -144,6 +144,8 @@ pub struct Facts {
     pub has_unsafe: bool,
     /// Locations of `unsafe` constructs.
     pub unsafe_locations: Vec<(usize, usize)>,
+    /// Method calls occurring lexically inside a loop body (`for`, `while`, `loop`).
+    pub loop_calls: Vec<CallFact>,
 }
 
 impl Facts {
@@ -246,12 +248,21 @@ impl Facts {
     pub fn arithmetic_ops(&self) -> &[ArithFact] {
         &self.arith
     }
+
+    /// `require_auth` and `require_auth_for_args` calls occurring inside loop bodies.
+    pub fn loop_require_auth_calls(&self) -> Vec<&CallFact> {
+        self.loop_calls
+            .iter()
+            .filter(|c| c.name == "require_auth" || c.name == "require_auth_for_args")
+            .collect()
+    }
 }
 
 struct FactsVisitor<'a> {
     facts: Facts,
     imports: &'a ImportMap,
     unsafe_depth: usize,
+    loop_depth: usize,
     client_vars: BTreeSet<String>,
     current_macro: Option<String>,
     current_constructor: Option<String>,
@@ -263,6 +274,7 @@ impl<'a> FactsVisitor<'a> {
             facts: Facts::default(),
             imports,
             unsafe_depth: 0,
+            loop_depth: 0,
             client_vars: BTreeSet::new(),
             current_macro: None,
             current_constructor: None,
@@ -332,6 +344,9 @@ impl<'ast, 'a> Visit<'ast> for FactsVisitor<'a> {
         };
         if is_client_call {
             self.facts.client_calls.push(fact.clone());
+        }
+        if self.loop_depth > 0 {
+            self.facts.loop_calls.push(fact.clone());
         }
         self.facts.method_calls.push(fact);
         visit::visit_expr_method_call(self, node);
@@ -500,6 +515,27 @@ impl<'ast, 'a> Visit<'ast> for FactsVisitor<'a> {
         self.facts.unsafe_locations.push((line, column));
         visit::visit_expr_unsafe(self, node);
         self.unsafe_depth -= 1;
+    }
+
+    fn visit_expr_for_loop(&mut self, node: &'ast syn::ExprForLoop) {
+        self.visit_pat(&node.pat);
+        self.visit_expr(&node.expr);
+        self.loop_depth += 1;
+        self.visit_block(&node.body);
+        self.loop_depth -= 1;
+    }
+
+    fn visit_expr_while(&mut self, node: &'ast syn::ExprWhile) {
+        self.visit_expr(&node.cond);
+        self.loop_depth += 1;
+        self.visit_block(&node.body);
+        self.loop_depth -= 1;
+    }
+
+    fn visit_expr_loop(&mut self, node: &'ast syn::ExprLoop) {
+        self.loop_depth += 1;
+        self.visit_block(&node.body);
+        self.loop_depth -= 1;
     }
 }
 
@@ -680,6 +716,7 @@ fn merge_facts(dst: &mut Facts, src: &Facts) {
     dst.has_unsafe |= src.has_unsafe;
     dst.unsafe_locations
         .extend(src.unsafe_locations.iter().copied());
+    dst.loop_calls.extend(src.loop_calls.iter().cloned());
 }
 
 /// A contract entry point with its AST body attached.
