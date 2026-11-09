@@ -8,17 +8,17 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 74,
+    "source_files": 78,
     "soroban_sdk_versions": []
   },
   "stats": {
-    "files_analyzed": 74,
-    "files_parsed": 74,
+    "files_analyzed": 78,
+    "files_parsed": 78,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 19,
+    "rules_run": 20,
     "rules_skipped": 0,
-    "findings_raw": 134,
+    "findings_raw": 140,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -33,13 +33,13 @@
       "arithmetic": 6,
       "authorization": 28,
       "configuration": 2,
-      "cross-contract": 6,
+      "cross-contract": 9,
       "dependencies": 2,
       "error-handling": 11,
       "events": 13,
       "resource-usage": 2,
       "storage": 42,
-      "token": 11,
+      "token": 14,
       "unsafe": 1
     }
   },
@@ -1946,6 +1946,25 @@
       "fingerprint": "6a579809f30b4ea6f2b470881ba456be"
     },
     {
+      "rule_id": "SS-028",
+      "title": "State mutation after cross-contract call without reentrancy guard",
+      "description": "A public contract entry point mutates contract state (`set`, `update`, or `remove`) after an external cross-contract invocation without acquiring a reentrancy lock. If the remote contract re-enters before the post-call write completes, it can observe or corrupt intermediate state.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-013/positive.rs",
+        "line": 7,
+        "column": 9
+      },
+      "evidence": "storage `set` in `withdraw` occurs after cross-contract call `transfer` without a reentrancy guard",
+      "remediation": "Apply all state mutations before invoking external contracts (checks-effects-interactions), or protect the entry point with an explicit reentrancy guard stored in temporary/instance storage.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "91032cafd8172122a5cb4f70dd4fe310"
+    },
+    {
       "rule_id": "SS-004",
       "title": "Panic-prone construct in a contract entry point",
       "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
@@ -2616,6 +2635,105 @@
       "fingerprint": "fbf6d16b047d6733f4408c670b9ca2ee"
     },
     {
+      "rule_id": "SS-014",
+      "title": "Token transfer amount without validation",
+      "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-028/negative.rs",
+        "line": 15,
+        "column": 9
+      },
+      "evidence": "`transfer` transfers unchecked amount `amount` in entry point `withdraw`",
+      "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "b246a6af181e82c822350ad4e63a1c99"
+    },
+    {
+      "rule_id": "SS-014",
+      "title": "Token transfer amount without validation",
+      "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-028/negative2.rs",
+        "line": 15,
+        "column": 9
+      },
+      "evidence": "`transfer` transfers unchecked amount `amount` in entry point `withdraw_guarded`",
+      "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "057211282a2f6cc35b36adbcb98a837c"
+    },
+    {
+      "rule_id": "SS-013",
+      "title": "Cross-contract call before state update",
+      "description": "A public contract entry point makes a cross-contract call before its first storage write. Soroban permits reentrancy, so a malicious callee can be invoked while the caller's state still reflects the pre-call values and may re-enter or observe inconsistent state. This is a heuristic ordering check: it only compares call and mutation positions within the same function and cannot prove that reentrancy is reachable or exploitable.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "cross-contract call in `withdraw` at line 12 (byte 310) precedes the first storage write `set` at line 14 (byte 424)",
+      "remediation": "Follow checks-effects-interactions: validate inputs, update all relevant contract state, and only then invoke another contract. If an external call must happen first, add an explicit reentrancy guard and document why the intermediate state is safe to observe.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs"
+      ],
+      "fingerprint": "957773490d529778294e03c8f1314f19"
+    },
+    {
+      "rule_id": "SS-014",
+      "title": "Token transfer amount without validation",
+      "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-028/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "`transfer` transfers unchecked amount `amount` in entry point `withdraw`",
+      "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "ee16d4000bb6d884c3d94aa068300561"
+    },
+    {
+      "rule_id": "SS-028",
+      "title": "State mutation after cross-contract call without reentrancy guard",
+      "description": "A public contract entry point mutates contract state (`set`, `update`, or `remove`) after an external cross-contract invocation without acquiring a reentrancy lock. If the remote contract re-enters before the post-call write completes, it can observe or corrupt intermediate state.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/positive.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "storage `set` in `withdraw` occurs after cross-contract call `transfer` without a reentrancy guard",
+      "remediation": "Apply all state mutations before invoking external contracts (checks-effects-interactions), or protect the entry point with an explicit reentrancy guard stored in temporary/instance storage.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "1864121286ff5ea278359d80f3a41241"
+    },
+    {
       "rule_id": "SS-029",
       "title": "Public test or debug hook in a contract entry point",
       "description": "A public contract entry point is named like a test or debug backdoor (a `test`, `debug`, `dev`, `mock`, or `dummy` name segment). Backdoor entry points that remain callable in a production deployment let anyone invoke privileged behavior, and are a well-known way on-chain contracts are compromised. This is a name-based heuristic and may flag a legitimately named function.",
@@ -2783,6 +2901,27 @@
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: panic",
       "path": "SS-014/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-028/negative.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "2 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-028/negative2.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-028/positive.rs",
       "line": null
     },
     {
