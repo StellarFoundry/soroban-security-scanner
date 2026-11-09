@@ -25,11 +25,13 @@ pub struct RuleMetadata {
     pub remediation: &'static str,
     /// External references.
     pub references: &'static [&'static str],
+    /// Whether this rule is deprecated and excluded from default execution.
+    pub deprecated: bool,
 }
 
 impl RuleMetadata {
     /// Creates metadata without references.
-    pub fn new(
+    pub const fn new(
         id: &'static str,
         title: &'static str,
         description: &'static str,
@@ -47,12 +49,19 @@ impl RuleMetadata {
             default_confidence,
             remediation,
             references: &[],
+            deprecated: false,
         }
     }
 
     /// Attaches references.
-    pub fn with_references(mut self, references: &'static [&'static str]) -> Self {
+    pub const fn with_references(mut self, references: &'static [&'static str]) -> Self {
         self.references = references;
+        self
+    }
+
+    /// Marks the rule as deprecated (or active).
+    pub const fn with_deprecated(mut self, deprecated: bool) -> Self {
+        self.deprecated = deprecated;
         self
     }
 }
@@ -69,9 +78,9 @@ pub trait Rule: Send + Sync {
     /// Analyzes the context, appending findings.
     fn analyze(&self, ctx: &AnalysisContext<'_>, out: &mut Vec<Finding>);
 
-    /// Whether the rule is enabled by default. Defaults to `true`.
+    /// Whether the rule is enabled by default. Defaults to `!self.metadata().deprecated`.
     fn enabled_by_default(&self) -> bool {
-        true
+        !self.metadata().deprecated
     }
 }
 

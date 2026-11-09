@@ -228,9 +228,15 @@ pub enum DiagnosticCode {
     /// A configured suppression is invalid and was not applied.
     #[serde(rename = "CONFIG-002")]
     InvalidSuppression,
+    /// Configuration references a deprecated rule.
+    #[serde(rename = "CONFIG-003")]
+    DeprecatedRule,
     /// A baseline references a rule id that is not registered.
     #[serde(rename = "BASELINE-001")]
     BaselineUnknownRule,
+    /// A baseline references a rule id that is deprecated.
+    #[serde(rename = "BASELINE-002")]
+    BaselineDeprecatedRule,
     /// A source file contains macro invocations that were not expanded.
     #[serde(rename = "MACRO-001")]
     UnexpandedMacro,
@@ -265,7 +271,9 @@ impl DiagnosticCode {
             DiagnosticCode::RuleTimeBudgetExceeded => "RULE-005",
             DiagnosticCode::IneffectiveOverride => "CONFIG-001",
             DiagnosticCode::InvalidSuppression => "CONFIG-002",
+            DiagnosticCode::DeprecatedRule => "CONFIG-003",
             DiagnosticCode::BaselineUnknownRule => "BASELINE-001",
+            DiagnosticCode::BaselineDeprecatedRule => "BASELINE-002",
             DiagnosticCode::UnexpandedMacro => "MACRO-001",
             DiagnosticCode::GeneratedFileMarked => "GENERATED-001",
             DiagnosticCode::GeneratedFileExcluded => "GENERATED-002",

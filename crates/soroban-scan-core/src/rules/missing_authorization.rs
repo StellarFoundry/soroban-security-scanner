@@ -33,6 +33,7 @@ than authorizing a stored admin address unconditionally. If the function is \
 intentionally permissionless, document that and suppress this rule for the \
 function.",
     references: &["https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"],
+    deprecated: false,
 };
 
 /// Detects storage-mutating entry points without authorization.

@@ -34,7 +34,9 @@ can classify or suppress them without parsing the human-readable message.
 | `RULE-004` | error | A rule panicked; the panic was isolated and its findings were discarded. |
 | `RULE-005` | warning | A rule exceeded its configured time budget; its findings were discarded. |
 | `CONFIG-001` | warning | A severity or confidence override has no effect because its rule is unknown or disabled. |
+| `CONFIG-003` | warning | Configuration references a deprecated rule id; deprecated rules are excluded from default execution. |
 | `BASELINE-001` | warning | A baseline references a rule id that is no longer registered; the entry remains forward compatible. |
+| `BASELINE-002` | warning | A baseline references a deprecated rule id; the entry remains resolvable during the deprecation window. |
 | `AI-001` | warning | The optional assistance layer reached its configured request budget; the scan continued without further AI calls. |
 | `AI-002` | warning | Repeated provider failures opened the assistance circuit breaker; the scan continued without further AI calls. |
 

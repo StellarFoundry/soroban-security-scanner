@@ -311,6 +311,37 @@ impl Baseline {
             })
             .collect()
     }
+
+    /// Diagnostics for baseline entries whose rule ids are marked deprecated.
+    ///
+    /// Deprecated rule ids remain registered so baselines continue to match,
+    /// while surfacing a warning so teams can prune retired entries during the
+    /// deprecation window.
+    pub fn deprecated_rule_diagnostics(&self, registry: &RuleRegistry) -> Vec<Diagnostic> {
+        let mut deprecated: BTreeMap<&str, usize> = BTreeMap::new();
+        for entry in &self.findings {
+            if let Some(rule) = registry.by_id(&entry.rule_id) {
+                if rule.metadata().deprecated {
+                    *deprecated.entry(entry.rule_id.as_str()).or_insert(0) += 1;
+                }
+            }
+        }
+        deprecated
+            .into_iter()
+            .map(|(rule_id, count)| {
+                let suffix = if count == 1 {
+                    String::new()
+                } else {
+                    format!(" ({count} entries)")
+                };
+                Diagnostic::warning(
+                    DiagnosticCode::BaselineDeprecatedRule,
+                    format!("baseline references deprecated rule id `{rule_id}`{suffix}"),
+                    None,
+                )
+            })
+            .collect()
+    }
 }
 
 /// Result of comparing findings against a baseline.
@@ -606,6 +637,37 @@ mod tests {
         assert_eq!(diagnostics.len(), 1);
         assert_eq!(diagnostics[0].code, DiagnosticCode::BaselineUnknownRule);
         assert!(diagnostics[0].message.contains("SS-999"));
+    }
+
+    #[test]
+    fn deprecated_rule_ids_in_baseline_produce_warning_diagnostics() {
+        struct DeprecatedRule {
+            meta: RuleMetadata,
+        }
+        impl crate::rule::Rule for DeprecatedRule {
+            fn metadata(&self) -> &RuleMetadata {
+                &self.meta
+            }
+            fn analyze(&self, _ctx: &crate::context::AnalysisContext<'_>, _out: &mut Vec<Finding>) {
+            }
+        }
+
+        let mut registry = RuleRegistry::new();
+        registry
+            .register(Box::new(DeprecatedRule {
+                meta: meta().with_deprecated(true),
+            }))
+            .unwrap();
+
+        let baseline = Baseline::from_findings(&[
+            finding("src/lib.rs", 10, "a"),
+            finding("src/lib.rs", 20, "b"),
+        ]);
+        let diagnostics = baseline.deprecated_rule_diagnostics(&registry);
+        assert_eq!(diagnostics.len(), 1);
+        assert_eq!(diagnostics[0].code, DiagnosticCode::BaselineDeprecatedRule);
+        assert!(diagnostics[0].message.contains("SS-001"));
+        assert!(diagnostics[0].message.contains("2 entries"));
     }
 
     #[test]

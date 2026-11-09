@@ -415,6 +415,46 @@ pub fn override_diagnostics(config: &ScanConfig, registry: &RuleRegistry) -> Vec
         .collect()
 }
 
+/// Returns warning diagnostics when configuration references a deprecated rule id.
+pub fn deprecated_rule_diagnostics(config: &ScanConfig, registry: &RuleRegistry) -> Vec<Diagnostic> {
+    let mut referenced: BTreeSet<String> = BTreeSet::new();
+    for id in &config.rules.enabled {
+        referenced.insert(id.trim().to_ascii_uppercase());
+    }
+    for id in &config.rules.disabled {
+        referenced.insert(id.trim().to_ascii_uppercase());
+    }
+    for id in config.rules.severity_overrides.keys() {
+        referenced.insert(id.trim().to_ascii_uppercase());
+    }
+    for id in config.rules.confidence_overrides.keys() {
+        referenced.insert(id.trim().to_ascii_uppercase());
+    }
+    for suppression in &config.suppressions {
+        if !suppression.rule.eq_ignore_ascii_case(crate::config::ALL_SUPPRESSION_RULES) {
+            referenced.insert(suppression.rule.trim().to_ascii_uppercase());
+        }
+    }
+
+    referenced
+        .into_iter()
+        .filter_map(|id| {
+            let rule = registry.by_id(&id)?;
+            if !rule.metadata().deprecated {
+                return None;
+            }
+            Some(Diagnostic::warning(
+                DiagnosticCode::DeprecatedRule,
+                format!(
+                    "configuration references deprecated rule `{id}`; \
+                     deprecated rules are excluded from default execution and should be removed from configuration"
+                ),
+                None,
+            ))
+        })
+        .collect()
+}
+
 struct CompiledConfigSuppression {
     report: ConfigSuppressionReport,
     matcher: Option<globset::GlobMatcher>,
@@ -520,6 +560,7 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
 
     let mut diagnostics = loaded.project.diagnostics.clone();
     diagnostics.extend(override_diagnostics(config, registry));
+    diagnostics.extend(deprecated_rule_diagnostics(config, registry));
     let mut findings: Vec<Finding> = Vec::new();
     let mut stats = ScanStats {
         files_analyzed: loaded.sources.len(),
@@ -2158,6 +2199,61 @@ mod tests {
             .diagnostics
             .iter()
             .any(|diagnostic| diagnostic.code == DiagnosticCode::GeneratedFileExcluded));
+    }
+
+    #[test]
+    fn deprecated_rules_are_resolvable_but_skipped_by_default_and_warn_on_config_ref() {
+        struct RetiredRule {
+            meta: RuleMetadata,
+        }
+        impl Rule for RetiredRule {
+            fn metadata(&self) -> &RuleMetadata {
+                &self.meta
+            }
+            fn analyze(&self, _ctx: &AnalysisContext<'_>, out: &mut Vec<Finding>) {
+                out.push(Finding::new(
+                    &self.meta,
+                    SourceLocation::new("src/lib.rs", 1),
+                    "should not run by default",
+                ));
+            }
+        }
+
+        let mut registry = RuleRegistry::new();
+        registry
+            .register(Box::new(RetiredRule {
+                meta: dedup_meta("SS-099").with_deprecated(true),
+            }))
+            .unwrap();
+
+        // Still resolvable by ID.
+        assert!(registry.by_id("SS-099").is_some());
+        assert!(registry.by_id("SS-099").unwrap().metadata().deprecated);
+
+        // Skipped by default during scan.
+        let outcome = scan_source_str(
+            "#[contractimpl] impl C { pub fn f() {} }",
+            "src/lib.rs",
+            &ScanConfig::default(),
+            &registry,
+        );
+        assert!(outcome.findings.is_empty());
+        assert_eq!(outcome.stats.rules_run, 0);
+        assert_eq!(outcome.stats.rules_skipped, 1);
+
+        // Referencing a deprecated rule in config produces a CONFIG-003 warning.
+        let mut config = ScanConfig::default();
+        config.rules.enabled.push("SS-099".to_string());
+        let outcome_with_ref = scan_source_str(
+            "#[contractimpl] impl C { pub fn f() {} }",
+            "src/lib.rs",
+            &config,
+            &registry,
+        );
+        assert!(outcome_with_ref
+            .diagnostics
+            .iter()
+            .any(|d| d.code == DiagnosticCode::DeprecatedRule && d.message.contains("SS-099")));
     }
 }
 

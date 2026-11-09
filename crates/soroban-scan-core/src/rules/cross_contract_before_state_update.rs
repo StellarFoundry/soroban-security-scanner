@@ -30,6 +30,7 @@ intermediate state is safe to observe.",
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs",
     ],
+    deprecated: false,
 };
 
 /// Detects cross-contract calls that precede the first storage mutation.

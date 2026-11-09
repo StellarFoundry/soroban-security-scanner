@@ -718,6 +718,9 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
         outcome
             .diagnostics
             .extend(baseline.unknown_rule_diagnostics(registry));
+        outcome
+            .diagnostics
+            .extend(baseline.deprecated_rule_diagnostics(registry));
         let comparison = baseline::compare(&outcome.findings, &baseline);
         let resolved = if args.incremental {
             0
@@ -1385,7 +1388,10 @@ fn run_config(args: ConfigArgs) -> CliResult<u8> {
             let effective = load_config(config.as_deref(), Path::new("."), true)?;
             let registry = RuleRegistry::with_default_rules();
             validate_rule_ids(&effective, &registry)?;
-            for diagnostic in engine::override_diagnostics(&effective, &registry) {
+            for diagnostic in engine::override_diagnostics(&effective, &registry)
+                .into_iter()
+                .chain(engine::deprecated_rule_diagnostics(&effective, &registry))
+            {
                 eprintln!("warning: [{}] {}", diagnostic.code, diagnostic.message);
             }
             println!(

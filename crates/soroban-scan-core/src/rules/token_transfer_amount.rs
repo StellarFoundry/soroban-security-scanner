@@ -37,6 +37,7 @@ has a maximum). Validate once at the entry point and pass the checked value to \
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
     ],
+    deprecated: false,
 };
 
 /// Detects token transfers whose amount parameter is not validated.

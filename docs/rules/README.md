@@ -14,6 +14,23 @@ SS-###   (Soroban Security)
 Identifiers are **never reused** and **never renumbered**. A retired rule keeps
 its identifier and is marked deprecated.
 
+## Rule deprecation lifecycle
+
+When a rule is superseded or retired:
+
+1. Set `deprecated: true` on its `RuleMetadata` (or via `.with_deprecated(true)`).
+2. Keep the rule registered in `RuleRegistry` so `soroban-scan explain <ID>` and
+   existing baselines or configuration files remain resolvable.
+3. Deprecated rules are **excluded from default execution** (`enabled_by_default`
+   returns `false`).
+4. Referencing a deprecated rule in `.soroban-scan.toml` emits a `CONFIG-003`
+   warning diagnostic; referencing it in a baseline file emits a `BASELINE-002`
+   warning diagnostic.
+5. **Minimum deprecation window:** a deprecated rule must remain registered and
+   documented for at least **two minor releases and 90 days** before its
+   detector implementation is retired, and its `SS-###` identifier is reserved
+   permanently.
+
 ## Severity
 
 Severity describes **potential impact if the issue is real**.

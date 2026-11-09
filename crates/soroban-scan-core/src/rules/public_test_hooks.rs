@@ -26,6 +26,7 @@ function.",
 behind `#[cfg(test)]` or a compile-time feature so they cannot be called from a \
 production build. Never ship a privileged function intended only for testing.",
     references: &["https://developers.stellar.org/docs/learn/encyclopedia/security"],
+    deprecated: false,
 };
 
 /// Detects public entry points whose name looks like a test/debug hook.

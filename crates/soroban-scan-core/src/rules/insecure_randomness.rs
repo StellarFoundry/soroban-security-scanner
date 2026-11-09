@@ -32,6 +32,7 @@ stored deadline, document the use and suppress this rule.",
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs",
     ],
+    deprecated: false,
 };
 
 /// Detects predictable ledger values used in outcome-selecting expressions.
