@@ -3837,6 +3837,35 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-026/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Inconsistent or inverted TTL threshold and extend_to arguments — invalid TTL parameters (`threshold` = 10000, `extend_to` = 1000): env . storage () . persistent () . extend_ttl (& key , TTL_THRESHOLD , TTL_EXTEND_TO)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "aa799d6d9289b7431211b8b04ca385a0"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "high",
+            "remediation": "Ensure `threshold <= extend_to` and `extend_to > 0` in every `extend_ttl` call, and define named constants (`MIN_TTL_THRESHOLD` and `MAX_TTL_EXTEND`) in ascending order.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-026"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-029/positive.rs"
                 },
                 "region": {
@@ -4359,6 +4388,33 @@
               },
               "shortDescription": {
                 "text": "Authorization after state mutation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A call to `extend_ttl` passes a `threshold` larger than `extend_to` (or `extend_to == 0`). The Soroban host requires `threshold <= extend_to` and panics at runtime when the arguments are inverted."
+              },
+              "help": {
+                "markdown": "## Inconsistent or inverted TTL threshold and extend_to arguments\n\nA call to `extend_ttl` passes a `threshold` larger than `extend_to` (or `extend_to == 0`). The Soroban host requires `threshold <= extend_to` and panics at runtime when the arguments are inverted.\n\n### Remediation\n\nEnsure `threshold <= extend_to` and `extend_to > 0` in every `extend_ttl` call, and define named constants (`MIN_TTL_THRESHOLD` and `MAX_TTL_EXTEND`) in ascending order.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                "text": "A call to `extend_ttl` passes a `threshold` larger than `extend_to` (or `extend_to == 0`). The Soroban host requires `threshold <= extend_to` and panics at runtime when the arguments are inverted.\n\nRemediation: Ensure `threshold <= extend_to` and `extend_to > 0` in every `extend_ttl` call, and define named constants (`MIN_TTL_THRESHOLD` and `MAX_TTL_EXTEND`) in ascending order."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-026",
+              "name": "Inconsistent or inverted TTL threshold and extend_to arguments",
+              "properties": {
+                "category": "storage",
+                "confidence": "high",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+                ],
+                "remediation": "Ensure `threshold <= extend_to` and `extend_to > 0` in every `extend_ttl` call, and define named constants (`MIN_TTL_THRESHOLD` and `MAX_TTL_EXTEND`) in ascending order.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Inconsistent or inverted TTL threshold and extend_to arguments"
               }
             },
             {

@@ -14,6 +14,7 @@ mod cross_contract_auth;
 mod cross_contract_before_state_update;
 mod deprecated_sdk;
 mod hardcoded_address;
+mod inconsistent_ttl_constants;
 mod insecure_randomness;
 mod instance_storage_unbounded;
 mod missing_authorization;
@@ -60,6 +61,9 @@ pub fn register_all(registry: &mut RuleRegistry) -> Result<(), RegistryError> {
     registry.register(Box::new(
         authorization_after_mutation::AuthorizationAfterMutation,
     ))?;
+    registry.register(Box::new(
+        inconsistent_ttl_constants::InconsistentTtlConstants,
+    ))?;
     registry.register(Box::new(wildcard_sdk_import::WildcardSdkImport))?;
     Ok(())
 }
@@ -77,7 +81,7 @@ mod tests {
             vec![
                 "SS-001", "SS-002", "SS-003", "SS-004", "SS-005", "SS-006", "SS-007", "SS-008",
                 "SS-009", "SS-010", "SS-011", "SS-012", "SS-013", "SS-014", "SS-015", "SS-016",
-                "SS-017", "SS-029", "SS-033"
+                "SS-017", "SS-026", "SS-029", "SS-033"
             ]
         );
     }
