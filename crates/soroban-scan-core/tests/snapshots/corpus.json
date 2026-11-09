@@ -8,17 +8,17 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 74,
+    "source_files": 78,
     "soroban_sdk_versions": []
   },
   "stats": {
-    "files_analyzed": 74,
-    "files_parsed": 74,
+    "files_analyzed": 78,
+    "files_parsed": 78,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 19,
+    "rules_run": 20,
     "rules_skipped": 0,
-    "findings_raw": 134,
+    "findings_raw": 135,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -36,7 +36,7 @@
       "cross-contract": 6,
       "dependencies": 2,
       "error-handling": 11,
-      "events": 13,
+      "events": 14,
       "resource-usage": 2,
       "storage": 42,
       "token": 11,
@@ -2616,6 +2616,25 @@
       "fingerprint": "fbf6d16b047d6733f4408c670b9ca2ee"
     },
     {
+      "rule_id": "SS-023",
+      "title": "Sensitive data published in contract event",
+      "description": "A contract entry point publishes an event whose topic or payload references an identifier associated with secret material (such as `secret`, `private_key`, `password`, `mnemonic`, or `preimage`). Soroban contract events are public and permanently recorded in ledger metadata, exposing any emitted secret to all observers.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "events",
+      "location": {
+        "file": "SS-023/positive.rs",
+        "line": 11,
+        "column": 9
+      },
+      "evidence": "event payload in `register_secret` references sensitive identifier `secret`: env . events () . publish ((symbol_short ! (\"reg\") , & user) , user_secret_key)",
+      "remediation": "Never emit raw secrets, preimages, or private keys in `env.events().publish(...)`. Emit a cryptographic commitment (such as a SHA-256 hash) or an opaque identifier instead.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events"
+      ],
+      "fingerprint": "7faa87d2ce98fbafc62f3a5158a23489"
+    },
+    {
       "rule_id": "SS-029",
       "title": "Public test or debug hook in a contract entry point",
       "description": "A public contract entry point is named like a test or debug backdoor (a `test`, `debug`, `dev`, `mock`, or `dummy` name segment). Backdoor entry points that remain callable in a production deployment let anyone invoke privileged behavior, and are a well-known way on-chain contracts are compromised. This is a name-based heuristic and may flag a legitimately named function.",
@@ -2783,6 +2802,34 @@
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: panic",
       "path": "SS-014/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-023/negative.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-023/negative2.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-023/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-023/positive.rs",
       "line": null
     },
     {

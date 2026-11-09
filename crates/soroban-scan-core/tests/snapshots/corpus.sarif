@@ -3832,6 +3832,35 @@
           "ruleId": "SS-017"
         },
         {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-023/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Sensitive data published in contract event — event payload in `register_secret` references sensitive identifier `secret`: env . events () . publish ((symbol_short ! (\"reg\") , & user) , user_secret_key)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "7faa87d2ce98fbafc62f3a5158a23489"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "remediation": "Never emit raw secrets, preimages, or private keys in `env.events().publish(...)`. Emit a cryptographic commitment (such as a SHA-256 hash) or an opaque identifier instead.",
+            "severity": "low"
+          },
+          "ruleId": "SS-023"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -4359,6 +4388,33 @@
               },
               "shortDescription": {
                 "text": "Authorization after state mutation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "fullDescription": {
+                "text": "A contract entry point publishes an event whose topic or payload references an identifier associated with secret material (such as `secret`, `private_key`, `password`, `mnemonic`, or `preimage`). Soroban contract events are public and permanently recorded in ledger metadata, exposing any emitted secret to all observers."
+              },
+              "help": {
+                "markdown": "## Sensitive data published in contract event\n\nA contract entry point publishes an event whose topic or payload references an identifier associated with secret material (such as `secret`, `private_key`, `password`, `mnemonic`, or `preimage`). Soroban contract events are public and permanently recorded in ledger metadata, exposing any emitted secret to all observers.\n\n### Remediation\n\nNever emit raw secrets, preimages, or private keys in `env.events().publish(...)`. Emit a cryptographic commitment (such as a SHA-256 hash) or an opaque identifier instead.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/events",
+                "text": "A contract entry point publishes an event whose topic or payload references an identifier associated with secret material (such as `secret`, `private_key`, `password`, `mnemonic`, or `preimage`). Soroban contract events are public and permanently recorded in ledger metadata, exposing any emitted secret to all observers.\n\nRemediation: Never emit raw secrets, preimages, or private keys in `env.events().publish(...)`. Emit a cryptographic commitment (such as a SHA-256 hash) or an opaque identifier instead."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/events",
+              "id": "SS-023",
+              "name": "Sensitive data published in contract event",
+              "properties": {
+                "category": "events",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/events"
+                ],
+                "remediation": "Never emit raw secrets, preimages, or private keys in `env.events().publish(...)`. Emit a cryptographic commitment (such as a SHA-256 hash) or an opaque identifier instead.",
+                "severity": "low"
+              },
+              "shortDescription": {
+                "text": "Sensitive data published in contract event"
               }
             },
             {
