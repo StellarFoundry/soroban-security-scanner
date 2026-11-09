@@ -10,6 +10,7 @@ mod backlog;
 mod cli;
 mod docs;
 mod fixtures;
+mod rules;
 
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
@@ -39,6 +40,27 @@ fn run(cli: Cli) -> Result<(), String> {
             let root = args.root.unwrap_or_else(workspace_root);
             let directory = fixtures::scaffold(&root, &args.name, args.force)?;
             println!("Scaffolded fixture at {}", directory.display());
+        }
+        Command::Rule(args) => {
+            let root = args.root.unwrap_or_else(workspace_root);
+            let created = rules::scaffold(
+                &root,
+                &rules::RuleScaffoldOptions {
+                    id: args.id,
+                    title: args.title,
+                    module: args.module,
+                    category: args.category,
+                    severity: args.severity,
+                    confidence: args.confidence,
+                    force: args.force,
+                },
+            )?;
+            println!(
+                "Scaffolded rule module {}, docs {}, and corpus fixtures at {}",
+                created.module_file.display(),
+                created.doc_file.display(),
+                created.corpus_dir.display()
+            );
         }
         Command::Backlog(args) => {
             let root = args.root.unwrap_or_else(workspace_root);

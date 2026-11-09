@@ -21,6 +21,9 @@ pub enum Command {
     Docs(DocsArgs),
     /// Scaffold a project fixture under fixtures/projects/.
     Fixtures(FixturesArgs),
+    /// Scaffold a new security rule module, corpus fixtures, and detector docs.
+    #[command(visible_alias = "new-rule")]
+    Rule(RuleArgs),
     /// Render the contributor backlog from tools/backlog/*.json.
     Backlog(BacklogArgs),
 }
@@ -42,6 +45,33 @@ pub struct FixturesArgs {
     #[arg(long, value_name = "DIR")]
     pub root: Option<PathBuf>,
     /// Overwrite the scaffold files if the fixture already exists.
+    #[arg(long)]
+    pub force: bool,
+}
+
+/// Arguments for `xtask rule` / `xtask new-rule`.
+#[derive(Debug, Args, PartialEq, Eq)]
+pub struct RuleArgs {
+    /// Rule identifier (for example `SS-042`).
+    pub id: String,
+    /// Short rule title.
+    pub title: String,
+    /// Optional Rust module name (derived from title when omitted).
+    #[arg(long, value_name = "MODULE")]
+    pub module: Option<String>,
+    /// Rule category (defaults to `authorization`).
+    #[arg(long, default_value = "authorization", value_name = "CATEGORY")]
+    pub category: String,
+    /// Default severity (`info`, `low`, `medium`, `high`, `critical`).
+    #[arg(long, default_value = "medium", value_name = "SEVERITY")]
+    pub severity: String,
+    /// Default confidence (`low`, `medium`, `high`).
+    #[arg(long, default_value = "medium", value_name = "CONFIDENCE")]
+    pub confidence: String,
+    /// Repository root (defaults to the workspace root).
+    #[arg(long, value_name = "DIR")]
+    pub root: Option<PathBuf>,
+    /// Overwrite existing scaffold files if present.
     #[arg(long)]
     pub force: bool,
 }
@@ -106,5 +136,31 @@ mod tests {
     fn rejects_unknown_subcommands() {
         let err = Cli::try_parse_from(["xtask", "deploy"]).unwrap_err();
         assert!(err.to_string().contains("unrecognized subcommand"));
+    }
+
+    #[test]
+    fn parses_rule_scaffolding_and_new_rule_alias() {
+        let cli = Cli::try_parse_from([
+            "xtask",
+            "new-rule",
+            "SS-042",
+            "Unchecked ledger timestamp drift",
+            "--category",
+            "arithmetic",
+        ])
+        .unwrap();
+        assert_eq!(
+            cli.command,
+            Command::Rule(RuleArgs {
+                id: "SS-042".to_string(),
+                title: "Unchecked ledger timestamp drift".to_string(),
+                module: None,
+                category: "arithmetic".to_string(),
+                severity: "medium".to_string(),
+                confidence: "medium".to_string(),
+                root: None,
+                force: false,
+            })
+        );
     }
 }

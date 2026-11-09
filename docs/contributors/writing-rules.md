@@ -20,6 +20,22 @@ report over reporting uncertainly.
 
 Use the next free `SS-###` identifier. Ids are never reused or renumbered.
 
+### Optional: scaffold the boilerplate automatically
+
+Run the rule scaffold generator from the workspace root to create the rule
+module, corpus fixtures, detector documentation stub, and `rules/mod.rs`
+registration entry in one step:
+
+```bash
+cargo xtask rule SS-042 "Short rule title" \
+  --category authorization \
+  --severity high \
+  --confidence medium
+```
+
+The command is idempotent and refuses to overwrite any existing file unless
+`--force` is supplied.
+
 ## 2. Implement the detector
 
 Create `crates/soroban-scan-core/src/rules/<name>.rs`:
