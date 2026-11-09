@@ -10,6 +10,7 @@ pub mod util;
 pub mod validation;
 
 mod authorization_after_mutation;
+mod competing_auth;
 mod cross_contract_auth;
 mod cross_contract_before_state_update;
 mod deprecated_sdk;
@@ -61,6 +62,7 @@ pub fn register_all(registry: &mut RuleRegistry) -> Result<(), RegistryError> {
         authorization_after_mutation::AuthorizationAfterMutation,
     ))?;
     registry.register(Box::new(wildcard_sdk_import::WildcardSdkImport))?;
+    registry.register(Box::new(competing_auth::CompetingAuthCalls))?;
     Ok(())
 }
 
@@ -77,7 +79,7 @@ mod tests {
             vec![
                 "SS-001", "SS-002", "SS-003", "SS-004", "SS-005", "SS-006", "SS-007", "SS-008",
                 "SS-009", "SS-010", "SS-011", "SS-012", "SS-013", "SS-014", "SS-015", "SS-016",
-                "SS-017", "SS-029", "SS-033"
+                "SS-017", "SS-029", "SS-033", "SS-037"
             ]
         );
     }

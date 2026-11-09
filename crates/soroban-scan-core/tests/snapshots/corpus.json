@@ -8,17 +8,17 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 74,
+    "source_files": 78,
     "soroban_sdk_versions": []
   },
   "stats": {
-    "files_analyzed": 74,
-    "files_parsed": 74,
+    "files_analyzed": 78,
+    "files_parsed": 78,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 19,
+    "rules_run": 20,
     "rules_skipped": 0,
-    "findings_raw": 134,
+    "findings_raw": 142,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -31,14 +31,14 @@
     "findings_by_category": {
       "access-control": 10,
       "arithmetic": 6,
-      "authorization": 28,
+      "authorization": 29,
       "configuration": 2,
       "cross-contract": 6,
       "dependencies": 2,
       "error-handling": 11,
-      "events": 13,
+      "events": 15,
       "resource-usage": 2,
-      "storage": 42,
+      "storage": 47,
       "token": 11,
       "unsafe": 1
     }
@@ -2653,6 +2653,158 @@
         "https://developers.stellar.org/docs"
       ],
       "fingerprint": "f3f0a4aadf0de5b0abe020564befef9a"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-037/negative.rs",
+        "line": 11,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `withdraw`: env . storage () . persistent () . set (& caller , & amount)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "b3922a596800a0c96c8baa7eb0e9fc0e"
+    },
+    {
+      "rule_id": "SS-010",
+      "title": "Privileged state change without an event",
+      "description": "A contract entry point mutates a storage key that looks like privileged configuration (for example admin, owner, pause, params, fees, or oracle) without publishing an event. Off-chain indexers and users rely on events to observe critical changes; without one, the change is invisible to monitoring and incident response.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "events",
+      "location": {
+        "file": "SS-037/negative.rs",
+        "line": 16,
+        "column": 9
+      },
+      "evidence": "privileged storage change without an event in `set_fee`: env . storage () . instance () . set (& admin , & fee_bps)",
+      "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events"
+      ],
+      "fingerprint": "7a74232e94e943ca13abf7081563ea79"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-037/negative2.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `approve_proposal`: env . storage () . persistent () . set (& proposal_id , & signer)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "edaf2cd4626ba767c09050c20c878670"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-037/negative2.rs",
+        "line": 21,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `execute_with_signers`: env . storage () . persistent () . set (& payload , & true)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "c3feb5ddc04a5bb80285a8012aa3e48c"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-037/negative3.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `update_profile`: env . storage () . persistent () . set (& owner , & nonce)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "f0b6b429d849578ba8be1446a7e61492"
+    },
+    {
+      "rule_id": "SS-010",
+      "title": "Privileged state change without an event",
+      "description": "A contract entry point mutates a storage key that looks like privileged configuration (for example admin, owner, pause, params, fees, or oracle) without publishing an event. Off-chain indexers and users rely on events to observe critical changes; without one, the change is invisible to monitoring and incident response.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "events",
+      "location": {
+        "file": "SS-037/negative3.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "privileged storage change without an event in `update_profile`: env . storage () . persistent () . set (& owner , & nonce)",
+      "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events"
+      ],
+      "fingerprint": "43e8308d7960040ae0cd744db228d986"
+    },
+    {
+      "rule_id": "SS-037",
+      "title": "Competing authorization calls on distinct actors",
+      "description": "A single contract entry point invokes `require_auth` or `require_auth_for_args` on two or more distinct actor expressions. Requiring multiple independent actors to authorize the same entry point often indicates confused authorization semantics (for example, requiring both an administrator and an unprivileged caller to sign the same state transition) or an accidental copy-paste error that can deadlock operations when both signatures are not present simultaneously.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "authorization",
+      "location": {
+        "file": "SS-037/positive.rs",
+        "line": 11,
+        "column": 9
+      },
+      "evidence": "competing authorization calls on distinct actors (`admin`, `caller`) in `withdraw`: caller . require_auth ()",
+      "remediation": "Separate administrative actions from user actions into distinct entry points so each operation has a single, unambiguous authorizing actor. For legitimate multi-party or multi-sig workflows, either iterate over a deduplicated `Vec<Address>` of signers, use a proposal/approval state machine across separate invocations, or scope each actor's authorization with `require_auth_for_args` and document the multi-party invariant.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "9676190826bbdadce033cf8e853e4523"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-037/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `withdraw`: env . storage () . persistent () . set (& caller , & amount)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "33c8474ece458f380eddaf73ff8fc59f"
     }
   ],
   "suppressed": [],
