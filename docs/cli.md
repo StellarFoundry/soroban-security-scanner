@@ -41,6 +41,7 @@ roots in one run.
 | `--config <FILE>` | Use a specific configuration file. |
 | `--no-config` | Ignore discovered configuration and use built-in defaults (mutually exclusive with `--config`). |
 | `--files-from <FILE>` | Read a newline-separated list of files to scan (relative to `PATH`). |
+| `--changed-since <REF>` | Scan only Rust files changed since git revision `<REF>` (read-only; falls back to `--files-from` when `git` is unavailable). |
 | `--stdin-filename <NAME>` | Scan a single source read from stdin, using `NAME` as its logical path. |
 | `--disable <RULE>` | Disable a rule by id (repeatable). |
 | `--rule <RULE>` | Run only the given rule(s) (repeatable). |
@@ -240,6 +241,24 @@ cat src/lib.rs | soroban-scan scan --stdin-filename src/lib.rs --format json
 - Reads are capped at 8 MiB. Oversized input fails with exit code `2` rather
   than being truncated, so a runaway pipe cannot exhaust memory.
 - `PATH` and `--files-from` cannot be combined with `--stdin-filename`.
+
+### Incremental git scanning (`--changed-since`)
+
+`--changed-since <REF>` scans only `.rs` files changed relative to `<REF>`:
+
+```bash
+soroban-scan scan ./contracts --changed-since origin/main
+```
+
+- Invokes `git` read-only (`--no-optional-locks`, `--no-ext-diff`) and never
+  writes to the repository or index.
+- Output paths from `git` are treated as untrusted input: non-Rust files are
+  ignored, and any path that is absolute or contains `..` is rejected with exit
+  code `2`.
+- When `git` is unavailable (for example in a minimal container or exported
+  source archive), pass a precomputed file list with `--files-from <FILE>`
+  instead; if both `--changed-since` and `--files-from` are supplied, the file
+  list is used automatically as the fallback.
 
 ### Examples
 

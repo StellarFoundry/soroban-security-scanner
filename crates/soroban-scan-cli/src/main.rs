@@ -307,7 +307,7 @@ struct ScanArgs {
     #[arg(
         long,
         value_name = "NAME",
-        conflicts_with_all = ["paths", "files_from"]
+        conflicts_with_all = ["paths", "files_from", "changed_since"]
     )]
     stdin_filename: Option<String>,
 
@@ -360,6 +360,12 @@ struct ScanArgs {
     /// Read a newline-separated list of files to scan, relative to PATH.
     #[arg(long, value_name = "FILE")]
     files_from: Option<PathBuf>,
+
+    /// Scan only Rust files changed since the given git revision (read-only).
+    ///
+    /// When git is unavailable, supply a precomputed file list with `--files-from`.
+    #[arg(long, value_name = "REF")]
+    changed_since: Option<String>,
 
     /// Disable a rule by id. Repeatable.
     #[arg(long = "disable", value_name = "RULE")]
@@ -643,6 +649,21 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
         let file_name = validate_logical_filename(name)?;
         let source = read_stdin_bounded()?;
         engine::scan_source_str(&source, &file_name, &config, registry)
+    } else if let Some(git_ref) = &args.changed_since {
+        let path = single_path(&args.paths, "--changed-since")?;
+        if path.is_file() {
+            return Err(CliError::Usage(
+                "--changed-since requires PATH to be a directory".to_string(),
+            ));
+        }
+        let files = changed_rust_files_since(path, git_ref, args.files_from.as_deref())?;
+        let mut loaded =
+            project::load_files_with_options(path, &files, &config.discovery_options())
+                .map_err(runtime)?;
+        if files.is_empty() {
+            loaded.project.manifests.clear();
+        }
+        engine::scan(&loaded, registry, &config)
     } else if let Some(list) = &args.files_from {
         let path = single_path(&args.paths, "--files-from")?;
         if path.is_file() {
@@ -1455,6 +1476,157 @@ fn read_file_list(list: &Path, root: &Path) -> CliResult<Vec<PathBuf>> {
     Ok(files)
 }
 
+/// Validates a git revision supplied to `--changed-since`.
+///
+/// Revisions are treated as untrusted CLI arguments: empty strings, control
+/// characters, and leading dashes (which git could parse as options) are
+/// rejected before invoking git.
+fn validate_git_ref(git_ref: &str) -> CliResult<&str> {
+    let trimmed = git_ref.trim();
+    if trimmed.is_empty() {
+        return Err(CliError::Usage(
+            "--changed-since revision must not be empty".to_string(),
+        ));
+    }
+    if trimmed.starts_with('-') {
+        return Err(CliError::Usage(format!(
+            "--changed-since revision must not start with '-': {trimmed}"
+        )));
+    }
+    if trimmed.chars().any(char::is_control) {
+        return Err(CliError::Usage(
+            "--changed-since revision must not contain control characters".to_string(),
+        ));
+    }
+    Ok(trimmed)
+}
+
+/// Validates and filters untrusted newline-separated paths into existing `.rs`
+/// files inside `root`, sorted and de-duplicated deterministically.
+fn parse_changed_rust_files(text: &str, root: &Path) -> CliResult<Vec<PathBuf>> {
+    let mut files = std::collections::BTreeSet::new();
+    for raw in text.lines() {
+        let line = raw.trim();
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let candidate = Path::new(line);
+        if candidate.is_absolute()
+            || candidate.components().any(|component| {
+                matches!(
+                    component,
+                    std::path::Component::ParentDir
+                        | std::path::Component::RootDir
+                        | std::path::Component::Prefix(_)
+                )
+            })
+        {
+            return Err(CliError::Usage(format!(
+                "changed file entry escapes the scan root: {line}"
+            )));
+        }
+        if !candidate.extension().is_some_and(|ext| ext == "rs") {
+            continue;
+        }
+        let resolved = root.join(candidate);
+        if resolved.is_file() {
+            files.insert(resolved);
+        }
+    }
+    Ok(files.into_iter().collect())
+}
+
+/// Derives changed Rust files since `git_ref` using a read-only git invocation,
+/// falling back to `fallback_list` (`--files-from`) when git is unavailable.
+fn changed_rust_files_since(
+    root: &Path,
+    git_ref: &str,
+    fallback_list: Option<&Path>,
+) -> CliResult<Vec<PathBuf>> {
+    let rev = validate_git_ref(git_ref)?;
+    let git_bin = std::env::var_os("SOROBAN_SCAN_GIT_BIN")
+        .filter(|value| !value.is_empty())
+        .unwrap_or_else(|| std::ffi::OsString::from("git"));
+
+    let diff_output = std::process::Command::new(&git_bin)
+        .arg("--no-optional-locks")
+        .args(["-c", "core.quotepath=false"])
+        .arg("-C")
+        .arg(root)
+        .args([
+            "diff",
+            "--no-ext-diff",
+            "--name-only",
+            "--relative",
+            "--diff-filter=ACMRTUXB",
+            rev,
+            "--",
+        ])
+        .stdin(std::process::Stdio::null())
+        .output();
+
+    let output = match diff_output {
+        Ok(output) => output,
+        Err(error) => {
+            if let Some(list) = fallback_list {
+                let text = std::fs::read_to_string(list).map_err(|e| {
+                    CliError::Runtime(format!("cannot read file list {}: {e}", list.display()))
+                })?;
+                return parse_changed_rust_files(&text, root);
+            }
+            if error.kind() == std::io::ErrorKind::NotFound {
+                return Err(CliError::Runtime(
+                    "git executable was not found; install git or pass a precomputed \
+                     file list with --files-from <FILE>"
+                        .to_string(),
+                ));
+            }
+            return Err(CliError::Runtime(format!(
+                "failed to invoke git: {error} (pass --files-from <FILE> when git is unavailable)"
+            )));
+        }
+    };
+
+    if !output.status.success() {
+        if let Some(list) = fallback_list {
+            let text = std::fs::read_to_string(list).map_err(|e| {
+                CliError::Runtime(format!("cannot read file list {}: {e}", list.display()))
+            })?;
+            return parse_changed_rust_files(&text, root);
+        }
+        let detail = String::from_utf8_lossy(&output.stderr).trim().to_string();
+        let reason = if detail.is_empty() {
+            format!("git exited with status {}", output.status)
+        } else {
+            detail
+        };
+        return Err(CliError::Runtime(format!(
+            "git diff --changed-since {rev} failed: {reason} \
+             (when git is unavailable, pass --files-from <FILE>)"
+        )));
+    }
+
+    let mut combined = String::from_utf8_lossy(&output.stdout).into_owned();
+    if let Ok(untracked) = std::process::Command::new(&git_bin)
+        .arg("--no-optional-locks")
+        .args(["-c", "core.quotepath=false"])
+        .arg("-C")
+        .arg(root)
+        .args(["ls-files", "--others", "--exclude-standard"])
+        .stdin(std::process::Stdio::null())
+        .output()
+    {
+        if untracked.status.success() {
+            if !combined.ends_with('\n') && !combined.is_empty() {
+                combined.push('\n');
+            }
+            combined.push_str(&String::from_utf8_lossy(&untracked.stdout));
+        }
+    }
+
+    parse_changed_rust_files(&combined, root)
+}
+
 /// Returns the single allowed path, or a usage error naming the offending flag.
 fn single_path<'a>(paths: &'a [PathBuf], flag: &str) -> CliResult<&'a Path> {
     match paths {
@@ -1772,5 +1944,34 @@ mod tests {
         ] {
             assert!(!resolve_color(ColorArg::Always, format, false));
         }
+    }
+
+    #[test]
+    fn validate_git_ref_rejects_empty_and_option_like_revisions() {
+        assert_eq!(validate_git_ref("HEAD~1").unwrap(), "HEAD~1");
+        assert_eq!(validate_git_ref(" origin/main ").unwrap(), "origin/main");
+        assert!(validate_git_ref("").is_err());
+        assert!(validate_git_ref("   ").is_err());
+        assert!(validate_git_ref("--output=/tmp/pwn").is_err());
+        assert!(validate_git_ref("-n").is_err());
+        assert!(validate_git_ref("HEAD\0").is_err());
+    }
+
+    #[test]
+    fn parse_changed_rust_files_validates_and_filters_paths() {
+        let dir =
+            std::env::temp_dir().join(format!("soroban-scan-changed-unit-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        std::fs::create_dir_all(dir.join("src")).unwrap();
+        std::fs::write(dir.join("src/lib.rs"), "pub fn a() {}\n").unwrap();
+        std::fs::write(dir.join("README.md"), "# readme\n").unwrap();
+
+        let files =
+            parse_changed_rust_files("README.md\nsrc/lib.rs\nsrc/missing.rs\nsrc/lib.rs\n", &dir)
+                .unwrap();
+        assert_eq!(files, vec![dir.join("src/lib.rs")]);
+
+        assert!(parse_changed_rust_files("../outside.rs\n", &dir).is_err());
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }

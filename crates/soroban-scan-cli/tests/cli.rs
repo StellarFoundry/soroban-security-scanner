@@ -2272,3 +2272,156 @@ fn completions_rejects_an_unknown_shell() {
     let out = run(&["completions", "tcsh"]);
     assert_eq!(out.code, 2, "{}", out.stderr);
 }
+
+#[test]
+fn changed_since_scans_only_changed_rust_files_in_git_repo_without_writes() {
+    let dir = std::env::temp_dir().join(format!(
+        "soroban-scan-cli-changed-since-{}",
+        std::process::id()
+    ));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(dir.join("src")).unwrap();
+
+    std::fs::write(
+        dir.join("Cargo.toml"),
+        "[package]\nname = \"demo\"\nversion = \"0.1.0\"\n\n[dependencies]\nsoroban-sdk = \"21.0.0\"\n",
+    )
+    .unwrap();
+    let vuln = std::fs::read_to_string(fixture("corpus/SS-001/positive.rs")).unwrap();
+    let safe = std::fs::read_to_string(fixture("corpus/SS-001/negative.rs")).unwrap();
+    std::fs::write(dir.join("src/unchanged.rs"), &vuln).unwrap();
+    std::fs::write(dir.join("src/changed.rs"), &safe).unwrap();
+
+    let git = |args: &[&str]| {
+        let status = Command::new("git")
+            .current_dir(&dir)
+            .args(args)
+            .status()
+            .expect("git must run in test environment");
+        assert!(status.success(), "git {args:?} failed");
+    };
+
+    git(&["init", "-q"]);
+    git(&["config", "user.email", "scanner@example.com"]);
+    git(&["config", "user.name", "Scanner Test"]);
+    git(&["add", "."]);
+    git(&["commit", "-q", "-m", "initial"]);
+
+    // Modify only src/changed.rs and a non-Rust file in a second commit.
+    std::fs::write(dir.join("src/changed.rs"), &vuln).unwrap();
+    std::fs::write(dir.join("README.md"), "# Updated docs\n").unwrap();
+    git(&["add", "."]);
+    git(&["commit", "-q", "-m", "modify changed.rs"]);
+
+    let out = run(&[
+        "scan",
+        dir.to_str().unwrap(),
+        "--changed-since",
+        "HEAD~1",
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+
+    let report: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
+    assert_eq!(report["stats"]["files_analyzed"], 1);
+    let findings = report["findings"].as_array().unwrap();
+    assert!(!findings.is_empty());
+    for finding in findings {
+        assert_eq!(finding["location"]["file"], "src/changed.rs");
+    }
+
+    // Scanning since HEAD (no changes) analyzes 0 files and emits 0 findings.
+    let clean = run(&[
+        "scan",
+        dir.to_str().unwrap(),
+        "--changed-since",
+        "HEAD",
+        "--format",
+        "json",
+        "--fail-on",
+        "high",
+    ]);
+    assert_eq!(clean.code, 0, "stderr: {}", clean.stderr);
+    let clean_report: serde_json::Value = serde_json::from_str(&clean.stdout).unwrap();
+    assert_eq!(clean_report["stats"]["files_analyzed"], 0);
+    assert!(clean_report["findings"].as_array().unwrap().is_empty());
+
+    // Ensure no writes occurred in the repository.
+    let status_out = Command::new("git")
+        .current_dir(&dir)
+        .args(["status", "--porcelain"])
+        .output()
+        .unwrap();
+    assert!(
+        String::from_utf8_lossy(&status_out.stdout)
+            .trim()
+            .is_empty(),
+        "repository was modified by scan"
+    );
+
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn changed_since_fails_clearly_when_git_missing_and_supports_files_from_fallback() {
+    let dir = std::env::temp_dir().join(format!(
+        "soroban-scan-cli-changed-nogit-{}",
+        std::process::id()
+    ));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let list = dir.join("changed.txt");
+    std::fs::write(&list, "fixtures/corpus/SS-001/positive.rs\nREADME.md\n").unwrap();
+
+    let missing = run_with_env(
+        &[
+            "scan",
+            repo_root().to_str().unwrap(),
+            "--changed-since",
+            "HEAD~1",
+        ],
+        &[("SOROBAN_SCAN_GIT_BIN", "__definitely_missing_git_binary__")],
+    );
+    assert_eq!(missing.code, 3, "stderr: {}", missing.stderr);
+    assert!(
+        missing.stderr.contains("--files-from"),
+        "expected fallback hint in stderr: {}",
+        missing.stderr
+    );
+
+    let fallback = run_with_env(
+        &[
+            "scan",
+            repo_root().to_str().unwrap(),
+            "--changed-since",
+            "HEAD~1",
+            "--files-from",
+            list.to_str().unwrap(),
+            "--format",
+            "json",
+            "--fail-on",
+            "none",
+        ],
+        &[("SOROBAN_SCAN_GIT_BIN", "__definitely_missing_git_binary__")],
+    );
+    assert_eq!(fallback.code, 0, "stderr: {}", fallback.stderr);
+    let report: serde_json::Value = serde_json::from_str(&fallback.stdout).unwrap();
+    assert_eq!(report["stats"]["files_analyzed"], 1);
+    assert!(!report["findings"].as_array().unwrap().is_empty());
+
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn changed_since_rejects_option_like_revision() {
+    let out = run(&["scan", repo_root().to_str().unwrap(), "--changed-since=-n"]);
+    assert_eq!(out.code, 2, "stderr: {}", out.stderr);
+    assert!(
+        out.stderr.contains("must not start with '-'"),
+        "stderr: {}",
+        out.stderr
+    );
+}
