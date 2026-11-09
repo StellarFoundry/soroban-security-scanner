@@ -22,12 +22,28 @@
 //! corpus contains no absolute paths, timestamps, or timings, so the snapshots
 //! are reproducible across machines.
 
+use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
+use serde::Serialize;
 use soroban_scan_core::config::ScanConfig;
 use soroban_scan_core::engine::{self, ScanOutcome};
 use soroban_scan_core::registry::RuleRegistry;
 use soroban_scan_core::report;
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+struct RuleFindingCountSnapshot {
+    /// Total findings emitted by this rule across the entire regression corpus.
+    total_corpus: usize,
+    /// Findings emitted by this rule on its own `fixtures/corpus/<RULE-ID>/` positive fixtures.
+    own_positive: usize,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+struct CorpusFindingCountsSnapshot {
+    total_findings: usize,
+    rules: BTreeMap<String, RuleFindingCountSnapshot>,
+}
 
 fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..")
@@ -180,4 +196,79 @@ fn corpus_reports_are_deterministic() {
         report::render_sarif(&second, &registry),
         "SARIF output must be byte-identical across runs"
     );
+}
+
+fn corpus_finding_counts() -> CorpusFindingCountsSnapshot {
+    let outcome = corpus_outcome();
+    let registry = RuleRegistry::with_default_rules();
+    let config = ScanConfig::default();
+    let corpus = repo_root().join("fixtures/corpus");
+
+    let mut rules: BTreeMap<String, RuleFindingCountSnapshot> = registry
+        .metadata_sorted()
+        .into_iter()
+        .map(|meta| {
+            (
+                meta.id.to_string(),
+                RuleFindingCountSnapshot {
+                    total_corpus: 0,
+                    own_positive: 0,
+                },
+            )
+        })
+        .collect();
+
+    for finding in &outcome.findings {
+        let entry = rules
+            .entry(finding.rule_id.clone())
+            .or_insert(RuleFindingCountSnapshot {
+                total_corpus: 0,
+                own_positive: 0,
+            });
+        entry.total_corpus += 1;
+        let prefix = format!("{}/positive", finding.rule_id);
+        let file_str = finding.location.file.to_string_lossy().replace('\\', "/");
+        if file_str.starts_with(&prefix) {
+            entry.own_positive += 1;
+        }
+    }
+
+    // Include manifest-based rule SS-015 from fixtures/corpus/SS-015/positive.toml.
+    let ss015_pos = corpus.join("SS-015/positive.toml");
+    if ss015_pos.exists() {
+        let manifest = std::fs::read_to_string(&ss015_pos).expect("read SS-015/positive.toml");
+        let manifest_outcome =
+            engine::scan_manifest_str("Cargo.toml", &manifest, &config, &registry)
+                .expect("parse SS-015/positive.toml");
+        let count = manifest_outcome
+            .findings
+            .iter()
+            .filter(|f| f.rule_id == "SS-015")
+            .count();
+        if let Some(entry) = rules.get_mut("SS-015") {
+            entry.total_corpus += count;
+            entry.own_positive += count;
+        }
+    }
+
+    let total_findings: usize = rules.values().map(|r| r.total_corpus).sum();
+    CorpusFindingCountsSnapshot {
+        total_findings,
+        rules,
+    }
+}
+
+#[test]
+fn per_rule_finding_counts_match_golden_snapshot() {
+    let counts = corpus_finding_counts();
+    for (rule_id, entry) in &counts.rules {
+        assert!(
+            entry.own_positive > 0,
+            "{rule_id}: expected at least 1 finding on its own positive corpus fixture"
+        );
+    }
+    let mut rendered =
+        serde_json::to_string_pretty(&counts).expect("serialize finding count snapshot");
+    rendered.push('\n');
+    assert_golden("finding_counts.json", &rendered);
 }

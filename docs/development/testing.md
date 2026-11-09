@@ -65,12 +65,18 @@ samples.
 ## Golden report snapshots
 
 `crates/soroban-scan-core/tests/report_snapshots.rs` scans the full regression
-corpus and compares the JSON and SARIF renderings with committed golden files
-under `crates/soroban-scan-core/tests/snapshots/`. The project root is
-normalized to `fixtures/corpus`, so the snapshots do not contain absolute paths,
-timestamps, or timings.
+corpus and compares the JSON report (`corpus.json`), SARIF report
+(`corpus.sarif`), and exact per-rule finding counts (`finding_counts.json`) with
+committed golden files under `crates/soroban-scan-core/tests/snapshots/`. The
+project root is normalized to `fixtures/corpus`, so the snapshots do not contain
+absolute paths, timestamps, or timings.
 
-Update the snapshots only when a machine-format change is intentional:
+The `finding_counts.json` snapshot records both `total_corpus` and
+`own_positive` finding counts for every built-in rule so any refactor that
+accidentally broadens or narrows detector matching fails immediately.
+
+Update the snapshots only when a machine-format or rule-matching change is
+intentional:
 
 ```bash
 UPDATE_SNAPSHOTS=1 cargo test -p soroban-scan-core --test report_snapshots

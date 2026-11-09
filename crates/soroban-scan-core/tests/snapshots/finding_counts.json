@@ -1,0 +1,81 @@
+{
+  "total_findings": 135,
+  "rules": {
+    "SS-001": {
+      "total_corpus": 27,
+      "own_positive": 2
+    },
+    "SS-002": {
+      "total_corpus": 5,
+      "own_positive": 1
+    },
+    "SS-003": {
+      "total_corpus": 1,
+      "own_positive": 1
+    },
+    "SS-004": {
+      "total_corpus": 11,
+      "own_positive": 2
+    },
+    "SS-005": {
+      "total_corpus": 1,
+      "own_positive": 1
+    },
+    "SS-006": {
+      "total_corpus": 36,
+      "own_positive": 1
+    },
+    "SS-007": {
+      "total_corpus": 2,
+      "own_positive": 1
+    },
+    "SS-008": {
+      "total_corpus": 5,
+      "own_positive": 1
+    },
+    "SS-009": {
+      "total_corpus": 1,
+      "own_positive": 1
+    },
+    "SS-010": {
+      "total_corpus": 13,
+      "own_positive": 1
+    },
+    "SS-011": {
+      "total_corpus": 9,
+      "own_positive": 1
+    },
+    "SS-012": {
+      "total_corpus": 1,
+      "own_positive": 1
+    },
+    "SS-013": {
+      "total_corpus": 1,
+      "own_positive": 1
+    },
+    "SS-014": {
+      "total_corpus": 11,
+      "own_positive": 1
+    },
+    "SS-015": {
+      "total_corpus": 1,
+      "own_positive": 1
+    },
+    "SS-016": {
+      "total_corpus": 6,
+      "own_positive": 6
+    },
+    "SS-017": {
+      "total_corpus": 1,
+      "own_positive": 1
+    },
+    "SS-029": {
+      "total_corpus": 1,
+      "own_positive": 1
+    },
+    "SS-033": {
+      "total_corpus": 2,
+      "own_positive": 1
+    }
+  }
+}
