@@ -1,0 +1,22 @@
+{
+    "schema_version":  "1",
+    "rule_id":  "SS-001",
+    "expected":  [
+                     {
+                         "rule_id":  "SS-001",
+                         "file":  "positive.rs",
+                         "line":  9,
+                         "severity":  "high",
+                         "confidence":  "medium",
+                         "evidence_contains":  "`set` storage mutation with no a"
+                     },
+                     {
+                         "rule_id":  "SS-001",
+                         "file":  "positive.rs",
+                         "line":  21,
+                         "severity":  "high",
+                         "confidence":  "medium",
+                         "evidence_contains":  "`set` storage mutation with no a"
+                     }
+                 ]
+}

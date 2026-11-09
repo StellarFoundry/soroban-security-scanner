@@ -1,0 +1,14 @@
+{
+    "schema_version":  "1",
+    "rule_id":  "SS-012",
+    "expected":  [
+                     {
+                         "rule_id":  "SS-012",
+                         "file":  "positive.rs",
+                         "line":  17,
+                         "severity":  "medium",
+                         "confidence":  "low",
+                         "evidence_contains":  "unbounded collection growth in `"
+                     }
+                 ]
+}

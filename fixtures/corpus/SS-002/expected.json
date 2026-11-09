@@ -1,0 +1,14 @@
+{
+    "schema_version":  "1",
+    "rule_id":  "SS-002",
+    "expected":  [
+                     {
+                         "rule_id":  "SS-002",
+                         "file":  "positive.rs",
+                         "line":  9,
+                         "severity":  "high",
+                         "confidence":  "low",
+                         "evidence_contains":  "cross-contract client constructe"
+                     }
+                 ]
+}

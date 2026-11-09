@@ -1,0 +1,14 @@
+{
+    "schema_version":  "1",
+    "rule_id":  "SS-015",
+    "expected":  [
+                     {
+                         "rule_id":  "SS-015",
+                         "file":  "positive.toml",
+                         "line":  1,
+                         "severity":  "low",
+                         "confidence":  "medium",
+                         "evidence_contains":  "20.5.0"
+                     }
+                 ]
+}

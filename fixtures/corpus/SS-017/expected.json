@@ -1,0 +1,14 @@
+{
+    "schema_version":  "1",
+    "rule_id":  "SS-017",
+    "expected":  [
+                     {
+                         "rule_id":  "SS-017",
+                         "file":  "positive.rs",
+                         "line":  12,
+                         "severity":  "medium",
+                         "confidence":  "medium",
+                         "evidence_contains":  "storage mutation before authoriz"
+                     }
+                 ]
+}

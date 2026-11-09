@@ -1,0 +1,14 @@
+{
+    "schema_version":  "1",
+    "rule_id":  "SS-033",
+    "expected":  [
+                     {
+                         "rule_id":  "SS-033",
+                         "file":  "positive.rs",
+                         "line":  2,
+                         "severity":  "low",
+                         "confidence":  "high",
+                         "evidence_contains":  "wildcard import `use soroban_sdk"
+                     }
+                 ]
+}

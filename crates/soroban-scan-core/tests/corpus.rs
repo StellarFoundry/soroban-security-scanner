@@ -4,11 +4,99 @@
 //! trigger the rule and `negative.rs` must not. This pins detector behavior and
 //! catches false positives.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
+use serde::Deserialize;
+use soroban_scan_core::confidence::Confidence;
 use soroban_scan_core::config::ScanConfig;
 use soroban_scan_core::engine;
+use soroban_scan_core::finding::Finding;
 use soroban_scan_core::registry::RuleRegistry;
+use soroban_scan_core::severity::Severity;
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct CorpusManifest {
+    schema_version: String,
+    rule_id: String,
+    expected: Vec<ExpectedFinding>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ExpectedFinding {
+    rule_id: String,
+    file: String,
+    line: usize,
+    severity: Severity,
+    confidence: Confidence,
+    #[serde(default)]
+    evidence_contains: Option<String>,
+}
+
+fn load_manifest(dir: &Path, rule_id: &str) -> CorpusManifest {
+    let manifest_path = dir.join("expected.json");
+    let raw = std::fs::read_to_string(&manifest_path)
+        .unwrap_or_else(|e| panic!("{rule_id}: missing corpus manifest {}: {e}", manifest_path.display()));
+    let manifest: CorpusManifest = serde_json::from_str(&raw)
+        .unwrap_or_else(|e| panic!("{rule_id}: invalid corpus manifest {}: {e}", manifest_path.display()));
+    assert_eq!(
+        manifest.schema_version, "1",
+        "{rule_id}: unsupported corpus manifest schema_version {}",
+        manifest.schema_version
+    );
+    assert_eq!(
+        manifest.rule_id, rule_id,
+        "{rule_id}: corpus manifest rule_id mismatch (got {})",
+        manifest.rule_id
+    );
+    assert!(
+        !manifest.expected.is_empty(),
+        "{rule_id}: corpus manifest must declare at least one expected finding"
+    );
+    manifest
+}
+
+fn assert_expected_findings(
+    rule_id: &str,
+    fixture_file: &str,
+    expected_entries: &[&ExpectedFinding],
+    actual_findings: &[&Finding],
+) {
+    assert_eq!(
+        actual_findings.len(),
+        expected_entries.len(),
+        "{rule_id} ({fixture_file}): finding count mismatch: expected {}, got {}",
+        expected_entries.len(),
+        actual_findings.len()
+    );
+    for expected in expected_entries {
+        assert_eq!(
+            expected.rule_id, rule_id,
+            "{rule_id} ({fixture_file}): expected entry rule_id {} must match rule directory",
+            expected.rule_id
+        );
+        let matched = actual_findings.iter().find(|finding| {
+            finding.rule_id == expected.rule_id
+                && finding.location.line == expected.line
+                && finding.severity == expected.severity
+                && finding.confidence == expected.confidence
+                && expected
+                    .evidence_contains
+                    .as_deref()
+                    .is_none_or(|needle| finding.evidence.contains(needle))
+        });
+        assert!(
+            matched.is_some(),
+            "{rule_id} ({fixture_file}): missing expected finding at line {} (severity={:?}, confidence={:?}, evidence_contains={:?}); actual={:#?}",
+            expected.line,
+            expected.severity,
+            expected.confidence,
+            expected.evidence_contains,
+            actual_findings
+        );
+    }
+}
 
 fn corpus_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/corpus")
@@ -23,18 +111,28 @@ fn positive_and_negative_fixtures_match_expectations() {
 
     for meta in registry.metadata_sorted() {
         let dir = base.join(meta.id);
+        let manifest = load_manifest(&dir, meta.id);
         if meta.id == "SS-015" {
             let positive = std::fs::read_to_string(dir.join("positive.toml"))
                 .unwrap_or_else(|_| panic!("missing positive.toml for {}", meta.id));
             let pos = engine::scan_manifest_str("Cargo.toml", &positive, &config, &registry)
                 .expect("manifest fixture must parse");
+            let pos_hits: Vec<_> = pos
+                .findings
+                .iter()
+                .filter(|finding| finding.rule_id == meta.id)
+                .collect();
             assert!(
-                pos.findings
-                    .iter()
-                    .any(|finding| finding.rule_id == meta.id),
+                !pos_hits.is_empty(),
                 "{}: positive manifest fixture did not trigger the rule",
                 meta.id
             );
+            let expected_for_file: Vec<_> = manifest
+                .expected
+                .iter()
+                .filter(|e| e.file == "positive.toml" || e.file == "Cargo.toml")
+                .collect();
+            assert_expected_findings(meta.id, "positive.toml", &expected_for_file, &pos_hits);
 
             let negatives: Vec<_> = std::fs::read_dir(&dir)
                 .unwrap()
@@ -104,6 +202,12 @@ fn positive_and_negative_fixtures_match_expectations() {
                 meta.id,
                 positive_name
             );
+            let expected_for_file: Vec<_> = manifest
+                .expected
+                .iter()
+                .filter(|e| e.file == positive_name)
+                .collect();
+            assert_expected_findings(meta.id, &positive_name, &expected_for_file, &pos_hits);
         }
 
         // Every `negative*.rs` fixture in the rule's directory must not

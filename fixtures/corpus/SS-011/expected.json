@@ -1,0 +1,14 @@
+{
+    "schema_version":  "1",
+    "rule_id":  "SS-011",
+    "expected":  [
+                     {
+                         "rule_id":  "SS-011",
+                         "file":  "positive.rs",
+                         "line":  13,
+                         "severity":  "high",
+                         "confidence":  "low",
+                         "evidence_contains":  "initializer `initialize` writes "
+                     }
+                 ]
+}

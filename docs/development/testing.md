@@ -50,17 +50,29 @@ fixtures/
   corpus/     # regression corpus fixtures
 ```
 
-Each fixture directory should be self-describing, for example:
+Each rule directory under `fixtures/corpus/<RULE-ID>/` includes positive and
+negative fixtures along with an `expected.json` manifest:
 
-```
-fixtures/corpus/authorization/missing-auth-positive/
-  Cargo.toml
-  src/lib.rs
-  expected.json      # expected findings (rule ids, lines)
+```json
+{
+  "schema_version": "1",
+  "rule_id": "SS-001",
+  "expected": [
+    {
+      "rule_id": "SS-001",
+      "file": "positive.rs",
+      "line": 9,
+      "severity": "high",
+      "confidence": "medium",
+      "evidence_contains": "`set` storage mutation"
+    }
+  ]
+}
 ```
 
-Exact formats are defined in Phase 5. Until then, fixtures are plain source
-samples.
+`crates/soroban-scan-core/tests/corpus.rs` validates every entry in
+`expected.json` (`rule_id`, `file`, `line`, `severity`, `confidence`, and
+optional `evidence_contains`) against the actual scan result.
 
 ## Golden report snapshots
 
