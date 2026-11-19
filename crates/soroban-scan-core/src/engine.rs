@@ -17,8 +17,8 @@ use crate::config::{ScanConfig, SuppressionRule, WaiverRule};
 use crate::context::AnalysisContext;
 use crate::error::ScanError;
 use crate::finding::Finding;
+use crate::frontend::{self, Frontend, LoadedProject};
 use crate::model::{Diagnostic, DiagnosticCode, Project, ProjectKind, SorobanInfo};
-use crate::project::{self, LoadedProject};
 use crate::registry::RuleRegistry;
 use crate::suppression::Suppression;
 
@@ -987,13 +987,23 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
     }
 }
 
-/// Loads and scans a directory in one step.
+/// Loads and scans a directory in one step through the default Rust frontend.
 pub fn run_scan(
     root: &Path,
     config: &ScanConfig,
     registry: &RuleRegistry,
 ) -> Result<ScanOutcome, ScanError> {
-    let loaded = project::load(root, &config.discovery_options())?;
+    run_scan_with_frontend(root, config, registry, &frontend::default_frontend())
+}
+
+/// Loads and scans a directory through an explicit frontend.
+pub fn run_scan_with_frontend(
+    root: &Path,
+    config: &ScanConfig,
+    registry: &RuleRegistry,
+    frontend: &dyn Frontend,
+) -> Result<ScanOutcome, ScanError> {
+    let loaded = frontend.load(root, &config.discovery_options())?;
     Ok(scan(&loaded, registry, config))
 }
 
@@ -1455,6 +1465,7 @@ mod tests {
     use crate::category::Category;
     use crate::confidence::Confidence;
     use crate::finding::SourceLocation;
+    use crate::project;
     use crate::rule::{Rule, RuleMetadata};
     use crate::severity::Severity;
     use std::path::PathBuf;

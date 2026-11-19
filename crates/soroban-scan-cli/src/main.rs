@@ -21,8 +21,8 @@ use soroban_scan_core::compare;
 use soroban_scan_core::confidence::Confidence;
 use soroban_scan_core::config::ScanConfig;
 use soroban_scan_core::engine;
+use soroban_scan_core::frontend::{self, Frontend};
 use soroban_scan_core::model::DiagnosticCode;
-use soroban_scan_core::project;
 use soroban_scan_core::redaction;
 use soroban_scan_core::registry::RuleRegistry;
 use soroban_scan_core::report::{self, OutputFormat};
@@ -768,7 +768,8 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
             ));
         }
         let files = read_file_list(list, path)?;
-        let loaded = project::load_files_with_options(path, &files, &config.discovery_options())
+        let loaded = frontend::default_frontend()
+            .load_files(path, &files, &config.discovery_options())
             .map_err(runtime)?;
         engine::scan(&loaded, registry, &config)
     } else if multiple {
@@ -1391,7 +1392,9 @@ fn run_doctor(args: DoctorArgs, registry: &RuleRegistry) -> CliResult<u8> {
         args.path.clone()
     };
     let config = load_config(args.config.as_deref(), &root, !args.no_config)?;
-    let loaded = project::load(&root, &config.discovery_options()).map_err(runtime)?;
+    let loaded = frontend::default_frontend()
+        .load(&root, &config.discovery_options())
+        .map_err(runtime)?;
 
     let root_label = display_root(&root);
     let manifests: Vec<String> = loaded
@@ -1750,7 +1753,8 @@ fn scan_path(
             .parent()
             .unwrap_or_else(|| Path::new("."))
             .to_path_buf();
-        let loaded = project::load_files_with_options(&root, &[file], &config.discovery_options())
+        let loaded = frontend::default_frontend()
+            .load_files(&root, &[file], &config.discovery_options())
             .map_err(runtime)?;
         Ok(engine::scan(&loaded, registry, config))
     } else {

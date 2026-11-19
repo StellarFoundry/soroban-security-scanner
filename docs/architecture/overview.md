@@ -42,7 +42,14 @@ discovery ──▶ parsing ──▶ analysis context ──▶ rule engine ─
                  └─ syn-based AST parsing with source spans
 ```
 
-### 1. Discovery
+### 1. Discovery and frontends
+
+The engine loads projects through a bounded `frontend::Frontend` trait that
+covers discovery and item extraction. The **Rust frontend is the only frontend
+that ships today** and remains the default; the trait exists so a future
+language never requires forking the engine, not as a promise of support for
+another language. A frontend may read files below the scan root and parse them,
+but never executes, builds, fetches, or mutates the project.
 
 Locates repositories, `Cargo.toml` manifests, workspaces, and Rust source files.
 Classifies a project as **generic Rust**, **likely Soroban**, or **confirmed
