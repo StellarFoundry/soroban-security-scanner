@@ -15,6 +15,7 @@ soroban-scan <COMMAND>
 | `version` | Print the scanner name and version. |
 | `init` | Write a starter configuration file. |
 | `doctor` | Explain project classification, excludes, and effective configuration. |
+| `compare` | Compare two JSON scan reports by finding fingerprint. |
 | `config show` / `config validate` | Inspect or validate configuration. |
 
 ---
@@ -318,6 +319,35 @@ soroban-scan doctor [PATH] [--format terminal|json] [--config FILE] [--no-config
 Prints the discovered manifests, classification and evidence, source file count,
 excludes, effective configuration, and enabled rule ids. See
 [Doctor](doctor.md).
+
+## `compare`
+
+```text
+soroban-scan compare BEFORE.json AFTER.json [--format terminal|json] [--output FILE]
+```
+
+Compares two JSON reports (`--format json`) and matches findings by the
+documented [fingerprint](baselines.md#fingerprints): rule id, scan-relative
+file, and normalized evidence. It prints `unchanged`, `new`, `fixed`, and
+`renamed` counts, followed by the findings themselves:
+
+```bash
+soroban-scan scan ./contracts --format json --output old.json
+soroban-scan scan ./contracts --format json --output new.json
+soroban-scan compare old.json new.json
+```
+
+- A finding present in both reports with the same fingerprint is **unchanged**.
+- An unmatched finding only in the newer report is **new**; only in the older
+  report it is **fixed**.
+- A finding that keeps its rule id and file but changes fingerprint (for
+  example, because the flagged expression was edited) is **renamed**. Renamed
+  pairs are listed with both fingerprints instead of being miscounted as a fix
+  plus a regression. Rename pairing uses rule id and file only, so it is a
+  best-effort explanation that should be reviewed.
+- Reports are bounded to 64 MiB and 100,000 findings per file before parsing.
+  Unsupported `schema_version` values and malformed documents are runtime errors
+  (exit code `3`). Comparison never changes the reports or fails on findings.
 
 ## `completions`
 

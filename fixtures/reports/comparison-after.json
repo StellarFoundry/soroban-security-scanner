@@ -1,0 +1,67 @@
+{
+  "schema_version": "1",
+  "tool": {
+    "name": "soroban-scan",
+    "version": "0.2.0",
+    "information_uri": "https://github.com/AyinkxLab/soroban-security-scanner"
+  },
+  "project": {
+    "root": "fixtures/comparison",
+    "kind": "confirmed_soroban",
+    "source_files": 3,
+    "soroban_sdk_versions": ["21.0.0"]
+  },
+  "stats": {
+    "files_analyzed": 3,
+    "rules_run": 20,
+    "rules_skipped": 0,
+    "findings_raw": 3,
+    "findings_rejected": 0
+  },
+  "effective_config": {},
+  "findings": [
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A state-changing entry point does not call require_auth.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": { "file": "src/lib.rs", "line": 12, "column": 5 },
+      "evidence": "pub fn set_admin(env: Env, new_admin: Address)",
+      "remediation": "Call require_auth before mutating state.",
+      "references": [],
+      "fingerprint": "00000000000000000000000000000001"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A state-changing entry point does not call require_auth.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": { "file": "src/admin.rs", "line": 15, "column": 5 },
+      "evidence": "env.storage().persistent().set(&Key::Admin, &admin.clone())",
+      "remediation": "Call require_auth before mutating state.",
+      "references": [],
+      "fingerprint": "00000000000000000000000000000014"
+    },
+    {
+      "rule_id": "SS-002",
+      "title": "Instance storage used without TTL management",
+      "description": "Instance storage is extended without a TTL policy.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "resource-usage",
+      "location": { "file": "src/lib.rs", "line": 40 },
+      "evidence": "env.storage().instance().set(&Key::Count, &1)",
+      "remediation": "Extend the TTL when writing instance storage.",
+      "references": [],
+      "fingerprint": "00000000000000000000000000000005"
+    }
+  ],
+  "suppressed": [],
+  "suppressions": [],
+  "config_suppressions": [],
+  "diagnostics": []
+}

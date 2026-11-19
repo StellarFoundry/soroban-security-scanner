@@ -17,6 +17,7 @@ use clap::{Args, Parser, Subcommand, ValueEnum};
 use soroban_scan_core::ai::{self, Assistant};
 use soroban_scan_core::baseline::{self, Baseline, BaselineReport};
 use soroban_scan_core::category::Category;
+use soroban_scan_core::compare;
 use soroban_scan_core::confidence::Confidence;
 use soroban_scan_core::config::ScanConfig;
 use soroban_scan_core::engine;
@@ -277,6 +278,8 @@ enum Command {
     Config(ConfigArgs),
     /// Diagnose project classification, exclusions, and effective configuration.
     Doctor(DoctorArgs),
+    /// Compare two JSON scan reports by finding fingerprint.
+    Compare(CompareArgs),
     /// Generate a shell completion script (bash, zsh, fish, powershell).
     #[command(hide = true)]
     Completions(CompletionsArgs),
@@ -460,6 +463,33 @@ struct ExplainArgs {
 }
 
 #[derive(Debug, Args)]
+#[command(after_help = "Examples:\n  \
+    soroban-scan compare old.json new.json\n  \
+    soroban-scan compare old.json new.json --format json --output diff.json")]
+struct CompareArgs {
+    /// Older JSON report (the baseline side).
+    before: PathBuf,
+
+    /// Newer JSON report (the current side).
+    after: PathBuf,
+
+    /// Output format.
+    #[arg(long, value_enum, default_value_t = CompareFormatArg::Terminal)]
+    format: CompareFormatArg,
+
+    /// Write the comparison to a file instead of stdout.
+    #[arg(long, value_name = "FILE")]
+    output: Option<PathBuf>,
+}
+
+/// Argument value for `compare --format`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+enum CompareFormatArg {
+    Terminal,
+    Json,
+}
+
+#[derive(Debug, Args)]
 struct InitArgs {
     /// Directory in which to create the configuration file.
     #[arg(default_value = ".")]
@@ -575,6 +605,7 @@ fn run(cli: Cli) -> CliResult<u8> {
         Command::Init(args) => run_init(args),
         Command::Config(args) => run_config(args),
         Command::Doctor(args) => run_doctor(args, &registry),
+        Command::Compare(args) => run_compare(args),
         Command::Completions(args) => {
             let mut command = <Cli as clap::CommandFactory>::command();
             let name = command.get_name().to_string();
@@ -1372,6 +1403,29 @@ fn sanitize_root(text: &str, root: &Path, root_label: &str) -> String {
     text.replace(absolute.as_ref(), root_label)
 }
 
+fn run_compare(args: CompareArgs) -> CliResult<u8> {
+    let before_text = read_report_text(&args.before)?;
+    let after_text = read_report_text(&args.after)?;
+    let before = compare::parse_report(&before_text)
+        .map_err(|error| CliError::Runtime(format!("{}: {error}", args.before.display())))?;
+    let after = compare::parse_report(&after_text)
+        .map_err(|error| CliError::Runtime(format!("{}: {error}", args.after.display())))?;
+    let comparison = compare::compare_reports(&before, &after);
+
+    let rendered = match args.format {
+        CompareFormatArg::Terminal => compare::render_comparison_text(&before, &after, &comparison),
+        CompareFormatArg::Json => compare::render_comparison_json(&before, &after, &comparison)
+            .map_err(|error| CliError::Runtime(format!("cannot serialize comparison: {error}")))?,
+    };
+
+    match &args.output {
+        Some(path) => std::fs::write(path, rendered)
+            .map_err(|e| CliError::Runtime(format!("cannot write {}: {e}", path.display())))?,
+        None => print!("{rendered}"),
+    }
+    Ok(EXIT_SUCCESS)
+}
+
 fn run_config(args: ConfigArgs) -> CliResult<u8> {
     match args.command {
         ConfigCommand::Show { config } => {
@@ -1679,6 +1733,22 @@ fn read_baseline_text(path: &Path) -> CliResult<String> {
     }
     std::fs::read_to_string(path)
         .map_err(|e| CliError::Runtime(format!("cannot read baseline {}: {e}", path.display())))
+}
+
+/// Reads a JSON report, rejecting documents above the comparison memory bound.
+fn read_report_text(path: &Path) -> CliResult<String> {
+    let metadata = std::fs::metadata(path)
+        .map_err(|e| CliError::Runtime(format!("cannot read report {}: {e}", path.display())))?;
+    if metadata.len() > compare::MAX_REPORT_BYTES as u64 {
+        return Err(CliError::Runtime(format!(
+            "report {} is too large ({} bytes; limit {} bytes)",
+            path.display(),
+            metadata.len(),
+            compare::MAX_REPORT_BYTES
+        )));
+    }
+    std::fs::read_to_string(path)
+        .map_err(|e| CliError::Runtime(format!("cannot read report {}: {e}", path.display())))
 }
 
 fn serialize_baseline(baseline: &Baseline, format: BaselineFormatArg) -> CliResult<String> {

@@ -2272,3 +2272,62 @@ fn completions_rejects_an_unknown_shell() {
     let out = run(&["completions", "tcsh"]);
     assert_eq!(out.code, 2, "{}", out.stderr);
 }
+
+#[test]
+fn compare_reports_counts_and_lists_findings() {
+    let before = fixture("reports/comparison-before.json");
+    let after = fixture("reports/comparison-after.json");
+    let out = run(&["compare", before.to_str().unwrap(), after.to_str().unwrap()]);
+
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+    assert!(
+        out.stdout
+            .contains("Unchanged: 1  New: 1  Fixed: 2  Renamed: 1"),
+        "got: {}",
+        out.stdout
+    );
+    assert!(out.stdout.contains("New findings (1)"));
+    assert!(out.stdout.contains("Fixed findings (2)"));
+    assert!(out.stdout.contains("Renamed findings (1)"));
+    // Unmatched entries include the findings themselves, not only counts.
+    assert!(out.stdout.contains("src/storage.rs"));
+    assert!(out.stdout.contains("src/admin.rs"));
+    assert!(out.stdout.contains("fingerprint:"));
+}
+
+#[test]
+fn compare_json_output_is_machine_readable() {
+    let before = fixture("reports/comparison-before.json");
+    let after = fixture("reports/comparison-after.json");
+    let out = run(&[
+        "compare",
+        before.to_str().unwrap(),
+        after.to_str().unwrap(),
+        "--format",
+        "json",
+    ]);
+
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+    let value: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
+    assert_eq!(value["summary"]["unchanged"], 1);
+    assert_eq!(value["summary"]["new"], 1);
+    assert_eq!(value["summary"]["fixed"], 2);
+    assert_eq!(value["summary"]["renamed"], 1);
+    assert!(value["renamed"][0]["before"]["fingerprint"].is_string());
+}
+
+#[test]
+fn compare_rejects_a_malformed_report() {
+    let dir = std::env::temp_dir().join(format!("soroban-scan-cli-compare-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let before = fixture("reports/comparison-before.json");
+    let bad = dir.join("bad.json");
+    std::fs::write(&bad, "{\"schema_version\":\"1\"}").unwrap();
+
+    let out = run(&["compare", before.to_str().unwrap(), bad.to_str().unwrap()]);
+    assert_eq!(out.code, 3, "stderr: {}", out.stderr);
+    assert!(out.stderr.contains("invalid report"), "got: {}", out.stderr);
+
+    let _ = std::fs::remove_dir_all(&dir);
+}
