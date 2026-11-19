@@ -2392,3 +2392,43 @@ fn compare_rejects_a_malformed_report() {
 
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+#[test]
+fn dashboard_renders_multiple_reports_without_source_text() {
+    let first = fixture("reports/trend-run-1.json");
+    let second = fixture("reports/trend-run-2.json");
+    let third = fixture("reports/trend-run-3.json");
+    let out = run(&[
+        "dashboard",
+        first.to_str().unwrap(),
+        second.to_str().unwrap(),
+        third.to_str().unwrap(),
+    ]);
+
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+    assert!(out.stdout.starts_with("<!DOCTYPE html>"));
+    assert!(out.stdout.contains("<table>"));
+    assert!(out.stdout.contains("trend-run-1.json"));
+    assert!(out.stdout.contains("trend-run-3.json"));
+    assert!(out.stdout.contains("—"));
+    assert!(!out.stdout.contains("<script"));
+    assert!(!out.stdout.contains("<link"));
+    assert!(!out.stdout.contains("EVIDENCE_MARKER"));
+}
+
+#[test]
+fn dashboard_rejects_a_malformed_report() {
+    let dir =
+        std::env::temp_dir().join(format!("soroban-scan-cli-dashboard-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let good = fixture("reports/trend-run-1.json");
+    let bad = dir.join("bad.json");
+    std::fs::write(&bad, "not json").unwrap();
+
+    let out = run(&["dashboard", good.to_str().unwrap(), bad.to_str().unwrap()]);
+    assert_eq!(out.code, 3, "stderr: {}", out.stderr);
+    assert!(out.stderr.contains("invalid report"), "got: {}", out.stderr);
+
+    let _ = std::fs::remove_dir_all(&dir);
+}

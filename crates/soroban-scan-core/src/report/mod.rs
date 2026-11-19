@@ -19,6 +19,8 @@ use crate::registry::RuleRegistry;
 use crate::rule::RuleMetadata;
 use crate::severity::Severity;
 
+pub mod trend;
+
 /// Tool name used in reports.
 pub const TOOL_NAME: &str = "soroban-scan";
 /// Tool homepage used in reports.

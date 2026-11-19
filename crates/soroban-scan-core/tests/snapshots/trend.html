@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>soroban-scan trend</title>
+<style>:root{color-scheme:light dark;--bg:#f7f8fa;--panel:#fff;--ink:#1c2430;--muted:#5b6776;--line:#d8dee7;--bar:#2f6f9f}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}main{max-width:1040px;margin:0 auto;padding:2rem 1.25rem 4rem}h1{font-size:1.65rem;margin:0 0 .35rem}h2{font-size:1.15rem;margin:2rem 0 .6rem;border-bottom:1px solid var(--line);padding-bottom:.35rem}.meta{color:var(--muted);margin:.2rem 0}.cards{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin:1rem 0}.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:.7rem .8rem}.card .label{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}.card .value{font-size:1.35rem;font-weight:650}table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}th,td{text-align:left;padding:.5rem .65rem;border-bottom:1px solid var(--line);vertical-align:top}tr:last-child td{border-bottom:0}th{font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}svg{width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px}.bar{fill:var(--bar)}.axis{stroke:var(--line);stroke-width:1}.missing{fill:var(--muted);font-size:12px}.note{color:var(--muted);font-style:italic}@media (prefers-color-scheme:dark){:root{--bg:#12161c;--panel:#1a2028;--ink:#e6eaf0;--muted:#a3adba;--line:#2c3541;--bar:#6fa8d6}}@media print{@page{margin:18mm}:root{color-scheme:light;--bg:#fff;--panel:#fff;--ink:#000;--muted:#333;--line:#999}body{background:#fff;color:#000}.card,.bar,table{break-inside:avoid}}</style>
+</head>
+<body>
+<main>
+<h1>soroban-scan trend</h1>
+<p class="meta">Aggregated from JSON scan reports. Counts only: finding text and source are never included.</p>
+<div class="cards">
+<div class="card"><div class="label">Runs</div><div class="value">3</div></div>
+<div class="card"><div class="label">Latest findings</div><div class="value">1</div></div>
+<div class="card"><div class="label">Change</div><div class="value">-2</div></div>
+<div class="card"><div class="label">Runs with data</div><div class="value">2</div></div>
+</div>
+<h2>Findings over time</h2>
+<svg role="img" aria-label="Findings per run" viewBox="0 0 640 160" xmlns="http://www.w3.org/2000/svg">
+<line class="axis" x1="0" y1="140" x2="640" y2="140"/>
+<rect class="bar" x="86.7" y="20.0" width="40.0" height="120.0"><title>trend-run-1.json</title></rect>
+<rect class="bar" x="300.0" y="100.0" width="40.0" height="40.0"><title>trend-run-2.json</title></rect>
+<text class="missing" x="533.3" y="136" text-anchor="middle">—</text>
+</svg>
+<h2>Runs</h2>
+<table><thead><tr><th>Run</th><th>Project</th><th>Files</th><th>Findings</th><th>Critical</th><th>High</th><th>Medium</th><th>Low</th><th>Info</th></tr></thead><tbody>
+<tr><td><code>trend-run-1.json</code></td><td><code>contracts/alpha</code></td><td>4</td><td>3</td><td>0</td><td>2</td><td>1</td><td>0</td><td>0</td></tr>
+<tr><td><code>trend-run-2.json</code></td><td><code>contracts/alpha</code></td><td>4</td><td>1</td><td>0</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td><code>trend-run-3.json</code></td><td><code>contracts/alpha</code></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+</tbody></table>
+<p class="note">Missing values are shown as — and are ignored when computing the latest value and change.</p>
+</main>
+</body>
+</html>

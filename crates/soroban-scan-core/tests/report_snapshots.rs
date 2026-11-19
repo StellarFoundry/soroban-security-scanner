@@ -220,6 +220,40 @@ fn print_friendly_html_is_self_contained_and_shows_policy_status() {
     assert!(!html.contains("url("));
 }
 
+fn trend_runs() -> Vec<report::trend::TrendRun> {
+    ["trend-run-1.json", "trend-run-2.json", "trend-run-3.json"]
+        .iter()
+        .map(|name| {
+            let path = repo_root().join("fixtures/reports").join(name);
+            let text = std::fs::read_to_string(&path)
+                .unwrap_or_else(|error| panic!("cannot read {}: {error}", path.display()));
+            report::trend::parse_run(*name, &text)
+                .unwrap_or_else(|error| panic!("cannot parse {name}: {error}"))
+        })
+        .collect()
+}
+
+#[test]
+fn trend_dashboard_matches_golden_snapshot() {
+    let dashboard = report::trend::render_dashboard("soroban-scan trend", &trend_runs());
+    assert_golden("trend.html", &dashboard);
+}
+
+#[test]
+fn trend_dashboard_is_self_contained_and_handles_missing_data() {
+    let dashboard = report::trend::render_dashboard("soroban-scan trend", &trend_runs());
+
+    assert!(dashboard.contains("<table>"));
+    assert!(dashboard.contains("trend-run-1.json"));
+    assert!(dashboard.contains("trend-run-3.json"));
+    assert!(dashboard.contains("—"));
+    assert!(!dashboard.contains("<script"));
+    assert!(!dashboard.contains("<link"));
+    assert!(!dashboard.contains("src="));
+    // Trend fixtures carry markers in evidence; the dashboard renders counts only.
+    assert!(!dashboard.contains("EVIDENCE_MARKER"));
+}
+
 #[test]
 fn sarif_policy_annotations_match_golden_snapshot() {
     let outcome = sample_outcome();

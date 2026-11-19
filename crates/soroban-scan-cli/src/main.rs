@@ -280,6 +280,8 @@ enum Command {
     Doctor(DoctorArgs),
     /// Compare two JSON scan reports by finding fingerprint.
     Compare(CompareArgs),
+    /// Render a static trend dashboard from several JSON scan reports.
+    Dashboard(DashboardArgs),
     /// Generate a shell completion script (bash, zsh, fish, powershell).
     #[command(hide = true)]
     Completions(CompletionsArgs),
@@ -488,6 +490,24 @@ struct CompareArgs {
     output: Option<PathBuf>,
 }
 
+#[derive(Debug, Args)]
+#[command(after_help = "Examples:\n  \
+    soroban-scan dashboard scans/*.json --output trend.html\n  \
+    soroban-scan dashboard old.json new.json --title \"Contract trends\"")]
+struct DashboardArgs {
+    /// JSON scan reports to include, oldest first. Repeatable.
+    #[arg(required = true, num_args = 1..)]
+    reports: Vec<PathBuf>,
+
+    /// Dashboard title.
+    #[arg(long, default_value = "soroban-scan trend")]
+    title: String,
+
+    /// Write the dashboard to a file instead of stdout.
+    #[arg(long, value_name = "FILE")]
+    output: Option<PathBuf>,
+}
+
 /// Argument value for `compare --format`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
 enum CompareFormatArg {
@@ -612,6 +632,7 @@ fn run(cli: Cli) -> CliResult<u8> {
         Command::Config(args) => run_config(args),
         Command::Doctor(args) => run_doctor(args, &registry),
         Command::Compare(args) => run_compare(args),
+        Command::Dashboard(args) => run_dashboard(args),
         Command::Completions(args) => {
             let mut command = <Cli as clap::CommandFactory>::command();
             let name = command.get_name().to_string();
@@ -1447,6 +1468,36 @@ fn run_compare(args: CompareArgs) -> CliResult<u8> {
     Ok(EXIT_SUCCESS)
 }
 
+fn run_dashboard(args: DashboardArgs) -> CliResult<u8> {
+    if args.reports.len() > report::trend::MAX_REPORTS {
+        return Err(CliError::Usage(format!(
+            "too many reports: {} (limit {} per dashboard)",
+            args.reports.len(),
+            report::trend::MAX_REPORTS
+        )));
+    }
+
+    let mut runs = Vec::with_capacity(args.reports.len());
+    for path in &args.reports {
+        let text = read_trend_text(path)?;
+        let label = path
+            .file_name()
+            .map(|name| name.to_string_lossy().into_owned())
+            .unwrap_or_else(|| path.display().to_string());
+        let run = report::trend::parse_run(label, &text)
+            .map_err(|error| CliError::Runtime(format!("{}: {error}", path.display())))?;
+        runs.push(run);
+    }
+
+    let rendered = report::trend::render_dashboard(&args.title, &runs);
+    match &args.output {
+        Some(path) => std::fs::write(path, rendered)
+            .map_err(|e| CliError::Runtime(format!("cannot write {}: {e}", path.display())))?,
+        None => print!("{rendered}"),
+    }
+    Ok(EXIT_SUCCESS)
+}
+
 fn run_config(args: ConfigArgs) -> CliResult<u8> {
     match args.command {
         ConfigCommand::Show { config } => {
@@ -1766,6 +1817,22 @@ fn read_report_text(path: &Path) -> CliResult<String> {
             path.display(),
             metadata.len(),
             compare::MAX_REPORT_BYTES
+        )));
+    }
+    std::fs::read_to_string(path)
+        .map_err(|e| CliError::Runtime(format!("cannot read report {}: {e}", path.display())))
+}
+
+/// Reads a trend input report, rejecting documents above the dashboard bound.
+fn read_trend_text(path: &Path) -> CliResult<String> {
+    let metadata = std::fs::metadata(path)
+        .map_err(|e| CliError::Runtime(format!("cannot read report {}: {e}", path.display())))?;
+    if metadata.len() > report::trend::MAX_REPORT_BYTES as u64 {
+        return Err(CliError::Runtime(format!(
+            "report {} is too large ({} bytes; limit {} bytes)",
+            path.display(),
+            metadata.len(),
+            report::trend::MAX_REPORT_BYTES
         )));
     }
     std::fs::read_to_string(path)

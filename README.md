@@ -130,6 +130,10 @@ soroban-scan explain SS-001
 # Configuration
 soroban-scan init
 soroban-scan config validate
+
+# Compare runs and track trends
+soroban-scan compare old.json new.json
+soroban-scan dashboard scans/*.json --output trend.html
 ```
 
 See [`docs/cli.md`](docs/cli.md) for the full reference, including configuration

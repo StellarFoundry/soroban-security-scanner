@@ -16,6 +16,7 @@ soroban-scan <COMMAND>
 | `init` | Write a starter configuration file. |
 | `doctor` | Explain project classification, excludes, and effective configuration. |
 | `compare` | Compare two JSON scan reports by finding fingerprint. |
+| `dashboard` | Render a static trend dashboard from several JSON scan reports. |
 | `config show` / `config validate` | Inspect or validate configuration. |
 
 ---
@@ -375,6 +376,33 @@ soroban-scan compare old.json new.json
 - Reports are bounded to 64 MiB and 100,000 findings per file before parsing.
   Unsupported `schema_version` values and malformed documents are runtime errors
   (exit code `3`). Comparison never changes the reports or fails on findings.
+
+## `dashboard`
+
+```text
+soroban-scan dashboard REPORT.json... [--title TEXT] [--output FILE]
+```
+
+Aggregates several JSON reports (oldest first) into one static,
+self-contained HTML page:
+
+```bash
+soroban-scan dashboard scans/jan.json scans/feb.json scans/mar.json \
+  --output trend.html
+```
+
+- Renders per-run files analyzed, total findings, and severity counts, plus a
+  summary (latest findings and change from the first run) and an inline SVG
+  bar chart.
+- Uses inline CSS and SVG only: no JavaScript, remote fonts, stylesheets, or
+  images, so the page renders offline.
+- Never includes finding titles, evidence, or source text. Only counts and
+  project labels are copied from the reports.
+- Missing `stats` or `findings` data is shown as `—` and ignored when computing
+  the latest value and change; an unknown severity drops the per-severity split
+  but keeps the total.
+- Bounded to 50 reports per dashboard, 16 MiB per report, and 100,000 findings
+  per report. Oversized or malformed inputs are runtime errors (exit code `3`).
 
 ## `completions`
 
