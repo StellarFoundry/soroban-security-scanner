@@ -606,15 +606,18 @@ fn scan_html_output_is_self_contained() {
         fixture("corpus/SS-001").to_str().unwrap(),
         "--format",
         "html",
-        "--fail-on",
-        "none",
     ]);
-    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+    assert_eq!(out.code, 1, "stderr: {}", out.stderr);
     assert!(out.stdout.starts_with("<!DOCTYPE html>"));
     assert!(out.stdout.contains("<style>"));
     assert!(out.stdout.contains("SS-001"));
+    assert!(out.stdout.contains("@media print"));
+    assert!(out.stdout.contains("Policy status"));
+    assert!(out.stdout.contains("Gate threshold"));
     assert!(!out.stdout.contains("<script"));
     assert!(!out.stdout.contains("<link"));
+    assert!(!out.stdout.contains("@import"));
+    assert!(!out.stdout.contains("url("));
 }
 
 #[test]

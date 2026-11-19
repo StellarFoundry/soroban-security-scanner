@@ -28,6 +28,7 @@ use soroban_scan_core::config::ScanConfig;
 use soroban_scan_core::engine::{self, ScanOutcome};
 use soroban_scan_core::registry::RuleRegistry;
 use soroban_scan_core::report;
+use soroban_scan_core::severity::Severity;
 
 fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..")
@@ -180,4 +181,41 @@ fn corpus_reports_are_deterministic() {
         report::render_sarif(&second, &registry),
         "SARIF output must be byte-identical across runs"
     );
+}
+
+/// A small, reproducible outcome for presentation snapshots.
+fn sample_outcome() -> ScanOutcome {
+    let path = repo_root().join("fixtures/corpus/SS-001/positive.rs");
+    let content = std::fs::read_to_string(&path)
+        .unwrap_or_else(|error| panic!("cannot read {}: {error}", path.display()));
+    let registry = RuleRegistry::with_default_rules();
+    let mut outcome =
+        engine::scan_source_str(&content, "positive.rs", &ScanConfig::default(), &registry);
+    outcome.project.root = PathBuf::from("fixtures/corpus/SS-001");
+    outcome
+}
+
+#[test]
+fn print_friendly_html_matches_golden_snapshot() {
+    let outcome = sample_outcome();
+    let html = report::render_html_with_policy(&outcome, Some(Severity::High));
+    assert_golden("policy.html", &html);
+}
+
+#[test]
+fn print_friendly_html_is_self_contained_and_shows_policy_status() {
+    let outcome = sample_outcome();
+    let html = report::render_html_with_policy(&outcome, Some(Severity::High));
+
+    assert!(html.contains("@media print"));
+    assert!(html.contains("@page"));
+    assert!(html.contains("Policy status"));
+    assert!(html.contains("Gate threshold <code>high</code>"));
+    assert!(html.contains("above gate") || html.contains("below gate"));
+    assert!(html.contains("Evidence"));
+    assert!(!html.contains("<script"));
+    assert!(!html.contains("<link"));
+    assert!(!html.contains("@import"));
+    assert!(!html.contains("src="));
+    assert!(!html.contains("url("));
 }

@@ -818,6 +818,8 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
         report::render_terminal_compact_with_color(&outcome, color)
     } else if matches!(args.format, FormatArg::Terminal) {
         report::render_terminal_with_color(&outcome, color)
+    } else if matches!(args.format, FormatArg::Html) {
+        report::render_html_with_policy(&outcome, args.fail_on.threshold())
     } else {
         report::render_with_baseline(
             &outcome,

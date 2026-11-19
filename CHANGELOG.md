@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `compare BEFORE.json AFTER.json` compares two JSON reports by the documented
   fingerprint, reporting unchanged, new, fixed, and renamed findings with the
   findings themselves and an explicit explanation of unmatched entries (`#376`).
+- The self-contained HTML report now has a deterministic `@media print`
+  stylesheet and a policy-status section showing the gate threshold and each
+  finding's position relative to it, with no remote assets (`#375`).
 
 - Parsed files now expose a best-effort `use` import map
   (`ParsedSource::resolve_path`) with support for aliases, grouped imports, and

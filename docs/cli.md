@@ -423,7 +423,10 @@ network access.
 - **html** — a single self-contained file with inline CSS, no JavaScript, and no
   remote resources. All source-derived text (titles, evidence, remediation,
   paths, suppressions) is HTML-escaped, so crafted findings cannot inject
-  markup. Suitable for sharing with reviewers who do not use a terminal.
+  markup. It includes a deterministic `@media print` stylesheet (no external
+  fonts or images) and a policy-status block with the `--fail-on` threshold and
+  each finding's position relative to it, so the file renders and prints with
+  the network disabled. Suitable for sharing with reviewers and audit packets.
 - **github** — GitHub Actions workflow-command annotations (`::error`,
   `::warning`, `::notice`) with escaped paths, titles, and evidence.
 

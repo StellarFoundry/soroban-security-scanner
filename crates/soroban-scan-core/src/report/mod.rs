@@ -1110,6 +1110,12 @@ pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px s
 code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em}\
 ul.references{margin:.3rem 0 0;padding-left:1.1rem}.note{color:var(--muted);font-style:italic}\
 @media (prefers-color-scheme:dark){:root{--bg:#12161c;--panel:#1a2028;--ink:#e6eaf0;--muted:#a3adba;--line:#2c3541}}\
+@media print{@page{margin:18mm}:root{color-scheme:light;--bg:#fff;--panel:#fff;--ink:#000;--muted:#333;--line:#999}\
+*{print-color-adjust:exact;-webkit-print-color-adjust:exact}body{background:#fff;color:#000;font-size:11pt}\
+main{max-width:none;padding:0}a{color:inherit;text-decoration:none}\
+h1,h2{break-after:avoid}.cards{grid-template-columns:repeat(5,1fr)}\
+.card,.finding,table,pre{break-inside:avoid}.finding{box-shadow:none}tr,img{break-inside:avoid}\
+thead{display:table-header-group}}\
 ";
 
 /// Renders a self-contained HTML report.
@@ -1118,7 +1124,26 @@ ul.references{margin:.3rem 0 0;padding-left:1.1rem}.note{color:var(--muted);font
 /// All finding, project, and suppression text is escaped, so crafted evidence
 /// or source paths cannot inject markup.
 pub fn render_html(outcome: &ScanOutcome) -> String {
+    render_html_with_policy(outcome, None)
+}
+
+/// Renders a self-contained HTML report with an explicit gate status.
+///
+/// `gate` is the severity threshold used by `--fail-on`, when one applies.
+/// The gate is evaluated against the reported findings only: suppressed
+/// findings are excluded, matching the `--fail-on` contract. The document
+/// inlines its CSS (including a deterministic `@media print` stylesheet) and
+/// contains no JavaScript or remote resources, so it prints and renders with
+/// the network disabled.
+pub fn render_html_with_policy(outcome: &ScanOutcome, gate: Option<Severity>) -> String {
     let counts = severity_counts(&outcome.findings);
+    let gate_findings = gate.map(|threshold| {
+        outcome
+            .findings
+            .iter()
+            .filter(|finding| finding.severity.meets(threshold))
+            .count()
+    });
     let mut out = String::new();
     out.push_str("<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n");
     out.push_str("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n");
@@ -1156,6 +1181,23 @@ pub fn render_html(outcome: &ScanOutcome) -> String {
         outcome.findings.len(),
         outcome.stats.findings_suppressed
     ));
+    out.push_str("<h2>Policy status</h2>\n");
+    match (gate, gate_findings) {
+        (Some(threshold), Some(count)) => {
+            let status = if count > 0 { "fail" } else { "pass" };
+            out.push_str(&format!(
+                "<p class=\"meta\">Gate threshold <code>{}</code>: <strong>{status}</strong> \
+                 &middot; {} finding(s) at or above the threshold</p>\n",
+                threshold, count
+            ));
+        }
+        _ => {
+            out.push_str(
+                "<p class=\"meta\">Gate: <strong>not evaluated</strong> \
+                 (no policy threshold supplied)</p>\n",
+            );
+        }
+    }
 
     if outcome.findings.is_empty() {
         out.push_str("<h2>Findings</h2>\n<p class=\"note\">No security findings.</p>\n");
@@ -1206,11 +1248,19 @@ pub fn render_html(outcome: &ScanOutcome) -> String {
                 escape_html(&finding.rule_id),
                 escape_html(&finding.title)
             ));
+            let gate_badge = match gate {
+                Some(threshold) if finding.severity.meets(threshold) => {
+                    "<span class=\"badge\">above gate</span> "
+                }
+                Some(_) => "<span class=\"badge\">below gate</span> ",
+                None => "",
+            };
             out.push_str(&format!(
-                "<p><span class=\"badge\">{}</span> <span class=\"badge\">{}</span> <span class=\"badge\">{}</span></p>\n",
+                "<p><span class=\"badge\">{}</span> <span class=\"badge\">{}</span> <span class=\"badge\">{}</span> {}</p>\n",
                 escape_html(&finding.severity.to_string()),
                 escape_html(&finding.confidence.to_string()),
-                escape_html(finding.category.as_str())
+                escape_html(finding.category.as_str()),
+                gate_badge
             ));
             out.push_str(&format!(
                 "<dl><dt>Location</dt><dd><code>{}</code></dd>\n",
