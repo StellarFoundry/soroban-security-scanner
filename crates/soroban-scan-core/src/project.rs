@@ -2,6 +2,7 @@
 
 use std::path::{Path, PathBuf};
 
+use crate::detection;
 use crate::discovery::{self, DiscoveryOptions};
 use crate::error::ScanError;
 use crate::manifest;
@@ -77,10 +78,18 @@ pub fn load(root: &Path, opts: &DiscoveryOptions) -> Result<LoadedProject, ScanE
         manifests,
         soroban,
         target,
+        detection: Default::default(),
         source_files: discovered.rust_files.len(),
         diagnostics,
     };
     source::apply_source_evidence(&mut project, &sources);
+    project.detection = detection::detect(
+        root,
+        &project.manifests,
+        &sources,
+        &project.soroban,
+        discovered.rust_files.len(),
+    );
 
     Ok(LoadedProject {
         project,
@@ -156,10 +165,18 @@ pub fn load_files_with_options(
         manifests,
         soroban,
         target,
+        detection: Default::default(),
         source_files: files.len(),
         diagnostics,
     };
     source::apply_source_evidence(&mut project, &sources);
+    project.detection = detection::detect(
+        root,
+        &project.manifests,
+        &sources,
+        &project.soroban,
+        files.len(),
+    );
 
     Ok(LoadedProject {
         project,

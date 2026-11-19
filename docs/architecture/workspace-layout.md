@@ -75,13 +75,16 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `config` | Layered `ScanConfig` and validation; repository config is untrusted input. | `ai`, `category`, `confidence`, `severity`. |
 | `manifest` | Syntactic `Cargo.toml` parsing (no execution or fetching). | `error`, `model`. |
 | `discovery` | Deterministic, symlink-safe filesystem traversal and exclude globs. | `error`. |
+| `frontend` | Bounded parser frontend trait and the default Rust frontend. | `discovery`, `error`, `project`. |
+| `detection` | Language and project-type evidence; incomplete evidence is marked weak. | `frontend`, `model`, `soroban`, `source`. |
+| `target` | Static Cargo target analysis and target-scoped dependency filtering. | `discovery`, `model`. |
 | `source` | `syn` parsing, spans, module paths, crate-root membership, contract evidence, suppressions. | `error`, `imports`, `model`, `soroban`. |
 | `imports` | Best-effort per-file `use` import map and path canonicalization. | Nothing in the crate. |
-| `project` | Orchestrates discovery, manifest loading, source parsing, and Soroban classification. | `discovery`, `error`, `manifest`, `model`, `soroban`, `source`. |
+| `project` | Orchestrates discovery, manifest loading, source parsing, Soroban classification, detection evidence, and optional target analysis. | `detection`, `discovery`, `error`, `manifest`, `model`, `soroban`, `source`, `target`. |
 | `soroban` | Soroban evidence and project classification; never executes contracts. | `model`. |
 | `context` | Immutable `AnalysisContext` passed to rules. | `model`, `source`. |
 | `rules` | Built-in detectors, rule metadata validation, and shared analysis helpers. | `category`, `confidence`, `context`, `finding`, `rule`, `severity`, `source`. |
-| `engine` | Runs enabled rules, collects/sorts/deduplicates findings, applies suppressions and baselines. | `config`, `context`, `error`, `finding`, `model`, `project`, `registry`, `suppression`. |
+| `engine` | Runs enabled rules, collects/sorts/deduplicates findings, applies suppressions and baselines, and loads projects through the frontend trait. | `config`, `context`, `error`, `finding`, `frontend`, `model`, `registry`, `suppression`. |
 | `suppression` | Inline `ignore` directives and source ranges. | `finding`-adjacent data only. |
 | `baseline` | Fingerprint baselines, JSON/TOML parsing, merge/prune, unknown-rule diagnostics. | `error`, `finding`, `model`, `registry`, `severity`. |
 | `report` | Terminal, JSON, SARIF, Markdown, HTML, and GitHub renderers. | `config`, `engine`, `finding`, `model`, `registry`, `rule`, `severity`. |

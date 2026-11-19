@@ -18,7 +18,10 @@ use crate::context::AnalysisContext;
 use crate::error::ScanError;
 use crate::finding::Finding;
 use crate::frontend::{self, Frontend, LoadedProject};
-use crate::model::{Diagnostic, DiagnosticCode, Project, ProjectKind, SorobanInfo, TargetInfo};
+use crate::model::{
+    DetectionConfidence, DetectionEvidence, DetectionInfo, Diagnostic, DiagnosticCode, Project,
+    ProjectKind, SorobanInfo, TargetInfo,
+};
 use crate::registry::RuleRegistry;
 use crate::suppression::Suppression;
 
@@ -1313,9 +1316,11 @@ fn merge_projects(projects: Vec<Project>) -> Project {
     let mut diagnostics = Vec::new();
     let mut soroban = SorobanInfo::default();
     let mut target: Option<TargetInfo> = None;
+    let mut detections = Vec::new();
     let mut source_files = 0usize;
 
     for project in projects {
+        detections.push(project.detection);
         if kind_rank(project.kind) > kind_rank(kind) {
             kind = project.kind;
         }
@@ -1345,8 +1350,75 @@ fn merge_projects(projects: Vec<Project>) -> Project {
         manifests,
         soroban,
         target,
+        detection: merge_detections(detections, kind),
         source_files,
         diagnostics,
+    }
+}
+
+/// Combines per-root detection evidence; an unknown root keeps the result weak.
+fn merge_detections(detections: Vec<DetectionInfo>, kind: ProjectKind) -> DetectionInfo {
+    if detections.is_empty() {
+        return DetectionInfo::default();
+    }
+    let mut evidence = Vec::new();
+    let mut seen = BTreeSet::new();
+    for detection in &detections {
+        for item in &detection.evidence {
+            if seen.insert((item.kind.clone(), item.path.clone(), item.detail.clone())) {
+                evidence.push(item.clone());
+            }
+        }
+    }
+    evidence.sort_by(|a, b| {
+        (a.kind.as_str(), a.path.as_deref(), a.detail.as_str()).cmp(&(
+            b.kind.as_str(),
+            b.path.as_deref(),
+            b.detail.as_str(),
+        ))
+    });
+    if evidence.len() > crate::detection::MAX_DETECTION_EVIDENCE {
+        evidence.truncate(crate::detection::MAX_DETECTION_EVIDENCE - 1);
+        evidence.push(DetectionEvidence {
+            kind: "limit".to_string(),
+            path: None,
+            detail: format!(
+                "additional evidence omitted (limit {})",
+                crate::detection::MAX_DETECTION_EVIDENCE
+            ),
+        });
+    }
+
+    let language = if detections
+        .iter()
+        .any(|detection| detection.language == crate::frontend::RUST_LANGUAGE)
+    {
+        crate::frontend::RUST_LANGUAGE
+    } else {
+        "unknown"
+    };
+    let confidence = if detections
+        .iter()
+        .all(|detection| detection.confidence == DetectionConfidence::Strong)
+    {
+        DetectionConfidence::Strong
+    } else {
+        DetectionConfidence::Weak
+    };
+    DetectionInfo {
+        frontend: if language == crate::frontend::RUST_LANGUAGE {
+            crate::frontend::RUST_LANGUAGE.to_string()
+        } else {
+            "unknown".to_string()
+        },
+        language: language.to_string(),
+        project_type: if language == crate::frontend::RUST_LANGUAGE {
+            kind.as_str().to_string()
+        } else {
+            "unknown".to_string()
+        },
+        confidence,
+        evidence,
     }
 }
 
@@ -1443,6 +1515,7 @@ pub fn synthetic_loaded_with_options(
         crate::soroban::note_contract_definition(&mut info, location);
     }
     let kind = crate::soroban::classify(&info);
+    let detection = crate::detection::detect(&root, &[], std::slice::from_ref(&parsed), &info, 1);
 
     let project = Project {
         root,
@@ -1450,6 +1523,7 @@ pub fn synthetic_loaded_with_options(
         manifests: Vec::new(),
         soroban: info,
         target: None,
+        detection,
         source_files: 1,
         diagnostics,
     };
@@ -1515,12 +1589,15 @@ pub fn scan_manifest_str(
     let manifest = crate::manifest::parse_manifest(Path::new(file_name), content)?;
     let manifests = vec![manifest];
     let soroban = crate::soroban::analyze_manifests(&manifests);
+    let root = PathBuf::from(".");
+    let detection = crate::detection::detect(&root, &manifests, &[], &soroban, 0);
     let project = Project {
-        root: PathBuf::from("."),
+        root,
         kind: crate::soroban::classify(&soroban),
         manifests,
         soroban,
         target: None,
+        detection,
         source_files: 0,
         diagnostics: Vec::new(),
     };

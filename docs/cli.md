@@ -101,6 +101,31 @@ The static result appears in terminal and Markdown output as `Target:` and in
 JSON as `stats.target`. The same setting is available as
 `target_analysis = true` in `soroban-scan.toml`.
 
+### Detection manifest
+
+Every report records why a language and project type were selected. Only the
+Rust frontend ships today, and the manifest never claims another language. JSON
+exposes it as `stats.detection`:
+
+```json
+{
+  "language": "rust",
+  "frontend": "rust",
+  "project_type": "confirmed_soroban",
+  "confidence": "strong",
+  "evidence": [
+    { "kind": "manifest", "path": "Cargo.toml", "detail": "Cargo.toml manifest" },
+    { "kind": "source", "path": "src/lib.rs", "detail": "1 Rust source file(s) discovered" }
+  ]
+}
+```
+
+Evidence is bounded and contains only relative paths and short labels — never
+source text, environment values, or secrets. When a manifest or source signal is
+missing, `confidence` is `weak`; when no recognized evidence exists at all, the
+language and project type are `unknown`. The same selection is printed as
+`Detection:` in terminal and Markdown reports and by `doctor`.
+
 ### Structured logs
 
 `--log-level` writes one JSON object per line to stderr; it is disabled by
@@ -608,7 +633,8 @@ network access.
   independent of the tool version. The `effective_config` object records the
   settings used for the scan, excluding environment data and secrets. `stats`
   includes `files_parsed`, `files_failed`, and `files_skipped` so coverage gaps
-  are visible. When `--max-findings` omits findings, a `truncation` object
+  are visible, plus the effective `mode`, the opt-in `target` record, and the
+  `detection` manifest. When `--max-findings` omits findings, a `truncation` object
   reports the counts. The published JSON Schema is
   [`docs/integration/report.schema.json`](integration/report.schema.json); a
   CLI test validates a real report against it on every run.

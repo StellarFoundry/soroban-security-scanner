@@ -366,6 +366,70 @@ impl Diagnostic {
     }
 }
 
+/// Confidence in the detected language and project type.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DetectionConfidence {
+    /// Evidence is incomplete; the selection must not be treated as certain.
+    #[default]
+    Weak,
+    /// Both a manifest and source evidence were found.
+    Strong,
+}
+
+impl DetectionConfidence {
+    /// Stable lowercase name used in reports.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            DetectionConfidence::Weak => "weak",
+            DetectionConfidence::Strong => "strong",
+        }
+    }
+}
+
+/// One piece of evidence supporting language or project-type detection.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DetectionEvidence {
+    /// Stable evidence kind (`manifest`, `source`, `dependency`, `contract-macro`).
+    pub kind: String,
+    /// Root-relative file, when the evidence is tied to one.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub path: Option<String>,
+    /// Human-readable, bounded detail. Never contains file contents or secrets.
+    pub detail: String,
+}
+
+/// How the language and project type were selected.
+///
+/// Only the Rust frontend ships today. When evidence is incomplete the
+/// confidence is `weak` rather than guessing.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct DetectionInfo {
+    /// Selected frontend (`rust`, or `unknown`).
+    pub frontend: String,
+    /// Selected language (`rust`, or `unknown`).
+    pub language: String,
+    /// Selected project type (`generic_rust`, `likely_soroban`,
+    /// `confirmed_soroban`, or `unknown`).
+    pub project_type: String,
+    /// Whether the evidence is strong or weak.
+    pub confidence: DetectionConfidence,
+    /// Bounded evidence records, sorted deterministically.
+    pub evidence: Vec<DetectionEvidence>,
+}
+
+impl Default for DetectionInfo {
+    fn default() -> Self {
+        DetectionInfo {
+            frontend: "unknown".to_string(),
+            language: "unknown".to_string(),
+            project_type: "unknown".to_string(),
+            confidence: DetectionConfidence::Weak,
+            evidence: Vec::new(),
+        }
+    }
+}
+
 /// Static target configuration read from Cargo manifests and `.cargo/config`.
 ///
 /// Present only when target analysis is enabled. The scanner never builds the
@@ -400,6 +464,9 @@ pub struct Project {
     /// Static target configuration, when target analysis is enabled.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub target: Option<TargetInfo>,
+    /// Evidence for the selected language and project type.
+    #[serde(default)]
+    pub detection: DetectionInfo,
     /// Number of Rust source files discovered.
     pub source_files: usize,
     /// Non-fatal diagnostics collected during analysis.

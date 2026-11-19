@@ -23,6 +23,7 @@ pub mod compare;
 pub mod confidence;
 pub mod config;
 pub mod context;
+pub mod detection;
 pub mod discovery;
 pub mod engine;
 pub mod error;

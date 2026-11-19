@@ -1464,6 +1464,8 @@ fn run_doctor(args: DoctorArgs, registry: &RuleRegistry) -> CliResult<u8> {
             let value = serde_json::json!({
                 "root": root_label,
                 "classification": loaded.project.kind.to_string(),
+                "detection": &loaded.project.detection,
+                "target": &loaded.project.target,
                 "manifests": manifests,
                 "classification_evidence": evidence,
                 "source_files": loaded.project.source_files,
@@ -1486,6 +1488,20 @@ fn run_doctor(args: DoctorArgs, registry: &RuleRegistry) -> CliResult<u8> {
             println!("soroban-scan doctor");
             println!("Root: {root_label}");
             println!("Classification: {}", loaded.project.kind);
+            println!(
+                "Detection: {} ({}) -> {}",
+                loaded.project.detection.language,
+                loaded.project.detection.confidence.as_str(),
+                loaded.project.detection.project_type
+            );
+            if let Some(target) = &loaded.project.target {
+                println!(
+                    "Target: {} (wasm32: {}, supported: {})",
+                    target.requested.as_deref().unwrap_or("not configured"),
+                    target.wasm32,
+                    target.supported
+                );
+            }
             println!(
                 "Manifests: {}",
                 if manifests.is_empty() {

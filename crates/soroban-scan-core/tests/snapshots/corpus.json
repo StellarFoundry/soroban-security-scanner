@@ -13,6 +13,172 @@
   },
   "stats": {
     "mode": "soroban",
+    "detection": {
+      "frontend": "rust",
+      "language": "rust",
+      "project_type": "confirmed_soroban",
+      "confidence": "weak",
+      "evidence": [
+        {
+          "kind": "contract-macro",
+          "detail": "contract definition attribute found"
+        },
+        {
+          "kind": "source",
+          "path": "SS-001/negative.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-001/negative2.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-001/negative3.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-001/positive.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-002/negative.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-002/negative2.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-002/negative3.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-002/positive.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-003/negative.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-003/negative2.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-003/negative3.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-003/positive.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-004/negative.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-004/negative2.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-004/negative3.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-004/positive.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-005/negative.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-005/negative2.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-005/negative3.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-005/positive.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-006/negative.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-006/negative2.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-006/negative3.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-006/positive.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-007/negative.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-007/negative2.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-007/negative3.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-007/positive.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-008/negative.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "source",
+          "path": "SS-008/negative2.rs",
+          "detail": "1 Rust source file(s) discovered"
+        },
+        {
+          "kind": "limit",
+          "detail": "additional evidence omitted (limit 32)"
+        }
+      ]
+    },
     "files_analyzed": 74,
     "files_parsed": 74,
     "files_failed": 0,

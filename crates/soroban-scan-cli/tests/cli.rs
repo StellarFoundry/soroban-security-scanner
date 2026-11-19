@@ -395,6 +395,31 @@ fn target_analysis_is_opt_in_and_reported() {
 }
 
 #[test]
+fn detection_manifest_is_exposed_in_json_stats() {
+    let out = run(&[
+        "scan",
+        fixture("detection/rust-soroban").to_str().unwrap(),
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+    let value: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
+    assert_eq!(value["stats"]["detection"]["language"], "rust");
+    assert_eq!(
+        value["stats"]["detection"]["project_type"],
+        "confirmed_soroban"
+    );
+    assert_eq!(value["stats"]["detection"]["confidence"], "strong");
+    assert!(value["stats"]["detection"]["evidence"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .all(|item| item["detail"].as_str().is_some()));
+}
+
+#[test]
 fn scan_help_includes_copy_pasteable_examples() {
     let out = run(&["scan", "--help"]);
     assert_eq!(out.code, 0);

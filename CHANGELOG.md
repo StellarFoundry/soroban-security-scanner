@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Language detection evidence is recorded for the selected frontend and project
+  type and exposed as `stats.detection` in JSON. Incomplete evidence is marked
+  `weak`, and no language is guessed when nothing is recognized (`#384`).
 - `--target-analysis` / `target_analysis` reads declared Cargo targets and
   `.cargo/config`, filters target-scoped dependencies, and reports unsupported
   targets with `TARGET-001` to `TARGET-003`. It never builds or executes the

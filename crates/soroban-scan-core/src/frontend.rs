@@ -17,6 +17,9 @@ use crate::project;
 
 pub use crate::project::LoadedProject;
 
+/// Language name reported by the Rust frontend.
+pub const RUST_LANGUAGE: &str = "rust";
+
 /// Discovery and item extraction for one source language.
 pub trait Frontend {
     /// Stable lowercase language name used in reports.
@@ -43,7 +46,7 @@ pub struct RustFrontend;
 
 impl Frontend for RustFrontend {
     fn name(&self) -> &'static str {
-        "rust"
+        RUST_LANGUAGE
     }
 
     fn discover(&self, root: &Path, opts: &DiscoveryOptions) -> Result<Discovered, ScanError> {

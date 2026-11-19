@@ -81,6 +81,7 @@ fn outcome_with(findings: Vec<Finding>) -> ScanOutcome {
             manifests: vec![],
             soroban: SorobanInfo::default(),
             target: None,
+            detection: Default::default(),
             source_files: 1,
             diagnostics: vec![],
         },
