@@ -19,6 +19,8 @@ use crate::registry::RuleRegistry;
 use crate::rule::RuleMetadata;
 use crate::severity::Severity;
 
+pub mod trend;
+
 /// Tool name used in reports.
 pub const TOOL_NAME: &str = "soroban-scan";
 /// Tool homepage used in reports.
@@ -694,6 +696,7 @@ fn sarif_result(
     finding: &Finding,
     suppression: Option<&SuppressionInfo>,
     baseline_status: Option<BaselineStatus>,
+    policy: Option<Severity>,
 ) -> serde_json::Value {
     use serde_json::json;
 
@@ -762,7 +765,56 @@ fn sarif_result(
         };
     }
 
+    if let Some(threshold) = policy {
+        let (status, reason) =
+            sarif_policy_annotation(finding, suppression, baseline_status, threshold);
+        result["properties"]["policyStatus"] = json!(status);
+        result["properties"]["policyReason"] = json!(reason);
+    }
+
     result
+}
+
+/// The policy decision for one SARIF result.
+///
+/// Policy annotations are opt-in and only describe existing report state: the
+/// severity, the baseline status, and the suppression marker. They never add
+/// source text, environment data, or secrets to the report.
+fn sarif_policy_annotation(
+    finding: &Finding,
+    suppression: Option<&SuppressionInfo>,
+    baseline_status: Option<BaselineStatus>,
+    threshold: Severity,
+) -> (&'static str, String) {
+    if suppression.is_some() {
+        return (
+            "suppressed",
+            "excluded from the gate by a suppression".to_string(),
+        );
+    }
+    if baseline_status == Some(BaselineStatus::Existing) {
+        return (
+            "accepted",
+            "accepted by the baseline; the gate considers new findings only".to_string(),
+        );
+    }
+    if finding.severity.meets(threshold) {
+        (
+            "fail",
+            format!(
+                "severity {} meets the policy threshold {}",
+                finding.severity, threshold
+            ),
+        )
+    } else {
+        (
+            "pass",
+            format!(
+                "severity {} is below the policy threshold {}",
+                finding.severity, threshold
+            ),
+        )
+    }
 }
 
 /// Renders the SARIF 2.1.0 report.
@@ -775,6 +827,21 @@ pub fn render_sarif_with_baseline(
     outcome: &ScanOutcome,
     registry: &RuleRegistry,
     baseline: Option<&BaselineReport>,
+) -> String {
+    render_sarif_with_policy(outcome, registry, baseline, None)
+}
+
+/// Renders the SARIF 2.1.0 report with opt-in policy annotations.
+///
+/// `policy` is the gate threshold to annotate. When it is `None` no policy
+/// properties are added, so the default SARIF output is unchanged. Annotations
+/// live under each result's SARIF `properties` bag and contain only the policy
+/// decision and a short reason derived from the finding.
+pub fn render_sarif_with_policy(
+    outcome: &ScanOutcome,
+    registry: &RuleRegistry,
+    baseline: Option<&BaselineReport>,
+    policy: Option<Severity>,
 ) -> String {
     use serde_json::{json, Value};
 
@@ -825,17 +892,21 @@ pub fn render_sarif_with_baseline(
                 finding,
                 None,
                 baseline.and_then(|report| report.status(&finding.fingerprint)),
+                policy,
             )
         })
         .collect();
 
     // Suppressed findings are never dropped: they stay in the SARIF results and
     // are marked as in-source suppressions (SARIF 2.1.0 `suppressions`).
-    results.extend(
-        outcome.suppressed.iter().map(|suppressed| {
-            sarif_result(&suppressed.finding, Some(&suppressed.suppression), None)
-        }),
-    );
+    results.extend(outcome.suppressed.iter().map(|suppressed| {
+        sarif_result(
+            &suppressed.finding,
+            Some(&suppressed.suppression),
+            None,
+            policy,
+        )
+    }));
 
     let mut run = json!({
         "tool": {
@@ -1110,6 +1181,12 @@ pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px s
 code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em}\
 ul.references{margin:.3rem 0 0;padding-left:1.1rem}.note{color:var(--muted);font-style:italic}\
 @media (prefers-color-scheme:dark){:root{--bg:#12161c;--panel:#1a2028;--ink:#e6eaf0;--muted:#a3adba;--line:#2c3541}}\
+@media print{@page{margin:18mm}:root{color-scheme:light;--bg:#fff;--panel:#fff;--ink:#000;--muted:#333;--line:#999}\
+*{print-color-adjust:exact;-webkit-print-color-adjust:exact}body{background:#fff;color:#000;font-size:11pt}\
+main{max-width:none;padding:0}a{color:inherit;text-decoration:none}\
+h1,h2{break-after:avoid}.cards{grid-template-columns:repeat(5,1fr)}\
+.card,.finding,table,pre{break-inside:avoid}.finding{box-shadow:none}tr,img{break-inside:avoid}\
+thead{display:table-header-group}}\
 ";
 
 /// Renders a self-contained HTML report.
@@ -1118,7 +1195,26 @@ ul.references{margin:.3rem 0 0;padding-left:1.1rem}.note{color:var(--muted);font
 /// All finding, project, and suppression text is escaped, so crafted evidence
 /// or source paths cannot inject markup.
 pub fn render_html(outcome: &ScanOutcome) -> String {
+    render_html_with_policy(outcome, None)
+}
+
+/// Renders a self-contained HTML report with an explicit gate status.
+///
+/// `gate` is the severity threshold used by `--fail-on`, when one applies.
+/// The gate is evaluated against the reported findings only: suppressed
+/// findings are excluded, matching the `--fail-on` contract. The document
+/// inlines its CSS (including a deterministic `@media print` stylesheet) and
+/// contains no JavaScript or remote resources, so it prints and renders with
+/// the network disabled.
+pub fn render_html_with_policy(outcome: &ScanOutcome, gate: Option<Severity>) -> String {
     let counts = severity_counts(&outcome.findings);
+    let gate_findings = gate.map(|threshold| {
+        outcome
+            .findings
+            .iter()
+            .filter(|finding| finding.severity.meets(threshold))
+            .count()
+    });
     let mut out = String::new();
     out.push_str("<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n");
     out.push_str("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n");
@@ -1156,6 +1252,23 @@ pub fn render_html(outcome: &ScanOutcome) -> String {
         outcome.findings.len(),
         outcome.stats.findings_suppressed
     ));
+    out.push_str("<h2>Policy status</h2>\n");
+    match (gate, gate_findings) {
+        (Some(threshold), Some(count)) => {
+            let status = if count > 0 { "fail" } else { "pass" };
+            out.push_str(&format!(
+                "<p class=\"meta\">Gate threshold <code>{}</code>: <strong>{status}</strong> \
+                 &middot; {} finding(s) at or above the threshold</p>\n",
+                threshold, count
+            ));
+        }
+        _ => {
+            out.push_str(
+                "<p class=\"meta\">Gate: <strong>not evaluated</strong> \
+                 (no policy threshold supplied)</p>\n",
+            );
+        }
+    }
 
     if outcome.findings.is_empty() {
         out.push_str("<h2>Findings</h2>\n<p class=\"note\">No security findings.</p>\n");
@@ -1206,11 +1319,19 @@ pub fn render_html(outcome: &ScanOutcome) -> String {
                 escape_html(&finding.rule_id),
                 escape_html(&finding.title)
             ));
+            let gate_badge = match gate {
+                Some(threshold) if finding.severity.meets(threshold) => {
+                    "<span class=\"badge\">above gate</span> "
+                }
+                Some(_) => "<span class=\"badge\">below gate</span> ",
+                None => "",
+            };
             out.push_str(&format!(
-                "<p><span class=\"badge\">{}</span> <span class=\"badge\">{}</span> <span class=\"badge\">{}</span></p>\n",
+                "<p><span class=\"badge\">{}</span> <span class=\"badge\">{}</span> <span class=\"badge\">{}</span> {}</p>\n",
                 escape_html(&finding.severity.to_string()),
                 escape_html(&finding.confidence.to_string()),
-                escape_html(finding.category.as_str())
+                escape_html(finding.category.as_str()),
+                gate_badge
             ));
             out.push_str(&format!(
                 "<dl><dt>Location</dt><dd><code>{}</code></dd>\n",

@@ -17,6 +17,7 @@ use clap::{Args, Parser, Subcommand, ValueEnum};
 use soroban_scan_core::ai::{self, Assistant};
 use soroban_scan_core::baseline::{self, Baseline, BaselineReport};
 use soroban_scan_core::category::Category;
+use soroban_scan_core::compare;
 use soroban_scan_core::confidence::Confidence;
 use soroban_scan_core::config::ScanConfig;
 use soroban_scan_core::engine;
@@ -277,6 +278,10 @@ enum Command {
     Config(ConfigArgs),
     /// Diagnose project classification, exclusions, and effective configuration.
     Doctor(DoctorArgs),
+    /// Compare two JSON scan reports by finding fingerprint.
+    Compare(CompareArgs),
+    /// Render a static trend dashboard from several JSON scan reports.
+    Dashboard(DashboardArgs),
     /// Generate a shell completion script (bash, zsh, fish, powershell).
     #[command(hide = true)]
     Completions(CompletionsArgs),
@@ -373,6 +378,12 @@ struct ScanArgs {
     #[arg(long, value_enum, default_value_t = FailOnArg::High)]
     fail_on: FailOnArg,
 
+    /// Opt-in SARIF policy annotations: add `properties.policyStatus` and
+    /// `policyReason` to each result for this threshold. Requires
+    /// `--format sarif`.
+    #[arg(long, value_enum, value_name = "LEVEL")]
+    sarif_policy: Option<FailOnArg>,
+
     /// Compare against one or more baseline files, marking findings as new or existing.
     #[arg(long, value_name = "FILE", action = clap::ArgAction::Append)]
     baseline: Vec<PathBuf>,
@@ -457,6 +468,51 @@ struct ExplainArgs {
     /// Output format.
     #[arg(long, value_enum, default_value_t = FormatArg::Terminal)]
     format: FormatArg,
+}
+
+#[derive(Debug, Args)]
+#[command(after_help = "Examples:\n  \
+    soroban-scan compare old.json new.json\n  \
+    soroban-scan compare old.json new.json --format json --output diff.json")]
+struct CompareArgs {
+    /// Older JSON report (the baseline side).
+    before: PathBuf,
+
+    /// Newer JSON report (the current side).
+    after: PathBuf,
+
+    /// Output format.
+    #[arg(long, value_enum, default_value_t = CompareFormatArg::Terminal)]
+    format: CompareFormatArg,
+
+    /// Write the comparison to a file instead of stdout.
+    #[arg(long, value_name = "FILE")]
+    output: Option<PathBuf>,
+}
+
+#[derive(Debug, Args)]
+#[command(after_help = "Examples:\n  \
+    soroban-scan dashboard scans/*.json --output trend.html\n  \
+    soroban-scan dashboard old.json new.json --title \"Contract trends\"")]
+struct DashboardArgs {
+    /// JSON scan reports to include, oldest first. Repeatable.
+    #[arg(required = true, num_args = 1..)]
+    reports: Vec<PathBuf>,
+
+    /// Dashboard title.
+    #[arg(long, default_value = "soroban-scan trend")]
+    title: String,
+
+    /// Write the dashboard to a file instead of stdout.
+    #[arg(long, value_name = "FILE")]
+    output: Option<PathBuf>,
+}
+
+/// Argument value for `compare --format`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+enum CompareFormatArg {
+    Terminal,
+    Json,
 }
 
 #[derive(Debug, Args)]
@@ -575,6 +631,8 @@ fn run(cli: Cli) -> CliResult<u8> {
         Command::Init(args) => run_init(args),
         Command::Config(args) => run_config(args),
         Command::Doctor(args) => run_doctor(args, &registry),
+        Command::Compare(args) => run_compare(args),
+        Command::Dashboard(args) => run_dashboard(args),
         Command::Completions(args) => {
             let mut command = <Cli as clap::CommandFactory>::command();
             let name = command.get_name().to_string();
@@ -587,6 +645,12 @@ fn run(cli: Cli) -> CliResult<u8> {
 fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
     let stdin_mode = args.stdin_filename.is_some();
     let multiple = args.paths.len() > 1;
+
+    if args.sarif_policy.is_some() && args.format != FormatArg::Sarif {
+        return Err(CliError::Usage(
+            "--sarif-policy requires --format sarif".to_string(),
+        ));
+    }
 
     if !stdin_mode {
         for path in &args.paths {
@@ -787,6 +851,15 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
         report::render_terminal_compact_with_color(&outcome, color)
     } else if matches!(args.format, FormatArg::Terminal) {
         report::render_terminal_with_color(&outcome, color)
+    } else if matches!(args.format, FormatArg::Html) {
+        report::render_html_with_policy(&outcome, args.fail_on.threshold())
+    } else if matches!(args.format, FormatArg::Sarif) && args.sarif_policy.is_some() {
+        report::render_sarif_with_policy(
+            &outcome,
+            registry,
+            baseline_report.as_ref(),
+            args.sarif_policy.and_then(FailOnArg::threshold),
+        )
     } else {
         report::render_with_baseline(
             &outcome,
@@ -1372,6 +1445,59 @@ fn sanitize_root(text: &str, root: &Path, root_label: &str) -> String {
     text.replace(absolute.as_ref(), root_label)
 }
 
+fn run_compare(args: CompareArgs) -> CliResult<u8> {
+    let before_text = read_report_text(&args.before)?;
+    let after_text = read_report_text(&args.after)?;
+    let before = compare::parse_report(&before_text)
+        .map_err(|error| CliError::Runtime(format!("{}: {error}", args.before.display())))?;
+    let after = compare::parse_report(&after_text)
+        .map_err(|error| CliError::Runtime(format!("{}: {error}", args.after.display())))?;
+    let comparison = compare::compare_reports(&before, &after);
+
+    let rendered = match args.format {
+        CompareFormatArg::Terminal => compare::render_comparison_text(&before, &after, &comparison),
+        CompareFormatArg::Json => compare::render_comparison_json(&before, &after, &comparison)
+            .map_err(|error| CliError::Runtime(format!("cannot serialize comparison: {error}")))?,
+    };
+
+    match &args.output {
+        Some(path) => std::fs::write(path, rendered)
+            .map_err(|e| CliError::Runtime(format!("cannot write {}: {e}", path.display())))?,
+        None => print!("{rendered}"),
+    }
+    Ok(EXIT_SUCCESS)
+}
+
+fn run_dashboard(args: DashboardArgs) -> CliResult<u8> {
+    if args.reports.len() > report::trend::MAX_REPORTS {
+        return Err(CliError::Usage(format!(
+            "too many reports: {} (limit {} per dashboard)",
+            args.reports.len(),
+            report::trend::MAX_REPORTS
+        )));
+    }
+
+    let mut runs = Vec::with_capacity(args.reports.len());
+    for path in &args.reports {
+        let text = read_trend_text(path)?;
+        let label = path
+            .file_name()
+            .map(|name| name.to_string_lossy().into_owned())
+            .unwrap_or_else(|| path.display().to_string());
+        let run = report::trend::parse_run(label, &text)
+            .map_err(|error| CliError::Runtime(format!("{}: {error}", path.display())))?;
+        runs.push(run);
+    }
+
+    let rendered = report::trend::render_dashboard(&args.title, &runs);
+    match &args.output {
+        Some(path) => std::fs::write(path, rendered)
+            .map_err(|e| CliError::Runtime(format!("cannot write {}: {e}", path.display())))?,
+        None => print!("{rendered}"),
+    }
+    Ok(EXIT_SUCCESS)
+}
+
 fn run_config(args: ConfigArgs) -> CliResult<u8> {
     match args.command {
         ConfigCommand::Show { config } => {
@@ -1679,6 +1805,38 @@ fn read_baseline_text(path: &Path) -> CliResult<String> {
     }
     std::fs::read_to_string(path)
         .map_err(|e| CliError::Runtime(format!("cannot read baseline {}: {e}", path.display())))
+}
+
+/// Reads a JSON report, rejecting documents above the comparison memory bound.
+fn read_report_text(path: &Path) -> CliResult<String> {
+    let metadata = std::fs::metadata(path)
+        .map_err(|e| CliError::Runtime(format!("cannot read report {}: {e}", path.display())))?;
+    if metadata.len() > compare::MAX_REPORT_BYTES as u64 {
+        return Err(CliError::Runtime(format!(
+            "report {} is too large ({} bytes; limit {} bytes)",
+            path.display(),
+            metadata.len(),
+            compare::MAX_REPORT_BYTES
+        )));
+    }
+    std::fs::read_to_string(path)
+        .map_err(|e| CliError::Runtime(format!("cannot read report {}: {e}", path.display())))
+}
+
+/// Reads a trend input report, rejecting documents above the dashboard bound.
+fn read_trend_text(path: &Path) -> CliResult<String> {
+    let metadata = std::fs::metadata(path)
+        .map_err(|e| CliError::Runtime(format!("cannot read report {}: {e}", path.display())))?;
+    if metadata.len() > report::trend::MAX_REPORT_BYTES as u64 {
+        return Err(CliError::Runtime(format!(
+            "report {} is too large ({} bytes; limit {} bytes)",
+            path.display(),
+            metadata.len(),
+            report::trend::MAX_REPORT_BYTES
+        )));
+    }
+    std::fs::read_to_string(path)
+        .map_err(|e| CliError::Runtime(format!("cannot read report {}: {e}", path.display())))
 }
 
 fn serialize_baseline(baseline: &Baseline, format: BaselineFormatArg) -> CliResult<String> {

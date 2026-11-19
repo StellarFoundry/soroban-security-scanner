@@ -28,6 +28,7 @@ use soroban_scan_core::config::ScanConfig;
 use soroban_scan_core::engine::{self, ScanOutcome};
 use soroban_scan_core::registry::RuleRegistry;
 use soroban_scan_core::report;
+use soroban_scan_core::severity::Severity;
 
 fn repo_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..")
@@ -180,4 +181,111 @@ fn corpus_reports_are_deterministic() {
         report::render_sarif(&second, &registry),
         "SARIF output must be byte-identical across runs"
     );
+}
+
+/// A small, reproducible outcome for presentation snapshots.
+fn sample_outcome() -> ScanOutcome {
+    let path = repo_root().join("fixtures/corpus/SS-001/positive.rs");
+    let content = std::fs::read_to_string(&path)
+        .unwrap_or_else(|error| panic!("cannot read {}: {error}", path.display()));
+    let registry = RuleRegistry::with_default_rules();
+    let mut outcome =
+        engine::scan_source_str(&content, "positive.rs", &ScanConfig::default(), &registry);
+    outcome.project.root = PathBuf::from("fixtures/corpus/SS-001");
+    outcome
+}
+
+#[test]
+fn print_friendly_html_matches_golden_snapshot() {
+    let outcome = sample_outcome();
+    let html = report::render_html_with_policy(&outcome, Some(Severity::High));
+    assert_golden("policy.html", &html);
+}
+
+#[test]
+fn print_friendly_html_is_self_contained_and_shows_policy_status() {
+    let outcome = sample_outcome();
+    let html = report::render_html_with_policy(&outcome, Some(Severity::High));
+
+    assert!(html.contains("@media print"));
+    assert!(html.contains("@page"));
+    assert!(html.contains("Policy status"));
+    assert!(html.contains("Gate threshold <code>high</code>"));
+    assert!(html.contains("above gate") || html.contains("below gate"));
+    assert!(html.contains("Evidence"));
+    assert!(!html.contains("<script"));
+    assert!(!html.contains("<link"));
+    assert!(!html.contains("@import"));
+    assert!(!html.contains("src="));
+    assert!(!html.contains("url("));
+}
+
+fn trend_runs() -> Vec<report::trend::TrendRun> {
+    ["trend-run-1.json", "trend-run-2.json", "trend-run-3.json"]
+        .iter()
+        .map(|name| {
+            let path = repo_root().join("fixtures/reports").join(name);
+            let text = std::fs::read_to_string(&path)
+                .unwrap_or_else(|error| panic!("cannot read {}: {error}", path.display()));
+            report::trend::parse_run(*name, &text)
+                .unwrap_or_else(|error| panic!("cannot parse {name}: {error}"))
+        })
+        .collect()
+}
+
+#[test]
+fn trend_dashboard_matches_golden_snapshot() {
+    let dashboard = report::trend::render_dashboard("soroban-scan trend", &trend_runs());
+    assert_golden("trend.html", &dashboard);
+}
+
+#[test]
+fn trend_dashboard_is_self_contained_and_handles_missing_data() {
+    let dashboard = report::trend::render_dashboard("soroban-scan trend", &trend_runs());
+
+    assert!(dashboard.contains("<table>"));
+    assert!(dashboard.contains("trend-run-1.json"));
+    assert!(dashboard.contains("trend-run-3.json"));
+    assert!(dashboard.contains("—"));
+    assert!(!dashboard.contains("<script"));
+    assert!(!dashboard.contains("<link"));
+    assert!(!dashboard.contains("src="));
+    // Trend fixtures carry markers in evidence; the dashboard renders counts only.
+    assert!(!dashboard.contains("EVIDENCE_MARKER"));
+}
+
+#[test]
+fn sarif_policy_annotations_match_golden_snapshot() {
+    let outcome = sample_outcome();
+    let registry = RuleRegistry::with_default_rules();
+    let sarif = report::render_sarif_with_policy(&outcome, &registry, None, Some(Severity::High));
+    assert_golden("policy.sarif", &sarif);
+}
+
+#[test]
+fn sarif_policy_annotations_are_schema_safe_and_opt_in() {
+    let outcome = sample_outcome();
+    let registry = RuleRegistry::with_default_rules();
+
+    let plain = report::render_sarif(&outcome, &registry);
+    let plain: serde_json::Value = serde_json::from_str(&plain).unwrap();
+    for result in plain["runs"][0]["results"].as_array().unwrap() {
+        assert!(result["properties"].get("policyStatus").is_none());
+        assert!(result["properties"].get("policyReason").is_none());
+    }
+
+    let annotated =
+        report::render_sarif_with_policy(&outcome, &registry, None, Some(Severity::High));
+    let annotated: serde_json::Value = serde_json::from_str(&annotated).unwrap();
+    let results = annotated["runs"][0]["results"].as_array().unwrap();
+    assert!(!results.is_empty());
+    for result in results {
+        let status = result["properties"]["policyStatus"].as_str().unwrap();
+        let reason = result["properties"]["policyReason"].as_str().unwrap();
+        assert!(
+            matches!(status, "pass" | "fail" | "accepted" | "suppressed"),
+            "unexpected policy status: {status}"
+        );
+        assert!(!reason.is_empty());
+    }
 }

@@ -600,21 +600,82 @@ fn scan_sarif_output_is_valid() {
 }
 
 #[test]
+fn sarif_policy_annotations_are_opt_in_and_schema_safe() {
+    let fixture = fixture("corpus/SS-001");
+    let base = [
+        "scan",
+        fixture.to_str().unwrap(),
+        "--format",
+        "sarif",
+        "--fail-on",
+        "none",
+    ];
+
+    let plain = run(&base);
+    assert_eq!(plain.code, 0, "stderr: {}", plain.stderr);
+    let plain: serde_json::Value = serde_json::from_str(&plain.stdout).unwrap();
+    for result in plain["runs"][0]["results"].as_array().unwrap() {
+        assert!(result["properties"].get("policyStatus").is_none());
+        assert!(result["properties"].get("policyReason").is_none());
+    }
+
+    let mut args = base.to_vec();
+    args.extend(["--sarif-policy", "high"]);
+    let annotated = run(&args);
+    assert_eq!(annotated.code, 0, "stderr: {}", annotated.stderr);
+    let annotated: serde_json::Value = serde_json::from_str(&annotated.stdout).unwrap();
+    let results = annotated["runs"][0]["results"].as_array().unwrap();
+    assert!(!results.is_empty());
+    for result in results {
+        assert!(matches!(
+            result["properties"]["policyStatus"].as_str(),
+            Some("pass" | "fail" | "accepted" | "suppressed")
+        ));
+        assert!(!result["properties"]["policyReason"]
+            .as_str()
+            .unwrap()
+            .is_empty());
+    }
+}
+
+#[test]
+fn sarif_policy_requires_the_sarif_format() {
+    let out = run(&[
+        "scan",
+        fixture("corpus/SS-001").to_str().unwrap(),
+        "--format",
+        "json",
+        "--sarif-policy",
+        "high",
+    ]);
+    assert_eq!(out.code, 2, "stderr: {}", out.stderr);
+    assert!(
+        out.stderr
+            .contains("--sarif-policy requires --format sarif"),
+        "got: {}",
+        out.stderr
+    );
+}
+
+#[test]
 fn scan_html_output_is_self_contained() {
     let out = run(&[
         "scan",
         fixture("corpus/SS-001").to_str().unwrap(),
         "--format",
         "html",
-        "--fail-on",
-        "none",
     ]);
-    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+    assert_eq!(out.code, 1, "stderr: {}", out.stderr);
     assert!(out.stdout.starts_with("<!DOCTYPE html>"));
     assert!(out.stdout.contains("<style>"));
     assert!(out.stdout.contains("SS-001"));
+    assert!(out.stdout.contains("@media print"));
+    assert!(out.stdout.contains("Policy status"));
+    assert!(out.stdout.contains("Gate threshold"));
     assert!(!out.stdout.contains("<script"));
     assert!(!out.stdout.contains("<link"));
+    assert!(!out.stdout.contains("@import"));
+    assert!(!out.stdout.contains("url("));
 }
 
 #[test]
@@ -2271,4 +2332,103 @@ fn completions_command_is_hidden_from_help() {
 fn completions_rejects_an_unknown_shell() {
     let out = run(&["completions", "tcsh"]);
     assert_eq!(out.code, 2, "{}", out.stderr);
+}
+
+#[test]
+fn compare_reports_counts_and_lists_findings() {
+    let before = fixture("reports/comparison-before.json");
+    let after = fixture("reports/comparison-after.json");
+    let out = run(&["compare", before.to_str().unwrap(), after.to_str().unwrap()]);
+
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+    assert!(
+        out.stdout
+            .contains("Unchanged: 1  New: 1  Fixed: 2  Renamed: 1"),
+        "got: {}",
+        out.stdout
+    );
+    assert!(out.stdout.contains("New findings (1)"));
+    assert!(out.stdout.contains("Fixed findings (2)"));
+    assert!(out.stdout.contains("Renamed findings (1)"));
+    // Unmatched entries include the findings themselves, not only counts.
+    assert!(out.stdout.contains("src/storage.rs"));
+    assert!(out.stdout.contains("src/admin.rs"));
+    assert!(out.stdout.contains("fingerprint:"));
+}
+
+#[test]
+fn compare_json_output_is_machine_readable() {
+    let before = fixture("reports/comparison-before.json");
+    let after = fixture("reports/comparison-after.json");
+    let out = run(&[
+        "compare",
+        before.to_str().unwrap(),
+        after.to_str().unwrap(),
+        "--format",
+        "json",
+    ]);
+
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+    let value: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
+    assert_eq!(value["summary"]["unchanged"], 1);
+    assert_eq!(value["summary"]["new"], 1);
+    assert_eq!(value["summary"]["fixed"], 2);
+    assert_eq!(value["summary"]["renamed"], 1);
+    assert!(value["renamed"][0]["before"]["fingerprint"].is_string());
+}
+
+#[test]
+fn compare_rejects_a_malformed_report() {
+    let dir = std::env::temp_dir().join(format!("soroban-scan-cli-compare-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let before = fixture("reports/comparison-before.json");
+    let bad = dir.join("bad.json");
+    std::fs::write(&bad, "{\"schema_version\":\"1\"}").unwrap();
+
+    let out = run(&["compare", before.to_str().unwrap(), bad.to_str().unwrap()]);
+    assert_eq!(out.code, 3, "stderr: {}", out.stderr);
+    assert!(out.stderr.contains("invalid report"), "got: {}", out.stderr);
+
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn dashboard_renders_multiple_reports_without_source_text() {
+    let first = fixture("reports/trend-run-1.json");
+    let second = fixture("reports/trend-run-2.json");
+    let third = fixture("reports/trend-run-3.json");
+    let out = run(&[
+        "dashboard",
+        first.to_str().unwrap(),
+        second.to_str().unwrap(),
+        third.to_str().unwrap(),
+    ]);
+
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+    assert!(out.stdout.starts_with("<!DOCTYPE html>"));
+    assert!(out.stdout.contains("<table>"));
+    assert!(out.stdout.contains("trend-run-1.json"));
+    assert!(out.stdout.contains("trend-run-3.json"));
+    assert!(out.stdout.contains("—"));
+    assert!(!out.stdout.contains("<script"));
+    assert!(!out.stdout.contains("<link"));
+    assert!(!out.stdout.contains("EVIDENCE_MARKER"));
+}
+
+#[test]
+fn dashboard_rejects_a_malformed_report() {
+    let dir =
+        std::env::temp_dir().join(format!("soroban-scan-cli-dashboard-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+    let good = fixture("reports/trend-run-1.json");
+    let bad = dir.join("bad.json");
+    std::fs::write(&bad, "not json").unwrap();
+
+    let out = run(&["dashboard", good.to_str().unwrap(), bad.to_str().unwrap()]);
+    assert_eq!(out.code, 3, "stderr: {}", out.stderr);
+    assert!(out.stderr.contains("invalid report"), "got: {}", out.stderr);
+
+    let _ = std::fs::remove_dir_all(&dir);
 }

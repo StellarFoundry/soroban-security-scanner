@@ -1,0 +1,726 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "results": [
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 9
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_admin`: env . storage () . persistent () . set (& symbol_short ! (\"ADMIN\") , & new_admin)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "25b58acab18e8c25be7d846c7b336d5b"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "policyReason": "severity high meets the policy threshold high",
+            "policyStatus": "fail",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 9
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_admin`: env . storage () . persistent () . set (& symbol_short ! (\"ADMIN\") , & new_admin)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "8f6087141dd1cca533087cd6af3f6d20"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "policyReason": "severity low is below the policy threshold high",
+            "policyStatus": "pass",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 9
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `set_admin`: env . storage () . persistent () . set (& symbol_short ! (\"ADMIN\") , & new_admin)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "8e7fd2ef89cdb87afedd8004cb80e1d7"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "policyReason": "severity low is below the policy threshold high",
+            "policyStatus": "pass",
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "positive.rs"
+                },
+                "region": {
+                  "startColumn": 27,
+                  "startLine": 20
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked arithmetic in a contract entry point — unchecked `-` arithmetic in entry point `withdraw`: balance - amount (use `checked_sub` and handle `None`)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "4eaccf1c3ce89ad12f06685a18208d0a"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "policyReason": "severity medium is below the policy threshold high",
+            "policyStatus": "pass",
+            "remediation": "Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-008"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `withdraw`: env . storage () . persistent () . set (& symbol_short ! (\"BAL\") , & new_balance)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2409db0240752ada2e699033b37c550e"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "policyReason": "severity high meets the policy threshold high",
+            "policyStatus": "fail",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `withdraw`: env . storage () . persistent () . set (& symbol_short ! (\"BAL\") , & new_balance)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "bc335ac75bcdb2f37bb23e25e9fc3aea"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "policyReason": "severity low is below the policy threshold high",
+            "policyStatus": "pass",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        }
+      ],
+      "tool": {
+        "driver": {
+          "informationUri": "https://github.com/AyinkxLab/soroban-security-scanner",
+          "name": "soroban-scan",
+          "rules": [
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations."
+              },
+              "help": {
+                "markdown": "## State-changing entry point without caller authorization\n\nA public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.\n\n### Remediation\n\nCall `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                "text": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.\n\nRemediation: Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-001",
+              "name": "State-changing entry point without caller authorization",
+              "properties": {
+                "category": "authorization",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+                ],
+                "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "State-changing entry point without caller authorization"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A public contract function constructs and calls another contract client but does not call require_auth in its body or in the intra-file helper functions it calls. If the contract acts on funds or privileges it controls, an attacker may be able to trigger cross-contract effects without the caller's approval. This is a heuristic: the called contract may itself enforce authorization, or the invocation may be intentionally permissionless."
+              },
+              "help": {
+                "markdown": "## Cross-contract call without caller authorization\n\nA public contract function constructs and calls another contract client but does not call require_auth in its body or in the intra-file helper functions it calls. If the contract acts on funds or privileges it controls, an attacker may be able to trigger cross-contract effects without the caller's approval. This is a heuristic: the called contract may itself enforce authorization, or the invocation may be intentionally permissionless.\n\n### Remediation\n\nAuthorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                "text": "A public contract function constructs and calls another contract client but does not call require_auth in its body or in the intra-file helper functions it calls. If the contract acts on funds or privileges it controls, an attacker may be able to trigger cross-contract effects without the caller's approval. This is a heuristic: the called contract may itself enforce authorization, or the invocation may be intentionally permissionless.\n\nRemediation: Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-002",
+              "name": "Cross-contract call without caller authorization",
+              "properties": {
+                "category": "cross-contract",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+                ],
+                "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Cross-contract call without caller authorization"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract entry point iterates over storage. If the iterated collection grows without bound, the operation's resource cost grows with it and may exceed Soroban's ledger entry, CPU, or memory limits, causing the entry point to fail (a denial of service). Soroban does not provide storage enumeration in the same way as some platforms, so patterns that loop over persistent collections built by the contract are the usual cause."
+              },
+              "help": {
+                "markdown": "## Unbounded storage iteration in an entry point\n\nA contract entry point iterates over storage. If the iterated collection grows without bound, the operation's resource cost grows with it and may exceed Soroban's ledger entry, CPU, or memory limits, causing the entry point to fail (a denial of service). Soroban does not provide storage enumeration in the same way as some platforms, so patterns that loop over persistent collections built by the contract are the usual cause.\n\n### Remediation\n\nBound the amount of work performed per invocation: paginate with an explicit limit, maintain aggregate values instead of scanning, or cap the number of entries processed and return partial results. Ensure any loop over storage is bounded by a value the contract controls.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/resource-limits",
+                "text": "A contract entry point iterates over storage. If the iterated collection grows without bound, the operation's resource cost grows with it and may exceed Soroban's ledger entry, CPU, or memory limits, causing the entry point to fail (a denial of service). Soroban does not provide storage enumeration in the same way as some platforms, so patterns that loop over persistent collections built by the contract are the usual cause.\n\nRemediation: Bound the amount of work performed per invocation: paginate with an explicit limit, maintain aggregate values instead of scanning, or cap the number of entries processed and return partial results. Ensure any loop over storage is bounded by a value the contract controls."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/resource-limits",
+              "id": "SS-003",
+              "name": "Unbounded storage iteration in an entry point",
+              "properties": {
+                "category": "resource-usage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/resource-limits"
+                ],
+                "remediation": "Bound the amount of work performed per invocation: paginate with an explicit limit, maintain aggregate values instead of scanning, or cap the number of entries processed and return partial results. Ensure any loop over storage is bounded by a value the contract controls.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unbounded storage iteration in an entry point"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "fullDescription": {
+                "text": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability."
+              },
+              "help": {
+                "markdown": "## Panic-prone construct in a contract entry point\n\nA contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.\n\n### Remediation\n\nReturn a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees\n- https://developers.stellar.org/docs/tools/cli/stellar-cli",
+                "text": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.\n\nRemediation: Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+              "id": "SS-004",
+              "name": "Panic-prone construct in a contract entry point",
+              "properties": {
+                "category": "error-handling",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+                  "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+                ],
+                "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+                "severity": "low"
+              },
+              "shortDescription": {
+                "text": "Panic-prone construct in a contract entry point"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "The contract source contains an `unsafe` block or expression. Soroban contracts execute in a sandbox and rarely require `unsafe`; when it is present it bypasses the guarantees Rust normally provides and can undermine memory safety assumptions or introduce undefined behavior. This finding is evidence of `unsafe` usage, not proof of a bug."
+              },
+              "help": {
+                "markdown": "## Unsafe code in a Soroban contract\n\nThe contract source contains an `unsafe` block or expression. Soroban contracts execute in a sandbox and rarely require `unsafe`; when it is present it bypasses the guarantees Rust normally provides and can undermine memory safety assumptions or introduce undefined behavior. This finding is evidence of `unsafe` usage, not proof of a bug.\n\n### Remediation\n\nRemove the `unsafe` block if possible. If it is genuinely required, isolate it in a small, well-documented function, prove its invariants, and cover it with targeted tests. Document why safe alternatives are insufficient.\n\n### References\n\n- https://doc.rust-lang.org/nomicon/\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "The contract source contains an `unsafe` block or expression. Soroban contracts execute in a sandbox and rarely require `unsafe`; when it is present it bypasses the guarantees Rust normally provides and can undermine memory safety assumptions or introduce undefined behavior. This finding is evidence of `unsafe` usage, not proof of a bug.\n\nRemediation: Remove the `unsafe` block if possible. If it is genuinely required, isolate it in a small, well-documented function, prove its invariants, and cover it with targeted tests. Document why safe alternatives are insufficient."
+              },
+              "helpUri": "https://doc.rust-lang.org/nomicon/",
+              "id": "SS-005",
+              "name": "Unsafe code in a Soroban contract",
+              "properties": {
+                "category": "unsafe",
+                "confidence": "high",
+                "references": [
+                  "https://doc.rust-lang.org/nomicon/",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Remove the `unsafe` block if possible. If it is genuinely required, isolate it in a small, well-documented function, prove its invariants, and cover it with targeted tests. Document why safe alternatives are insufficient.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unsafe code in a Soroban contract"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "fullDescription": {
+                "text": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal."
+              },
+              "help": {
+                "markdown": "## Persistent storage write without TTL management\n\nA contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.\n\n### Remediation\n\nWhen writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                "text": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.\n\nRemediation: When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-006",
+              "name": "Persistent storage write without TTL management",
+              "properties": {
+                "category": "storage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+                ],
+                "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+                "severity": "low"
+              },
+              "shortDescription": {
+                "text": "Persistent storage write without TTL management"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A string literal in the contract matches the shape of a Stellar account (`G...`) or contract (`C...`) address. Hardcoding an address bakes a fixed counterparty or administrator into the contract, preventing rotation and making the contract unsafe if that key or contract changes or is compromised. Addresses are public, so this is a design concern rather than a secret leak."
+              },
+              "help": {
+                "markdown": "## Hardcoded Stellar account or contract address\n\nA string literal in the contract matches the shape of a Stellar account (`G...`) or contract (`C...`) address. Hardcoding an address bakes a fixed counterparty or administrator into the contract, preventing rotation and making the contract unsafe if that key or contract changes or is compromised. Addresses are public, so this is a design concern rather than a secret leak.\n\n### Remediation\n\nStore addresses in contract storage or pass them as parameters, and validate them against stored configuration. If an address must be a compile-time constant, document the operational plan for rotation and key compromise.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A string literal in the contract matches the shape of a Stellar account (`G...`) or contract (`C...`) address. Hardcoding an address bakes a fixed counterparty or administrator into the contract, preventing rotation and making the contract unsafe if that key or contract changes or is compromised. Addresses are public, so this is a design concern rather than a secret leak.\n\nRemediation: Store addresses in contract storage or pass them as parameters, and validate them against stored configuration. If an address must be a compile-time constant, document the operational plan for rotation and key compromise."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-007",
+              "name": "Hardcoded Stellar account or contract address",
+              "properties": {
+                "category": "configuration",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Store addresses in contract storage or pass them as parameters, and validate them against stored configuration. If an address must be a compile-time constant, document the operational plan for rotation and key compromise.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Hardcoded Stellar account or contract address"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A public contract entry point performs binary arithmetic (`+`, `-`, or `*`) on values without a checked, saturating, overflowing, or wrapping operation. In release builds Rust arithmetic wraps on overflow and underflow instead of panicking, so a decrement below zero (or an overflow) can silently produce an incorrect result — a common cause of balance and accounting bugs in token, escrow and vault contracts. This is a heuristic: it cannot prove that the operands are attacker-influenced or that their range is constrained, so it reports low confidence and should be reviewed in context."
+              },
+              "help": {
+                "markdown": "## Unchecked arithmetic in a contract entry point\n\nA public contract entry point performs binary arithmetic (`+`, `-`, or `*`) on values without a checked, saturating, overflowing, or wrapping operation. In release builds Rust arithmetic wraps on overflow and underflow instead of panicking, so a decrement below zero (or an overflow) can silently produce an incorrect result — a common cause of balance and accounting bugs in token, escrow and vault contracts. This is a heuristic: it cannot prove that the operands are attacker-influenced or that their range is constrained, so it reports low confidence and should be reviewed in context.\n\n### Remediation\n\nUse explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.\n\n### References\n\n- https://doc.rust-lang.org/reference/expressions/operator-expr.html#overflow\n- https://developers.stellar.org/docs",
+                "text": "A public contract entry point performs binary arithmetic (`+`, `-`, or `*`) on values without a checked, saturating, overflowing, or wrapping operation. In release builds Rust arithmetic wraps on overflow and underflow instead of panicking, so a decrement below zero (or an overflow) can silently produce an incorrect result — a common cause of balance and accounting bugs in token, escrow and vault contracts. This is a heuristic: it cannot prove that the operands are attacker-influenced or that their range is constrained, so it reports low confidence and should be reviewed in context.\n\nRemediation: Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input."
+              },
+              "helpUri": "https://doc.rust-lang.org/reference/expressions/operator-expr.html#overflow",
+              "id": "SS-008",
+              "name": "Unchecked arithmetic in a contract entry point",
+              "properties": {
+                "category": "arithmetic",
+                "confidence": "low",
+                "references": [
+                  "https://doc.rust-lang.org/reference/expressions/operator-expr.html#overflow",
+                  "https://developers.stellar.org/docs"
+                ],
+                "remediation": "Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unchecked arithmetic in a contract entry point"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A public contract entry point uses the ledger timestamp or ledger sequence in arithmetic, modulo, or a comparison that appears to select an outcome. Ledger values are publicly known and can be influenced by transaction submission timing, so deriving randomness from them is predictable and may let an attacker steer lotteries, winner selection, or other value-dependent logic. This is a heuristic: it reports low confidence and cannot prove that the value is used as randomness or that an attacker can control the result."
+              },
+              "help": {
+                "markdown": "## Insecure randomness derived from ledger state\n\nA public contract entry point uses the ledger timestamp or ledger sequence in arithmetic, modulo, or a comparison that appears to select an outcome. Ledger values are publicly known and can be influenced by transaction submission timing, so deriving randomness from them is predictable and may let an attacker steer lotteries, winner selection, or other value-dependent logic. This is a heuristic: it reports low confidence and cannot prove that the value is used as randomness or that an attacker can control the result.\n\n### Remediation\n\nDo not derive randomness from `ledger().timestamp()` or `ledger().sequence()`. Use a commitment/reveal scheme, a verifiable randomness source, or another design that does not depend on ledger values the submitter can observe or influence. If the value is only used for an expiry check against a stored deadline, document the use and suppress this rule.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security\n- https://developers.stellar.org/docs",
+                "text": "A public contract entry point uses the ledger timestamp or ledger sequence in arithmetic, modulo, or a comparison that appears to select an outcome. Ledger values are publicly known and can be influenced by transaction submission timing, so deriving randomness from them is predictable and may let an attacker steer lotteries, winner selection, or other value-dependent logic. This is a heuristic: it reports low confidence and cannot prove that the value is used as randomness or that an attacker can control the result.\n\nRemediation: Do not derive randomness from `ledger().timestamp()` or `ledger().sequence()`. Use a commitment/reveal scheme, a verifiable randomness source, or another design that does not depend on ledger values the submitter can observe or influence. If the value is only used for an expiry check against a stored deadline, document the use and suppress this rule."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-009",
+              "name": "Insecure randomness derived from ledger state",
+              "properties": {
+                "category": "arithmetic",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security",
+                  "https://developers.stellar.org/docs"
+                ],
+                "remediation": "Do not derive randomness from `ledger().timestamp()` or `ledger().sequence()`. Use a commitment/reveal scheme, a verifiable randomness source, or another design that does not depend on ledger values the submitter can observe or influence. If the value is only used for an expiry check against a stored deadline, document the use and suppress this rule.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Insecure randomness derived from ledger state"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "fullDescription": {
+                "text": "A contract entry point mutates a storage key that looks like privileged configuration (for example admin, owner, pause, params, fees, or oracle) without publishing an event. Off-chain indexers and users rely on events to observe critical changes; without one, the change is invisible to monitoring and incident response."
+              },
+              "help": {
+                "markdown": "## Privileged state change without an event\n\nA contract entry point mutates a storage key that looks like privileged configuration (for example admin, owner, pause, params, fees, or oracle) without publishing an event. Off-chain indexers and users rely on events to observe critical changes; without one, the change is invisible to monitoring and incident response.\n\n### Remediation\n\nPublish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/events",
+                "text": "A contract entry point mutates a storage key that looks like privileged configuration (for example admin, owner, pause, params, fees, or oracle) without publishing an event. Off-chain indexers and users rely on events to observe critical changes; without one, the change is invisible to monitoring and incident response.\n\nRemediation: Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/events",
+              "id": "SS-010",
+              "name": "Privileged state change without an event",
+              "properties": {
+                "category": "events",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/events"
+                ],
+                "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+                "severity": "low"
+              },
+              "shortDescription": {
+                "text": "Privileged state change without an event"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "An initialization-style entry point (for example `initialize` or `init`) writes contract storage without first checking whether the contract has already been initialized. If the function stays callable after deployment, anyone can call it again to overwrite configuration or take over privileged state. This is a heuristic based on the function name and the absence of an authorization check or a storage existence read in the function or its same-file helpers."
+              },
+              "help": {
+                "markdown": "## Initialization entry point without a re-initialization guard\n\nAn initialization-style entry point (for example `initialize` or `init`) writes contract storage without first checking whether the contract has already been initialized. If the function stays callable after deployment, anyone can call it again to overwrite configuration or take over privileged state. This is a heuristic based on the function name and the absence of an authorization check or a storage existence read in the function or its same-file helpers.\n\n### Remediation\n\nGuard initialization by checking that the contract is not already initialized before writing (for example `if env.storage().instance().has(&KEY) { return Err(Error::AlreadyInitialized) }`), or perform initialization in a constructor (`__constructor`) so it runs only at deploy time.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "An initialization-style entry point (for example `initialize` or `init`) writes contract storage without first checking whether the contract has already been initialized. If the function stays callable after deployment, anyone can call it again to overwrite configuration or take over privileged state. This is a heuristic based on the function name and the absence of an authorization check or a storage existence read in the function or its same-file helpers.\n\nRemediation: Guard initialization by checking that the contract is not already initialized before writing (for example `if env.storage().instance().has(&KEY) { return Err(Error::AlreadyInitialized) }`), or perform initialization in a constructor (`__constructor`) so it runs only at deploy time."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-011",
+              "name": "Initialization entry point without a re-initialization guard",
+              "properties": {
+                "category": "access-control",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Guard initialization by checking that the contract is not already initialized before writing (for example `if env.storage().instance().has(&KEY) { return Err(Error::AlreadyInitialized) }`), or perform initialization in a constructor (`__constructor`) so it runs only at deploy time.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Initialization entry point without a re-initialization guard"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract entry point grows a collection that was read from storage without checking a length or capacity limit. Repeated calls can grow the ledger entry without bound, increasing rent and eventually making reads or iteration fail, a denial of service."
+              },
+              "help": {
+                "markdown": "## Unbounded collection growth in an entry point\n\nA contract entry point grows a collection that was read from storage without checking a length or capacity limit. Repeated calls can grow the ledger entry without bound, increasing rent and eventually making reads or iteration fail, a denial of service.\n\n### Remediation\n\nCap the collection size before growing it: read the current length and reject the operation at a documented maximum, or store a bounded aggregate instead. Return a typed contract error when the cap is reached.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/resource-limits",
+                "text": "A contract entry point grows a collection that was read from storage without checking a length or capacity limit. Repeated calls can grow the ledger entry without bound, increasing rent and eventually making reads or iteration fail, a denial of service.\n\nRemediation: Cap the collection size before growing it: read the current length and reject the operation at a documented maximum, or store a bounded aggregate instead. Return a typed contract error when the cap is reached."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/resource-limits",
+              "id": "SS-012",
+              "name": "Unbounded collection growth in an entry point",
+              "properties": {
+                "category": "resource-usage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/resource-limits"
+                ],
+                "remediation": "Cap the collection size before growing it: read the current length and reject the operation at a documented maximum, or store a bounded aggregate instead. Return a typed contract error when the cap is reached.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unbounded collection growth in an entry point"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A public contract entry point makes a cross-contract call before its first storage write. Soroban permits reentrancy, so a malicious callee can be invoked while the caller's state still reflects the pre-call values and may re-enter or observe inconsistent state. This is a heuristic ordering check: it only compares call and mutation positions within the same function and cannot prove that reentrancy is reachable or exploitable."
+              },
+              "help": {
+                "markdown": "## Cross-contract call before state update\n\nA public contract entry point makes a cross-contract call before its first storage write. Soroban permits reentrancy, so a malicious callee can be invoked while the caller's state still reflects the pre-call values and may re-enter or observe inconsistent state. This is a heuristic ordering check: it only compares call and mutation positions within the same function and cannot prove that reentrancy is reachable or exploitable.\n\n### Remediation\n\nFollow checks-effects-interactions: validate inputs, update all relevant contract state, and only then invoke another contract. If an external call must happen first, add an explicit reentrancy guard and document why the intermediate state is safe to observe.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security\n- https://developers.stellar.org/docs",
+                "text": "A public contract entry point makes a cross-contract call before its first storage write. Soroban permits reentrancy, so a malicious callee can be invoked while the caller's state still reflects the pre-call values and may re-enter or observe inconsistent state. This is a heuristic ordering check: it only compares call and mutation positions within the same function and cannot prove that reentrancy is reachable or exploitable.\n\nRemediation: Follow checks-effects-interactions: validate inputs, update all relevant contract state, and only then invoke another contract. If an external call must happen first, add an explicit reentrancy guard and document why the intermediate state is safe to observe."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-013",
+              "name": "Cross-contract call before state update",
+              "properties": {
+                "category": "cross-contract",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security",
+                  "https://developers.stellar.org/docs"
+                ],
+                "remediation": "Follow checks-effects-interactions: validate inputs, update all relevant contract state, and only then invoke another contract. If an external call must happen first, add an explicit reentrancy guard and document why the intermediate state is safe to observe.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Cross-contract call before state update"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence."
+              },
+              "help": {
+                "markdown": "## Token transfer amount without validation\n\nA public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.\n\n### Remediation\n\nValidate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.\n\n### References\n\n- https://developers.stellar.org/docs/tokens/token-interface\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.\n\nRemediation: Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`."
+              },
+              "helpUri": "https://developers.stellar.org/docs/tokens/token-interface",
+              "id": "SS-014",
+              "name": "Token transfer amount without validation",
+              "properties": {
+                "category": "token",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/tokens/token-interface",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Token transfer amount without validation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "fullDescription": {
+                "text": "The project declares a `soroban-sdk` version older than the configured minimum. Older major versions can miss API fixes, security patches, and supported runtime behavior. This is a policy signal: review the changelog and upgrade when practical."
+              },
+              "help": {
+                "markdown": "## Deprecated Soroban SDK version\n\nThe project declares a `soroban-sdk` version older than the configured minimum. Older major versions can miss API fixes, security patches, and supported runtime behavior. This is a policy signal: review the changelog and upgrade when practical.\n\n### Remediation\n\nUpgrade `soroban-sdk` to at least the minimum configured in `minimum_soroban_sdk` (default 21.0.0), then rebuild and rerun the contract tests.\n\n### References\n\n- https://github.com/stellar/rs-soroban-sdk/releases\n- https://developers.stellar.org/docs",
+                "text": "The project declares a `soroban-sdk` version older than the configured minimum. Older major versions can miss API fixes, security patches, and supported runtime behavior. This is a policy signal: review the changelog and upgrade when practical.\n\nRemediation: Upgrade `soroban-sdk` to at least the minimum configured in `minimum_soroban_sdk` (default 21.0.0), then rebuild and rerun the contract tests."
+              },
+              "helpUri": "https://github.com/stellar/rs-soroban-sdk/releases",
+              "id": "SS-015",
+              "name": "Deprecated Soroban SDK version",
+              "properties": {
+                "category": "dependencies",
+                "confidence": "medium",
+                "references": [
+                  "https://github.com/stellar/rs-soroban-sdk/releases",
+                  "https://developers.stellar.org/docs"
+                ],
+                "remediation": "Upgrade `soroban-sdk` to at least the minimum configured in `minimum_soroban_sdk` (default 21.0.0), then rebuild and rerun the contract tests.",
+                "severity": "low"
+              },
+              "shortDescription": {
+                "text": "Deprecated Soroban SDK version"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Instance storage is loaded for every invocation and has strict size limits. Writing repeated distinct keys, or growing a collection, in instance storage increases the cost of every call and can break the contract at scale. Constant configuration is a better fit for instance storage."
+              },
+              "help": {
+                "markdown": "## Unbounded data stored in instance storage\n\nInstance storage is loaded for every invocation and has strict size limits. Writing repeated distinct keys, or growing a collection, in instance storage increases the cost of every call and can break the contract at scale. Constant configuration is a better fit for instance storage.\n\n### Remediation\n\nKeep instance storage for small, fixed configuration. Store growing collections in persistent storage, and bound their size explicitly.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                "text": "Instance storage is loaded for every invocation and has strict size limits. Writing repeated distinct keys, or growing a collection, in instance storage increases the cost of every call and can break the contract at scale. Constant configuration is a better fit for instance storage.\n\nRemediation: Keep instance storage for small, fixed configuration. Store growing collections in persistent storage, and bound their size explicitly."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-016",
+              "name": "Unbounded data stored in instance storage",
+              "properties": {
+                "category": "storage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+                ],
+                "remediation": "Keep instance storage for small, fixed configuration. Store growing collections in persistent storage, and bound their size explicitly.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unbounded data stored in instance storage"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract entry point mutates storage before calling `require_auth`. The authorization check must run before the effect, otherwise a rejected call may already have changed state on some paths and the ordering indicates a logic bug."
+              },
+              "help": {
+                "markdown": "## Authorization after state mutation\n\nA contract entry point mutates storage before calling `require_auth`. The authorization check must run before the effect, otherwise a rejected call may already have changed state on some paths and the ordering indicates a logic bug.\n\n### Remediation\n\nAuthorize the caller at the start of the entry point, before any storage read or write that depends on the caller. Call `require_auth` or `require_auth_for_args` first, then perform the state change.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                "text": "A contract entry point mutates storage before calling `require_auth`. The authorization check must run before the effect, otherwise a rejected call may already have changed state on some paths and the ordering indicates a logic bug.\n\nRemediation: Authorize the caller at the start of the entry point, before any storage read or write that depends on the caller. Call `require_auth` or `require_auth_for_args` first, then perform the state change."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-017",
+              "name": "Authorization after state mutation",
+              "properties": {
+                "category": "authorization",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+                ],
+                "remediation": "Authorize the caller at the start of the entry point, before any storage read or write that depends on the caller. Call `require_auth` or `require_auth_for_args` first, then perform the state change.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Authorization after state mutation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A public contract entry point is named like a test or debug backdoor (a `test`, `debug`, `dev`, `mock`, or `dummy` name segment). Backdoor entry points that remain callable in a production deployment let anyone invoke privileged behavior, and are a well-known way on-chain contracts are compromised. This is a name-based heuristic and may flag a legitimately named function."
+              },
+              "help": {
+                "markdown": "## Public test or debug hook in a contract entry point\n\nA public contract entry point is named like a test or debug backdoor (a `test`, `debug`, `dev`, `mock`, or `dummy` name segment). Backdoor entry points that remain callable in a production deployment let anyone invoke privileged behavior, and are a well-known way on-chain contracts are compromised. This is a name-based heuristic and may flag a legitimately named function.\n\n### Remediation\n\nRemove test/debug entry points before deployment, or gate them behind `#[cfg(test)]` or a compile-time feature so they cannot be called from a production build. Never ship a privileged function intended only for testing.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A public contract entry point is named like a test or debug backdoor (a `test`, `debug`, `dev`, `mock`, or `dummy` name segment). Backdoor entry points that remain callable in a production deployment let anyone invoke privileged behavior, and are a well-known way on-chain contracts are compromised. This is a name-based heuristic and may flag a legitimately named function.\n\nRemediation: Remove test/debug entry points before deployment, or gate them behind `#[cfg(test)]` or a compile-time feature so they cannot be called from a production build. Never ship a privileged function intended only for testing."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-029",
+              "name": "Public test or debug hook in a contract entry point",
+              "properties": {
+                "category": "access-control",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Remove test/debug entry points before deployment, or gate them behind `#[cfg(test)]` or a compile-time feature so they cannot be called from a production build. Never ship a privileged function intended only for testing.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Public test or debug hook in a contract entry point"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "fullDescription": {
+                "text": "A source file imports everything from `soroban_sdk` with a glob (`use soroban_sdk::*;` or a nested glob). Wildcard imports obscure which SDK items are used and can silently include deprecated or unsafe APIs when the SDK changes. This is a readability and reviewability signal, not proof of a security defect."
+              },
+              "help": {
+                "markdown": "## Wildcard import from the Soroban SDK\n\nA source file imports everything from `soroban_sdk` with a glob (`use soroban_sdk::*;` or a nested glob). Wildcard imports obscure which SDK items are used and can silently include deprecated or unsafe APIs when the SDK changes. This is a readability and reviewability signal, not proof of a security defect.\n\n### Remediation\n\nReplace the glob with the specific `soroban_sdk` items the contract uses (for example `use soroban_sdk::{Address, Env};`). Nested module imports should likewise name each item instead of ending in `*`.\n\n### References\n\n- https://doc.rust-lang.org/book/ch07-04-bringing-paths-into-scope-with-the-use-keyword.html\n- https://developers.stellar.org/docs",
+                "text": "A source file imports everything from `soroban_sdk` with a glob (`use soroban_sdk::*;` or a nested glob). Wildcard imports obscure which SDK items are used and can silently include deprecated or unsafe APIs when the SDK changes. This is a readability and reviewability signal, not proof of a security defect.\n\nRemediation: Replace the glob with the specific `soroban_sdk` items the contract uses (for example `use soroban_sdk::{Address, Env};`). Nested module imports should likewise name each item instead of ending in `*`."
+              },
+              "helpUri": "https://doc.rust-lang.org/book/ch07-04-bringing-paths-into-scope-with-the-use-keyword.html",
+              "id": "SS-033",
+              "name": "Wildcard import from the Soroban SDK",
+              "properties": {
+                "category": "dependencies",
+                "confidence": "high",
+                "references": [
+                  "https://doc.rust-lang.org/book/ch07-04-bringing-paths-into-scope-with-the-use-keyword.html",
+                  "https://developers.stellar.org/docs"
+                ],
+                "remediation": "Replace the glob with the specific `soroban_sdk` items the contract uses (for example `use soroban_sdk::{Address, Env};`). Nested module imports should likewise name each item instead of ending in `*`.",
+                "severity": "low"
+              },
+              "shortDescription": {
+                "text": "Wildcard import from the Soroban SDK"
+              }
+            }
+          ],
+          "version": "0.2.0"
+        }
+      }
+    }
+  ],
+  "version": "2.1.0"
+}

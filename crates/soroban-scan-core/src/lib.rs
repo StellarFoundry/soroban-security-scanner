@@ -19,6 +19,7 @@
 pub mod ai;
 pub mod baseline;
 pub mod category;
+pub mod compare;
 pub mod confidence;
 pub mod config;
 pub mod context;

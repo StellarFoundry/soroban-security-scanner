@@ -15,6 +15,8 @@ soroban-scan <COMMAND>
 | `version` | Print the scanner name and version. |
 | `init` | Write a starter configuration file. |
 | `doctor` | Explain project classification, excludes, and effective configuration. |
+| `compare` | Compare two JSON scan reports by finding fingerprint. |
+| `dashboard` | Render a static trend dashboard from several JSON scan reports. |
 | `config show` / `config validate` | Inspect or validate configuration. |
 
 ---
@@ -45,6 +47,7 @@ roots in one run.
 | `--disable <RULE>` | Disable a rule by id (repeatable). |
 | `--rule <RULE>` | Run only the given rule(s) (repeatable). |
 | `--fail-on <none\|info\|low\|medium\|high\|critical>` | Failure threshold (default `high`). |
+| `--sarif-policy <none\|info\|low\|medium\|high\|critical>` | Opt-in SARIF policy annotations on each result; requires `--format sarif`. |
 | `--baseline <FILE>` | Compare against a baseline (repeatable; files are merged). Gate applies to new findings only. |
 | `--write-baseline <FILE>` | Write current findings as a baseline and exit. |
 | `--prune-baseline <FILE>` | Rewrite the baseline with only findings present in this scan and print a removal summary. |
@@ -129,6 +132,32 @@ Pass `--include-cfg-test` (or set `include_cfg_test = true`) to analyze
 test-gated items too. `--exclude-tests` additionally skips `tests` directories
 and wins if both are given. Because skipped items are removed before analysis,
 they do not appear in the inventory unless `--include-cfg-test` is set.
+
+### SARIF policy annotations
+
+`--sarif-policy <LEVEL>` (requires `--format sarif`) adds the policy decision
+to each SARIF result, inside the schema's `properties` bag:
+
+```bash
+soroban-scan scan ./contracts --format sarif --sarif-policy high \
+  --output results.sarif
+```
+
+Each result gains `properties.policyStatus` (`fail`, `pass`, `accepted`, or
+`suppressed`) and a short `properties.policyReason`:
+
+```json
+"properties": {
+  "severity": "high",
+  "policyStatus": "fail",
+  "policyReason": "severity high meets the policy threshold high"
+}
+```
+
+The annotations are opt-in: without the flag the SARIF output is unchanged.
+They describe existing report state only (severity, baseline status, and
+suppression) and add no source text, environment data, or secrets. Policy
+annotations are bounded to the results already present in the report.
 
 ### GitHub workflow annotations
 
@@ -319,6 +348,62 @@ Prints the discovered manifests, classification and evidence, source file count,
 excludes, effective configuration, and enabled rule ids. See
 [Doctor](doctor.md).
 
+## `compare`
+
+```text
+soroban-scan compare BEFORE.json AFTER.json [--format terminal|json] [--output FILE]
+```
+
+Compares two JSON reports (`--format json`) and matches findings by the
+documented [fingerprint](baselines.md#fingerprints): rule id, scan-relative
+file, and normalized evidence. It prints `unchanged`, `new`, `fixed`, and
+`renamed` counts, followed by the findings themselves:
+
+```bash
+soroban-scan scan ./contracts --format json --output old.json
+soroban-scan scan ./contracts --format json --output new.json
+soroban-scan compare old.json new.json
+```
+
+- A finding present in both reports with the same fingerprint is **unchanged**.
+- An unmatched finding only in the newer report is **new**; only in the older
+  report it is **fixed**.
+- A finding that keeps its rule id and file but changes fingerprint (for
+  example, because the flagged expression was edited) is **renamed**. Renamed
+  pairs are listed with both fingerprints instead of being miscounted as a fix
+  plus a regression. Rename pairing uses rule id and file only, so it is a
+  best-effort explanation that should be reviewed.
+- Reports are bounded to 64 MiB and 100,000 findings per file before parsing.
+  Unsupported `schema_version` values and malformed documents are runtime errors
+  (exit code `3`). Comparison never changes the reports or fails on findings.
+
+## `dashboard`
+
+```text
+soroban-scan dashboard REPORT.json... [--title TEXT] [--output FILE]
+```
+
+Aggregates several JSON reports (oldest first) into one static,
+self-contained HTML page:
+
+```bash
+soroban-scan dashboard scans/jan.json scans/feb.json scans/mar.json \
+  --output trend.html
+```
+
+- Renders per-run files analyzed, total findings, and severity counts, plus a
+  summary (latest findings and change from the first run) and an inline SVG
+  bar chart.
+- Uses inline CSS and SVG only: no JavaScript, remote fonts, stylesheets, or
+  images, so the page renders offline.
+- Never includes finding titles, evidence, or source text. Only counts and
+  project labels are copied from the reports.
+- Missing `stats` or `findings` data is shown as `—` and ignored when computing
+  the latest value and change; an unknown severity drops the per-severity split
+  but keeps the total.
+- Bounded to 50 reports per dashboard, 16 MiB per report, and 100,000 findings
+  per report. Oversized or malformed inputs are runtime errors (exit code `3`).
+
 ## `completions`
 
 ```text
@@ -393,7 +478,10 @@ network access.
 - **html** — a single self-contained file with inline CSS, no JavaScript, and no
   remote resources. All source-derived text (titles, evidence, remediation,
   paths, suppressions) is HTML-escaped, so crafted findings cannot inject
-  markup. Suitable for sharing with reviewers who do not use a terminal.
+  markup. It includes a deterministic `@media print` stylesheet (no external
+  fonts or images) and a policy-status block with the `--fail-on` threshold and
+  each finding's position relative to it, so the file renders and prints with
+  the network disabled. Suitable for sharing with reviewers and audit packets.
 - **github** — GitHub Actions workflow-command annotations (`::error`,
   `::warning`, `::notice`) with escaped paths, titles, and evidence.
 
