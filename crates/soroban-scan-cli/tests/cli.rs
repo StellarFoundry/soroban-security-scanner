@@ -340,6 +340,61 @@ fn scan_help_includes_copy_pasteable_examples() {
 }
 
 #[test]
+fn policy_guide_examples_are_valid_and_linked_from_help() {
+    let doc = std::fs::read_to_string(repo_root().join("docs/policy.md")).unwrap();
+    for heading in [
+        "## Policy schema",
+        "## Precedence",
+        "## Waivers",
+        "## Report formats",
+        "## CI examples",
+        "## Limitations",
+    ] {
+        assert!(doc.contains(heading), "policy.md is missing {heading}");
+    }
+
+    let fenced = |language: &str| -> Vec<String> {
+        let marker = format!("```{language}\n");
+        let mut blocks = Vec::new();
+        let mut rest = doc.as_str();
+        while let Some(start) = rest.find(&marker) {
+            let body = &rest[start + marker.len()..];
+            let Some(end) = body.find("```") else { break };
+            blocks.push(body[..end].to_string());
+            rest = &body[end + 3..];
+        }
+        blocks
+    };
+
+    let toml = fenced("toml")
+        .into_iter()
+        .find(|block| block.contains("[[waivers]]"))
+        .expect("policy.md must show a waiver example");
+    soroban_scan_core::config::ScanConfig::from_toml(&toml)
+        .expect("the documented policy TOML must parse");
+
+    let waiver_json = fenced("json")
+        .into_iter()
+        .next()
+        .expect("policy.md must show a waiver audit JSON example");
+    let value: serde_json::Value = serde_json::from_str(&waiver_json).unwrap();
+    assert_eq!(value["owner"], "security-team");
+    assert_eq!(value["expired"], false);
+
+    let help = run(&["--help"]);
+    assert_eq!(help.code, 0, "{}", help.stderr);
+    assert!(
+        help.stdout.contains("docs/policy.md"),
+        "top-level help must link the policy guide"
+    );
+    let scan_help = run(&["scan", "--help"]);
+    assert!(
+        scan_help.stdout.contains("docs/policy.md"),
+        "scan help must link the policy guide"
+    );
+}
+
+#[test]
 fn rules_lists_built_in_rules() {
     let out = run(&["rules"]);
     assert_eq!(out.code, 0);

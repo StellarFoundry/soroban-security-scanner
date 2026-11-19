@@ -16,6 +16,7 @@ Start here.
 - [Rules](rules/README.md) — severity, confidence, and the built-in detectors.
 - [Analysis Methodology](analysis-methodology.md) — what static analysis can and cannot prove.
 - [Baselines](baselines.md) - track new vs. known findings.
+- [Policy and Reporting](policy.md) - policy schema, precedence, waivers, and report formats.
 - [Report Retention](retention.md) - deterministic artifact names and retention guidance.
 - [GitHub Integration](github-integration.md) — Action, SARIF, PR scanning.
 - [GitHub Action](github-action.md) — inputs, outputs, and usage examples.

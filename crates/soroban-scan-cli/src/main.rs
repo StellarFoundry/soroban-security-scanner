@@ -266,7 +266,10 @@ enum PagerArg {
     long_about = "Statically analyzes Soroban/Rust source code and reports \
 security findings with stable rule ids, severity, confidence, source locations, \
 and remediation guidance. The scanner never executes, deploys, or mutates the \
-code it analyzes.",
+code it analyzes.\n\nPolicy and reporting guide: docs/policy.md",
+    after_help = "Documentation:\n  \
+    Policy and reporting: docs/policy.md\n  \
+    CLI reference:        docs/cli.md",
     propagate_version = true
 )]
 struct Cli {
@@ -314,7 +317,8 @@ struct CompletionsArgs {
 #[command(after_help = "Examples:\n  \
     soroban-scan scan ./contracts\n  \
     soroban-scan scan ./contracts --format json --output report.json\n  \
-    soroban-scan scan ./contracts --min-severity high --fail-on high")]
+    soroban-scan scan ./contracts --min-severity high --fail-on high\n\n  \
+    Policy and reporting guide: docs/policy.md")]
 struct ScanArgs {
     /// Directory or file(s) to scan. Repeatable; results are merged.
     #[arg(default_value = ".", num_args = 1..)]
