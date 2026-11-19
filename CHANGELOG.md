@@ -23,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The self-contained HTML report now has a deterministic `@media print`
   stylesheet and a policy-status section showing the gate threshold and each
   finding's position relative to it, with no remote assets (`#375`).
+- `--sarif-policy <LEVEL>` opt-in adds `properties.policyStatus` and
+  `properties.policyReason` to each SARIF result for consumers that need to see
+  the policy decision; output without the flag is unchanged (`#373`).
 
 - Parsed files now expose a best-effort `use` import map
   (`ParsedSource::resolve_path`) with support for aliases, grouped imports, and

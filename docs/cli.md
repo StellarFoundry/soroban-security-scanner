@@ -46,6 +46,7 @@ roots in one run.
 | `--disable <RULE>` | Disable a rule by id (repeatable). |
 | `--rule <RULE>` | Run only the given rule(s) (repeatable). |
 | `--fail-on <none\|info\|low\|medium\|high\|critical>` | Failure threshold (default `high`). |
+| `--sarif-policy <none\|info\|low\|medium\|high\|critical>` | Opt-in SARIF policy annotations on each result; requires `--format sarif`. |
 | `--baseline <FILE>` | Compare against a baseline (repeatable; files are merged). Gate applies to new findings only. |
 | `--write-baseline <FILE>` | Write current findings as a baseline and exit. |
 | `--prune-baseline <FILE>` | Rewrite the baseline with only findings present in this scan and print a removal summary. |
@@ -130,6 +131,32 @@ Pass `--include-cfg-test` (or set `include_cfg_test = true`) to analyze
 test-gated items too. `--exclude-tests` additionally skips `tests` directories
 and wins if both are given. Because skipped items are removed before analysis,
 they do not appear in the inventory unless `--include-cfg-test` is set.
+
+### SARIF policy annotations
+
+`--sarif-policy <LEVEL>` (requires `--format sarif`) adds the policy decision
+to each SARIF result, inside the schema's `properties` bag:
+
+```bash
+soroban-scan scan ./contracts --format sarif --sarif-policy high \
+  --output results.sarif
+```
+
+Each result gains `properties.policyStatus` (`fail`, `pass`, `accepted`, or
+`suppressed`) and a short `properties.policyReason`:
+
+```json
+"properties": {
+  "severity": "high",
+  "policyStatus": "fail",
+  "policyReason": "severity high meets the policy threshold high"
+}
+```
+
+The annotations are opt-in: without the flag the SARIF output is unchanged.
+They describe existing report state only (severity, baseline status, and
+suppression) and add no source text, environment data, or secrets. Policy
+annotations are bounded to the results already present in the report.
 
 ### GitHub workflow annotations
 

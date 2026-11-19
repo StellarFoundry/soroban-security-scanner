@@ -376,6 +376,12 @@ struct ScanArgs {
     #[arg(long, value_enum, default_value_t = FailOnArg::High)]
     fail_on: FailOnArg,
 
+    /// Opt-in SARIF policy annotations: add `properties.policyStatus` and
+    /// `policyReason` to each result for this threshold. Requires
+    /// `--format sarif`.
+    #[arg(long, value_enum, value_name = "LEVEL")]
+    sarif_policy: Option<FailOnArg>,
+
     /// Compare against one or more baseline files, marking findings as new or existing.
     #[arg(long, value_name = "FILE", action = clap::ArgAction::Append)]
     baseline: Vec<PathBuf>,
@@ -619,6 +625,12 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
     let stdin_mode = args.stdin_filename.is_some();
     let multiple = args.paths.len() > 1;
 
+    if args.sarif_policy.is_some() && args.format != FormatArg::Sarif {
+        return Err(CliError::Usage(
+            "--sarif-policy requires --format sarif".to_string(),
+        ));
+    }
+
     if !stdin_mode {
         for path in &args.paths {
             if !path.exists() {
@@ -820,6 +832,13 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
         report::render_terminal_with_color(&outcome, color)
     } else if matches!(args.format, FormatArg::Html) {
         report::render_html_with_policy(&outcome, args.fail_on.threshold())
+    } else if matches!(args.format, FormatArg::Sarif) && args.sarif_policy.is_some() {
+        report::render_sarif_with_policy(
+            &outcome,
+            registry,
+            baseline_report.as_ref(),
+            args.sarif_policy.and_then(FailOnArg::threshold),
+        )
     } else {
         report::render_with_baseline(
             &outcome,

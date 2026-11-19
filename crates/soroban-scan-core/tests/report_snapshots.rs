@@ -219,3 +219,39 @@ fn print_friendly_html_is_self_contained_and_shows_policy_status() {
     assert!(!html.contains("src="));
     assert!(!html.contains("url("));
 }
+
+#[test]
+fn sarif_policy_annotations_match_golden_snapshot() {
+    let outcome = sample_outcome();
+    let registry = RuleRegistry::with_default_rules();
+    let sarif = report::render_sarif_with_policy(&outcome, &registry, None, Some(Severity::High));
+    assert_golden("policy.sarif", &sarif);
+}
+
+#[test]
+fn sarif_policy_annotations_are_schema_safe_and_opt_in() {
+    let outcome = sample_outcome();
+    let registry = RuleRegistry::with_default_rules();
+
+    let plain = report::render_sarif(&outcome, &registry);
+    let plain: serde_json::Value = serde_json::from_str(&plain).unwrap();
+    for result in plain["runs"][0]["results"].as_array().unwrap() {
+        assert!(result["properties"].get("policyStatus").is_none());
+        assert!(result["properties"].get("policyReason").is_none());
+    }
+
+    let annotated =
+        report::render_sarif_with_policy(&outcome, &registry, None, Some(Severity::High));
+    let annotated: serde_json::Value = serde_json::from_str(&annotated).unwrap();
+    let results = annotated["runs"][0]["results"].as_array().unwrap();
+    assert!(!results.is_empty());
+    for result in results {
+        let status = result["properties"]["policyStatus"].as_str().unwrap();
+        let reason = result["properties"]["policyReason"].as_str().unwrap();
+        assert!(
+            matches!(status, "pass" | "fail" | "accepted" | "suppressed"),
+            "unexpected policy status: {status}"
+        );
+        assert!(!reason.is_empty());
+    }
+}

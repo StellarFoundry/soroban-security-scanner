@@ -694,6 +694,7 @@ fn sarif_result(
     finding: &Finding,
     suppression: Option<&SuppressionInfo>,
     baseline_status: Option<BaselineStatus>,
+    policy: Option<Severity>,
 ) -> serde_json::Value {
     use serde_json::json;
 
@@ -762,7 +763,56 @@ fn sarif_result(
         };
     }
 
+    if let Some(threshold) = policy {
+        let (status, reason) =
+            sarif_policy_annotation(finding, suppression, baseline_status, threshold);
+        result["properties"]["policyStatus"] = json!(status);
+        result["properties"]["policyReason"] = json!(reason);
+    }
+
     result
+}
+
+/// The policy decision for one SARIF result.
+///
+/// Policy annotations are opt-in and only describe existing report state: the
+/// severity, the baseline status, and the suppression marker. They never add
+/// source text, environment data, or secrets to the report.
+fn sarif_policy_annotation(
+    finding: &Finding,
+    suppression: Option<&SuppressionInfo>,
+    baseline_status: Option<BaselineStatus>,
+    threshold: Severity,
+) -> (&'static str, String) {
+    if suppression.is_some() {
+        return (
+            "suppressed",
+            "excluded from the gate by a suppression".to_string(),
+        );
+    }
+    if baseline_status == Some(BaselineStatus::Existing) {
+        return (
+            "accepted",
+            "accepted by the baseline; the gate considers new findings only".to_string(),
+        );
+    }
+    if finding.severity.meets(threshold) {
+        (
+            "fail",
+            format!(
+                "severity {} meets the policy threshold {}",
+                finding.severity, threshold
+            ),
+        )
+    } else {
+        (
+            "pass",
+            format!(
+                "severity {} is below the policy threshold {}",
+                finding.severity, threshold
+            ),
+        )
+    }
 }
 
 /// Renders the SARIF 2.1.0 report.
@@ -775,6 +825,21 @@ pub fn render_sarif_with_baseline(
     outcome: &ScanOutcome,
     registry: &RuleRegistry,
     baseline: Option<&BaselineReport>,
+) -> String {
+    render_sarif_with_policy(outcome, registry, baseline, None)
+}
+
+/// Renders the SARIF 2.1.0 report with opt-in policy annotations.
+///
+/// `policy` is the gate threshold to annotate. When it is `None` no policy
+/// properties are added, so the default SARIF output is unchanged. Annotations
+/// live under each result's SARIF `properties` bag and contain only the policy
+/// decision and a short reason derived from the finding.
+pub fn render_sarif_with_policy(
+    outcome: &ScanOutcome,
+    registry: &RuleRegistry,
+    baseline: Option<&BaselineReport>,
+    policy: Option<Severity>,
 ) -> String {
     use serde_json::{json, Value};
 
@@ -825,17 +890,21 @@ pub fn render_sarif_with_baseline(
                 finding,
                 None,
                 baseline.and_then(|report| report.status(&finding.fingerprint)),
+                policy,
             )
         })
         .collect();
 
     // Suppressed findings are never dropped: they stay in the SARIF results and
     // are marked as in-source suppressions (SARIF 2.1.0 `suppressions`).
-    results.extend(
-        outcome.suppressed.iter().map(|suppressed| {
-            sarif_result(&suppressed.finding, Some(&suppressed.suppression), None)
-        }),
-    );
+    results.extend(outcome.suppressed.iter().map(|suppressed| {
+        sarif_result(
+            &suppressed.finding,
+            Some(&suppressed.suppression),
+            None,
+            policy,
+        )
+    }));
 
     let mut run = json!({
         "tool": {

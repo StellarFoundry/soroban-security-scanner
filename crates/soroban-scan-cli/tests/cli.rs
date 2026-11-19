@@ -600,6 +600,64 @@ fn scan_sarif_output_is_valid() {
 }
 
 #[test]
+fn sarif_policy_annotations_are_opt_in_and_schema_safe() {
+    let fixture = fixture("corpus/SS-001");
+    let base = [
+        "scan",
+        fixture.to_str().unwrap(),
+        "--format",
+        "sarif",
+        "--fail-on",
+        "none",
+    ];
+
+    let plain = run(&base);
+    assert_eq!(plain.code, 0, "stderr: {}", plain.stderr);
+    let plain: serde_json::Value = serde_json::from_str(&plain.stdout).unwrap();
+    for result in plain["runs"][0]["results"].as_array().unwrap() {
+        assert!(result["properties"].get("policyStatus").is_none());
+        assert!(result["properties"].get("policyReason").is_none());
+    }
+
+    let mut args = base.to_vec();
+    args.extend(["--sarif-policy", "high"]);
+    let annotated = run(&args);
+    assert_eq!(annotated.code, 0, "stderr: {}", annotated.stderr);
+    let annotated: serde_json::Value = serde_json::from_str(&annotated.stdout).unwrap();
+    let results = annotated["runs"][0]["results"].as_array().unwrap();
+    assert!(!results.is_empty());
+    for result in results {
+        assert!(matches!(
+            result["properties"]["policyStatus"].as_str(),
+            Some("pass" | "fail" | "accepted" | "suppressed")
+        ));
+        assert!(!result["properties"]["policyReason"]
+            .as_str()
+            .unwrap()
+            .is_empty());
+    }
+}
+
+#[test]
+fn sarif_policy_requires_the_sarif_format() {
+    let out = run(&[
+        "scan",
+        fixture("corpus/SS-001").to_str().unwrap(),
+        "--format",
+        "json",
+        "--sarif-policy",
+        "high",
+    ]);
+    assert_eq!(out.code, 2, "stderr: {}", out.stderr);
+    assert!(
+        out.stderr
+            .contains("--sarif-policy requires --format sarif"),
+        "got: {}",
+        out.stderr
+    );
+}
+
+#[test]
 fn scan_html_output_is_self_contained() {
     let out = run(&[
         "scan",
