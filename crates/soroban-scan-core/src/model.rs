@@ -252,6 +252,9 @@ pub enum DiagnosticCode {
     /// Repeated provider failures disabled assistance for the rest of the scan.
     #[serde(rename = "AI-002")]
     AiCircuitOpen,
+    /// Generic mode is active and Soroban-only rules were skipped.
+    #[serde(rename = "MODE-001")]
+    GenericMode,
 }
 
 impl DiagnosticCode {
@@ -279,6 +282,7 @@ impl DiagnosticCode {
             DiagnosticCode::GeneratedFileExcluded => "GENERATED-002",
             DiagnosticCode::AiRequestBudgetExhausted => "AI-001",
             DiagnosticCode::AiCircuitOpen => "AI-002",
+            DiagnosticCode::GenericMode => "MODE-001",
         }
     }
 }

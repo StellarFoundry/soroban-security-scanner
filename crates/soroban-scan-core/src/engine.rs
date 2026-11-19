@@ -13,7 +13,7 @@ use std::time::{Duration, Instant};
 use globset::Glob;
 use serde::Serialize;
 
-use crate::config::{ScanConfig, SuppressionRule, WaiverRule};
+use crate::config::{AnalysisMode, ScanConfig, SuppressionRule, WaiverRule};
 use crate::context::AnalysisContext;
 use crate::error::ScanError;
 use crate::finding::Finding;
@@ -25,6 +25,8 @@ use crate::suppression::Suppression;
 /// Statistics about a scan.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct ScanStats {
+    /// Effective project analysis mode.
+    pub analysis_mode: AnalysisMode,
     /// Number of rules executed.
     pub rules_run: usize,
     /// Number of rules skipped by configuration.
@@ -652,10 +654,35 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
             .map(|manifest| normalize_rel(&ctx.relative_path(&manifest.path))),
     );
 
+    let analysis_mode = match config.mode {
+        AnalysisMode::Auto if loaded.project.kind == ProjectKind::GenericRust => {
+            AnalysisMode::Generic
+        }
+        AnalysisMode::Auto => AnalysisMode::Soroban,
+        mode => mode,
+    };
+    let soroban_only_rules = registry
+        .rules()
+        .iter()
+        .filter(|rule| rule.soroban_only())
+        .count();
+
     let mut diagnostics = loaded.project.diagnostics.clone();
     diagnostics.extend(override_diagnostics(config, registry));
+    if analysis_mode == AnalysisMode::Generic {
+        diagnostics.push(Diagnostic::info(
+            DiagnosticCode::GenericMode,
+            format!(
+                "generic mode: {soroban_only_rules} Soroban-only rule(s) disabled; \
+                 project classified as {}",
+                loaded.project.kind
+            ),
+            None,
+        ));
+    }
     let mut findings: Vec<Finding> = Vec::new();
     let mut stats = ScanStats {
+        analysis_mode,
         files_analyzed: loaded.sources.len(),
         files_parsed: loaded
             .sources
@@ -689,6 +716,10 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
     for rule in rules {
         let meta = rule.metadata();
         if !rule.enabled_by_default() || !config.rules.is_rule_enabled(meta.id, meta.category) {
+            stats.rules_skipped += 1;
+            continue;
+        }
+        if analysis_mode == AnalysisMode::Generic && rule.soroban_only() {
             stats.rules_skipped += 1;
             continue;
         }
@@ -1061,6 +1092,11 @@ pub fn merge(outcomes: Vec<ScanOutcome>, labels: &[String]) -> ScanOutcome {
         suppressed.append(&mut outcome.suppressed);
         config_suppressions.append(&mut outcome.config_suppressions);
         waivers.append(&mut outcome.waivers);
+        stats.analysis_mode = if projects.is_empty() {
+            outcome.stats.analysis_mode
+        } else {
+            merge_analysis_mode(stats.analysis_mode, outcome.stats.analysis_mode)
+        };
         merge_stats(&mut stats, &outcome.stats);
         for timing in &outcome.rule_timings {
             let entry = timings
@@ -1111,6 +1147,15 @@ pub fn merge(outcomes: Vec<ScanOutcome>, labels: &[String]) -> ScanOutcome {
         waivers: merge_waiver_reports(waivers),
         truncation: None,
         rule_timings,
+    }
+}
+
+/// Keeps the Soroban rule set when roots requested different effective modes.
+fn merge_analysis_mode(a: AnalysisMode, b: AnalysisMode) -> AnalysisMode {
+    if a == AnalysisMode::Soroban || b == AnalysisMode::Soroban {
+        AnalysisMode::Soroban
+    } else {
+        AnalysisMode::Generic
     }
 }
 

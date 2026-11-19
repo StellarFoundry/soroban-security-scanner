@@ -40,9 +40,10 @@ can classify or suppress them without parsing the human-readable message.
 | `BASELINE-001` | warning | A baseline references a rule id that is no longer registered; the entry remains forward compatible. |
 | `AI-001` | warning | The optional assistance layer reached its configured request budget; the scan continued without further AI calls. |
 | `AI-002` | warning | Repeated provider failures opened the assistance circuit breaker; the scan continued without further AI calls. |
+| `MODE-001` | info | Generic mode is active; Soroban-only rules were skipped. The diagnostic names the project classification and how many rules were disabled. |
 
 Codes are grouped by area: `PARSE-*`, `MANIFEST-*`, `SOURCE-*`, `CRATE-*`,
-`RULE-*`, `CONFIG-*`, and `BASELINE-*`. `config validate` prints `CONFIG-*` warnings to
+`RULE-*`, `CONFIG-*`, `BASELINE-*`, and `MODE-*`. `config validate` prints `CONFIG-*` warnings to
 stderr while still exiting successfully, because they do not prevent a scan from
 running.
 

@@ -278,6 +278,15 @@ pub fn render_terminal_with_color(outcome: &ScanOutcome, color: TerminalColor) -
         outcome.project.kind
     ));
     out.push_str(&format!(
+        "Mode: {}{}\n",
+        outcome.stats.analysis_mode.as_str(),
+        if outcome.stats.analysis_mode == crate::config::AnalysisMode::Generic {
+            " (Soroban-only rules disabled)"
+        } else {
+            ""
+        }
+    ));
+    out.push_str(&format!(
         "Files: {}  Rules run: {}  Skipped: {}  Suppressions: {}\n",
         outcome.stats.files_analyzed,
         outcome.stats.rules_run,
@@ -504,6 +513,8 @@ struct ProjectSummary {
 /// Scan statistics in JSON reports.
 #[derive(Debug, Serialize)]
 struct StatsSummary {
+    /// Effective analysis mode (`soroban` or `generic`).
+    mode: String,
     files_analyzed: usize,
     files_parsed: usize,
     files_failed: usize,
@@ -595,6 +606,7 @@ pub fn render_json_with_baseline(
             soroban_sdk_versions: outcome.project.soroban.sdk_versions.clone(),
         },
         stats: StatsSummary {
+            mode: outcome.stats.analysis_mode.as_str().to_string(),
             files_analyzed: outcome.stats.files_analyzed,
             files_parsed: outcome.stats.files_parsed,
             files_failed: outcome.stats.files_failed,
@@ -1008,9 +1020,10 @@ pub fn render_markdown(outcome: &ScanOutcome) -> String {
     out.push_str("# Soroban Security Scan\n\n");
     out.push_str(&format!("- **Tool:** {TOOL_NAME} {}\n", crate::VERSION));
     out.push_str(&format!(
-        "- **Project:** `{}` ({})\n",
+        "- **Project:** `{}` ({})\n- **Mode:** {}\n",
         outcome.project.root.display(),
-        outcome.project.kind
+        outcome.project.kind,
+        outcome.stats.analysis_mode.as_str()
     ));
     out.push_str(&format!(
         "- **Files analyzed:** {}\n",

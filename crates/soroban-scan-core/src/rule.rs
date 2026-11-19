@@ -73,6 +73,15 @@ pub trait Rule: Send + Sync {
     fn enabled_by_default(&self) -> bool {
         true
     }
+
+    /// Whether the rule only makes sense for Soroban projects.
+    ///
+    /// Defaults to `true`: the built-in detectors model Soroban semantics.
+    /// A future generic-Rust rule can override this to keep running in
+    /// generic mode.
+    fn soroban_only(&self) -> bool {
+        true
+    }
 }
 
 #[cfg(test)]

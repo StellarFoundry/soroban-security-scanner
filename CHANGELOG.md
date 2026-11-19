@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `--mode <soroban|generic|auto>` / `mode` selects the project analysis mode.
+  Generic mode is opt-in and skips Soroban-only rules for plain Rust projects;
+  the effective mode is reported in terminal, Markdown, and JSON output, and a
+  `MODE-001` diagnostic makes the rule change explicit (`#381`).
 - `[[waivers]]` configuration: time-limited suppressions with a required owner,
   reason, and UTC expiry date. Expired waivers stop suppressing, emit
   `CONFIG-003`, and fail the run unless `--fail-on none` is set; every waiver is

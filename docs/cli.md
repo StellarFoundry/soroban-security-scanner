@@ -37,6 +37,7 @@ roots in one run.
 | `--output <FILE>` | Write the report to a file instead of stdout. |
 | `--min-severity <LEVEL>` | Only report findings at or above this severity. |
 | `--min-confidence <LEVEL>` | Only report findings at or above this confidence. |
+| `--mode <soroban\|generic\|auto>` | Project analysis mode (default `soroban`). `generic` is opt-in and skips Soroban-only rules; `auto` uses generic mode only for plain Rust projects. The effective mode is always shown. |
 | `--max-findings <N>` | Report at most N findings after sorting; the exit gate is unaffected and the report states how many were omitted. |
 | `--redact <FIELD>` | Replace a report field with a stable hash at render time (repeatable; see [Report redaction](#report-redaction)). |
 | `--exclude <GLOB>` | Exclude a glob relative to the scan root (repeatable). |
@@ -63,6 +64,19 @@ roots in one run.
 | `--log-level <off\|error\|warn\|info\|debug>` | Emit structured JSON log lines to stderr (default `off`). Stdout stays reserved for the report; logs never include source text, environment values, or absolute home paths. |
 | `--pager <auto\|never\|always>` | Page long terminal reports through `$PAGER` (default `auto`); never affects JSON/SARIF/Markdown/GitHub output. |
 | `--color <auto\|always\|never>` | Colorize terminal output (default `auto`). Machine formats never contain ANSI escapes. |
+
+### Analysis modes
+
+The default `soroban` mode runs the full rule set. `--mode generic` is opt-in:
+it skips every rule that is Soroban-only (all built-in detectors today), so a
+plain Rust project never receives Soroban-flavored claims. `--mode auto` applies
+generic mode only when the project is classified as `generic_rust`.
+
+The effective mode is printed as `Mode:` in terminal and Markdown reports and
+stored as `stats.mode` in JSON. Generic mode also emits a `MODE-001`
+informational diagnostic naming the project classification and the number of
+rules skipped, so a mode change is never silent. The same setting is available
+as `mode = "soroban"` in `soroban-scan.toml`.
 
 ### Structured logs
 

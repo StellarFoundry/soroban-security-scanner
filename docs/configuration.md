@@ -39,6 +39,10 @@ min_severity = "info"
 # Minimum confidence to report: low, medium, high
 min_confidence = "low"
 
+# Project analysis mode: soroban (default), generic, or auto. Generic skips
+# Soroban-only rules and is opt-in; auto uses it only for plain Rust projects.
+mode = "soroban"
+
 # Glob patterns (relative to the scan root) to exclude from discovery
 exclude = ["vendor/**", "target/**"]
 
@@ -104,6 +108,7 @@ max_output_tokens = 1024
 | ----- | ---- | ------- | ------- |
 | `min_severity` | severity | `info` | Minimum severity to report. |
 | `min_confidence` | confidence | `low` | Minimum confidence to report. |
+| `mode` | `soroban`, `generic`, `auto` | `soroban` | Project analysis mode. `generic` is opt-in and skips Soroban-only rules; `auto` selects it only for plain Rust projects. |
 | `exclude` | array of globs | `[]` | Paths excluded from discovery. |
 | `exclude_tests` | bool | `false` | Skip `#[cfg(test)]` items and directories named `tests`. |
 | `include_cfg_test` | bool | `false` | Analyze items gated behind `#[cfg(test)]`. They are skipped by default. |

@@ -19,7 +19,7 @@ use soroban_scan_core::baseline::{self, Baseline, BaselineReport};
 use soroban_scan_core::category::Category;
 use soroban_scan_core::compare;
 use soroban_scan_core::confidence::Confidence;
-use soroban_scan_core::config::ScanConfig;
+use soroban_scan_core::config::{AnalysisMode, ScanConfig};
 use soroban_scan_core::engine;
 use soroban_scan_core::frontend::{self, Frontend};
 use soroban_scan_core::model::DiagnosticCode;
@@ -225,6 +225,27 @@ impl FailOnArg {
     }
 }
 
+/// Argument value for `--mode`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+enum ModeArg {
+    /// Run the Soroban rule set (default).
+    Soroban,
+    /// Skip Soroban-only rules for a generic Rust project.
+    Generic,
+    /// Use generic mode only when the project is classified as plain Rust.
+    Auto,
+}
+
+impl From<ModeArg> for AnalysisMode {
+    fn from(value: ModeArg) -> Self {
+        match value {
+            ModeArg::Soroban => AnalysisMode::Soroban,
+            ModeArg::Generic => AnalysisMode::Generic,
+            ModeArg::Auto => AnalysisMode::Auto,
+        }
+    }
+}
+
 /// Argument value for `--baseline-format`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
 enum BaselineFormatArg {
@@ -351,6 +372,12 @@ struct ScanArgs {
     /// Only report findings at or above this confidence.
     #[arg(long, value_name = "LEVEL")]
     min_confidence: Option<Confidence>,
+
+    /// Project analysis mode. `generic` is opt-in and skips Soroban-only rules;
+    /// `auto` uses generic mode only for plain Rust projects. The effective mode
+    /// is always shown in the report.
+    #[arg(long, value_enum, value_name = "MODE", default_value_t = ModeArg::Soroban)]
+    mode: ModeArg,
 
     /// Report at most N findings, after sorting. The exit gate still considers
     /// every finding, and the report states how many were omitted.
@@ -730,6 +757,7 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
     if let Some(confidence) = args.min_confidence {
         config.min_confidence = confidence;
     }
+    config.mode = args.mode.into();
     config.exclude.extend(args.exclude.iter().cloned());
     config.exclude_tests |= args.exclude_tests;
     config.include_cfg_test |= args.include_cfg_test;

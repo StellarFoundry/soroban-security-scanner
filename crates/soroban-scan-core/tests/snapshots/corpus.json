@@ -12,6 +12,7 @@
     "soroban_sdk_versions": []
   },
   "stats": {
+    "mode": "soroban",
     "files_analyzed": 74,
     "files_parsed": 74,
     "files_failed": 0,
@@ -46,6 +47,7 @@
   "effective_config": {
     "min_severity": "info",
     "min_confidence": "low",
+    "mode": "soroban",
     "exclude": [],
     "exclude_tests": false,
     "include_cfg_test": false,
