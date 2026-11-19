@@ -54,6 +54,7 @@
     "minimum_soroban_sdk": "21.0.0",
     "suppressions": [],
     "waivers": [],
+    "redact": [],
     "rules": {
       "disabled": [],
       "enabled": [],

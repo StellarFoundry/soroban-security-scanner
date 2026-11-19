@@ -23,6 +23,7 @@ use soroban_scan_core::config::ScanConfig;
 use soroban_scan_core::engine;
 use soroban_scan_core::model::DiagnosticCode;
 use soroban_scan_core::project;
+use soroban_scan_core::redaction;
 use soroban_scan_core::registry::RuleRegistry;
 use soroban_scan_core::report::{self, OutputFormat};
 use soroban_scan_core::severity::Severity;
@@ -62,6 +63,10 @@ exclude_generated = false
 
 # Follow symbolic links during discovery (disabled by default for safety).
 follow_symlinks = false
+
+# Hash selected report fields at render time. Presentation-only; fingerprints
+# and matching are unaffected. See docs/cli.md for the field names.
+# redact = ["finding.evidence", "finding.location.file"]
 
 # Minimum supported soroban-sdk version for SS-015.
 minimum_soroban_sdk = "21.0.0"
@@ -345,6 +350,11 @@ struct ScanArgs {
     /// every finding, and the report states how many were omitted.
     #[arg(long, value_name = "N")]
     max_findings: Option<usize>,
+
+    /// Replace a report field with a stable hash. Repeatable; opt-in and
+    /// presentation-only. Fingerprints stay intact so matching still works.
+    #[arg(long, value_name = "FIELD")]
+    redact: Vec<String>,
 
     /// Exclude a glob (relative to the scan root). Repeatable.
     #[arg(long = "exclude", value_name = "GLOB")]
@@ -696,6 +706,8 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
     if let Some(budget) = args.rule_time_budget_ms {
         config.rules.rule_time_budget_ms = Some(budget);
     }
+    config.redact.extend(args.redact.iter().cloned());
+    let redaction = redaction::validate_fields(&config.redact).map_err(CliError::Usage)?;
 
     validate_rule_ids(&config, registry)?;
 
@@ -857,31 +869,45 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
     // sorted, so the retained prefix is deterministic.
     outcome.truncate_findings(args.max_findings);
 
+    // Redaction is applied to a render-only copy. The original outcome keeps
+    // its fingerprints and paths for the gate, baselines, and guidance.
+    let redacted_outcome;
+    let outcome_view: &engine::ScanOutcome = if redaction.is_empty() {
+        &outcome
+    } else {
+        redacted_outcome = redaction::redact(&outcome, &redaction);
+        &redacted_outcome
+    };
+    let redacted_baseline = if redaction.is_empty() {
+        None
+    } else {
+        baseline_report.clone().map(|mut baseline| {
+            redaction::redact_baseline(&mut baseline, &redaction);
+            baseline
+        })
+    };
+    let baseline_view = redacted_baseline.as_ref().or(baseline_report.as_ref());
+
     let color = report::TerminalColor::new(resolve_color(
         args.color,
         args.format,
         args.output.is_some(),
     ));
     let rendered = if args.quiet && matches!(args.format, FormatArg::Terminal) {
-        report::render_terminal_compact_with_color(&outcome, color)
+        report::render_terminal_compact_with_color(outcome_view, color)
     } else if matches!(args.format, FormatArg::Terminal) {
-        report::render_terminal_with_color(&outcome, color)
+        report::render_terminal_with_color(outcome_view, color)
     } else if matches!(args.format, FormatArg::Html) {
-        report::render_html_with_policy(&outcome, args.fail_on.threshold())
+        report::render_html_with_policy(outcome_view, args.fail_on.threshold())
     } else if matches!(args.format, FormatArg::Sarif) && args.sarif_policy.is_some() {
         report::render_sarif_with_policy(
-            &outcome,
+            outcome_view,
             registry,
-            baseline_report.as_ref(),
+            baseline_view,
             args.sarif_policy.and_then(FailOnArg::threshold),
         )
     } else {
-        report::render_with_baseline(
-            &outcome,
-            registry,
-            args.format.into(),
-            baseline_report.as_ref(),
-        )
+        report::render_with_baseline(outcome_view, registry, args.format.into(), baseline_view)
     };
 
     match &args.output {

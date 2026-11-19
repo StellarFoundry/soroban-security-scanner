@@ -37,6 +37,7 @@ roots in one run.
 | `--min-severity <LEVEL>` | Only report findings at or above this severity. |
 | `--min-confidence <LEVEL>` | Only report findings at or above this confidence. |
 | `--max-findings <N>` | Report at most N findings after sorting; the exit gate is unaffected and the report states how many were omitted. |
+| `--redact <FIELD>` | Replace a report field with a stable hash at render time (repeatable; see [Report redaction](#report-redaction)). |
 | `--exclude <GLOB>` | Exclude a glob relative to the scan root (repeatable). |
 | `--exclude-tests` | Skip items gated behind `#[cfg(test)]` and files in test directories. |
 | `--include-cfg-test` | Also analyze items gated behind `#[cfg(test)]`, which are skipped by default. |
@@ -239,6 +240,46 @@ soroban-scan scan ./contracts --max-findings 50
   so a bounded report cannot turn a failing scan into a passing one.
 - `--write-baseline` always records every finding; the limit only affects
   rendered reports.
+
+### Report redaction
+
+`--redact <FIELD>` replaces selected fields with a stable `sha256:` hash before
+rendering. It is off by default, bounded to 32 distinct fields, and can also be
+configured with `redact = [...]` in `soroban-scan.toml`:
+
+```bash
+soroban-scan scan ./contracts --format json \
+  --redact finding.evidence \
+  --redact finding.location.file \
+  --redact suppression.reason \
+  --output report.redacted.json
+```
+
+| Field | What is hashed |
+| ----- | -------------- |
+| `project.root` | The project root label. |
+| `finding.title` | Finding titles, including suppressed findings and resolved baseline entries. |
+| `finding.description` | Finding descriptions. |
+| `finding.evidence` | Source evidence snippets. |
+| `finding.remediation` | Remediation guidance. |
+| `finding.location.file` | Finding file paths. |
+| `suppression.reason` | Inline, configured, and waiver suppression reasons. |
+| `suppression.file` | Inline suppression directive files and configured suppression globs. |
+| `waiver.owner` | Waiver owner names. |
+| `waiver.reason` | Waiver reasons. |
+| `diagnostic.message` | Diagnostic messages. |
+| `diagnostic.path` | Diagnostic file paths. |
+
+- Redaction is presentation-only: it happens on a copy after the gate has been
+  evaluated. `rule_id`, `location.line`, and especially `fingerprint` are never
+  changed, so baselines, `compare`, and `dashboard` keep matching findings.
+- The same value always hashes to the same `sha256:` value, which preserves
+  correlation between a finding and its suppressed or baseline entry.
+- **Limitation:** redaction only covers the fields above. It cannot detect
+  sensitive text in arbitrary free-form content, and it does not rewrite rule
+  metadata or any field not listed. Do not treat it as proof that a report is
+  free of secrets. Keep source, environment values, and credentials out of
+  reports entirely.
 
 ### Long output and paging
 

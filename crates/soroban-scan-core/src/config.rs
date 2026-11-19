@@ -310,6 +310,8 @@ pub struct ScanConfig {
     /// Time-limited, owned suppressions. Expired waivers stop applying and are
     /// reported as errors.
     pub waivers: Vec<WaiverRule>,
+    /// Report fields to replace with a stable hash at render time.
+    pub redact: Vec<String>,
     /// Rule selection and overrides.
     pub rules: RulesConfig,
     /// Optional assistance layer configuration (disabled by default).
@@ -329,6 +331,7 @@ impl Default for ScanConfig {
             minimum_soroban_sdk: "21.0.0".to_string(),
             suppressions: Vec::new(),
             waivers: Vec::new(),
+            redact: Vec::new(),
             rules: RulesConfig::default(),
             ai: AiConfig::default(),
         }
@@ -359,6 +362,8 @@ impl ScanConfig {
                 crate::error::ScanError::Config(format!("invalid waivers[{index}]: {error}"))
             })?;
         }
+        crate::redaction::validate_fields(&self.redact)
+            .map_err(|error| crate::error::ScanError::Config(format!("invalid redact: {error}")))?;
         self.ai
             .validate()
             .map_err(|error| crate::error::ScanError::Config(format!("invalid config: {error}")))?;
@@ -730,6 +735,21 @@ expires = "tomorrow"
         assert_eq!(utc_date_from_unix(1_709_164_800), "2024-02-29");
         assert_eq!(utc_date_from_unix(1_735_689_599), "2024-12-31");
         assert_eq!(utc_date_from_unix(1_735_689_600), "2025-01-01");
+    }
+
+    #[test]
+    fn parses_and_validates_redaction_fields() {
+        let config = ScanConfig::from_toml(
+            r#"
+redact = ["finding.evidence", "finding.location.file", "suppression.reason"]
+"#,
+        )
+        .unwrap();
+        assert_eq!(config.redact.len(), 3);
+
+        let err = ScanConfig::from_toml("redact = [\"not.a.field\"]").unwrap_err();
+        assert!(matches!(err, crate::error::ScanError::Config(_)));
+        assert!(err.to_string().contains("unknown redaction field"), "{err}");
     }
 
     #[test]

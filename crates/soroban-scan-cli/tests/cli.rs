@@ -1443,6 +1443,89 @@ fn inline_suppressions_are_applied_and_reported() {
 }
 
 #[test]
+fn report_redaction_hashes_selected_fields_and_keeps_identity() {
+    let dir = std::env::temp_dir().join(format!("soroban-scan-cli-redact-{}", std::process::id()));
+    write_suppression_project(&dir, true);
+
+    let plain = run(&[
+        "scan",
+        dir.to_str().unwrap(),
+        "--format",
+        "json",
+        "--rule",
+        "SS-001",
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(plain.code, 0, "{}", plain.stderr);
+    let plain: serde_json::Value = serde_json::from_str(&plain.stdout).unwrap();
+    let plain_fingerprint = plain["suppressed"][0]["fingerprint"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    let redacted = run(&[
+        "scan",
+        dir.to_str().unwrap(),
+        "--format",
+        "json",
+        "--rule",
+        "SS-001",
+        "--fail-on",
+        "none",
+        "--redact",
+        "finding.evidence",
+        "--redact",
+        "finding.location.file",
+        "--redact",
+        "suppression.reason",
+        "--redact",
+        "suppression.file",
+    ]);
+    assert_eq!(redacted.code, 0, "{}", redacted.stderr);
+    let value: serde_json::Value = serde_json::from_str(&redacted.stdout).unwrap();
+
+    let suppressed = &value["suppressed"][0];
+    assert!(suppressed["evidence"]
+        .as_str()
+        .unwrap()
+        .starts_with("sha256:"));
+    assert!(suppressed["location"]["file"]
+        .as_str()
+        .unwrap()
+        .starts_with("sha256:"));
+    assert!(suppressed["suppression"]["reason"]
+        .as_str()
+        .unwrap()
+        .starts_with("sha256:"));
+    assert!(suppressed["suppression"]["file"]
+        .as_str()
+        .unwrap()
+        .starts_with("sha256:"));
+    // Identity is unchanged: rule, line and fingerprint survive redaction.
+    assert_eq!(suppressed["rule_id"], "SS-001");
+    assert_eq!(suppressed["fingerprint"], plain_fingerprint);
+    assert_eq!(
+        suppressed["location"]["line"],
+        plain["suppressed"][0]["location"]["line"]
+    );
+    assert_eq!(suppressed["title"], plain["suppressed"][0]["title"]);
+
+    let unknown = run(&[
+        "scan",
+        dir.to_str().unwrap(),
+        "--fail-on",
+        "none",
+        "--redact",
+        "not.a.field",
+    ]);
+    assert_eq!(unknown.code, 2, "{}", unknown.stderr);
+    assert!(unknown.stderr.contains("unknown redaction field"));
+
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
 fn waivers_apply_until_their_expiry_and_report_ownership() {
     let dir = std::env::temp_dir().join(format!("soroban-scan-cli-waiver-{}", std::process::id()));
     write_suppression_project(&dir, false);
