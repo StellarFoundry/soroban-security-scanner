@@ -317,6 +317,26 @@
         "additionalProperties": true
       }
     },
+    "waivers": {
+      "description": "Every configured waiver, including unused and expired entries, so accepted risk and its owner stay auditable. Expired waivers never suppress findings.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "rule", "owner", "reason", "expires", "expired", "matched", "findings_suppressed", "applied"],
+        "properties": {
+          "path": { "type": "string" },
+          "rule": { "type": "string" },
+          "owner": { "type": "string" },
+          "reason": { "type": "string" },
+          "expires": { "type": "string" },
+          "expired": { "type": "boolean" },
+          "matched": { "type": "integer", "minimum": 0 },
+          "findings_suppressed": { "type": "integer", "minimum": 0 },
+          "applied": { "type": "boolean" }
+        },
+        "additionalProperties": true
+      }
+    },
     "diagnostics": {
       "type": "array",
       "items": {

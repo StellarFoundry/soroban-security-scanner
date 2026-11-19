@@ -53,6 +53,7 @@
     "follow_symlinks": false,
     "minimum_soroban_sdk": "21.0.0",
     "suppressions": [],
+    "waivers": [],
     "rules": {
       "disabled": [],
       "enabled": [],
@@ -2658,6 +2659,7 @@
   "suppressed": [],
   "suppressions": [],
   "config_suppressions": [],
+  "waivers": [],
   "diagnostics": [
     {
       "code": "MACRO-001",

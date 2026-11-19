@@ -1443,6 +1443,87 @@ fn inline_suppressions_are_applied_and_reported() {
 }
 
 #[test]
+fn waivers_apply_until_their_expiry_and_report_ownership() {
+    let dir = std::env::temp_dir().join(format!("soroban-scan-cli-waiver-{}", std::process::id()));
+    write_suppression_project(&dir, false);
+    let config = dir.join("waiver.toml");
+
+    let scan = |extra: &[&str]| {
+        let mut args = vec![
+            "scan".to_string(),
+            dir.to_string_lossy().into_owned(),
+            "--config".to_string(),
+            config.to_string_lossy().into_owned(),
+            "--format".to_string(),
+            "json".to_string(),
+            "--rule".to_string(),
+            "SS-001".to_string(),
+        ];
+        args.extend(extra.iter().map(|arg| arg.to_string()));
+        let refs: Vec<&str> = args.iter().map(String::as_str).collect();
+        run(&refs)
+    };
+
+    // A future expiry keeps the waiver active and the owner visible.
+    std::fs::write(
+        &config,
+        "[[waivers]]\npath = \"src/**\"\nrule = \"SS-001\"\nowner = \"security-team\"\n\
+         reason = \"migration tracked in SEC-42\"\nexpires = \"2999-12-31\"\n",
+    )
+    .unwrap();
+    let active = scan(&["--fail-on", "high"]);
+    assert_eq!(active.code, 0, "{}", active.stderr);
+    let value: serde_json::Value = serde_json::from_str(&active.stdout).unwrap();
+    assert!(value["findings"].as_array().unwrap().is_empty());
+    assert_eq!(value["waivers"][0]["owner"], "security-team");
+    assert_eq!(value["waivers"][0]["expires"], "2999-12-31");
+    assert_eq!(value["waivers"][0]["applied"], true);
+    assert_eq!(value["waivers"][0]["expired"], false);
+    assert_eq!(value["suppressed"][0]["suppression"]["source"], "waiver");
+
+    // An expired waiver stops suppressing, is reported as an error, and fails
+    // the run unless the gate is explicitly disabled.
+    std::fs::write(
+        &config,
+        "[[waivers]]\npath = \"src/**\"\nrule = \"SS-001\"\nowner = \"security-team\"\n\
+         reason = \"migration tracked in SEC-42\"\nexpires = \"2000-01-01\"\n",
+    )
+    .unwrap();
+    let expired = scan(&["--fail-on", "high"]);
+    assert_eq!(expired.code, 1, "{}", expired.stderr);
+    let value: serde_json::Value = serde_json::from_str(&expired.stdout).unwrap();
+    assert_eq!(value["findings"].as_array().unwrap().len(), 1);
+    assert_eq!(value["waivers"][0]["expired"], true);
+    assert_eq!(value["waivers"][0]["applied"], false);
+    assert!(value["diagnostics"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|diagnostic| diagnostic["code"] == "CONFIG-003" && diagnostic["level"] == "error"));
+
+    let non_failing = scan(&["--fail-on", "none"]);
+    assert_eq!(non_failing.code, 0, "{}", non_failing.stderr);
+    assert!(non_failing.stdout.contains("CONFIG-003"));
+
+    // A waiver without a reason is rejected as invalid configuration.
+    std::fs::write(
+        &config,
+        "[[waivers]]\npath = \"src/**\"\nrule = \"SS-001\"\nowner = \"security-team\"\n\
+         expires = \"2999-12-31\"\n",
+    )
+    .unwrap();
+    let missing_reason = scan(&["--fail-on", "high"]);
+    assert_eq!(missing_reason.code, 2, "{}", missing_reason.stderr);
+    assert!(
+        missing_reason.stderr.contains("reason"),
+        "stderr: {}",
+        missing_reason.stderr
+    );
+
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
 fn category_filters_apply_to_scans() {
     let dir = std::env::temp_dir().join(format!(
         "soroban-scan-cli-categories-{}",

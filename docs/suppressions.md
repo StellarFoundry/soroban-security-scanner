@@ -109,5 +109,7 @@ mistyped suppressions visible in review.
 ## Related
 
 - [Baselines](baselines.md) — suppress known findings across a whole project.
+- [Waivers](cli.md#waivers-with-expiry) — time-limited, owned suppressions with
+  an audit trail.
 - [Configuration](configuration.md) — disable or re-scope rules project-wide.
 - [CLI reference](cli.md) — output formats and exit codes.

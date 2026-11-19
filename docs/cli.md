@@ -100,6 +100,37 @@ from the `--fail-on` gate but never dropped from the report: terminal, JSON,
 SARIF and Markdown output all list them together with the directive that
 suppressed them. See [Inline Suppressions](suppressions.md).
 
+### Waivers with expiry
+
+A suppression hides a finding indefinitely. A **waiver** is a time-limited,
+owned suppression configured in `soroban-scan.toml`:
+
+```toml
+[[waivers]]
+path = "src/legacy/**"
+rule = "SS-001"
+owner = "security-team"
+reason = "migration tracked in SEC-42"
+expires = "2026-12-31"
+```
+
+- `owner` and `reason` are required and must not be empty. A waiver without a
+  stated reason is rejected as invalid configuration (exit code `2`).
+- `expires` is the last day the waiver applies, as a UTC `YYYY-MM-DD` date.
+- While unexpired, a waiver removes matching findings from the `--fail-on` gate
+  exactly like a suppression, but they stay in the report with `source:
+  "waiver"`, the owner, and the expiry date.
+- After the expiry date the waiver stops applying. Matching findings return to
+  the gate, a `CONFIG-003` **error** is emitted, and the scan exits `1` unless
+  `--fail-on none` is given. Expired waivers are reported even when they match
+  no finding, so stale risk acceptances cannot go unnoticed.
+- Every configured waiver appears in JSON under `waivers` with `expired`,
+  `matched`, `findings_suppressed`, and `applied`, including unused entries.
+
+Waivers run after inline directives and configured suppressions, so an inline
+directive or suppression wins if both apply. `config validate` rejects malformed
+waivers before a scan runs.
+
 ### Excluding test code
 
 `--exclude-tests` removes the most common source of noise in one step:

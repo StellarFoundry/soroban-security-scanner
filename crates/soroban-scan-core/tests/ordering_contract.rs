@@ -90,6 +90,7 @@ fn outcome_with(findings: Vec<Finding>) -> ScanOutcome {
         suppressions: vec![],
         suppressed: vec![],
         config_suppressions: vec![],
+        waivers: vec![],
         truncation: None,
         rule_timings: vec![],
     }
