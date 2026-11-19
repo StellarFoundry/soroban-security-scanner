@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `--target-analysis` / `target_analysis` reads declared Cargo targets and
+  `.cargo/config`, filters target-scoped dependencies, and reports unsupported
+  targets with `TARGET-001` to `TARGET-003`. It never builds or executes the
+  project and is off by default (`#382`).
 - `--mode <soroban|generic|auto>` / `mode` selects the project analysis mode.
   Generic mode is opt-in and skips Soroban-only rules for plain Rust projects;
   the effective mode is reported in terminal, Markdown, and JSON output, and a

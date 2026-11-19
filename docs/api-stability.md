@@ -20,6 +20,7 @@ is enforced by the `api_stability` integration test.
 - `source`, `project`, `discovery`, `manifest`, `suppression`, `soroban`, and
   `rules` internals.
 - `frontend` (the parser frontend boundary and the default Rust frontend).
+- `target` (static Cargo target analysis).
 - `imports` (best-effort, per-file `use` resolution), `ai`, `baseline`,
   `compare`, `context`, `error`, and `redaction` support modules.
 - The `analysis`/pipeline implementation details and any `pub(crate)` item.

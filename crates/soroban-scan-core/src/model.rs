@@ -38,7 +38,7 @@ impl std::fmt::Display for ProjectKind {
 }
 
 /// Which dependency table a dependency came from.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum DepKind {
     /// `[dependencies]`
@@ -93,6 +93,10 @@ pub struct Dependency {
     /// Whether default features are enabled.
     #[serde(default = "default_true")]
     pub default_features: bool,
+    /// Target cfg or triple this dependency is scoped to, when declared under
+    /// `[target.<key>.dependencies]`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub target: Option<String>,
 }
 
 /// Serde default for fields that are enabled unless explicitly disabled.
@@ -129,6 +133,9 @@ pub struct Manifest {
     pub package: Option<PackageInfo>,
     /// `[workspace]` section, if this is a workspace root.
     pub workspace: Option<WorkspaceInfo>,
+    /// `[lib] crate-type` values (for example `cdylib`).
+    #[serde(default)]
+    pub crate_types: Vec<String>,
     /// All dependencies declared across dependency tables.
     pub dependencies: Vec<Dependency>,
 }
@@ -255,6 +262,15 @@ pub enum DiagnosticCode {
     /// Generic mode is active and Soroban-only rules were skipped.
     #[serde(rename = "MODE-001")]
     GenericMode,
+    /// A configured target is not supported by target analysis.
+    #[serde(rename = "TARGET-001")]
+    TargetUnsupported,
+    /// A wasm32 target was detected and target-specific dependencies were filtered.
+    #[serde(rename = "TARGET-002")]
+    TargetDetected,
+    /// Cargo target configuration could not be read and was ignored.
+    #[serde(rename = "TARGET-003")]
+    TargetConfigUnreadable,
 }
 
 impl DiagnosticCode {
@@ -283,6 +299,9 @@ impl DiagnosticCode {
             DiagnosticCode::AiRequestBudgetExhausted => "AI-001",
             DiagnosticCode::AiCircuitOpen => "AI-002",
             DiagnosticCode::GenericMode => "MODE-001",
+            DiagnosticCode::TargetUnsupported => "TARGET-001",
+            DiagnosticCode::TargetDetected => "TARGET-002",
+            DiagnosticCode::TargetConfigUnreadable => "TARGET-003",
         }
     }
 }
@@ -347,6 +366,26 @@ impl Diagnostic {
     }
 }
 
+/// Static target configuration read from Cargo manifests and `.cargo/config`.
+///
+/// Present only when target analysis is enabled. The scanner never builds the
+/// project or invokes Cargo; this is a syntactic read of declared targets.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct TargetInfo {
+    /// Explicit build target, for example `wasm32-unknown-unknown`.
+    pub requested: Option<String>,
+    /// Whether a wasm32 target or target table was found.
+    pub wasm32: bool,
+    /// Whether this target is understood by the scanner. Only wasm32 is.
+    pub supported: bool,
+    /// Declared `[lib] crate-type` values, sorted and de-duplicated.
+    pub crate_types: Vec<String>,
+    /// Target table keys found in manifests or Cargo config, sorted.
+    pub targets: Vec<String>,
+    /// Relative evidence labels; never absolute paths or file contents.
+    pub evidence: Vec<String>,
+}
+
 /// Top-level project metadata discovered by the scanner.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Project {
@@ -358,6 +397,9 @@ pub struct Project {
     pub manifests: Vec<Manifest>,
     /// Soroban-specific evidence.
     pub soroban: SorobanInfo,
+    /// Static target configuration, when target analysis is enabled.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub target: Option<TargetInfo>,
     /// Number of Rust source files discovered.
     pub source_files: usize,
     /// Non-fatal diagnostics collected during analysis.
@@ -420,7 +462,9 @@ mod tests {
                 optional: false,
                 features: Vec::new(),
                 default_features: true,
+                target: None,
             }],
+            crate_types: Vec::new(),
         };
         assert!(m.dependency("soroban-sdk").is_some());
         assert!(m.dependency("serde").is_none());

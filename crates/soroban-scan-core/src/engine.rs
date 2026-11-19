@@ -18,7 +18,7 @@ use crate::context::AnalysisContext;
 use crate::error::ScanError;
 use crate::finding::Finding;
 use crate::frontend::{self, Frontend, LoadedProject};
-use crate::model::{Diagnostic, DiagnosticCode, Project, ProjectKind, SorobanInfo};
+use crate::model::{Diagnostic, DiagnosticCode, Project, ProjectKind, SorobanInfo, TargetInfo};
 use crate::registry::RuleRegistry;
 use crate::suppression::Suppression;
 
@@ -1312,6 +1312,7 @@ fn merge_projects(projects: Vec<Project>) -> Project {
     let mut manifests = Vec::new();
     let mut diagnostics = Vec::new();
     let mut soroban = SorobanInfo::default();
+    let mut target: Option<TargetInfo> = None;
     let mut source_files = 0usize;
 
     for project in projects {
@@ -1319,6 +1320,7 @@ fn merge_projects(projects: Vec<Project>) -> Project {
             kind = project.kind;
         }
         source_files += project.source_files;
+        target = merge_targets(target, project.target);
         soroban.has_sdk_dependency |= project.soroban.has_sdk_dependency;
         soroban.contract_macros_found |= project.soroban.contract_macros_found;
         for version in project.soroban.sdk_versions {
@@ -1342,8 +1344,32 @@ fn merge_projects(projects: Vec<Project>) -> Project {
         kind,
         manifests,
         soroban,
+        target,
         source_files,
         diagnostics,
+    }
+}
+
+/// Combines per-root target metadata; any unsupported target stays visible.
+fn merge_targets(left: Option<TargetInfo>, right: Option<TargetInfo>) -> Option<TargetInfo> {
+    match (left, right) {
+        (None, right) => right,
+        (left, None) => left,
+        (Some(mut left), Some(right)) => {
+            left.requested = left.requested.or(right.requested);
+            left.wasm32 |= right.wasm32;
+            left.supported &= right.supported;
+            left.crate_types.extend(right.crate_types);
+            left.crate_types.sort();
+            left.crate_types.dedup();
+            left.targets.extend(right.targets);
+            left.targets.sort();
+            left.targets.dedup();
+            left.evidence.extend(right.evidence);
+            left.evidence.sort();
+            left.evidence.dedup();
+            Some(left)
+        }
     }
 }
 
@@ -1423,6 +1449,7 @@ pub fn synthetic_loaded_with_options(
         kind,
         manifests: Vec::new(),
         soroban: info,
+        target: None,
         source_files: 1,
         diagnostics,
     };
@@ -1493,6 +1520,7 @@ pub fn scan_manifest_str(
         kind: crate::soroban::classify(&soroban),
         manifests,
         soroban,
+        target: None,
         source_files: 0,
         diagnostics: Vec::new(),
     };

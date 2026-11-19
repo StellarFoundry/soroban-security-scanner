@@ -323,6 +323,9 @@ pub struct ScanConfig {
     pub min_confidence: Confidence,
     /// Project analysis mode. Defaults to the Soroban rule set.
     pub mode: AnalysisMode,
+    /// Read Cargo target configuration and adjust and filter target-scoped
+    /// dependencies. Disabled by default; never builds or executes the project.
+    pub target_analysis: bool,
     /// Glob patterns (relative to the scan root) to exclude from discovery.
     pub exclude: Vec<String>,
     /// Skip items gated behind `#[cfg(test)]` and test directories.
@@ -355,6 +358,7 @@ impl Default for ScanConfig {
             min_severity: Severity::Info,
             min_confidence: Confidence::Low,
             mode: AnalysisMode::Soroban,
+            target_analysis: false,
             exclude: Vec::new(),
             exclude_tests: false,
             include_cfg_test: false,
@@ -379,6 +383,7 @@ impl ScanConfig {
             exclude_tests: self.exclude_tests,
             include_cfg_test: self.include_cfg_test,
             exclude_generated: self.exclude_generated,
+            target_analysis: self.target_analysis,
         }
     }
 

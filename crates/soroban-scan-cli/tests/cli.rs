@@ -363,6 +363,38 @@ fn generic_mode_is_opt_in_and_visible_in_output() {
 }
 
 #[test]
+fn target_analysis_is_opt_in_and_reported() {
+    let root = fixture("targets/wasm32");
+    let out = run(&[
+        "scan",
+        root.to_str().unwrap(),
+        "--target-analysis",
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+    let value: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
+    assert_eq!(
+        value["stats"]["target"]["requested"],
+        "wasm32-unknown-unknown"
+    );
+    assert_eq!(value["stats"]["target"]["supported"], true);
+
+    let default = run(&[
+        "scan",
+        root.to_str().unwrap(),
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+    ]);
+    let value: serde_json::Value = serde_json::from_str(&default.stdout).unwrap();
+    assert!(value["stats"].get("target").is_none());
+}
+
+#[test]
 fn scan_help_includes_copy_pasteable_examples() {
     let out = run(&["scan", "--help"]);
     assert_eq!(out.code, 0);

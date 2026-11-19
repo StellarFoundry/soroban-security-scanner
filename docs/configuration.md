@@ -58,6 +58,10 @@ follow_symlinks = false
 # Minimum supported soroban-sdk version for SS-015
 minimum_soroban_sdk = "21.0.0"
 
+# Read Cargo target configuration and filter target-scoped dependencies.
+# Disabled by default; never builds or executes the project.
+target_analysis = false
+
 [rules]
 # Rule ids to disable
 disabled = ["SS-006"]
@@ -114,6 +118,7 @@ max_output_tokens = 1024
 | `include_cfg_test` | bool | `false` | Analyze items gated behind `#[cfg(test)]`. They are skipped by default. |
 | `follow_symlinks` | bool | `false` | Follow symlinks (off by default for safety). |
 | `minimum_soroban_sdk` | string | `21.0.0` | Minimum supported `soroban-sdk` version for SS-015. |
+| `target_analysis` | bool | `false` | Read Cargo target configuration and filter target-scoped dependencies. Only wasm32 is understood; unsupported targets are reported. Never builds or executes the project. |
 | `suppressions` | array of tables | `[]` | Path- and rule-scoped suppressions (`path`, `rule`, optional `reason`). |
 | `waivers` | array of tables | `[]` | Time-limited suppressions (`path`, `rule`, `owner`, `reason`, `expires`). See [Waivers](cli.md#waivers-with-expiry). |
 | `redact` | array of fields | `[]` | Report fields hashed at render time. See [Report redaction](cli.md#report-redaction). |

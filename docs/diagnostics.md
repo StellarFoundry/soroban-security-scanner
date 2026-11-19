@@ -41,9 +41,12 @@ can classify or suppress them without parsing the human-readable message.
 | `AI-001` | warning | The optional assistance layer reached its configured request budget; the scan continued without further AI calls. |
 | `AI-002` | warning | Repeated provider failures opened the assistance circuit breaker; the scan continued without further AI calls. |
 | `MODE-001` | info | Generic mode is active; Soroban-only rules were skipped. The diagnostic names the project classification and how many rules were disabled. |
+| `TARGET-001` | warning | Target analysis is enabled for an explicit target other than wasm32. Only wasm32 is analyzed; the scanner did not build the project. |
+| `TARGET-002` | info | A wasm32 target was detected; target-specific dependencies were filtered. The scanner did not build or execute the project. |
+| `TARGET-003` | warning | A Cargo target configuration file could not be read or parsed and was ignored. |
 
 Codes are grouped by area: `PARSE-*`, `MANIFEST-*`, `SOURCE-*`, `CRATE-*`,
-`RULE-*`, `CONFIG-*`, `BASELINE-*`, and `MODE-*`. `config validate` prints `CONFIG-*` warnings to
+`RULE-*`, `CONFIG-*`, `BASELINE-*`, `MODE-*`, and `TARGET-*`. `config validate` prints `CONFIG-*` warnings to
 stderr while still exiting successfully, because they do not prevent a scan from
 running.
 

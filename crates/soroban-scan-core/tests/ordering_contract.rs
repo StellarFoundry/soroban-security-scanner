@@ -80,6 +80,7 @@ fn outcome_with(findings: Vec<Finding>) -> ScanOutcome {
             kind: ProjectKind::GenericRust,
             manifests: vec![],
             soroban: SorobanInfo::default(),
+            target: None,
             source_files: 1,
             diagnostics: vec![],
         },

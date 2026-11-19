@@ -14,7 +14,7 @@ use crate::engine::{
     SuppressionSource, WaiverReport,
 };
 use crate::finding::Finding;
-use crate::model::Diagnostic;
+use crate::model::{Diagnostic, TargetInfo};
 use crate::registry::RuleRegistry;
 use crate::rule::RuleMetadata;
 use crate::severity::Severity;
@@ -286,6 +286,13 @@ pub fn render_terminal_with_color(outcome: &ScanOutcome, color: TerminalColor) -
             ""
         }
     ));
+    if let Some(target) = &outcome.project.target {
+        let requested = target.requested.as_deref().unwrap_or("not configured");
+        out.push_str(&format!(
+            "Target: {requested} (wasm32: {}, supported: {})\n",
+            target.wasm32, target.supported
+        ));
+    }
     out.push_str(&format!(
         "Files: {}  Rules run: {}  Skipped: {}  Suppressions: {}\n",
         outcome.stats.files_analyzed,
@@ -515,6 +522,9 @@ struct ProjectSummary {
 struct StatsSummary {
     /// Effective analysis mode (`soroban` or `generic`).
     mode: String,
+    /// Static target configuration, present only with `--target-analysis`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    target: Option<TargetInfo>,
     files_analyzed: usize,
     files_parsed: usize,
     files_failed: usize,
@@ -607,6 +617,7 @@ pub fn render_json_with_baseline(
         },
         stats: StatsSummary {
             mode: outcome.stats.analysis_mode.as_str().to_string(),
+            target: outcome.project.target.clone(),
             files_analyzed: outcome.stats.files_analyzed,
             files_parsed: outcome.stats.files_parsed,
             files_failed: outcome.stats.files_failed,
@@ -1025,6 +1036,14 @@ pub fn render_markdown(outcome: &ScanOutcome) -> String {
         outcome.project.kind,
         outcome.stats.analysis_mode.as_str()
     ));
+    if let Some(target) = &outcome.project.target {
+        out.push_str(&format!(
+            "- **Target:** `{}` (wasm32: {}, supported: {})\n",
+            target.requested.as_deref().unwrap_or("not configured"),
+            target.wasm32,
+            target.supported
+        ));
+    }
     out.push_str(&format!(
         "- **Files analyzed:** {}\n",
         outcome.stats.files_analyzed

@@ -58,6 +58,25 @@
         "rules_skipped": { "type": "integer", "minimum": 0 },
         "findings_raw": { "type": "integer", "minimum": 0 },
         "findings_rejected": { "type": "integer", "minimum": 0 },
+        "mode": {
+          "type": "string",
+          "enum": ["soroban", "generic"],
+          "description": "Effective project analysis mode. Generic mode skips Soroban-only rules."
+        },
+        "target": {
+          "type": "object",
+          "description": "Static Cargo target configuration. Present only when target analysis is enabled.",
+          "required": ["wasm32", "supported", "crate_types", "targets", "evidence"],
+          "properties": {
+            "requested": { "type": ["string", "null"] },
+            "wasm32": { "type": "boolean" },
+            "supported": { "type": "boolean" },
+            "crate_types": { "type": "array", "items": { "type": "string" } },
+            "targets": { "type": "array", "items": { "type": "string" } },
+            "evidence": { "type": "array", "items": { "type": "string" } }
+          },
+          "additionalProperties": true
+        },
         "suppressions_detected": {
           "type": "integer",
           "minimum": 0,

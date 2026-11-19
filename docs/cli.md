@@ -38,6 +38,7 @@ roots in one run.
 | `--min-severity <LEVEL>` | Only report findings at or above this severity. |
 | `--min-confidence <LEVEL>` | Only report findings at or above this confidence. |
 | `--mode <soroban\|generic\|auto>` | Project analysis mode (default `soroban`). `generic` is opt-in and skips Soroban-only rules; `auto` uses generic mode only for plain Rust projects. The effective mode is always shown. |
+| `--target-analysis` | Read Cargo target configuration and filter target-scoped dependencies (default off). Only wasm32 is understood; unsupported targets are reported. Never builds or executes the project. |
 | `--max-findings <N>` | Report at most N findings after sorting; the exit gate is unaffected and the report states how many were omitted. |
 | `--redact <FIELD>` | Replace a report field with a stable hash at render time (repeatable; see [Report redaction](#report-redaction)). |
 | `--exclude <GLOB>` | Exclude a glob relative to the scan root (repeatable). |
@@ -77,6 +78,28 @@ stored as `stats.mode` in JSON. Generic mode also emits a `MODE-001`
 informational diagnostic naming the project classification and the number of
 rules skipped, so a mode change is never silent. The same setting is available
 as `mode = "soroban"` in `soroban-scan.toml`.
+
+### Target analysis
+
+`--target-analysis` is opt-in. It reads, without running Cargo:
+
+- `[lib] crate-type` and `[target.<key>.*]` tables in discovered `Cargo.toml`
+  manifests;
+- `[build] target` and `[target.<key>]` tables in `.cargo/config.toml` or
+  `.cargo/config` (capped at 1 MiB; unreadable or invalid files emit
+  `TARGET-003`).
+
+Only `wasm32*` targets are understood. When an explicit target is configured,
+dependencies scoped to a different target are removed before rule evaluation,
+so a host-only dependency cannot produce a false Soroban dependency finding in
+a wasm build. An explicit non-wasm target emits a `TARGET-001` warning saying
+that target analysis is unsupported; a detected wasm32 target emits an
+informational `TARGET-002`. The scanner never builds, runs, or invokes `cargo`
+on the scanned project.
+
+The static result appears in terminal and Markdown output as `Target:` and in
+JSON as `stats.target`. The same setting is available as
+`target_analysis = true` in `soroban-scan.toml`.
 
 ### Structured logs
 

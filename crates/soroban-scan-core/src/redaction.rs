@@ -265,6 +265,7 @@ mod tests {
                 kind: ProjectKind::ConfirmedSoroban,
                 manifests: vec![],
                 soroban: SorobanInfo::default(),
+                target: None,
                 source_files: 1,
                 diagnostics: vec![],
             },

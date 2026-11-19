@@ -23,14 +23,40 @@ pub fn parse_manifest(path: &Path, content: &str) -> Result<Manifest, ScanError>
 
     let package = table.get("package").and_then(parse_package);
     let workspace = table.get("workspace").and_then(parse_workspace);
+    let crate_types = table
+        .get("lib")
+        .and_then(Value::as_table)
+        .and_then(|lib| lib.get("crate-type"))
+        .and_then(Value::as_array)
+        .map(|items| {
+            items
+                .iter()
+                .filter_map(Value::as_str)
+                .map(str::to_string)
+                .collect()
+        })
+        .unwrap_or_default();
 
     let mut dependencies = Vec::new();
-    collect_dependencies(table, "dependencies", DepKind::Normal, &mut dependencies);
-    collect_dependencies(table, "dev-dependencies", DepKind::Dev, &mut dependencies);
+    collect_dependencies(
+        table,
+        "dependencies",
+        DepKind::Normal,
+        None,
+        &mut dependencies,
+    );
+    collect_dependencies(
+        table,
+        "dev-dependencies",
+        DepKind::Dev,
+        None,
+        &mut dependencies,
+    );
     collect_dependencies(
         table,
         "build-dependencies",
         DepKind::Build,
+        None,
         &mut dependencies,
     );
 
@@ -38,29 +64,54 @@ pub fn parse_manifest(path: &Path, content: &str) -> Result<Manifest, ScanError>
     if let Some(ws) = table.get("workspace").and_then(Value::as_table) {
         if let Some(deps) = ws.get("dependencies").and_then(Value::as_table) {
             for (name, spec) in deps {
-                dependencies.push(parse_dependency(name, spec, DepKind::Normal));
+                dependencies.push(parse_dependency(name, spec, DepKind::Normal, None));
             }
         }
     }
 
     // `[target.<cfg>.dependencies]`
     if let Some(targets) = table.get("target").and_then(Value::as_table) {
-        for target in targets.values() {
+        for (target_name, target) in targets {
             if let Some(t) = target.as_table() {
-                collect_dependencies(t, "dependencies", DepKind::Normal, &mut dependencies);
-                collect_dependencies(t, "dev-dependencies", DepKind::Dev, &mut dependencies);
-                collect_dependencies(t, "build-dependencies", DepKind::Build, &mut dependencies);
+                let target = Some(target_name.as_str());
+                collect_dependencies(
+                    t,
+                    "dependencies",
+                    DepKind::Normal,
+                    target,
+                    &mut dependencies,
+                );
+                collect_dependencies(
+                    t,
+                    "dev-dependencies",
+                    DepKind::Dev,
+                    target,
+                    &mut dependencies,
+                );
+                collect_dependencies(
+                    t,
+                    "build-dependencies",
+                    DepKind::Build,
+                    target,
+                    &mut dependencies,
+                );
             }
         }
     }
 
-    dependencies.sort_by(|a, b| a.name.cmp(&b.name));
-    dependencies.dedup_by(|a, b| a.name == b.name && a.kind == b.kind);
+    dependencies.sort_by(|a, b| {
+        a.name
+            .cmp(&b.name)
+            .then(a.kind.cmp(&b.kind))
+            .then(a.target.cmp(&b.target))
+    });
+    dependencies.dedup_by(|a, b| a.name == b.name && a.kind == b.kind && a.target == b.target);
 
     Ok(Manifest {
         path: path.to_path_buf(),
         package,
         workspace,
+        crate_types,
         dependencies,
     })
 }
@@ -110,16 +161,17 @@ fn collect_dependencies(
     table: &toml::map::Map<String, Value>,
     key: &str,
     kind: DepKind,
+    target: Option<&str>,
     out: &mut Vec<Dependency>,
 ) {
     if let Some(deps) = table.get(key).and_then(Value::as_table) {
         for (name, spec) in deps {
-            out.push(parse_dependency(name, spec, kind));
+            out.push(parse_dependency(name, spec, kind, target));
         }
     }
 }
 
-fn parse_dependency(name: &str, spec: &Value, kind: DepKind) -> Dependency {
+fn parse_dependency(name: &str, spec: &Value, kind: DepKind, target: Option<&str>) -> Dependency {
     match spec {
         Value::String(version) => Dependency {
             name: name.to_string(),
@@ -129,6 +181,7 @@ fn parse_dependency(name: &str, spec: &Value, kind: DepKind) -> Dependency {
             optional: false,
             features: Vec::new(),
             default_features: true,
+            target: target.map(str::to_string),
         },
         Value::Table(t) => {
             let version = t.get("version").and_then(Value::as_str).map(str::to_string);
@@ -173,6 +226,7 @@ fn parse_dependency(name: &str, spec: &Value, kind: DepKind) -> Dependency {
                 optional,
                 features,
                 default_features,
+                target: target.map(str::to_string),
             }
         }
         _ => Dependency {
@@ -183,6 +237,7 @@ fn parse_dependency(name: &str, spec: &Value, kind: DepKind) -> Dependency {
             optional: false,
             features: Vec::new(),
             default_features: true,
+            target: target.map(str::to_string),
         },
     }
 }
