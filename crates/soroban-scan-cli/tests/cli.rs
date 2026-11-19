@@ -340,6 +340,61 @@ fn scan_help_includes_copy_pasteable_examples() {
 }
 
 #[test]
+fn policy_guide_examples_are_valid_and_linked_from_help() {
+    let doc = std::fs::read_to_string(repo_root().join("docs/policy.md")).unwrap();
+    for heading in [
+        "## Policy schema",
+        "## Precedence",
+        "## Waivers",
+        "## Report formats",
+        "## CI examples",
+        "## Limitations",
+    ] {
+        assert!(doc.contains(heading), "policy.md is missing {heading}");
+    }
+
+    let fenced = |language: &str| -> Vec<String> {
+        let marker = format!("```{language}\n");
+        let mut blocks = Vec::new();
+        let mut rest = doc.as_str();
+        while let Some(start) = rest.find(&marker) {
+            let body = &rest[start + marker.len()..];
+            let Some(end) = body.find("```") else { break };
+            blocks.push(body[..end].to_string());
+            rest = &body[end + 3..];
+        }
+        blocks
+    };
+
+    let toml = fenced("toml")
+        .into_iter()
+        .find(|block| block.contains("[[waivers]]"))
+        .expect("policy.md must show a waiver example");
+    soroban_scan_core::config::ScanConfig::from_toml(&toml)
+        .expect("the documented policy TOML must parse");
+
+    let waiver_json = fenced("json")
+        .into_iter()
+        .next()
+        .expect("policy.md must show a waiver audit JSON example");
+    let value: serde_json::Value = serde_json::from_str(&waiver_json).unwrap();
+    assert_eq!(value["owner"], "security-team");
+    assert_eq!(value["expired"], false);
+
+    let help = run(&["--help"]);
+    assert_eq!(help.code, 0, "{}", help.stderr);
+    assert!(
+        help.stdout.contains("docs/policy.md"),
+        "top-level help must link the policy guide"
+    );
+    let scan_help = run(&["scan", "--help"]);
+    assert!(
+        scan_help.stdout.contains("docs/policy.md"),
+        "scan help must link the policy guide"
+    );
+}
+
+#[test]
 fn rules_lists_built_in_rules() {
     let out = run(&["rules"]);
     assert_eq!(out.code, 0);
@@ -1443,6 +1498,170 @@ fn inline_suppressions_are_applied_and_reported() {
 }
 
 #[test]
+fn report_redaction_hashes_selected_fields_and_keeps_identity() {
+    let dir = std::env::temp_dir().join(format!("soroban-scan-cli-redact-{}", std::process::id()));
+    write_suppression_project(&dir, true);
+
+    let plain = run(&[
+        "scan",
+        dir.to_str().unwrap(),
+        "--format",
+        "json",
+        "--rule",
+        "SS-001",
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(plain.code, 0, "{}", plain.stderr);
+    let plain: serde_json::Value = serde_json::from_str(&plain.stdout).unwrap();
+    let plain_fingerprint = plain["suppressed"][0]["fingerprint"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    let redacted = run(&[
+        "scan",
+        dir.to_str().unwrap(),
+        "--format",
+        "json",
+        "--rule",
+        "SS-001",
+        "--fail-on",
+        "none",
+        "--redact",
+        "finding.evidence",
+        "--redact",
+        "finding.location.file",
+        "--redact",
+        "suppression.reason",
+        "--redact",
+        "suppression.file",
+    ]);
+    assert_eq!(redacted.code, 0, "{}", redacted.stderr);
+    let value: serde_json::Value = serde_json::from_str(&redacted.stdout).unwrap();
+
+    let suppressed = &value["suppressed"][0];
+    assert!(suppressed["evidence"]
+        .as_str()
+        .unwrap()
+        .starts_with("sha256:"));
+    assert!(suppressed["location"]["file"]
+        .as_str()
+        .unwrap()
+        .starts_with("sha256:"));
+    assert!(suppressed["suppression"]["reason"]
+        .as_str()
+        .unwrap()
+        .starts_with("sha256:"));
+    assert!(suppressed["suppression"]["file"]
+        .as_str()
+        .unwrap()
+        .starts_with("sha256:"));
+    // Identity is unchanged: rule, line and fingerprint survive redaction.
+    assert_eq!(suppressed["rule_id"], "SS-001");
+    assert_eq!(suppressed["fingerprint"], plain_fingerprint);
+    assert_eq!(
+        suppressed["location"]["line"],
+        plain["suppressed"][0]["location"]["line"]
+    );
+    assert_eq!(suppressed["title"], plain["suppressed"][0]["title"]);
+
+    let unknown = run(&[
+        "scan",
+        dir.to_str().unwrap(),
+        "--fail-on",
+        "none",
+        "--redact",
+        "not.a.field",
+    ]);
+    assert_eq!(unknown.code, 2, "{}", unknown.stderr);
+    assert!(unknown.stderr.contains("unknown redaction field"));
+
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn waivers_apply_until_their_expiry_and_report_ownership() {
+    let dir = std::env::temp_dir().join(format!("soroban-scan-cli-waiver-{}", std::process::id()));
+    write_suppression_project(&dir, false);
+    let config = dir.join("waiver.toml");
+
+    let scan = |extra: &[&str]| {
+        let mut args = vec![
+            "scan".to_string(),
+            dir.to_string_lossy().into_owned(),
+            "--config".to_string(),
+            config.to_string_lossy().into_owned(),
+            "--format".to_string(),
+            "json".to_string(),
+            "--rule".to_string(),
+            "SS-001".to_string(),
+        ];
+        args.extend(extra.iter().map(|arg| arg.to_string()));
+        let refs: Vec<&str> = args.iter().map(String::as_str).collect();
+        run(&refs)
+    };
+
+    // A future expiry keeps the waiver active and the owner visible.
+    std::fs::write(
+        &config,
+        "[[waivers]]\npath = \"src/**\"\nrule = \"SS-001\"\nowner = \"security-team\"\n\
+         reason = \"migration tracked in SEC-42\"\nexpires = \"2999-12-31\"\n",
+    )
+    .unwrap();
+    let active = scan(&["--fail-on", "high"]);
+    assert_eq!(active.code, 0, "{}", active.stderr);
+    let value: serde_json::Value = serde_json::from_str(&active.stdout).unwrap();
+    assert!(value["findings"].as_array().unwrap().is_empty());
+    assert_eq!(value["waivers"][0]["owner"], "security-team");
+    assert_eq!(value["waivers"][0]["expires"], "2999-12-31");
+    assert_eq!(value["waivers"][0]["applied"], true);
+    assert_eq!(value["waivers"][0]["expired"], false);
+    assert_eq!(value["suppressed"][0]["suppression"]["source"], "waiver");
+
+    // An expired waiver stops suppressing, is reported as an error, and fails
+    // the run unless the gate is explicitly disabled.
+    std::fs::write(
+        &config,
+        "[[waivers]]\npath = \"src/**\"\nrule = \"SS-001\"\nowner = \"security-team\"\n\
+         reason = \"migration tracked in SEC-42\"\nexpires = \"2000-01-01\"\n",
+    )
+    .unwrap();
+    let expired = scan(&["--fail-on", "high"]);
+    assert_eq!(expired.code, 1, "{}", expired.stderr);
+    let value: serde_json::Value = serde_json::from_str(&expired.stdout).unwrap();
+    assert_eq!(value["findings"].as_array().unwrap().len(), 1);
+    assert_eq!(value["waivers"][0]["expired"], true);
+    assert_eq!(value["waivers"][0]["applied"], false);
+    assert!(value["diagnostics"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|diagnostic| diagnostic["code"] == "CONFIG-003" && diagnostic["level"] == "error"));
+
+    let non_failing = scan(&["--fail-on", "none"]);
+    assert_eq!(non_failing.code, 0, "{}", non_failing.stderr);
+    assert!(non_failing.stdout.contains("CONFIG-003"));
+
+    // A waiver without a reason is rejected as invalid configuration.
+    std::fs::write(
+        &config,
+        "[[waivers]]\npath = \"src/**\"\nrule = \"SS-001\"\nowner = \"security-team\"\n\
+         expires = \"2999-12-31\"\n",
+    )
+    .unwrap();
+    let missing_reason = scan(&["--fail-on", "high"]);
+    assert_eq!(missing_reason.code, 2, "{}", missing_reason.stderr);
+    assert!(
+        missing_reason.stderr.contains("reason"),
+        "stderr: {}",
+        missing_reason.stderr
+    );
+
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
 fn category_filters_apply_to_scans() {
     let dir = std::env::temp_dir().join(format!(
         "soroban-scan-cli-categories-{}",
@@ -2332,6 +2551,59 @@ fn completions_command_is_hidden_from_help() {
 fn completions_rejects_an_unknown_shell() {
     let out = run(&["completions", "tcsh"]);
     assert_eq!(out.code, 2, "{}", out.stderr);
+}
+
+#[test]
+fn artifact_name_uses_the_documented_scheme() {
+    let out = run(&[
+        "artifact-name",
+        "--project",
+        "Vault Contract",
+        "--commit",
+        "ABCDEF12345678",
+        "--timestamp",
+        "2024-03-01T10:20:30Z",
+    ]);
+    assert_eq!(out.code, 0, "{}", out.stderr);
+    assert_eq!(
+        out.stdout.trim(),
+        "vault-contract-abcdef1-20240301T102030Z.json"
+    );
+
+    let sarif = run(&[
+        "artifact-name",
+        "--project",
+        "vault",
+        "--commit",
+        "abcdef12345678",
+        "--timestamp",
+        "2024-03-01T10:20:30Z",
+        "--format",
+        "sarif",
+    ]);
+    assert_eq!(sarif.code, 0, "{}", sarif.stderr);
+    assert_eq!(sarif.stdout.trim(), "vault-abcdef1-20240301T102030Z.sarif");
+
+    let sanitized = run(&[
+        "artifact-name",
+        "--project",
+        "../../etc/passwd",
+        "--commit",
+        "abcdef12345678",
+        "--timestamp",
+        "2024-03-01T10:20:30Z",
+    ]);
+    assert_eq!(sanitized.code, 0, "{}", sanitized.stderr);
+    assert!(!sanitized.stdout.contains('/'), "{}", sanitized.stdout);
+    assert!(sanitized.stdout.starts_with("etc-passwd-"));
+
+    let invalid = run(&["artifact-name", "--project", "vault", "--commit", "not-hex"]);
+    assert_eq!(invalid.code, 2, "{}", invalid.stderr);
+    assert!(
+        invalid.stderr.contains("commit must be"),
+        "{}",
+        invalid.stderr
+    );
 }
 
 #[test]

@@ -20,7 +20,7 @@ is enforced by the `api_stability` integration test.
 - `source`, `project`, `discovery`, `manifest`, `suppression`, `soroban`, and
   `rules` internals.
 - `imports` (best-effort, per-file `use` resolution), `ai`, `baseline`,
-  `compare`, `context`, and `error` support modules.
+  `compare`, `context`, `error`, and `redaction` support modules.
 - The `analysis`/pipeline implementation details and any `pub(crate)` item.
 - Internal utility modules (`rules::util`, `test_support`).
 

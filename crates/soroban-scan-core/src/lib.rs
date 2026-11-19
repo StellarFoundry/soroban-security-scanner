@@ -31,6 +31,7 @@ pub mod imports;
 pub mod manifest;
 pub mod model;
 pub mod project;
+pub mod redaction;
 pub mod registry;
 pub mod report;
 pub mod rule;

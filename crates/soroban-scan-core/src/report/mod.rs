@@ -11,7 +11,7 @@ use crate::baseline::{BaselineReport, BaselineStatus};
 use crate::config::ScanConfig;
 use crate::engine::{
     ConfigSuppressionReport, FindingTruncation, ScanOutcome, SuppressedFinding, SuppressionInfo,
-    SuppressionSource,
+    SuppressionSource, WaiverReport,
 };
 use crate::finding::Finding;
 use crate::model::Diagnostic;
@@ -19,6 +19,7 @@ use crate::registry::RuleRegistry;
 use crate::rule::RuleMetadata;
 use crate::severity::Severity;
 
+pub mod naming;
 pub mod trend;
 
 /// Tool name used in reports.
@@ -284,12 +285,30 @@ pub fn render_terminal_with_color(outcome: &ScanOutcome, color: TerminalColor) -
         outcome.stats.suppressions_detected
     ));
     out.push_str(&format!(
-        "Generated: {} marked, {} excluded  Config suppressions: {} detected, {} applied\n\n",
+        "Generated: {} marked, {} excluded  Config suppressions: {} detected, {} applied\n",
         outcome.stats.generated_files_marked,
         outcome.stats.generated_files_excluded,
         outcome.stats.config_suppressions_detected,
         outcome.stats.config_suppressions_applied
     ));
+    if !outcome.waivers.is_empty() {
+        let expired = outcome
+            .waivers
+            .iter()
+            .filter(|waiver| waiver.expired)
+            .count();
+        out.push_str(&format!(
+            "Waivers: {} detected, {} expired, {} applied\n",
+            outcome.waivers.len(),
+            expired,
+            outcome
+                .waivers
+                .iter()
+                .filter(|waiver| waiver.applied)
+                .count()
+        ));
+    }
+    out.push('\n');
 
     if outcome.findings.is_empty() {
         if outcome.truncation.is_none() {
@@ -353,6 +372,13 @@ pub fn render_terminal_with_color(outcome: &ScanOutcome, color: TerminalColor) -
                     display_suppression_file(&suppressed.suppression.file),
                     suppressed.suppression.line,
                     suppressed.suppression.rules
+                )),
+                SuppressionSource::Waiver => out.push_str(&format!(
+                    "           waived by configuration path `{}` (`rule {}`, owner {}, expires {})\n",
+                    suppressed.suppression.path.as_deref().unwrap_or("?"),
+                    suppressed.suppression.rules,
+                    suppressed.suppression.owner.as_deref().unwrap_or("?"),
+                    suppressed.suppression.expires.as_deref().unwrap_or("?")
                 )),
             }
             out.push_str(&format!(
@@ -441,6 +467,7 @@ struct JsonReport<'a> {
     suppressed: &'a [SuppressedFinding],
     suppressions: Vec<SuppressionJson>,
     config_suppressions: &'a [ConfigSuppressionReport],
+    waivers: &'a [WaiverReport],
     diagnostics: &'a [Diagnostic],
     /// Present only when the caller bounded the number of reported findings.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -592,6 +619,7 @@ pub fn render_json_with_baseline(
         suppressed: &outcome.suppressed,
         suppressions: suppression_reports(outcome),
         config_suppressions: &outcome.config_suppressions,
+        waivers: &outcome.waivers,
         diagnostics: &outcome.diagnostics,
         truncation: outcome.truncation,
     };
@@ -741,6 +769,14 @@ fn sarif_result(
                 format!("config:{}", suppression.path.as_deref().unwrap_or_default()),
                 "configuration suppression",
             ),
+            SuppressionSource::Waiver => (
+                "external",
+                format!(
+                    "waiver:{}",
+                    suppression.owner.as_deref().unwrap_or_default()
+                ),
+                "configuration waiver",
+            ),
             SuppressionSource::Inline => (
                 "inSource",
                 format!("{}:{}", suppression.file, suppression.line),
@@ -761,8 +797,15 @@ fn sarif_result(
         result["properties"]["suppressedRules"] = json!(suppression.rules);
         result["properties"]["suppressionSource"] = match suppression.source {
             SuppressionSource::Config => json!("config"),
+            SuppressionSource::Waiver => json!("waiver"),
             SuppressionSource::Inline => json!("inline"),
         };
+        if let Some(owner) = &suppression.owner {
+            result["properties"]["waiverOwner"] = json!(owner);
+        }
+        if let Some(expires) = &suppression.expires {
+            result["properties"]["waiverExpires"] = json!(expires);
+        }
     }
 
     if let Some(threshold) = policy {
@@ -1089,6 +1132,13 @@ fn append_markdown_suppressed(outcome: &ScanOutcome, out: &mut String) {
                 suppressed.suppression.path.as_deref().unwrap_or("?"),
                 suppressed.suppression.rules
             ),
+            SuppressionSource::Waiver => format!(
+                "waiver for `{}` (`rule {}`, owner {}, expires {})",
+                suppressed.suppression.path.as_deref().unwrap_or("?"),
+                suppressed.suppression.rules,
+                suppressed.suppression.owner.as_deref().unwrap_or("?"),
+                suppressed.suppression.expires.as_deref().unwrap_or("?")
+            ),
             SuppressionSource::Inline => format!(
                 "`{}:{}` (`ignore {}`)",
                 display_suppression_file(&suppressed.suppression.file),
@@ -1126,6 +1176,29 @@ fn append_markdown_suppressed(outcome: &ScanOutcome, out: &mut String) {
                 suppression.findings_suppressed,
                 suppression.applied,
                 suppression.reason.as_deref().unwrap_or("")
+            ));
+        }
+    }
+
+    if !outcome.waivers.is_empty() {
+        out.push_str("\n### Waivers\n\n");
+        out.push_str(
+            "| Path | Rule | Owner | Expires | Expired | Matched | Suppressed | Reason |\n",
+        );
+        out.push_str(
+            "| ---- | ---- | ----- | ------- | ------- | ------- | ---------- | ------ |\n",
+        );
+        for waiver in &outcome.waivers {
+            out.push_str(&format!(
+                "| `{}` | {} | {} | {} | {} | {} | {} | {} |\n",
+                waiver.path,
+                waiver.rule,
+                waiver.owner,
+                waiver.expires,
+                waiver.expired,
+                waiver.matched,
+                waiver.findings_suppressed,
+                waiver.reason
             ));
         }
     }

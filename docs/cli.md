@@ -17,6 +17,7 @@ soroban-scan <COMMAND>
 | `doctor` | Explain project classification, excludes, and effective configuration. |
 | `compare` | Compare two JSON scan reports by finding fingerprint. |
 | `dashboard` | Render a static trend dashboard from several JSON scan reports. |
+| `artifact-name` | Print the canonical, deterministic report artifact name. |
 | `config show` / `config validate` | Inspect or validate configuration. |
 
 ---
@@ -37,6 +38,7 @@ roots in one run.
 | `--min-severity <LEVEL>` | Only report findings at or above this severity. |
 | `--min-confidence <LEVEL>` | Only report findings at or above this confidence. |
 | `--max-findings <N>` | Report at most N findings after sorting; the exit gate is unaffected and the report states how many were omitted. |
+| `--redact <FIELD>` | Replace a report field with a stable hash at render time (repeatable; see [Report redaction](#report-redaction)). |
 | `--exclude <GLOB>` | Exclude a glob relative to the scan root (repeatable). |
 | `--exclude-tests` | Skip items gated behind `#[cfg(test)]` and files in test directories. |
 | `--include-cfg-test` | Also analyze items gated behind `#[cfg(test)]`, which are skipped by default. |
@@ -99,6 +101,37 @@ suppress a single finding at that location. Suppressed findings are excluded
 from the `--fail-on` gate but never dropped from the report: terminal, JSON,
 SARIF and Markdown output all list them together with the directive that
 suppressed them. See [Inline Suppressions](suppressions.md).
+
+### Waivers with expiry
+
+A suppression hides a finding indefinitely. A **waiver** is a time-limited,
+owned suppression configured in `soroban-scan.toml`:
+
+```toml
+[[waivers]]
+path = "src/legacy/**"
+rule = "SS-001"
+owner = "security-team"
+reason = "migration tracked in SEC-42"
+expires = "2026-12-31"
+```
+
+- `owner` and `reason` are required and must not be empty. A waiver without a
+  stated reason is rejected as invalid configuration (exit code `2`).
+- `expires` is the last day the waiver applies, as a UTC `YYYY-MM-DD` date.
+- While unexpired, a waiver removes matching findings from the `--fail-on` gate
+  exactly like a suppression, but they stay in the report with `source:
+  "waiver"`, the owner, and the expiry date.
+- After the expiry date the waiver stops applying. Matching findings return to
+  the gate, a `CONFIG-003` **error** is emitted, and the scan exits `1` unless
+  `--fail-on none` is given. Expired waivers are reported even when they match
+  no finding, so stale risk acceptances cannot go unnoticed.
+- Every configured waiver appears in JSON under `waivers` with `expired`,
+  `matched`, `findings_suppressed`, and `applied`, including unused entries.
+
+Waivers run after inline directives and configured suppressions, so an inline
+directive or suppression wins if both apply. `config validate` rejects malformed
+waivers before a scan runs.
 
 ### Excluding test code
 
@@ -208,6 +241,46 @@ soroban-scan scan ./contracts --max-findings 50
   so a bounded report cannot turn a failing scan into a passing one.
 - `--write-baseline` always records every finding; the limit only affects
   rendered reports.
+
+### Report redaction
+
+`--redact <FIELD>` replaces selected fields with a stable `sha256:` hash before
+rendering. It is off by default, bounded to 32 distinct fields, and can also be
+configured with `redact = [...]` in `soroban-scan.toml`:
+
+```bash
+soroban-scan scan ./contracts --format json \
+  --redact finding.evidence \
+  --redact finding.location.file \
+  --redact suppression.reason \
+  --output report.redacted.json
+```
+
+| Field | What is hashed |
+| ----- | -------------- |
+| `project.root` | The project root label. |
+| `finding.title` | Finding titles, including suppressed findings and resolved baseline entries. |
+| `finding.description` | Finding descriptions. |
+| `finding.evidence` | Source evidence snippets. |
+| `finding.remediation` | Remediation guidance. |
+| `finding.location.file` | Finding file paths. |
+| `suppression.reason` | Inline, configured, and waiver suppression reasons. |
+| `suppression.file` | Inline suppression directive files and configured suppression globs. |
+| `waiver.owner` | Waiver owner names. |
+| `waiver.reason` | Waiver reasons. |
+| `diagnostic.message` | Diagnostic messages. |
+| `diagnostic.path` | Diagnostic file paths. |
+
+- Redaction is presentation-only: it happens on a copy after the gate has been
+  evaluated. `rule_id`, `location.line`, and especially `fingerprint` are never
+  changed, so baselines, `compare`, and `dashboard` keep matching findings.
+- The same value always hashes to the same `sha256:` value, which preserves
+  correlation between a finding and its suppressed or baseline entry.
+- **Limitation:** redaction only covers the fields above. It cannot detect
+  sensitive text in arbitrary free-form content, and it does not rewrite rule
+  metadata or any field not listed. Do not treat it as proof that a report is
+  free of secrets. Keep source, environment values, and credentials out of
+  reports entirely.
 
 ### Long output and paging
 
@@ -403,6 +476,37 @@ soroban-scan dashboard scans/jan.json scans/feb.json scans/mar.json \
   but keeps the total.
 - Bounded to 50 reports per dashboard, 16 MiB per report, and 100,000 findings
   per report. Oversized or malformed inputs are runtime errors (exit code `3`).
+
+## `artifact-name`
+
+```text
+soroban-scan artifact-name --project NAME --commit SHA [--timestamp UTC] [--format FORMAT]
+```
+
+Prints the canonical artifact name for a report:
+
+```text
+<project>-<commit7>-<YYYYMMDDTHHMMSSZ>.<extension>
+```
+
+```bash
+soroban-scan artifact-name --project "Vault Contract" \
+  --commit "$(git rev-parse HEAD)" --format json
+# vault-contract-abcdef1-20240301T102030Z.json
+```
+
+- `--project` is sanitized to lowercase `[a-z0-9._-]`; other characters become
+  `-` and the label is capped at 64 characters. It can never contain a path
+  separator or shell syntax.
+- `--commit` accepts 7-64 hexadecimal characters; the first 7 are used.
+- `--timestamp` is a UTC `YYYY-MM-DDTHH:MM:SSZ` value and defaults to the
+  current time. Pass it explicitly when reproducing a name.
+- `--format` selects the extension (`json`, `sarif`, `html`, `md`, `txt`, `xml`);
+  it defaults to `json`.
+
+The name is deterministic for the same inputs and contains no secrets. See
+[Report retention and artifact naming](retention.md) for the scheme and the
+recommended retention policy.
 
 ## `completions`
 

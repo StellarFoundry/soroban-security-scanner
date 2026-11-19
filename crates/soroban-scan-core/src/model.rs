@@ -228,6 +228,12 @@ pub enum DiagnosticCode {
     /// A configured suppression is invalid and was not applied.
     #[serde(rename = "CONFIG-002")]
     InvalidSuppression,
+    /// A configured waiver has expired and no longer suppresses findings.
+    #[serde(rename = "CONFIG-003")]
+    WaiverExpired,
+    /// A configured waiver is invalid and was not applied.
+    #[serde(rename = "CONFIG-004")]
+    InvalidWaiver,
     /// A baseline references a rule id that is not registered.
     #[serde(rename = "BASELINE-001")]
     BaselineUnknownRule,
@@ -265,6 +271,8 @@ impl DiagnosticCode {
             DiagnosticCode::RuleTimeBudgetExceeded => "RULE-005",
             DiagnosticCode::IneffectiveOverride => "CONFIG-001",
             DiagnosticCode::InvalidSuppression => "CONFIG-002",
+            DiagnosticCode::WaiverExpired => "CONFIG-003",
+            DiagnosticCode::InvalidWaiver => "CONFIG-004",
             DiagnosticCode::BaselineUnknownRule => "BASELINE-001",
             DiagnosticCode::UnexpandedMacro => "MACRO-001",
             DiagnosticCode::GeneratedFileMarked => "GENERATED-001",

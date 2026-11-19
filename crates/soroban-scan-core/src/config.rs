@@ -162,6 +162,128 @@ impl SuppressionRule {
     }
 }
 
+/// A time-limited suppression from configuration.
+///
+/// Unlike a plain suppression, a waiver must name an owner, a reason, and an
+/// expiry date (`YYYY-MM-DD`, UTC). Once the expiry date is in the past the
+/// waiver stops suppressing findings and is reported as an error, so an
+/// accepted risk cannot be hidden forever.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct WaiverRule {
+    /// Relative glob matched against root-relative finding paths.
+    pub path: String,
+    /// Rule id to waive, or `all`.
+    pub rule: String,
+    /// Accountable owner of the accepted risk.
+    pub owner: String,
+    /// Audit reason. Required and must not be empty.
+    pub reason: String,
+    /// Last day the waiver applies, as a UTC `YYYY-MM-DD` date.
+    pub expires: String,
+}
+
+impl WaiverRule {
+    /// Validates the path, rule, owner, reason, and expiry date.
+    pub fn validate(&self) -> Result<(), String> {
+        SuppressionRule {
+            path: self.path.clone(),
+            rule: self.rule.clone(),
+            reason: Some(self.reason.clone()),
+        }
+        .validate()?;
+        if self.owner.trim().is_empty() {
+            return Err("owner must not be empty".to_string());
+        }
+        if self.reason.trim().is_empty() {
+            return Err("reason must not be empty".to_string());
+        }
+        validate_iso_date(&self.expires)
+    }
+
+    /// Returns true when this waiver's rule covers `rule_id`.
+    pub fn matches_rule(&self, rule_id: &str) -> bool {
+        self.rule.eq_ignore_ascii_case(ALL_SUPPRESSION_RULES)
+            || self.rule.trim().eq_ignore_ascii_case(rule_id)
+    }
+
+    /// Stable rule label used in reports.
+    pub fn rule_label(&self) -> String {
+        if self.rule.eq_ignore_ascii_case(ALL_SUPPRESSION_RULES) {
+            ALL_SUPPRESSION_RULES.to_string()
+        } else {
+            self.rule.trim().to_ascii_uppercase()
+        }
+    }
+
+    /// Returns true when the waiver has expired on `today` (`YYYY-MM-DD`).
+    ///
+    /// ISO dates in this format compare lexicographically, so no clock or
+    /// calendar computation is needed at the comparison site. `today` is
+    /// supplied by the caller so expiry is testable with fixed dates.
+    pub fn is_expired_on(&self, today: &str) -> bool {
+        self.expires.trim() < today.trim()
+    }
+}
+
+/// Validates a UTC `YYYY-MM-DD` date.
+pub(crate) fn validate_iso_date(value: &str) -> Result<(), String> {
+    let value = value.trim();
+    let bytes = value.as_bytes();
+    if bytes.len() != 10 || bytes[4] != b'-' || bytes[7] != b'-' {
+        return Err(format!("expires must be a YYYY-MM-DD date, got '{value}'"));
+    }
+    let year = value[0..4]
+        .parse::<u32>()
+        .map_err(|_| format!("expires must be a YYYY-MM-DD date, got '{value}'"))?;
+    let month = value[5..7]
+        .parse::<u32>()
+        .map_err(|_| format!("expires must be a YYYY-MM-DD date, got '{value}'"))?;
+    let day = value[8..10]
+        .parse::<u32>()
+        .map_err(|_| format!("expires must be a YYYY-MM-DD date, got '{value}'"))?;
+    let leap = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+    let days = match month {
+        1 | 3 | 5 | 7 | 8 | 10 | 12 => 31,
+        4 | 6 | 9 | 11 => 30,
+        2 if leap => 29,
+        2 => 28,
+        _ => return Err(format!("expires has an invalid month: '{value}'")),
+    };
+    if day == 0 || day > days {
+        return Err(format!("expires has an invalid day: '{value}'"));
+    }
+    Ok(())
+}
+
+/// Returns the current UTC date as `YYYY-MM-DD`.
+///
+/// The system clock is read once per scan; waiver decisions use the UTC date,
+/// never a local timezone.
+pub fn today_utc() -> String {
+    let seconds = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|duration| duration.as_secs() as i64)
+        .unwrap_or(0);
+    utc_date_from_unix(seconds)
+}
+
+/// Converts Unix seconds to a UTC `YYYY-MM-DD` date (Howard Hinnant's algorithm).
+pub(crate) fn utc_date_from_unix(seconds: i64) -> String {
+    let days = seconds.div_euclid(86_400);
+    let z = days + 719_468;
+    let era = if z >= 0 { z } else { z - 146_096 } / 146_097;
+    let doe = z - era * 146_097;
+    let yoe = (doe - doe / 1_460 + doe / 36_524 - doe / 146_096) / 365;
+    let year = yoe + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let day = doy - (153 * mp + 2) / 5 + 1;
+    let month = if mp < 10 { mp + 3 } else { mp - 9 };
+    let year = if month <= 2 { year + 1 } else { year };
+    format!("{year:04}-{month:02}-{day:02}")
+}
+
 /// Complete scan configuration.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
@@ -185,6 +307,11 @@ pub struct ScanConfig {
     pub minimum_soroban_sdk: String,
     /// Path- and rule-scoped suppressions.
     pub suppressions: Vec<SuppressionRule>,
+    /// Time-limited, owned suppressions. Expired waivers stop applying and are
+    /// reported as errors.
+    pub waivers: Vec<WaiverRule>,
+    /// Report fields to replace with a stable hash at render time.
+    pub redact: Vec<String>,
     /// Rule selection and overrides.
     pub rules: RulesConfig,
     /// Optional assistance layer configuration (disabled by default).
@@ -203,6 +330,8 @@ impl Default for ScanConfig {
             follow_symlinks: false,
             minimum_soroban_sdk: "21.0.0".to_string(),
             suppressions: Vec::new(),
+            waivers: Vec::new(),
+            redact: Vec::new(),
             rules: RulesConfig::default(),
             ai: AiConfig::default(),
         }
@@ -228,6 +357,13 @@ impl ScanConfig {
                 crate::error::ScanError::Config(format!("invalid suppressions[{index}]: {error}"))
             })?;
         }
+        for (index, waiver) in self.waivers.iter().enumerate() {
+            waiver.validate().map_err(|error| {
+                crate::error::ScanError::Config(format!("invalid waivers[{index}]: {error}"))
+            })?;
+        }
+        crate::redaction::validate_fields(&self.redact)
+            .map_err(|error| crate::error::ScanError::Config(format!("invalid redact: {error}")))?;
         self.ai
             .validate()
             .map_err(|error| crate::error::ScanError::Config(format!("invalid config: {error}")))?;
@@ -500,6 +636,120 @@ rule = ""
 
         config.suppressions[0].path = "../escape/**".to_string();
         assert!(config.validate().is_err());
+    }
+
+    #[test]
+    fn parses_waivers_with_owner_reason_and_expiry() {
+        let config = ScanConfig::from_toml(
+            r#"
+[[waivers]]
+path = "src/legacy/**"
+rule = "SS-001"
+owner = "security-team"
+reason = "migration tracked in SEC-42"
+expires = "2030-06-30"
+"#,
+        )
+        .unwrap();
+        assert_eq!(config.waivers.len(), 1);
+        let waiver = &config.waivers[0];
+        assert_eq!(waiver.owner, "security-team");
+        assert_eq!(waiver.reason, "migration tracked in SEC-42");
+        assert!(waiver.matches_rule("ss-001"));
+        assert!(!waiver.is_expired_on("2030-06-30"));
+        assert!(waiver.is_expired_on("2030-07-01"));
+    }
+
+    #[test]
+    fn waiver_requires_reason_owner_and_valid_expiry() {
+        let cases = [
+            (
+                r#"
+[[waivers]]
+path = "src/**"
+rule = "SS-001"
+owner = "team"
+expires = "2030-01-01"
+"#,
+                "missing field `reason`",
+            ),
+            (
+                r#"
+[[waivers]]
+path = "src/**"
+rule = "SS-001"
+owner = "team"
+reason = "   "
+expires = "2030-01-01"
+"#,
+                "reason must not be empty",
+            ),
+            (
+                r#"
+[[waivers]]
+path = "src/**"
+rule = "SS-001"
+owner = ""
+reason = "documented"
+expires = "2030-01-01"
+"#,
+                "owner must not be empty",
+            ),
+            (
+                r#"
+[[waivers]]
+path = "src/**"
+rule = "SS-001"
+owner = "team"
+reason = "documented"
+expires = "2030-02-30"
+"#,
+                "invalid day",
+            ),
+            (
+                r#"
+[[waivers]]
+path = "src/**"
+rule = "SS-001"
+owner = "team"
+reason = "documented"
+expires = "tomorrow"
+"#,
+                "YYYY-MM-DD",
+            ),
+        ];
+        for (text, expected) in cases {
+            let err = ScanConfig::from_toml(text).unwrap_err();
+            assert!(matches!(err, crate::error::ScanError::Config(_)));
+            assert!(
+                err.to_string().contains(expected),
+                "expected {expected:?} in {err}"
+            );
+            assert!(err.to_string().contains("waivers"), "{err}");
+        }
+    }
+
+    #[test]
+    fn utc_date_conversion_uses_fixed_epochs() {
+        assert_eq!(utc_date_from_unix(0), "1970-01-01");
+        assert_eq!(utc_date_from_unix(1_709_164_800), "2024-02-29");
+        assert_eq!(utc_date_from_unix(1_735_689_599), "2024-12-31");
+        assert_eq!(utc_date_from_unix(1_735_689_600), "2025-01-01");
+    }
+
+    #[test]
+    fn parses_and_validates_redaction_fields() {
+        let config = ScanConfig::from_toml(
+            r#"
+redact = ["finding.evidence", "finding.location.file", "suppression.reason"]
+"#,
+        )
+        .unwrap();
+        assert_eq!(config.redact.len(), 3);
+
+        let err = ScanConfig::from_toml("redact = [\"not.a.field\"]").unwrap_err();
+        assert!(matches!(err, crate::error::ScanError::Config(_)));
+        assert!(err.to_string().contains("unknown redaction field"), "{err}");
     }
 
     #[test]

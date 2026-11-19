@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `[[waivers]]` configuration: time-limited suppressions with a required owner,
+  reason, and UTC expiry date. Expired waivers stop suppressing, emit
+  `CONFIG-003`, and fail the run unless `--fail-on none` is set; every waiver is
+  audited in JSON (`#372`).
+- `--redact <FIELD>` / `redact = [...]` replace selected report fields with a
+  stable hash at render time. Fingerprints and matching are unchanged; the
+  field-scoped limitation is documented (`#377`).
+- `artifact-name` prints the deterministic
+  `<project>-<commit7>-<YYYYMMDDTHHMMSSZ>.<extension>` report name, with
+  retention guidance in `docs/retention.md` (`#378`).
+- `docs/policy.md` documents the policy schema, precedence, waivers, all report
+  formats, CI examples, and limitations, and is linked from README and CLI help
+  (`#379`).
 - `GOVERNANCE.md` describing roles, the ADR process, and how contentious
   changes are decided, linked from the README and `CONTRIBUTING.md` (`#80`).
 - The parser records `#[cfg(...)]` attribute tokens on items and functions

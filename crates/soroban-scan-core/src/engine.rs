@@ -13,7 +13,7 @@ use std::time::{Duration, Instant};
 use globset::Glob;
 use serde::Serialize;
 
-use crate::config::{ScanConfig, SuppressionRule};
+use crate::config::{ScanConfig, SuppressionRule, WaiverRule};
 use crate::context::AnalysisContext;
 use crate::error::ScanError;
 use crate::finding::Finding;
@@ -153,6 +153,9 @@ pub struct ScanOutcome {
     pub suppressed: Vec<SuppressedFinding>,
     /// Audit records for every configured suppression, including unused ones.
     pub config_suppressions: Vec<ConfigSuppressionReport>,
+    /// Audit records for every configured waiver, including unused and expired
+    /// ones, so accepted risk and its owner stay visible.
+    pub waivers: Vec<WaiverReport>,
     /// Set when the caller bounded the number of reported findings.
     ///
     /// `None` means the report contains every finding. The gate is always
@@ -194,6 +197,8 @@ pub enum SuppressionSource {
     Inline,
     /// A `[[suppressions]]` entry from configuration.
     Config,
+    /// A time-limited `[[waivers]]` entry from configuration.
+    Waiver,
 }
 
 impl SuppressionSource {
@@ -217,9 +222,38 @@ pub struct SuppressionInfo {
     /// Suppression source.
     #[serde(default, skip_serializing_if = "SuppressionSource::is_inline")]
     pub source: SuppressionSource,
-    /// Configured path glob, when `source` is `config`.
+    /// Configured path glob, when `source` is `config` or `waiver`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub path: Option<String>,
+    /// Waiver owner, when `source` is `waiver`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub owner: Option<String>,
+    /// Waiver expiry date, when `source` is `waiver`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expires: Option<String>,
+}
+
+/// Audit record for one configured waiver entry.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct WaiverReport {
+    /// Configured relative path glob.
+    pub path: String,
+    /// Configured rule id or `all`.
+    pub rule: String,
+    /// Accountable owner of the accepted risk.
+    pub owner: String,
+    /// Audit reason.
+    pub reason: String,
+    /// Last day the waiver applies, as a UTC `YYYY-MM-DD` date.
+    pub expires: String,
+    /// True when the expiry date is in the past for this scan.
+    pub expired: bool,
+    /// Number of findings whose path matched this glob, regardless of rule.
+    pub matched: usize,
+    /// Number of findings this entry removed from the gate.
+    pub findings_suppressed: usize,
+    /// True when at least one finding was suppressed.
+    pub applied: bool,
 }
 
 /// Audit record for one configured suppression entry.
@@ -498,6 +532,106 @@ fn compile_config_suppressions(
         .collect()
 }
 
+struct CompiledWaiver {
+    report: WaiverReport,
+    matcher: Option<globset::GlobMatcher>,
+    rule: String,
+}
+
+impl CompiledWaiver {
+    fn rule_matches(&self, rule_id: &str) -> bool {
+        self.rule
+            .eq_ignore_ascii_case(crate::config::ALL_SUPPRESSION_RULES)
+            || self.rule.eq_ignore_ascii_case(rule_id)
+    }
+}
+
+/// Compiles configured waivers deterministically.
+///
+/// An expired waiver is reported as a `CONFIG-003` error and never suppresses a
+/// finding: expiry restores the finding to the normal gate. Invalid entries are
+/// reported as `CONFIG-004` errors and stay visible in the audit report.
+fn compile_waivers(
+    config: &ScanConfig,
+    today: &str,
+    diagnostics: &mut Vec<Diagnostic>,
+) -> Vec<CompiledWaiver> {
+    let mut indexed: Vec<&WaiverRule> = config.waivers.iter().collect();
+    indexed.sort_by(|a, b| {
+        (
+            a.path.trim(),
+            a.rule_label(),
+            a.owner.trim(),
+            a.expires.trim(),
+            a.reason.trim(),
+        )
+            .cmp(&(
+                b.path.trim(),
+                b.rule_label(),
+                b.owner.trim(),
+                b.expires.trim(),
+                b.reason.trim(),
+            ))
+    });
+
+    indexed
+        .into_iter()
+        .map(|waiver| {
+            let (matcher, valid) = match waiver.validate() {
+                Ok(()) => (
+                    Glob::new(waiver.path.trim())
+                        .ok()
+                        .map(|glob| glob.compile_matcher()),
+                    true,
+                ),
+                Err(error) => {
+                    diagnostics.push(Diagnostic::error(
+                        DiagnosticCode::InvalidWaiver,
+                        format!(
+                            "configured waiver for '{}' is invalid and was not applied: {error}",
+                            waiver.path
+                        ),
+                        None,
+                    ));
+                    (None, false)
+                }
+            };
+            let owner = waiver.owner.trim().to_string();
+            let reason = waiver.reason.trim().to_string();
+            let expires = waiver.expires.trim().to_string();
+            let expired = valid && waiver.is_expired_on(today);
+            if expired {
+                diagnostics.push(Diagnostic::error(
+                    DiagnosticCode::WaiverExpired,
+                    format!(
+                        "waiver for '{}' (rule {}) owned by '{}' expired on {expires}; \
+                         findings are no longer waived",
+                        waiver.path.trim(),
+                        waiver.rule_label(),
+                        owner
+                    ),
+                    None,
+                ));
+            }
+            CompiledWaiver {
+                report: WaiverReport {
+                    path: waiver.path.trim().to_string(),
+                    rule: waiver.rule_label(),
+                    owner,
+                    reason,
+                    expires,
+                    expired,
+                    matched: 0,
+                    findings_suppressed: 0,
+                    applied: false,
+                },
+                matcher,
+                rule: waiver.rule_label(),
+            }
+        })
+        .collect()
+}
+
 /// Runs the scanner over a loaded project.
 pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig) -> ScanOutcome {
     let ctx = AnalysisContext::new(
@@ -707,6 +841,8 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
                     reason: suppression.reason.clone(),
                     source: SuppressionSource::Inline,
                     path: None,
+                    owner: None,
+                    expires: None,
                 },
             });
             return false;
@@ -717,6 +853,7 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
     // Apply configured suppressions only after inline directives, so an inline
     // directive always takes precedence. Every configured entry is reported,
     // even when its path or rule matches nothing.
+    let today = crate::config::today_utc();
     let mut compiled = compile_config_suppressions(config, &mut diagnostics);
     findings.retain(|finding| {
         let file = normalize_rel(&finding.location.file);
@@ -749,10 +886,59 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
                 reason: suppression.reason.clone(),
                 source: SuppressionSource::Config,
                 path: Some(suppression.path.clone()),
+                owner: None,
+                expires: None,
             },
         });
         false
     });
+
+    // Waivers run after configured suppressions. A waiver suppresses only while
+    // it is unexpired; an expired entry is reported as an error and leaves the
+    // finding in the gate.
+    let mut compiled_waivers = compile_waivers(config, &today, &mut diagnostics);
+    findings.retain(|finding| {
+        let file = normalize_rel(&finding.location.file);
+        let mut chosen: Option<usize> = None;
+        for (index, waiver) in compiled_waivers.iter_mut().enumerate() {
+            let path_matches = waiver
+                .matcher
+                .as_ref()
+                .is_some_and(|matcher| matcher.is_match(&file));
+            if !path_matches {
+                continue;
+            }
+            waiver.report.matched += 1;
+            if !waiver.report.expired && chosen.is_none() && waiver.rule_matches(&finding.rule_id) {
+                chosen = Some(index);
+            }
+        }
+        let Some(index) = chosen else {
+            return true;
+        };
+        let waiver = &mut compiled_waivers[index];
+        waiver.report.findings_suppressed += 1;
+        waiver.report.applied = true;
+        suppressed.push(SuppressedFinding {
+            finding: finding.clone(),
+            suppression: SuppressionInfo {
+                file: file.clone(),
+                line: finding.location.line,
+                rules: waiver.report.rule.clone(),
+                reason: Some(waiver.report.reason.clone()),
+                source: SuppressionSource::Waiver,
+                path: Some(waiver.report.path.clone()),
+                owner: Some(waiver.report.owner.clone()),
+                expires: Some(waiver.report.expires.clone()),
+            },
+        });
+        false
+    });
+
+    let waivers: Vec<WaiverReport> = compiled_waivers
+        .into_iter()
+        .map(|waiver| waiver.report)
+        .collect();
 
     let config_suppressions: Vec<ConfigSuppressionReport> = compiled
         .into_iter()
@@ -795,6 +981,7 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
         suppressions,
         suppressed,
         config_suppressions,
+        waivers,
         truncation: None,
         rule_timings,
     }
@@ -832,6 +1019,7 @@ pub fn merge(outcomes: Vec<ScanOutcome>, labels: &[String]) -> ScanOutcome {
     let mut suppressions: Vec<Suppression> = Vec::new();
     let mut suppressed: Vec<SuppressedFinding> = Vec::new();
     let mut config_suppressions: Vec<ConfigSuppressionReport> = Vec::new();
+    let mut waivers: Vec<WaiverReport> = Vec::new();
     let mut stats = ScanStats::default();
     let mut projects: Vec<Project> = Vec::new();
     let mut timings: BTreeMap<String, (u128, RuleTimingStatus)> = BTreeMap::new();
@@ -862,6 +1050,7 @@ pub fn merge(outcomes: Vec<ScanOutcome>, labels: &[String]) -> ScanOutcome {
         suppressions.append(&mut outcome.suppressions);
         suppressed.append(&mut outcome.suppressed);
         config_suppressions.append(&mut outcome.config_suppressions);
+        waivers.append(&mut outcome.waivers);
         merge_stats(&mut stats, &outcome.stats);
         for timing in &outcome.rule_timings {
             let entry = timings
@@ -909,6 +1098,7 @@ pub fn merge(outcomes: Vec<ScanOutcome>, labels: &[String]) -> ScanOutcome {
         suppressions,
         suppressed,
         config_suppressions,
+        waivers: merge_waiver_reports(waivers),
         truncation: None,
         rule_timings,
     }
@@ -974,6 +1164,45 @@ fn merge_config_suppression_reports(
         if let Some(last) = merged.last_mut() {
             if last.path == report.path && last.rule == report.rule && last.reason == report.reason
             {
+                last.matched += report.matched;
+                last.findings_suppressed += report.findings_suppressed;
+                last.applied |= report.applied;
+                continue;
+            }
+        }
+        merged.push(report);
+    }
+    merged
+}
+
+/// Merges identical waiver audit entries across roots.
+fn merge_waiver_reports(mut reports: Vec<WaiverReport>) -> Vec<WaiverReport> {
+    reports.sort_by(|a, b| {
+        (
+            a.path.as_str(),
+            a.rule.as_str(),
+            a.owner.as_str(),
+            a.expires.as_str(),
+            a.reason.as_str(),
+        )
+            .cmp(&(
+                b.path.as_str(),
+                b.rule.as_str(),
+                b.owner.as_str(),
+                b.expires.as_str(),
+                b.reason.as_str(),
+            ))
+    });
+    let mut merged: Vec<WaiverReport> = Vec::new();
+    for report in reports {
+        if let Some(last) = merged.last_mut() {
+            if last.path == report.path
+                && last.rule == report.rule
+                && last.owner == report.owner
+                && last.expires == report.expires
+                && last.reason == report.reason
+            {
+                last.expired |= report.expired;
                 last.matched += report.matched;
                 last.findings_suppressed += report.findings_suppressed;
                 last.applied |= report.applied;
@@ -2158,6 +2387,109 @@ mod tests {
             .diagnostics
             .iter()
             .any(|diagnostic| diagnostic.code == DiagnosticCode::GeneratedFileExcluded));
+    }
+
+    fn waiver(path: &str, rule: &str, expires: &str) -> crate::config::WaiverRule {
+        crate::config::WaiverRule {
+            path: path.to_string(),
+            rule: rule.to_string(),
+            owner: "security-team".to_string(),
+            reason: "migration tracked in SEC-42".to_string(),
+            expires: expires.to_string(),
+        }
+    }
+
+    #[test]
+    fn unexpired_waiver_wins_the_finding_and_is_audited() {
+        let (root, loaded) = project_with_source("waiver-valid", "fn a() {}\n");
+        let registry = located_registry(Severity::High, 1);
+        let config = ScanConfig {
+            waivers: vec![waiver("src/**", "SS-001", "2999-12-31")],
+            ..ScanConfig::default()
+        };
+        let outcome = scan(&loaded, &registry, &config);
+
+        assert!(outcome.findings.is_empty());
+        assert_eq!(outcome.suppressed.len(), 1);
+        let suppressed = &outcome.suppressed[0];
+        assert_eq!(suppressed.suppression.source, SuppressionSource::Waiver);
+        assert_eq!(
+            suppressed.suppression.owner.as_deref(),
+            Some("security-team")
+        );
+        assert_eq!(
+            suppressed.suppression.expires.as_deref(),
+            Some("2999-12-31")
+        );
+        assert_eq!(outcome.waivers.len(), 1);
+        assert!(outcome.waivers[0].applied);
+        assert!(!outcome.waivers[0].expired);
+        assert_eq!(outcome.waivers[0].findings_suppressed, 1);
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn expired_waiver_reports_an_error_and_restores_the_finding() {
+        let (root, loaded) = project_with_source("waiver-expired", "fn a() {}\n");
+        let registry = located_registry(Severity::High, 1);
+        let config = ScanConfig {
+            waivers: vec![waiver("src/**", "SS-001", "2000-01-01")],
+            ..ScanConfig::default()
+        };
+        let outcome = scan(&loaded, &registry, &config);
+
+        assert_eq!(outcome.findings.len(), 1);
+        assert!(outcome.suppressed.is_empty());
+        assert!(outcome.waivers[0].expired);
+        assert!(!outcome.waivers[0].applied);
+        assert_eq!(outcome.waivers[0].matched, 1);
+        assert_eq!(outcome.waivers[0].findings_suppressed, 0);
+        let diagnostic = outcome
+            .diagnostics
+            .iter()
+            .find(|diagnostic| diagnostic.code == DiagnosticCode::WaiverExpired)
+            .expect("expired waiver diagnostic");
+        assert_eq!(diagnostic.level, crate::model::DiagnosticLevel::Error);
+        assert!(diagnostic.message.contains("2000-01-01"), "{diagnostic:?}");
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn expired_waiver_is_reported_even_when_nothing_matches() {
+        let (root, loaded) = project_with_source("waiver-expired-unused", "fn a() {}\n");
+        let registry = located_registry(Severity::High, 1);
+        let config = ScanConfig {
+            waivers: vec![waiver("vendor/**", "all", "2000-01-01")],
+            ..ScanConfig::default()
+        };
+        let outcome = scan(&loaded, &registry, &config);
+
+        assert_eq!(outcome.findings.len(), 1);
+        assert!(outcome
+            .diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == DiagnosticCode::WaiverExpired));
+        assert_eq!(outcome.waivers[0].matched, 0);
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn waivers_are_sorted_deterministically() {
+        let (root, loaded) = project_with_source("waiver-order", "fn a() {}\n");
+        let registry = located_registry(Severity::High, 1);
+        let config = ScanConfig {
+            waivers: vec![
+                waiver("src/**", "SS-002", "2999-12-31"),
+                waiver("src/**", "SS-001", "2999-12-31"),
+            ],
+            ..ScanConfig::default()
+        };
+        let first = scan(&loaded, &registry, &config);
+        let second = scan(&loaded, &registry, &config);
+        assert_eq!(first.waivers, second.waivers);
+        assert_eq!(first.waivers[0].rule, "SS-001");
+        assert_eq!(first.waivers[1].rule, "SS-002");
+        let _ = std::fs::remove_dir_all(&root);
     }
 }
 

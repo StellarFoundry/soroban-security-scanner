@@ -109,6 +109,9 @@ max_output_tokens = 1024
 | `include_cfg_test` | bool | `false` | Analyze items gated behind `#[cfg(test)]`. They are skipped by default. |
 | `follow_symlinks` | bool | `false` | Follow symlinks (off by default for safety). |
 | `minimum_soroban_sdk` | string | `21.0.0` | Minimum supported `soroban-sdk` version for SS-015. |
+| `suppressions` | array of tables | `[]` | Path- and rule-scoped suppressions (`path`, `rule`, optional `reason`). |
+| `waivers` | array of tables | `[]` | Time-limited suppressions (`path`, `rule`, `owner`, `reason`, `expires`). See [Waivers](cli.md#waivers-with-expiry). |
+| `redact` | array of fields | `[]` | Report fields hashed at render time. See [Report redaction](cli.md#report-redaction). |
 | `rules.disabled` | array of ids | `[]` | Rules never run. |
 | `rules.enabled` | array of ids | `[]` | If non-empty, the only rules that run. |
 | `rules.disabled_categories` | array of categories | `[]` | Rules in these categories never run. |
