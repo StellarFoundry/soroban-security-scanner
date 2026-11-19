@@ -296,6 +296,8 @@ enum Command {
     Compare(CompareArgs),
     /// Render a static trend dashboard from several JSON scan reports.
     Dashboard(DashboardArgs),
+    /// Print the canonical artifact name for a report.
+    ArtifactName(ArtifactNameArgs),
     /// Generate a shell completion script (bash, zsh, fish, powershell).
     #[command(hide = true)]
     Completions(CompletionsArgs),
@@ -527,6 +529,31 @@ struct DashboardArgs {
     output: Option<PathBuf>,
 }
 
+#[derive(Debug, Args)]
+#[command(
+    after_help = "Naming scheme: <project>-<commit7>-<YYYYMMDDTHHMMSSZ>.<extension>\n  \
+    soroban-scan artifact-name --project vault --commit abcdef12345678\n  \
+    soroban-scan artifact-name --project vault --commit abcdef12345678 \
+    --timestamp 2024-03-01T10:20:30Z --format sarif"
+)]
+struct ArtifactNameArgs {
+    /// Project label used in the name (sanitized, never a path).
+    #[arg(long, value_name = "NAME")]
+    project: String,
+
+    /// Commit hash (7-64 hexadecimal characters; the first 7 are used).
+    #[arg(long, value_name = "SHA")]
+    commit: String,
+
+    /// UTC timestamp as YYYY-MM-DDTHH:MM:SSZ (defaults to the current time).
+    #[arg(long, value_name = "UTC")]
+    timestamp: Option<String>,
+
+    /// Report format; controls the file extension.
+    #[arg(long, value_enum, default_value_t = FormatArg::Json)]
+    format: FormatArg,
+}
+
 /// Argument value for `compare --format`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
 enum CompareFormatArg {
@@ -652,6 +679,7 @@ fn run(cli: Cli) -> CliResult<u8> {
         Command::Doctor(args) => run_doctor(args, &registry),
         Command::Compare(args) => run_compare(args),
         Command::Dashboard(args) => run_dashboard(args),
+        Command::ArtifactName(args) => run_artifact_name(args),
         Command::Completions(args) => {
             let mut command = <Cli as clap::CommandFactory>::command();
             let name = command.get_name().to_string();
@@ -1536,6 +1564,18 @@ fn run_dashboard(args: DashboardArgs) -> CliResult<u8> {
             .map_err(|e| CliError::Runtime(format!("cannot write {}: {e}", path.display())))?,
         None => print!("{rendered}"),
     }
+    Ok(EXIT_SUCCESS)
+}
+
+fn run_artifact_name(args: ArtifactNameArgs) -> CliResult<u8> {
+    let name = report::naming::artifact_name(
+        &args.project,
+        &args.commit,
+        args.timestamp.as_deref(),
+        args.format.into(),
+    )
+    .map_err(CliError::Usage)?;
+    println!("{name}");
     Ok(EXIT_SUCCESS)
 }
 

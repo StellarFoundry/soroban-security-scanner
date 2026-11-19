@@ -2499,6 +2499,59 @@ fn completions_rejects_an_unknown_shell() {
 }
 
 #[test]
+fn artifact_name_uses_the_documented_scheme() {
+    let out = run(&[
+        "artifact-name",
+        "--project",
+        "Vault Contract",
+        "--commit",
+        "ABCDEF12345678",
+        "--timestamp",
+        "2024-03-01T10:20:30Z",
+    ]);
+    assert_eq!(out.code, 0, "{}", out.stderr);
+    assert_eq!(
+        out.stdout.trim(),
+        "vault-contract-abcdef1-20240301T102030Z.json"
+    );
+
+    let sarif = run(&[
+        "artifact-name",
+        "--project",
+        "vault",
+        "--commit",
+        "abcdef12345678",
+        "--timestamp",
+        "2024-03-01T10:20:30Z",
+        "--format",
+        "sarif",
+    ]);
+    assert_eq!(sarif.code, 0, "{}", sarif.stderr);
+    assert_eq!(sarif.stdout.trim(), "vault-abcdef1-20240301T102030Z.sarif");
+
+    let sanitized = run(&[
+        "artifact-name",
+        "--project",
+        "../../etc/passwd",
+        "--commit",
+        "abcdef12345678",
+        "--timestamp",
+        "2024-03-01T10:20:30Z",
+    ]);
+    assert_eq!(sanitized.code, 0, "{}", sanitized.stderr);
+    assert!(!sanitized.stdout.contains('/'), "{}", sanitized.stdout);
+    assert!(sanitized.stdout.starts_with("etc-passwd-"));
+
+    let invalid = run(&["artifact-name", "--project", "vault", "--commit", "not-hex"]);
+    assert_eq!(invalid.code, 2, "{}", invalid.stderr);
+    assert!(
+        invalid.stderr.contains("commit must be"),
+        "{}",
+        invalid.stderr
+    );
+}
+
+#[test]
 fn compare_reports_counts_and_lists_findings() {
     let before = fixture("reports/comparison-before.json");
     let after = fixture("reports/comparison-after.json");

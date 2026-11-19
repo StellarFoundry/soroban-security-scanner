@@ -17,6 +17,7 @@ soroban-scan <COMMAND>
 | `doctor` | Explain project classification, excludes, and effective configuration. |
 | `compare` | Compare two JSON scan reports by finding fingerprint. |
 | `dashboard` | Render a static trend dashboard from several JSON scan reports. |
+| `artifact-name` | Print the canonical, deterministic report artifact name. |
 | `config show` / `config validate` | Inspect or validate configuration. |
 
 ---
@@ -475,6 +476,37 @@ soroban-scan dashboard scans/jan.json scans/feb.json scans/mar.json \
   but keeps the total.
 - Bounded to 50 reports per dashboard, 16 MiB per report, and 100,000 findings
   per report. Oversized or malformed inputs are runtime errors (exit code `3`).
+
+## `artifact-name`
+
+```text
+soroban-scan artifact-name --project NAME --commit SHA [--timestamp UTC] [--format FORMAT]
+```
+
+Prints the canonical artifact name for a report:
+
+```text
+<project>-<commit7>-<YYYYMMDDTHHMMSSZ>.<extension>
+```
+
+```bash
+soroban-scan artifact-name --project "Vault Contract" \
+  --commit "$(git rev-parse HEAD)" --format json
+# vault-contract-abcdef1-20240301T102030Z.json
+```
+
+- `--project` is sanitized to lowercase `[a-z0-9._-]`; other characters become
+  `-` and the label is capped at 64 characters. It can never contain a path
+  separator or shell syntax.
+- `--commit` accepts 7-64 hexadecimal characters; the first 7 are used.
+- `--timestamp` is a UTC `YYYY-MM-DDTHH:MM:SSZ` value and defaults to the
+  current time. Pass it explicitly when reproducing a name.
+- `--format` selects the extension (`json`, `sarif`, `html`, `md`, `txt`, `xml`);
+  it defaults to `json`.
+
+The name is deterministic for the same inputs and contains no secrets. See
+[Report retention and artifact naming](retention.md) for the scheme and the
+recommended retention policy.
 
 ## `completions`
 

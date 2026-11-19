@@ -19,6 +19,7 @@ use crate::registry::RuleRegistry;
 use crate::rule::RuleMetadata;
 use crate::severity::Severity;
 
+pub mod naming;
 pub mod trend;
 
 /// Tool name used in reports.

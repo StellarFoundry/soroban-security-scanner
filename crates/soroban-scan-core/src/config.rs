@@ -227,7 +227,7 @@ impl WaiverRule {
 }
 
 /// Validates a UTC `YYYY-MM-DD` date.
-fn validate_iso_date(value: &str) -> Result<(), String> {
+pub(crate) fn validate_iso_date(value: &str) -> Result<(), String> {
     let value = value.trim();
     let bytes = value.as_bytes();
     if bytes.len() != 10 || bytes[4] != b'-' || bytes[7] != b'-' {
@@ -269,7 +269,7 @@ pub fn today_utc() -> String {
 }
 
 /// Converts Unix seconds to a UTC `YYYY-MM-DD` date (Howard Hinnant's algorithm).
-fn utc_date_from_unix(seconds: i64) -> String {
+pub(crate) fn utc_date_from_unix(seconds: i64) -> String {
     let days = seconds.div_euclid(86_400);
     let z = days + 719_468;
     let era = if z >= 0 { z } else { z - 146_096 } / 146_097;
