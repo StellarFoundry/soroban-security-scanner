@@ -41,6 +41,7 @@ and incident response.",
 privileged state change, including the old and new values where practical. Keep \
 the event schema stable so indexers can rely on it.",
     references: &["https://developers.stellar.org/docs/learn/encyclopedia/events"],
+    deprecated: false,
 };
 
 /// Detects privileged storage mutations without an event.

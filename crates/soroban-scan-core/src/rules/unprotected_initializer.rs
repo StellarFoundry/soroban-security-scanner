@@ -32,6 +32,7 @@ already initialized before writing (for example \
 or perform initialization in a constructor (`__constructor`) so it runs only at \
 deploy time.",
     references: &["https://developers.stellar.org/docs/learn/encyclopedia/security"],
+    deprecated: false,
 };
 
 /// Detects initialization entry points that lack a re-initialization guard.

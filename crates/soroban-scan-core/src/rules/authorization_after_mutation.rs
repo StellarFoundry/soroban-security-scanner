@@ -24,6 +24,7 @@ indicates a logic bug.",
 any storage read or write that depends on the caller. Call `require_auth` or \
 `require_auth_for_args` first, then perform the state change.",
     references: &["https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"],
+    deprecated: false,
 };
 
 /// Detects storage mutations that precede `require_auth`.

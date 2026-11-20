@@ -12,7 +12,8 @@ SS-###   (Soroban Security)
 ```
 
 Identifiers are **never reused** and **never renumbered**. A retired rule keeps
-its identifier and is marked deprecated.
+its identifier and is marked deprecated. See
+[rule deprecation](deprecation.md) for the lifecycle and the minimum window.
 
 ## Severity
 

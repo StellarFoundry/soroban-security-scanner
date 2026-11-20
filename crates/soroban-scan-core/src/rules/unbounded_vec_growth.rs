@@ -28,6 +28,7 @@ aggregate instead. Return a typed contract error when the cap is reached.",
     references: &[
         "https://developers.stellar.org/docs/learn/encyclopedia/security/resource-limits",
     ],
+    deprecated: false,
 };
 
 /// Detects unbounded collection growth inside contract entry points.

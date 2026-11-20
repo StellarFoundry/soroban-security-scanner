@@ -29,6 +29,7 @@ over storage is bounded by a value the contract controls.",
     references: &[
         "https://developers.stellar.org/docs/learn/encyclopedia/security/resource-limits",
     ],
+    deprecated: false,
 };
 
 /// Detects storage iteration inside contract entry points.

@@ -29,6 +29,7 @@ insufficient.",
         "https://doc.rust-lang.org/nomicon/",
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
     ],
+    deprecated: false,
 };
 
 /// Detects `unsafe` blocks in contract source files.

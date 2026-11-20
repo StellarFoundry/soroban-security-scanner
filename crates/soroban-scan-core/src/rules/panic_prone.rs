@@ -29,6 +29,7 @@ matching.",
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli",
     ],
+    deprecated: false,
 };
 
 /// Detects panic-prone constructs inside contract entry points.

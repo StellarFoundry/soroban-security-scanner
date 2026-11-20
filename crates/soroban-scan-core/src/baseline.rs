@@ -284,32 +284,67 @@ impl Baseline {
         )
     }
 
+    /// Diagnostics for baseline entries whose rule is unknown or deprecated.
+    ///
+    /// Unknown and deprecated ids are warnings: older baselines remain usable
+    /// and forward compatible, but stale or retiring entries are surfaced to the
+    /// user so they can be refreshed deliberately.
+    pub fn rule_status_diagnostics(&self, registry: &RuleRegistry) -> Vec<Diagnostic> {
+        let mut unknown: BTreeMap<&str, usize> = BTreeMap::new();
+        let mut deprecated: BTreeMap<&str, usize> = BTreeMap::new();
+        for entry in &self.findings {
+            match registry.by_id(&entry.rule_id) {
+                None => *unknown.entry(entry.rule_id.as_str()).or_insert(0) += 1,
+                Some(rule) if rule.metadata().is_deprecated() => {
+                    *deprecated.entry(entry.rule_id.as_str()).or_insert(0) += 1;
+                }
+                Some(_) => {}
+            }
+        }
+        let mut diagnostics: Vec<Diagnostic> = unknown
+            .into_iter()
+            .map(|(rule_id, count)| {
+                Diagnostic::warning(
+                    DiagnosticCode::BaselineUnknownRule,
+                    format!(
+                        "baseline references unknown rule id `{rule_id}`{}",
+                        count_suffix(count)
+                    ),
+                    None,
+                )
+            })
+            .collect();
+        diagnostics.extend(deprecated.into_iter().map(|(rule_id, count)| {
+            Diagnostic::warning(
+                DiagnosticCode::BaselineDeprecatedRule,
+                format!(
+                    "baseline references deprecated rule id `{rule_id}`{}; \
+                     refresh the baseline to drop stale entries",
+                    count_suffix(count)
+                ),
+                None,
+            )
+        }));
+        diagnostics
+    }
+
     /// Diagnostics for baseline entries whose rule ids are no longer registered.
     ///
     /// Unknown ids are warnings: older baselines remain usable and forward
     /// compatible, but stale entries are surfaced to the user.
     pub fn unknown_rule_diagnostics(&self, registry: &RuleRegistry) -> Vec<Diagnostic> {
-        let mut unknown: BTreeMap<&str, usize> = BTreeMap::new();
-        for entry in &self.findings {
-            if registry.by_id(&entry.rule_id).is_none() {
-                *unknown.entry(entry.rule_id.as_str()).or_insert(0) += 1;
-            }
-        }
-        unknown
+        self.rule_status_diagnostics(registry)
             .into_iter()
-            .map(|(rule_id, count)| {
-                let suffix = if count == 1 {
-                    String::new()
-                } else {
-                    format!(" ({count} entries)")
-                };
-                Diagnostic::warning(
-                    DiagnosticCode::BaselineUnknownRule,
-                    format!("baseline references unknown rule id `{rule_id}`{suffix}"),
-                    None,
-                )
-            })
+            .filter(|diagnostic| diagnostic.code == DiagnosticCode::BaselineUnknownRule)
             .collect()
+    }
+}
+
+fn count_suffix(count: usize) -> String {
+    if count == 1 {
+        String::new()
+    } else {
+        format!(" ({count} entries)")
     }
 }
 
@@ -606,6 +641,44 @@ mod tests {
         assert_eq!(diagnostics.len(), 1);
         assert_eq!(diagnostics[0].code, DiagnosticCode::BaselineUnknownRule);
         assert!(diagnostics[0].message.contains("SS-999"));
+    }
+
+    struct DeprecatedRule {
+        meta: RuleMetadata,
+    }
+
+    impl crate::rule::Rule for DeprecatedRule {
+        fn metadata(&self) -> &RuleMetadata {
+            &self.meta
+        }
+        fn analyze(&self, _ctx: &crate::context::AnalysisContext<'_>, _out: &mut Vec<Finding>) {}
+    }
+
+    #[test]
+    fn deprecated_rule_ids_are_diagnostics() {
+        let mut registry = RuleRegistry::new();
+        registry
+            .register(Box::new(DeprecatedRule {
+                meta: RuleMetadata::new(
+                    "SS-998",
+                    "Retired",
+                    "retired rule",
+                    Category::Authorization,
+                    Severity::Low,
+                    Confidence::Low,
+                    "upgrade",
+                )
+                .with_deprecated(true),
+            }))
+            .unwrap();
+        let mut baseline = Baseline::from_findings(&[finding("src/lib.rs", 10, "a")]);
+        baseline.findings[0].rule_id = "SS-998".to_string();
+
+        let diagnostics = baseline.rule_status_diagnostics(&registry);
+        assert_eq!(diagnostics.len(), 1);
+        assert_eq!(diagnostics[0].code, DiagnosticCode::BaselineDeprecatedRule);
+        assert!(diagnostics[0].message.contains("SS-998"));
+        assert!(baseline.unknown_rule_diagnostics(&registry).is_empty());
     }
 
     #[test]

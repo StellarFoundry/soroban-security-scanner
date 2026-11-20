@@ -28,6 +28,7 @@ tests.",
         "https://github.com/stellar/rs-soroban-sdk/releases",
         "https://developers.stellar.org/docs",
     ],
+    deprecated: false,
 };
 
 /// Detects manifests that pin an old `soroban-sdk` version.

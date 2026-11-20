@@ -68,6 +68,11 @@ pub struct ScanStats {
     pub generated_files_excluded: usize,
     /// Gate findings grouped by stable category name, sorted deterministically.
     pub findings_by_category: BTreeMap<String, usize>,
+    /// Wall-clock time spent in the analysis pipeline, in microseconds.
+    ///
+    /// Presentation-only metadata for the opt-in metrics output. It is never
+    /// serialized into the deterministic JSON/SARIF reports.
+    pub elapsed_micros: u128,
 }
 
 /// Outcome of one rule execution for the opt-in timing breakdown.
@@ -454,6 +459,37 @@ pub fn override_diagnostics(config: &ScanConfig, registry: &RuleRegistry) -> Vec
         .collect()
 }
 
+/// Returns warnings for configuration that references a deprecated rule.
+///
+/// A deprecated rule keeps its id resolvable, so a stale configuration still
+/// parses. Surfacing the reference lets users migrate before the rule is
+/// removed after the documented deprecation window.
+pub fn deprecation_diagnostics(config: &ScanConfig, registry: &RuleRegistry) -> Vec<Diagnostic> {
+    let mut referenced: BTreeSet<&str> = BTreeSet::new();
+    referenced.extend(config.rules.disabled.iter().map(String::as_str));
+    referenced.extend(config.rules.enabled.iter().map(String::as_str));
+    referenced.extend(config.rules.severity_overrides.keys().map(String::as_str));
+    referenced.extend(config.rules.confidence_overrides.keys().map(String::as_str));
+
+    referenced
+        .into_iter()
+        .filter_map(|id| {
+            let rule = registry.by_id(id)?;
+            rule.metadata().is_deprecated().then(|| {
+                Diagnostic::warning(
+                    DiagnosticCode::DeprecatedRuleReferenced,
+                    format!(
+                        "configuration references deprecated rule `{id}`; \
+                         it is skipped by default and will be removed after \
+                         the deprecation window"
+                    ),
+                    None,
+                )
+            })
+        })
+        .collect()
+}
+
 struct CompiledConfigSuppression {
     report: ConfigSuppressionReport,
     matcher: Option<globset::GlobMatcher>,
@@ -639,6 +675,7 @@ fn compile_waivers(
 
 /// Runs the scanner over a loaded project.
 pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig) -> ScanOutcome {
+    let scan_started = Instant::now();
     let ctx = AnalysisContext::new(
         &loaded.project,
         &loaded.sources,
@@ -672,6 +709,7 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
 
     let mut diagnostics = loaded.project.diagnostics.clone();
     diagnostics.extend(override_diagnostics(config, registry));
+    diagnostics.extend(deprecation_diagnostics(config, registry));
     if analysis_mode == AnalysisMode::Generic {
         diagnostics.push(Diagnostic::info(
             DiagnosticCode::GenericMode,
@@ -1005,6 +1043,7 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
                 .or_insert(0) += 1;
             counts
         });
+    stats.elapsed_micros = scan_started.elapsed().as_micros();
 
     ScanOutcome {
         project: loaded.project.clone(),
@@ -1292,6 +1331,7 @@ fn merge_stats(stats: &mut ScanStats, other: &ScanStats) {
     stats.config_suppressions_applied += other.config_suppressions_applied;
     stats.generated_files_marked += other.generated_files_marked;
     stats.generated_files_excluded += other.generated_files_excluded;
+    stats.elapsed_micros = stats.elapsed_micros.saturating_add(other.elapsed_micros);
     for (category, count) in &other.findings_by_category {
         *stats
             .findings_by_category
@@ -2019,6 +2059,56 @@ mod tests {
                 .iter()
                 .any(|message| message.contains("SS-999") && message.contains("unknown rule id")),
             "got: {messages:?}"
+        );
+
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn deprecated_rules_are_skipped_and_config_references_warn() {
+        struct DeprecatedRule {
+            meta: crate::rule::RuleMetadata,
+        }
+        impl crate::rule::Rule for DeprecatedRule {
+            fn metadata(&self) -> &crate::rule::RuleMetadata {
+                &self.meta
+            }
+            fn analyze(&self, _ctx: &AnalysisContext<'_>, _out: &mut Vec<Finding>) {}
+        }
+
+        let root = project_fixture("deprecated-rules");
+        let loaded = project::load(&root, &ScanConfig::default().discovery_options()).unwrap();
+        let mut registry = RuleRegistry::new();
+        registry
+            .register(Box::new(DeprecatedRule {
+                meta: crate::rule::RuleMetadata::new(
+                    "SS-998",
+                    "Retired",
+                    "retired rule",
+                    Category::Authorization,
+                    Severity::Low,
+                    Confidence::Low,
+                    "upgrade",
+                )
+                .with_deprecated(true),
+            }))
+            .unwrap();
+
+        let config = ScanConfig {
+            rules: crate::config::RulesConfig {
+                enabled: vec!["SS-998".into()],
+                ..crate::config::RulesConfig::default()
+            },
+            ..ScanConfig::default()
+        };
+        let outcome = scan(&loaded, &registry, &config);
+        assert_eq!(outcome.stats.rules_run, 0);
+        assert_eq!(outcome.stats.rules_skipped, 1);
+        assert!(outcome.findings.is_empty());
+        assert!(
+            outcome.diagnostics.iter().any(|diagnostic| diagnostic.code
+                == crate::model::DiagnosticCode::DeprecatedRuleReferenced),
+            "expected a deprecated-rule configuration warning"
         );
 
         let _ = std::fs::remove_dir_all(&root);
