@@ -28,6 +28,12 @@ Closes #
 - [ ] `cargo clippy --all-targets --all-features -- -D warnings` passes
 - [ ] `cargo test --all` passes
 
+## Rule changes
+
+<!-- Only for PRs that add or change a security rule. -->
+
+- [ ] I completed the [rule quality checklist](../docs/rules/quality-checklist.md)
+
 ## Security checklist
 
 - [ ] No secrets, credentials, or private keys are included
