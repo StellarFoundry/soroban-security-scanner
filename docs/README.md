@@ -16,6 +16,7 @@ Start here.
 
 - [Rules](rules/README.md) — severity, confidence, and the built-in detectors.
 - [Analysis Methodology](analysis-methodology.md) — what static analysis can and cannot prove.
+- [Taint Assumptions and Limitations](analysis/taint-model.md) — sources, sinks, sanitizers, path sensitivity, and truncation.
 - [Baselines](baselines.md) - track new vs. known findings.
 - [Policy and Reporting](policy.md) - policy schema, precedence, waivers, and report formats.
 - [Report Retention](retention.md) - deterministic artifact names and retention guidance.

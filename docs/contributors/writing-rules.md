@@ -10,7 +10,9 @@ Answer these questions in the rule documentation:
 
 1. **Problem** — what security problem does this address?
 2. **Evidence** — what exactly is detectable statically?
-3. **Limitations** — what can this detector not determine?
+3. **Limitations** — what can this detector not determine? If it reasons about
+   caller-controlled values, use the terms in the
+   [taint model](../analysis/taint-model.md).
 4. **False positives** — which legitimate patterns must not trigger it?
 
 If you cannot state concrete evidence, the rule is not ready. Prefer not to

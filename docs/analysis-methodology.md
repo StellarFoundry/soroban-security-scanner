@@ -208,6 +208,8 @@ decision; they do not make the code safe.
   modeling, and an independent audit.
 
 See [the rule system](rules/README.md) for detector details, the
+[taint assumptions and limitations](analysis/taint-model.md) for what the
+scanner can and cannot say about caller-controlled values, the
 [rule cookbook](rules/cookbook.md) for worked detection examples, and
 [the security model](security/security-model.md) for the scanner's trust
 boundaries.

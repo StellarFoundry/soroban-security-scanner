@@ -142,7 +142,9 @@ layout, and [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md) for the definition
 of done.
 
 For the limits of the analysis and the meaning of confidence, see
-[Analysis Methodology](../analysis-methodology.md).
+[Analysis Methodology](../analysis-methodology.md). Rules that reason about
+caller-controlled values must also follow the
+[Taint Assumptions and Limitations](../analysis/taint-model.md).
 
 ## Rule documentation template
 
