@@ -7,6 +7,7 @@ use crate::discovery::{self, DiscoveryOptions};
 use crate::error::ScanError;
 use crate::manifest;
 use crate::model::{Diagnostic, DiagnosticCode, Project};
+use crate::sdk_matrix;
 use crate::soroban;
 use crate::source::{self, ParsedSource};
 use crate::target;
@@ -73,6 +74,7 @@ pub fn load(root: &Path, opts: &DiscoveryOptions) -> Result<LoadedProject, ScanE
     diagnostics.extend(loaded.diagnostics);
 
     let soroban = soroban::analyze_manifests(&manifests);
+    diagnostics.extend(sdk_matrix::diagnostics(&manifests));
     let mut project = Project {
         root: root.to_path_buf(),
         kind: soroban::classify(&soroban),
@@ -160,6 +162,7 @@ pub fn load_files_with_options(
     diagnostics.extend(loaded.diagnostics);
 
     let soroban = soroban::analyze_manifests(&manifests);
+    diagnostics.extend(sdk_matrix::diagnostics(&manifests));
     let mut project = Project {
         root: root.to_path_buf(),
         kind: soroban::classify(&soroban),

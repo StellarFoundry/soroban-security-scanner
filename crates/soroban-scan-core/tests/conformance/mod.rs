@@ -106,9 +106,8 @@ fn check_discovery(
     }
 
     let missing = root.join("conformance-fixture-does-not-exist");
-    match frontend.discover(&missing, opts) {
-        Ok(_) => failures.push("discover: missing root returned Ok".to_string()),
-        Err(_) => {}
+    if frontend.discover(&missing, opts).is_ok() {
+        failures.push("discover: missing root returned Ok".to_string());
     }
 }
 

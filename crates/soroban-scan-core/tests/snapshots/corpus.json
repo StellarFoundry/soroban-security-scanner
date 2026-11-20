@@ -215,6 +215,7 @@
     "min_confidence": "low",
     "mode": "soroban",
     "target_analysis": false,
+    "unsupported_syntax": false,
     "exclude": [],
     "exclude_tests": false,
     "include_cfg_test": false,

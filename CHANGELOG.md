@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- The Soroban SDK support matrix (`>=20.5.0, <30.0.0`) is documented, covered by
+  fixtures, and run once per pinned version in CI. Declared versions outside the
+  matrix emit an `SDK-001` warning instead of claiming support (`#383`).
 - Cross-language fixtures (TypeScript, Solidity, plain Cargo) prove unsupported
   input fails safely: no panic, no partial parse, and a clear aggregated
   diagnostic when `--unsupported-syntax` is enabled (`#385`).

@@ -1,0 +1,10 @@
+[package]
+name = "fixture-sdk-30"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[dependencies]
+soroban-sdk = "30.0.0"
