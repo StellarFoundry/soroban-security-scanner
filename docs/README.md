@@ -16,6 +16,7 @@ Start here.
 
 - [Rules](rules/README.md) — severity, confidence, and the built-in detectors.
 - [Analysis Methodology](analysis-methodology.md) — what static analysis can and cannot prove.
+- [Exploitability Model](exploitability-model.md) — reachability, taint, control dependence, and `unknown` states for rule authors.
 - [Baselines](baselines.md) - track new vs. known findings.
 - [Policy and Reporting](policy.md) - policy schema, precedence, waivers, and report formats.
 - [Report Retention](retention.md) - deterministic artifact names and retention guidance.
