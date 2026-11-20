@@ -30,6 +30,7 @@ walkdir.workspace = true
 globset.workspace = true
 sha2.workspace = true
 hex.workspace = true
+ed25519-dalek.workspace = true
 ureq = { workspace = true, optional = true }
 url = { workspace = true, optional = true }
 

@@ -12,8 +12,7 @@ fixtures/
   adversarial/     # per-rule samples with unusual but valid syntax
   cross-language/  # valid non-Rust projects that must fail safely
   sdk-matrix/      # SDK version compatibility fixtures
-  third-party/     # third-party contracts; each needs PROVENANCE.toml
-  provenance-checks/ # fixtures for the provenance validator
+  rule-packs/      # Rule pack fixtures for signing and verification tests
   reports/         # JSON scan reports used by comparison and dashboard tests
 ```
 

@@ -9,8 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Corpus licensing and provenance policy: third-party entries require a compatible
-  license, source URL, and expected-findings manifest, enforced by tests in CI (`#328`).
+- Rule pack signing and verification: verify detached Ed25519 signatures (`pack.sig`)
+  against trusted keyrings, reject unsigned packs unless allowed via `--allow-unsigned-packs`,
+  and support key rotation and revocation (`#362`).
 - SS-018 "Unchecked integer cast" (medium/low): flags narrowing `as` casts of
   function parameters and storage reads, ignores widening and same-width casts,
   and recommends `TryFrom`/`try_into` (`#117`).

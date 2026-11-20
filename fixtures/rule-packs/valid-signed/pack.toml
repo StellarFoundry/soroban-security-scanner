@@ -1,0 +1,14 @@
+[pack]
+name = "soroban-defi-rules"
+version = "0.1.0"
+description = "Community rules for common Soroban DeFi attack vectors"
+authors = ["Stellar Foundry <security@stellarfoundry.org>"]
+min_scanner_version = "0.2.0"
+
+[[rules]]
+id = "COMM-001"
+title = "Unbounded slippage in swap invocation"
+category = "defi"
+default_severity = "high"
+default_confidence = "medium"
+description = "Flags swap calls where max_slippage is unconstrained or zero."
