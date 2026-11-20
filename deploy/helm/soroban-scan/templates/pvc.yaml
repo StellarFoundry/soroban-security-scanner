@@ -1,0 +1,35 @@
+{{- if not .Values.source.existingClaim }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "soroban-scan.sourceClaim" . }}
+  labels:
+    {{- include "soroban-scan.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.source.accessMode }}
+  {{- with .Values.source.storageClass }}
+  storageClassName: {{ . }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.source.size }}
+{{- end }}
+{{- if not .Values.reports.existingClaim }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "soroban-scan.reportsClaim" . }}
+  labels:
+    {{- include "soroban-scan.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.reports.accessMode }}
+  {{- with .Values.reports.storageClass }}
+  storageClassName: {{ . }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.reports.size }}
+{{- end }}

@@ -39,12 +39,19 @@ harness in `tests/conformance/mod.rs` against the Rust frontend. It checks the
 trait contract: a stable name, deterministic discovery inside the scan root,
 non-fatal diagnostics for unparseable files, item extraction, and valid source
 spans. A future frontend includes the same module from its own integration test
-and supplies a valid fixture plus one that fails to parse.
+and supplies a valid fixture plus one that fails to parse. See
+[Adding a language frontend](../contributors/adding-a-frontend.md) for the full
+contract, skeleton, fixtures, and experimental-status rules.
 
 ## Rules for security-sensitive tests
 
 - Every rule ships with at least one **positive** fixture (must trigger) and one
   **negative** fixture (must not trigger).
+- Every rule also ships with an **adversarial** sample under
+  `fixtures/adversarial/`. `tests/adversarial_corpus.rs` derives the rule list
+  from the registry and checks the recorded `trigger`/`no-trigger` result, so a
+  new detector without a sample fails. See
+  [`fixtures/adversarial/README.md`](../../fixtures/adversarial/README.md).
 - False-positive tests are as important as true-positive tests.
 - Parser features require malformed-input tests.
 - Any future network/CI integration requires permission and error-path tests.

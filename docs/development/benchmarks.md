@@ -76,6 +76,30 @@ python tools/benchmark.py --update-baseline
 The measurement and comparison logic is covered by
 `tests/tools/test_benchmark_threshold.py`.
 
+## Frontend performance budgets
+
+`crates/soroban-scan-core/tests/frontend_budgets.rs` loads the conformance
+fixture (`fixtures/projects/soroban-confirmed`) through the default `Frontend`
+and enforces two budgets in the normal `cargo test --all` CI job:
+
+| Budget | Bound | Measured how |
+| ------ | ----- | ------------ |
+| Time | 2 seconds | Wall-clock for one warm `load` in the debug test profile. |
+| Peak allocation | 32 MiB | A test-local counting global allocator; peak bytes allocated, not RSS. |
+
+The fixture is intentionally tiny, so the bounds are far above normal runs
+(roughly milliseconds and tens of KiB on a developer machine). They fail when a
+change makes loading dramatically slower or allocate an order of magnitude more
+memory, while tolerating slow or virtualized CI runners. Allocation counting is
+deterministic and works on every OS; no `/proc` or platform-specific probe is
+involved.
+
+A failure prints the measured value and the budget, and points at the frontend
+rather than asking for a larger limit. Raise a budget only with measurements
+from a clean baseline and an explanation in the pull request. The test uses a
+separate integration binary with a single test so parallel test allocations do
+not distort the peak.
+
 ## Pathological-input regression
 
 `crates/soroban-scan-core/tests/performance.rs` asserts generous upper time

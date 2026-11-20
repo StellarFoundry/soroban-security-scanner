@@ -1,0 +1,106 @@
+# Values for the soroban-scan batch chart.
+#
+# The scanner is a CLI, not a server. There is no Deployment, Service, Ingress,
+# or port, and therefore no liveness/readiness probes: a batch container has no
+# endpoint to probe. A scan either finishes (exit 0/1) or the Job fails.
+
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: soroban-scan
+  tag: "0.2.0"
+  # Set a digest to pin the image immutably. When set it is appended as
+  # `@sha256:...` after the tag.
+  digest: ""
+  pullPolicy: IfNotPresent
+
+# Names of existing image pull secrets. The scanner itself needs no secrets,
+# credentials, keys, or tokens; this is only for pulling from a private registry.
+imagePullSecrets: []
+
+# Extra environment variables and Secret/ConfigMap references for the scan
+# container. The chart ships no default credentials. Example:
+#   extraEnvFrom:
+#     - secretRef:
+#         name: scan-runtime
+extraEnv: []
+extraEnvFrom: []
+
+# One-off Job. Run it to validate an image, source tree, or config, or after an
+# upgrade. It is the closest thing this project has to a migration job.
+job:
+  enabled: true
+  backoffLimit: 0
+  activeDeadlineSeconds: 1800
+  ttlSecondsAfterFinished: 86400
+
+# Scheduled scans.
+cronjob:
+  enabled: true
+  schedule: "0 2 * * *"
+  timeZone: Etc/UTC
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  backoffLimit: 1
+  activeDeadlineSeconds: 1800
+  ttlSecondsAfterFinished: 86400
+
+# Arguments passed to `soroban-scan scan /workspace/src`.
+scan:
+  failOn: high
+  extraArgs: []
+
+# Mounted at /etc/soroban-scan/soroban-scan.toml. The scanner treats this file
+# as untrusted input: unknown fields and rule ids are rejected.
+config: |
+  min_severity = "info"
+  min_confidence = "low"
+  exclude = ["target/**", "vendor/**"]
+  exclude_tests = true
+  include_cfg_test = false
+  follow_symlinks = false
+  target_analysis = false
+
+  [rules]
+  disabled = []
+  enabled = []
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+# Source is mounted read-only; reports are writable. Set existingClaim to use a
+# claim you manage yourself instead of creating one.
+source:
+  existingClaim: ""
+  size: 10Gi
+  accessMode: ReadWriteOnce
+  storageClass: ""
+
+reports:
+  existingClaim: ""
+  size: 5Gi
+  accessMode: ReadWriteOnce
+  storageClass: ""
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL

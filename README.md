@@ -239,6 +239,7 @@ we'll help wire it up.
 - [Supply-chain verification](docs/supply-chain.md)
 - [Kubernetes manifests](docs/kubernetes.md) — scheduled and one-off scans
 - [Rules](docs/rules/README.md) · [Baselines](docs/baselines.md)
+- [Adding a language frontend](docs/contributors/adding-a-frontend.md) - experimental; trait, skeleton, and conformance suite
 - [Policy and Reporting](docs/policy.md) — policy schema, precedence, waivers, formats
 - [Report Retention](docs/retention.md) — artifact naming and retention guidance
 - [GitHub Integration](docs/github-integration.md)

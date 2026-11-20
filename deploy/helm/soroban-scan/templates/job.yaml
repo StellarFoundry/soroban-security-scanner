@@ -1,0 +1,14 @@
+{{- if .Values.job.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "soroban-scan.fullname" . }}-once
+  labels:
+    {{- include "soroban-scan.labels" . | nindent 4 }}
+spec:
+  backoffLimit: {{ .Values.job.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.job.activeDeadlineSeconds }}
+  ttlSecondsAfterFinished: {{ .Values.job.ttlSecondsAfterFinished }}
+  template:
+    {{- include "soroban-scan.podTemplate" . | nindent 4 }}
+{{- end }}

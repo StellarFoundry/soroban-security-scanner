@@ -39,6 +39,7 @@ Start here.
 - [Testing](development/testing.md)
 - [Benchmarks](development/benchmarks.md)
 - [Writing Rules](contributors/writing-rules.md)
+- [Adding a Language Frontend](contributors/adding-a-frontend.md) - experimental until reviewed.
 - [Rule Template](rules/TEMPLATE.md)
 - [Contributor Roadmap](contributors/roadmap.md)
 

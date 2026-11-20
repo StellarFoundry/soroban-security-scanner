@@ -17,8 +17,59 @@ The one-off `Job` is the "migration job" for this project: there is no database
 schema to migrate. Use it after an upgrade, or before enabling the schedule, to
 prove the image and mounted source still work.
 
-All files are plain YAML with no templating or Helm chart, so they can be read
-and diffed directly.
+All files are plain YAML with no templating, so they can be read and diffed
+directly. If you prefer Helm, the chart in `deploy/helm/soroban-scan/` renders
+the same resources with configurable values; see [Helm chart](#helm-chart)
+below.
+
+## Helm chart
+
+The chart deploys the **batch Job and CronJob**, not a server. There is no
+`Deployment`, `Service`, `Ingress`, or listening port, so there are no
+liveness/readiness/startup probes: a batch container has no endpoint to probe.
+A scan either finishes (exit 0 or 1) or the Job fails. This is an intentional
+adaptation of the service-oriented "API/worker chart" pattern.
+
+```bash
+helm install soroban-scan deploy/helm/soroban-scan \
+  --namespace soroban-scan --create-namespace \
+  --set image.repository=registry.example.com/security/soroban-scan \
+  --set image.tag=0.2.0
+```
+
+The chart does not publish or build an image, and it creates no namespace
+(use `--create-namespace`, as above). Populate the source claim after install,
+just as for the plain manifests.
+
+Common values:
+
+| Value | Default | Purpose |
+| ----- | ------- | ------- |
+| `image.repository`, `image.tag`, `image.digest` | `soroban-scan:0.2.0` | Image reference; a digest pins it immutably. |
+| `imagePullSecrets` | `[]` | Names of existing registry pull secrets. |
+| `job.enabled` | `true` | Render the one-off validation Job. |
+| `cronjob.enabled`, `cronjob.schedule` | `true`, `0 2 * * *` | Scheduled scans. |
+| `scan.failOn`, `scan.extraArgs` | `high`, `[]` | Exit-code gate and extra CLI arguments. |
+| `config` | the `soroban-scan.toml` above | ConfigMap contents. |
+| `resources` | 100m/128Mi requests, 500m/1Gi limits | Container requests and limits. |
+| `source` / `reports` | 10Gi / 5Gi claims | Size, access mode, storage class, or `existingClaim`. |
+| `extraEnv`, `extraEnvFrom` | `[]` | Optional environment and Secret/ConfigMap references. |
+
+The scanner needs **no credentials**, and the chart ships no default passwords,
+tokens, or Secret objects. `imagePullSecrets` and `extraEnvFrom` exist only for
+a private registry or an operator-supplied runtime Secret.
+
+Render and inspect the chart before installing:
+
+```bash
+helm lint deploy/helm/soroban-scan
+helm template soroban-scan deploy/helm/soroban-scan --namespace soroban-scan
+```
+
+`tests/test_helm_chart.py` runs `helm lint` and `helm template`, then asserts the
+rendered resource kinds, probes are absent, the workload is locked down, and
+image/resources/secrets/claims are parameterized. It is skipped when `helm` is
+not installed; CI installs Helm for the Python test job.
 
 ## Required image
 
