@@ -225,6 +225,8 @@ we'll help wire it up.
   acceptance criteria; PRs are reviewed before merge. This project participates
   in open-source contribution waves via [Drips Wave](docs/WAVE.md).
 - **Releases:** tagged releases with a maintained [`CHANGELOG.md`](CHANGELOG.md).
+  Cadence, support windows, and security response targets are in
+  [Releases and support](docs/releases.md).
 - **Security:** please follow [`SECURITY.md`](SECURITY.md) for responsible
   disclosure.
 
