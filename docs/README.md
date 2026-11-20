@@ -51,6 +51,7 @@ Start here.
 - [Releases and Support](releases.md) — cadence, support windows, security targets.
 - [Supply-chain verification](supply-chain.md) — checksums, attestations, dependencies.
 - [Kubernetes manifests](kubernetes.md) — scheduled and one-off scans.
+- [Docker image](docker.md) — build, run, and verify the CLI container.
 - [Security Model](security/security-model.md)
 - [Threat Model](security/threat-model.md)
 - [Project Status](PROJECT_STATUS.md)

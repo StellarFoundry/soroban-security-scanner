@@ -64,6 +64,21 @@ The attestation proves which workflow and commit produced the digest; it is not
 a detached GPG signature. See [Supply-chain verification](supply-chain.md) for
 the exact checksum commands per platform, what is attested, and what is not.
 
+## Container image
+
+The repository provides an opt-in `Dockerfile` for one-off scans. No registry
+image is published, so build it from a checkout and use the local tag:
+
+```bash
+docker build --tag soroban-scan:0.2.0 .
+docker run --rm --network none \
+  -v "$PWD/examples/token:/src:ro" \
+  soroban-scan:0.2.0 scan /src --fail-on high
+```
+
+See [Docker image](docker.md) for the entry point, health check, non-root user,
+report mounts, and security considerations.
+
 ## Verify the installation
 
 ```bash

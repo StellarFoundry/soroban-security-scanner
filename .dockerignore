@@ -1,0 +1,29 @@
+# Only the Cargo manifests, workspace crates, xtask, and cargo aliases are
+# copied into the builder stage. Everything else is kept out of the context.
+.git/
+.github/
+target/
+**/target/
+dist/
+tmp/
+docs/
+deploy/
+examples/
+fixtures/
+fuzz/
+tests/
+tools/
+*.md
+!README.md
+*.pem
+*.key
+*.p12
+*.pfx
+.env
+.env.*
+id_rsa*
+.netrc
+.npmrc
+.soroban-scan-baseline.json
+.scanner-cache/
+*.soroban-scan.local.*

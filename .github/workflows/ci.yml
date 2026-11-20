@@ -205,6 +205,52 @@ jobs:
       - name: Run tests
         run: python -m unittest discover -s tests -v
 
+  docker:
+    name: Docker build and smoke scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build the image
+        run: docker build --tag soroban-scan:ci .
+      - name: Verify the image runs as non-root
+        run: |
+          test "$(docker run --rm --entrypoint id soroban-scan:ci -u)" = "65532"
+          test "$(docker inspect --format '{{.Config.User}}' soroban-scan:ci)" = "65532:65532"
+      - name: Verify the documented entry point
+        run: docker run --rm soroban-scan:ci version
+      - name: Scan a fixture without network access
+        run: |
+          docker run --rm --network none \
+            -v "$PWD/fixtures/corpus/SS-001:/src:ro" \
+            soroban-scan:ci scan /src --format json --fail-on none > scan.json
+          python3 - <<'PY'
+          import json
+
+          with open("scan.json", encoding="utf-8") as handle:
+              report = json.load(handle)
+          assert report["findings"], "fixture should produce at least one finding"
+          print(f"scan found {len(report['findings'])} finding(s)")
+          PY
+      - name: Verify the health check
+        run: |
+          container="$(docker run -d --name soroban-scan-health \
+            --health-interval 1s --health-timeout 5s --health-retries 3 \
+            --entrypoint sleep soroban-scan:ci 30)"
+          trap 'docker rm -f "$container" >/dev/null' EXIT
+          status=starting
+          for attempt in $(seq 1 20); do
+            status="$(docker inspect --format '{{.State.Health.Status}}' "$container")"
+            if [ "$status" = "healthy" ]; then
+              echo "container health check passed"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "::error::health check did not become healthy (status: $status)"
+          docker logs "$container"
+          exit 1
+
   deny:
     name: Dependency audit
     runs-on: ubuntu-latest
