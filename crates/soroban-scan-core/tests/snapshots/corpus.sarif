@@ -3861,6 +3861,35 @@
           "ruleId": "SS-029"
         },
         {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-031/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Event topic derived from a caller-controlled parameter — event topic derived from caller-controlled parameter(s) `to` in entry point `transfer`: env . events () . publish ((symbol_short ! (\"transfer\") , to) , (from , amount))"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c2bc01d7f6cdb99f4bee7aa471df5ba5"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "remediation": "Use a constant topic (`symbol_short!(\"transfer\")` or `Symbol::new(&env, \"transfer\")`) and put caller-controlled values in the event data payload. If a parameter must appear in a topic, document why and validate it against an allowlist of expected topic values.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-031"
+        },
+        {
           "level": "note",
           "locations": [
             {
@@ -4386,6 +4415,34 @@
               },
               "shortDescription": {
                 "text": "Public test or debug hook in a contract entry point"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract publishes an event whose topic list includes a function parameter, so the caller influences which topic the event appears under. Off-chain indexers that group or trust events by topic can be fed spoofed, trusted-looking events (for example a fake `transfer` or `admin` event). Topics should identify the event type; caller-controlled values belong in the event data payload. This is a heuristic and reports low confidence."
+              },
+              "help": {
+                "markdown": "## Event topic derived from a caller-controlled parameter\n\nA contract publishes an event whose topic list includes a function parameter, so the caller influences which topic the event appears under. Off-chain indexers that group or trust events by topic can be fed spoofed, trusted-looking events (for example a fake `transfer` or `admin` event). Topics should identify the event type; caller-controlled values belong in the event data payload. This is a heuristic and reports low confidence.\n\n### Remediation\n\nUse a constant topic (`symbol_short!(\"transfer\")` or `Symbol::new(&env, \"transfer\")`) and put caller-controlled values in the event data payload. If a parameter must appear in a topic, document why and validate it against an allowlist of expected topic values.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/events\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A contract publishes an event whose topic list includes a function parameter, so the caller influences which topic the event appears under. Off-chain indexers that group or trust events by topic can be fed spoofed, trusted-looking events (for example a fake `transfer` or `admin` event). Topics should identify the event type; caller-controlled values belong in the event data payload. This is a heuristic and reports low confidence.\n\nRemediation: Use a constant topic (`symbol_short!(\"transfer\")` or `Symbol::new(&env, \"transfer\")`) and put caller-controlled values in the event data payload. If a parameter must appear in a topic, document why and validate it against an allowlist of expected topic values."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/events",
+              "id": "SS-031",
+              "name": "Event topic derived from a caller-controlled parameter",
+              "properties": {
+                "category": "events",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/events",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Use a constant topic (`symbol_short!(\"transfer\")` or `Symbol::new(&env, \"transfer\")`) and put caller-controlled values in the event data payload. If a parameter must appear in a topic, document why and validate it against an allowlist of expected topic values.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Event topic derived from a caller-controlled parameter"
               }
             },
             {

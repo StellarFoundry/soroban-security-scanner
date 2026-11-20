@@ -8,7 +8,7 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 74,
+    "source_files": 78,
     "soroban_sdk_versions": []
   },
   "stats": {
@@ -179,13 +179,13 @@
         }
       ]
     },
-    "files_analyzed": 74,
-    "files_parsed": 74,
+    "files_analyzed": 78,
+    "files_parsed": 78,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 19,
+    "rules_run": 20,
     "rules_skipped": 0,
-    "findings_raw": 134,
+    "findings_raw": 135,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -203,7 +203,7 @@
       "cross-contract": 6,
       "dependencies": 2,
       "error-handling": 11,
-      "events": 13,
+      "events": 14,
       "resource-usage": 2,
       "storage": 42,
       "token": 11,
@@ -2807,6 +2807,26 @@
       "fingerprint": "c2c7192fdfffc7b7c5fc6951261f5cb4"
     },
     {
+      "rule_id": "SS-031",
+      "title": "Event topic derived from a caller-controlled parameter",
+      "description": "A contract publishes an event whose topic list includes a function parameter, so the caller influences which topic the event appears under. Off-chain indexers that group or trust events by topic can be fed spoofed, trusted-looking events (for example a fake `transfer` or `admin` event). Topics should identify the event type; caller-controlled values belong in the event data payload. This is a heuristic and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "events",
+      "location": {
+        "file": "SS-031/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "event topic derived from caller-controlled parameter(s) `to` in entry point `transfer`: env . events () . publish ((symbol_short ! (\"transfer\") , to) , (from , amount))",
+      "remediation": "Use a constant topic (`symbol_short!(\"transfer\")` or `Symbol::new(&env, \"transfer\")`) and put caller-controlled values in the event data payload. If a parameter must appear in a topic, document why and validate it against an allowlist of expected topic values.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "c2bc01d7f6cdb99f4bee7aa471df5ba5"
+    },
+    {
       "rule_id": "SS-033",
       "title": "Wildcard import from the Soroban SDK",
       "description": "A source file imports everything from `soroban_sdk` with a glob (`use soroban_sdk::*;` or a nested glob). Wildcard imports obscure which SDK items are used and can silently include deprecated or unsafe APIs when the SDK changes. This is a readability and reviewability signal, not proof of a security defect.",
@@ -2956,6 +2976,27 @@
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: panic",
       "path": "SS-014/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-031/negative.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-031/negative2.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-031/positive.rs",
       "line": null
     },
     {

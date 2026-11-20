@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- SS-031 "Event topic derived from a caller-controlled parameter" (medium/low):
+  flags event topics built from function parameters, which lets callers choose
+  the topic trusted indexers see; constant topics and payload-only parameters do
+  not trigger (`#130`).
 - The Soroban SDK support matrix (`>=20.5.0, <30.0.0`) is documented, covered by
   fixtures, and run once per pinned version in CI. Declared versions outside the
   matrix emit an `SDK-001` warning instead of claiming support (`#383`).

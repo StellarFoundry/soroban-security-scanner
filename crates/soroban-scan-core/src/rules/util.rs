@@ -699,6 +699,12 @@ pub struct ContractFn<'a> {
     /// Only plain identifier patterns are recorded; destructuring patterns are
     /// deliberately omitted because they cannot be matched to a single name.
     pub params: Vec<String>,
+    /// Parameter names with their rendered type text, in declaration order.
+    ///
+    /// Only plain identifier patterns are recorded. The type text is exactly as
+    /// written in the signature (for example `u32`, `&Env`), so rules can do
+    /// conservative checks without type inference.
+    pub param_types: Vec<(String, String)>,
 }
 
 /// Collects the simple identifier parameter names of a function signature.
@@ -708,6 +714,23 @@ fn parameter_names(sig: &syn::Signature) -> Vec<String> {
         .filter_map(|arg| match arg {
             syn::FnArg::Typed(pat_type) => match &*pat_type.pat {
                 syn::Pat::Ident(pat_ident) => Some(pat_ident.ident.to_string()),
+                _ => None,
+            },
+            syn::FnArg::Receiver(_) => None,
+        })
+        .collect()
+}
+
+/// Collects parameter names and rendered type text of a function signature.
+fn parameter_types(sig: &syn::Signature) -> Vec<(String, String)> {
+    sig.inputs
+        .iter()
+        .filter_map(|arg| match arg {
+            syn::FnArg::Typed(pat_type) => match &*pat_type.pat {
+                syn::Pat::Ident(pat_ident) => Some((
+                    pat_ident.ident.to_string(),
+                    pat_type.ty.to_token_stream().to_string(),
+                )),
                 _ => None,
             },
             syn::FnArg::Receiver(_) => None,
@@ -748,6 +771,7 @@ fn collect_contract_fns<'a>(items: &'a [syn::Item], out: &mut Vec<ContractFn<'a>
                             block: &f.block,
                             is_public: matches!(f.vis, syn::Visibility::Public(_)),
                             params: parameter_names(&f.sig),
+                            param_types: parameter_types(&f.sig),
                         });
                     }
                 }
