@@ -93,6 +93,16 @@ file = "SS-017/split_auth.rs"
 expect = "trigger"
 why = "Authorization split across lines still occurs after the storage mutation."
 
+[SS-018]
+file = "SS-018/split_cast.rs"
+expect = "trigger"
+why = "A narrowing cast of a parameter split across lines is still an unchecked integer cast."
+
+[SS-031]
+file = "SS-031/spaced_publish.rs"
+expect = "trigger"
+why = "A spaced publish chain and an aliased symbol macro still expose the caller-controlled topic argument."
+
 [SS-029]
 file = "SS-029/raw_identifier.rs"
 expect = "trigger"

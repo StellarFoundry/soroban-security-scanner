@@ -8,7 +8,7 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 74,
+    "source_files": 82,
     "soroban_sdk_versions": []
   },
   "stats": {
@@ -179,13 +179,13 @@
         }
       ]
     },
-    "files_analyzed": 74,
-    "files_parsed": 74,
+    "files_analyzed": 82,
+    "files_parsed": 82,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 19,
+    "rules_run": 21,
     "rules_skipped": 0,
-    "findings_raw": 134,
+    "findings_raw": 137,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -197,13 +197,13 @@
     "generated_files_excluded": 0,
     "findings_by_category": {
       "access-control": 10,
-      "arithmetic": 6,
+      "arithmetic": 7,
       "authorization": 28,
       "configuration": 2,
       "cross-contract": 6,
       "dependencies": 2,
-      "error-handling": 11,
-      "events": 13,
+      "error-handling": 12,
+      "events": 14,
       "resource-usage": 2,
       "storage": 42,
       "token": 11,
@@ -2788,6 +2788,46 @@
       "fingerprint": "fbf6d16b047d6733f4408c670b9ca2ee"
     },
     {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-018/negative3.rs",
+        "line": 12,
+        "column": 27
+      },
+      "evidence": "`unwrap` in `read` can panic: env . storage () . instance () . get (& Key :: Amount) . unwrap ()",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "d03576c9681e54fab2518b57847ce5fc"
+    },
+    {
+      "rule_id": "SS-018",
+      "title": "Unchecked integer cast",
+      "description": "A public contract entry point narrows an integer with `as`, where the operand comes from a function parameter or a storage read. In Rust an `as` cast between integers truncates the high bits and wraps instead of reporting an error, so an out-of-range amount, timestamp, or counter can become a small unintended value. Widenings and same-width casts are ignored. This is a syntactic heuristic and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "arithmetic",
+      "location": {
+        "file": "SS-018/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "unchecked cast of parameter from `i128` to `u32` in entry point `set_amount`: amount as u32 (use `TryFrom`/`try_into`)",
+      "remediation": "Use fallible conversion: `u32::try_from(value)` / `value.try_into()` and handle the error with a typed contract error. Reserve `as` for casts whose range has already been checked.",
+      "references": [
+        "https://doc.rust-lang.org/reference/expressions/operator-expr.html#type-cast-expressions",
+        "https://doc.rust-lang.org/std/convert/trait.TryFrom.html"
+      ],
+      "fingerprint": "d3e81400b6b03ecab8bdc2b9535f6669"
+    },
+    {
       "rule_id": "SS-029",
       "title": "Public test or debug hook in a contract entry point",
       "description": "A public contract entry point is named like a test or debug backdoor (a `test`, `debug`, `dev`, `mock`, or `dummy` name segment). Backdoor entry points that remain callable in a production deployment let anyone invoke privileged behavior, and are a well-known way on-chain contracts are compromised. This is a name-based heuristic and may flag a legitimately named function.",
@@ -2805,6 +2845,26 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "c2c7192fdfffc7b7c5fc6951261f5cb4"
+    },
+    {
+      "rule_id": "SS-031",
+      "title": "Event topic derived from a caller-controlled parameter",
+      "description": "A contract publishes an event whose topic list includes a function parameter, so the caller influences which topic the event appears under. Off-chain indexers that group or trust events by topic can be fed spoofed, trusted-looking events (for example a fake `transfer` or `admin` event). Topics should identify the event type; caller-controlled values belong in the event data payload. This is a heuristic and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "events",
+      "location": {
+        "file": "SS-031/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "event topic derived from caller-controlled parameter(s) `to` in entry point `transfer`: env . events () . publish ((symbol_short ! (\"transfer\") , to) , (from , amount))",
+      "remediation": "Use a constant topic (`symbol_short!(\"transfer\")` or `Symbol::new(&env, \"transfer\")`) and put caller-controlled values in the event data payload. If a parameter must appear in a topic, document why and validate it against an allowlist of expected topic values.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "c2bc01d7f6cdb99f4bee7aa471df5ba5"
     },
     {
       "rule_id": "SS-033",
@@ -2956,6 +3016,27 @@
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: panic",
       "path": "SS-014/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-031/negative.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-031/negative2.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-031/positive.rs",
       "line": null
     },
     {

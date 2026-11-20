@@ -10,6 +10,7 @@ mod backlog;
 mod cli;
 mod docs;
 mod fixtures;
+mod rule;
 
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
@@ -52,6 +53,11 @@ fn run(cli: Cli) -> Result<(), String> {
                 let count = backlog::write_all(&root, &output)?;
                 println!("Wrote {count} issue bodies to {}", output.display());
             }
+        }
+        Command::Rule(args) => {
+            let root = args.root.unwrap_or_else(workspace_root);
+            let module = rule::scaffold(&root, &args.id, &args.title)?;
+            println!("Scaffolded {} at {}", args.id, module.display());
         }
     }
     Ok(())

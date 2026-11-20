@@ -68,7 +68,9 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-015](detectors/SS-015.md) | Deprecated Soroban SDK version | low | medium | dependencies |
 | [SS-016](detectors/SS-016.md) | Unbounded data stored in instance storage | medium | low | storage |
 | [SS-017](detectors/SS-017.md) | Authorization after state mutation | medium | medium | authorization |
+| [SS-018](detectors/SS-018.md) | Unchecked integer cast | medium | low | arithmetic |
 | [SS-029](detectors/SS-029.md) | Public test or debug hook in a contract entry point | medium | medium | access-control |
+| [SS-031](detectors/SS-031.md) | Event topic derived from a caller-controlled parameter | medium | low | events |
 | [SS-033](detectors/SS-033.md) | Wildcard import from the Soroban SDK | low | high | dependencies |
 
 Each detector has a positive and negative fixture under

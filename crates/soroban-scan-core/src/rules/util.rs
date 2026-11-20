@@ -119,6 +119,217 @@ pub struct ComparisonFact {
     pub text: String,
 }
 
+/// Where a cast operand comes from, as far as the source shows.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CastOrigin {
+    /// A function parameter.
+    Parameter,
+    /// A value read from contract storage (directly or through a local).
+    StorageRead,
+    /// A local variable with a visible type annotation.
+    Local,
+    /// Anything else, including literals and computed expressions.
+    Other,
+}
+
+/// A cast fact (`expr as Type`).
+///
+/// `source_type` is only populated when the source makes it visible: a literal
+/// suffix, a local type annotation, a parameter type, or a storage
+/// `get::<_, T>` turbofish. No type inference is performed.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct CastFact {
+    /// Rendered operand expression.
+    pub source: String,
+    /// Rendered source type when visible, otherwise empty.
+    pub source_type: String,
+    /// Rendered target type.
+    pub target_type: String,
+    /// Where the operand comes from.
+    pub origin: CastOrigin,
+    /// 1-based line.
+    pub line: usize,
+    /// 1-based column.
+    pub column: usize,
+    /// Rendered cast text (may be truncated).
+    pub text: String,
+}
+
+/// Returns the bit width of a Rust integer type name, if it is one.
+///
+/// Accepts a leading reference and a qualified path (`&u32`,
+/// `std::primitive::u64`). Soroban's `u256`/`i256` are included; `usize` and
+/// `isize` are treated as 64-bit, the Soroban host width.
+pub fn integer_bit_width(type_text: &str) -> Option<u32> {
+    let text = type_text.trim().trim_start_matches('&').trim();
+    let name = text.rsplit("::").next().unwrap_or(text).trim();
+    Some(match name {
+        "u8" | "i8" => 8,
+        "u16" | "i16" => 16,
+        "u32" | "i32" => 32,
+        "u64" | "i64" | "usize" | "isize" => 64,
+        "u128" | "i128" => 128,
+        "u256" | "i256" => 256,
+        _ => return None,
+    })
+}
+
+/// Extracts cast facts from a function block.
+///
+/// `param_types` maps parameter names to their rendered type text (see
+/// [`ContractFn::param_types`]). Only casts whose operand type is visible in the
+/// source carry a non-empty `source_type`.
+pub fn cast_facts(block: &syn::Block, param_types: &BTreeMap<String, String>) -> Vec<CastFact> {
+    struct CastVisitor<'a> {
+        param_types: &'a BTreeMap<String, String>,
+        local_types: BTreeMap<String, String>,
+        storage_locals: BTreeSet<String>,
+        casts: Vec<CastFact>,
+    }
+
+    impl<'ast> Visit<'ast> for CastVisitor<'_> {
+        fn visit_local(&mut self, node: &'ast syn::Local) {
+            if let Some(init) = &node.init {
+                let binding = match &node.pat {
+                    syn::Pat::Ident(pattern) => Some((pattern.ident.to_string(), None)),
+                    syn::Pat::Type(typed) => match &*typed.pat {
+                        syn::Pat::Ident(pattern) => Some((
+                            pattern.ident.to_string(),
+                            Some(typed.ty.to_token_stream().to_string()),
+                        )),
+                        _ => None,
+                    },
+                    _ => None,
+                };
+                if let Some((name, explicit)) = binding {
+                    let from_storage = is_storage_read(&init.expr);
+                    let inferred = storage_value_type(&init.expr);
+                    if let Some(ty) = explicit.or(inferred) {
+                        self.local_types.insert(name.clone(), ty);
+                    }
+                    if from_storage {
+                        self.storage_locals.insert(name);
+                    }
+                }
+            }
+            visit::visit_local(self, node);
+        }
+
+        fn visit_expr_cast(&mut self, node: &'ast syn::ExprCast) {
+            let (line, column) = span_line_col(node);
+            self.casts.push(CastFact {
+                source: truncate(&node.expr.to_token_stream().to_string(), 120),
+                source_type: source_type_of(&node.expr, self.param_types, &self.local_types)
+                    .unwrap_or_default(),
+                target_type: node.ty.to_token_stream().to_string(),
+                origin: origin_of(
+                    &node.expr,
+                    self.param_types,
+                    &self.local_types,
+                    &self.storage_locals,
+                ),
+                line,
+                column,
+                text: truncate(&node.to_token_stream().to_string(), 160),
+            });
+            visit::visit_expr_cast(self, node);
+        }
+    }
+
+    let mut visitor = CastVisitor {
+        param_types,
+        local_types: BTreeMap::new(),
+        storage_locals: BTreeSet::new(),
+        casts: Vec::new(),
+    };
+    visitor.visit_block(block);
+    visitor.casts
+}
+
+fn is_storage_read(expr: &syn::Expr) -> bool {
+    let text = expr.to_token_stream().to_string().to_ascii_lowercase();
+    text.contains("storage") && (text.contains("get") || text.contains("get_unchecked"))
+}
+
+/// Finds the value type of a storage `get::<K, V>` call in an expression chain.
+fn storage_value_type(expr: &syn::Expr) -> Option<String> {
+    match expr {
+        syn::Expr::MethodCall(call) => {
+            if call.method == "get" || call.method == "get_unchecked" {
+                if let Some(turbofish) = &call.turbofish {
+                    return turbofish.args.iter().rev().find_map(|arg| match arg {
+                        syn::GenericArgument::Type(ty) => Some(ty.to_token_stream().to_string()),
+                        _ => None,
+                    });
+                }
+            }
+            storage_value_type(&call.receiver)
+        }
+        syn::Expr::Try(expr) => storage_value_type(&expr.expr),
+        syn::Expr::Await(expr) => storage_value_type(&expr.base),
+        _ => None,
+    }
+}
+
+fn source_type_of(
+    expr: &syn::Expr,
+    param_types: &BTreeMap<String, String>,
+    local_types: &BTreeMap<String, String>,
+) -> Option<String> {
+    match expr {
+        syn::Expr::Path(path) => path.path.get_ident().and_then(|ident| {
+            let name = ident.to_string();
+            local_types
+                .get(&name)
+                .or_else(|| param_types.get(&name))
+                .cloned()
+        }),
+        syn::Expr::Reference(expr) => source_type_of(&expr.expr, param_types, local_types),
+        syn::Expr::Paren(expr) => source_type_of(&expr.expr, param_types, local_types),
+        syn::Expr::Group(expr) => source_type_of(&expr.expr, param_types, local_types),
+        syn::Expr::Lit(literal) => match &literal.lit {
+            syn::Lit::Int(int) => {
+                let suffix = int.suffix();
+                (!suffix.is_empty()).then(|| suffix.to_string())
+            }
+            _ => None,
+        },
+        _ => storage_value_type(expr),
+    }
+}
+
+fn origin_of(
+    expr: &syn::Expr,
+    param_types: &BTreeMap<String, String>,
+    local_types: &BTreeMap<String, String>,
+    storage_locals: &BTreeSet<String>,
+) -> CastOrigin {
+    match expr {
+        syn::Expr::Path(path) => match path.path.get_ident() {
+            Some(ident) => {
+                let name = ident.to_string();
+                if param_types.contains_key(&name) {
+                    CastOrigin::Parameter
+                } else if storage_locals.contains(&name) {
+                    CastOrigin::StorageRead
+                } else if local_types.contains_key(&name) {
+                    CastOrigin::Local
+                } else {
+                    CastOrigin::Other
+                }
+            }
+            None => CastOrigin::Other,
+        },
+        syn::Expr::Reference(expr) => {
+            origin_of(&expr.expr, param_types, local_types, storage_locals)
+        }
+        syn::Expr::Paren(expr) => origin_of(&expr.expr, param_types, local_types, storage_locals),
+        syn::Expr::Group(expr) => origin_of(&expr.expr, param_types, local_types, storage_locals),
+        other if is_storage_read(other) => CastOrigin::StorageRead,
+        _ => CastOrigin::Other,
+    }
+}
+
 /// Facts extracted from a function body or file.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Facts {
@@ -699,6 +910,12 @@ pub struct ContractFn<'a> {
     /// Only plain identifier patterns are recorded; destructuring patterns are
     /// deliberately omitted because they cannot be matched to a single name.
     pub params: Vec<String>,
+    /// Parameter names with their rendered type text, in declaration order.
+    ///
+    /// Only plain identifier patterns are recorded. The type text is exactly as
+    /// written in the signature (for example `u32`, `&Env`), so rules can do
+    /// conservative checks without type inference.
+    pub param_types: Vec<(String, String)>,
 }
 
 /// Collects the simple identifier parameter names of a function signature.
@@ -708,6 +925,23 @@ fn parameter_names(sig: &syn::Signature) -> Vec<String> {
         .filter_map(|arg| match arg {
             syn::FnArg::Typed(pat_type) => match &*pat_type.pat {
                 syn::Pat::Ident(pat_ident) => Some(pat_ident.ident.to_string()),
+                _ => None,
+            },
+            syn::FnArg::Receiver(_) => None,
+        })
+        .collect()
+}
+
+/// Collects parameter names and rendered type text of a function signature.
+fn parameter_types(sig: &syn::Signature) -> Vec<(String, String)> {
+    sig.inputs
+        .iter()
+        .filter_map(|arg| match arg {
+            syn::FnArg::Typed(pat_type) => match &*pat_type.pat {
+                syn::Pat::Ident(pat_ident) => Some((
+                    pat_ident.ident.to_string(),
+                    pat_type.ty.to_token_stream().to_string(),
+                )),
                 _ => None,
             },
             syn::FnArg::Receiver(_) => None,
@@ -748,6 +982,7 @@ fn collect_contract_fns<'a>(items: &'a [syn::Item], out: &mut Vec<ContractFn<'a>
                             block: &f.block,
                             is_public: matches!(f.vis, syn::Visibility::Public(_)),
                             params: parameter_names(&f.sig),
+                            param_types: parameter_types(&f.sig),
                         });
                     }
                 }
@@ -979,5 +1214,69 @@ mod tests {
         assert!(names.contains(&"entry"));
         assert!(names.contains(&"private"));
         assert!(!names.contains(&"helper"));
+    }
+
+    #[test]
+    fn records_cast_source_and_target_types() {
+        let block = syn::parse_file(
+            r#"
+            fn f(env: Env, amount: i128) {
+                let stored: u64 = env.storage().instance().get(&K).unwrap();
+                let _ = amount as u32;
+                let _ = stored as u32;
+                let local: u32 = 1;
+                let _ = local as u8;
+                let _ = 1u64 as u32;
+            }
+            "#,
+        )
+        .unwrap();
+        let syn::Item::Fn(function) = &block.items[0] else {
+            panic!("expected a function");
+        };
+        let params: BTreeMap<String, String> = [("amount".to_string(), "i128".to_string())]
+            .into_iter()
+            .collect();
+        let casts = cast_facts(&function.block, &params);
+        assert_eq!(casts.len(), 4);
+        assert_eq!(casts[0].source_type, "i128");
+        assert_eq!(casts[0].target_type, "u32");
+        assert_eq!(casts[0].origin, CastOrigin::Parameter);
+        assert_eq!(casts[1].source_type, "u64");
+        assert_eq!(casts[1].origin, CastOrigin::StorageRead);
+        assert_eq!(casts[2].source_type, "u32");
+        assert_eq!(casts[2].origin, CastOrigin::Local);
+        assert_eq!(casts[3].source_type, "u64");
+        assert_eq!(casts[3].origin, CastOrigin::Other);
+    }
+
+    #[test]
+    fn resolves_storage_read_types_from_turbofish() {
+        let block = syn::parse_file(
+            r#"
+            fn f(env: Env) {
+                let stored = env.storage().instance().get::<_, u64>(&K).unwrap();
+                let _ = stored as u32;
+            }
+            "#,
+        )
+        .unwrap();
+        let syn::Item::Fn(function) = &block.items[0] else {
+            panic!("expected a function");
+        };
+        let casts = cast_facts(&function.block, &BTreeMap::new());
+        assert_eq!(casts[0].source_type, "u64");
+        assert_eq!(casts[0].origin, CastOrigin::StorageRead);
+    }
+
+    #[test]
+    fn recognizes_integer_widths() {
+        assert_eq!(integer_bit_width("u8"), Some(8));
+        assert_eq!(integer_bit_width("&u32"), Some(32));
+        assert_eq!(integer_bit_width("std::primitive::i128"), Some(128));
+        assert_eq!(integer_bit_width("u256"), Some(256));
+        assert_eq!(integer_bit_width("usize"), Some(64));
+        assert_eq!(integer_bit_width("bool"), None);
+        assert_eq!(integer_bit_width("Address"), None);
     }
 }

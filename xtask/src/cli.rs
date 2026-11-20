@@ -23,6 +23,20 @@ pub enum Command {
     Fixtures(FixturesArgs),
     /// Render the contributor backlog from tools/backlog/*.json.
     Backlog(BacklogArgs),
+    /// Scaffold a new security rule and its fixtures.
+    Rule(RuleArgs),
+}
+
+/// Arguments for `xtask rule`.
+#[derive(Debug, Args, PartialEq, Eq)]
+pub struct RuleArgs {
+    /// Rule id (`SS-###`).
+    pub id: String,
+    /// Human-readable rule title.
+    pub title: String,
+    /// Repository root (defaults to the workspace root).
+    #[arg(long, value_name = "DIR")]
+    pub root: Option<PathBuf>,
 }
 
 /// Arguments for `xtask docs`.
@@ -106,5 +120,25 @@ mod tests {
     fn rejects_unknown_subcommands() {
         let err = Cli::try_parse_from(["xtask", "deploy"]).unwrap_err();
         assert!(err.to_string().contains("unrecognized subcommand"));
+    }
+
+    #[test]
+    fn parses_rule_scaffolding() {
+        let cli = Cli::try_parse_from(["xtask", "rule", "SS-034", "User-controlled event topic"])
+            .unwrap();
+        assert_eq!(
+            cli.command,
+            Command::Rule(RuleArgs {
+                id: "SS-034".to_string(),
+                title: "User-controlled event topic".to_string(),
+                root: None,
+            })
+        );
+    }
+
+    #[test]
+    fn rule_arguments_are_required() {
+        let err = Cli::try_parse_from(["xtask", "rule", "SS-034"]).unwrap_err();
+        assert!(err.to_string().contains("TITLE"), "unexpected error: {err}");
     }
 }

@@ -103,6 +103,30 @@ committing it. Never update a snapshot merely to make an unrelated test pass;
 explain the format change in the pull request and update the changelog when the
 report contract changes.
 
+## Finding-count snapshot
+
+`crates/soroban-scan-core/tests/finding_counts.rs` scans the full regression
+corpus and compares the number of findings reported per rule with
+`crates/soroban-scan-core/tests/snapshots/finding_counts.toml`. The corpus test
+proves that each fixture triggers (or does not trigger) its rule; the count
+snapshot additionally pins how many findings a rule reports, so a refactor that
+broadens or narrows matching fails the test instead of passing silently.
+
+Regenerate it only when the count change is intentional:
+
+```bash
+UPDATE_SNAPSHOTS=1 cargo test -p soroban-scan-core --test finding_counts
+```
+
+PowerShell:
+
+```powershell
+$env:UPDATE_SNAPSHOTS="1"; cargo test -p soroban-scan-core --test finding_counts
+```
+
+Review the diff and explain the added or removed findings in the pull request.
+Never regenerate the snapshot merely to make an unrelated test pass.
+
 ## Determinism
 
 Tests assert that scanning the same fixture twice produces byte-identical

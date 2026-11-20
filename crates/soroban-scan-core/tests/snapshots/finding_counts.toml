@@ -1,0 +1,28 @@
+# Per-rule finding counts over fixtures/corpus (#141).
+#
+# Compared on every test run. Regenerate deliberately with:
+#   UPDATE_SNAPSHOTS=1 cargo test -p soroban-scan-core --test finding_counts
+# and justify the count change in the pull request.
+
+[counts]
+SS-001 = 27
+SS-002 = 5
+SS-003 = 1
+SS-004 = 12
+SS-005 = 1
+SS-006 = 36
+SS-007 = 2
+SS-008 = 5
+SS-009 = 1
+SS-010 = 13
+SS-011 = 9
+SS-012 = 1
+SS-013 = 1
+SS-014 = 11
+SS-015 = 1
+SS-016 = 6
+SS-017 = 1
+SS-018 = 1
+SS-029 = 1
+SS-031 = 1
+SS-033 = 2
