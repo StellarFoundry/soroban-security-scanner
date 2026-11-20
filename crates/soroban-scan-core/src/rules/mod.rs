@@ -25,6 +25,7 @@ mod ttl_management;
 mod unbounded_iteration;
 mod unbounded_vec_growth;
 mod unchecked_arithmetic;
+mod unchecked_integer_cast;
 mod unprotected_initializer;
 mod unsafe_code;
 mod user_controlled_event_topic;
@@ -45,6 +46,7 @@ pub fn register_all(registry: &mut RuleRegistry) -> Result<(), RegistryError> {
     registry.register(Box::new(ttl_management::TtlManagement))?;
     registry.register(Box::new(hardcoded_address::HardcodedAddress))?;
     registry.register(Box::new(unchecked_arithmetic::UncheckedArithmetic))?;
+    registry.register(Box::new(unchecked_integer_cast::UncheckedIntegerCast))?;
     registry.register(Box::new(insecure_randomness::InsecureRandomness))?;
     registry.register(Box::new(missing_events::MissingEvents))?;
     registry.register(Box::new(public_test_hooks::PublicTestHooks))?;
@@ -81,7 +83,7 @@ mod tests {
             vec![
                 "SS-001", "SS-002", "SS-003", "SS-004", "SS-005", "SS-006", "SS-007", "SS-008",
                 "SS-009", "SS-010", "SS-011", "SS-012", "SS-013", "SS-014", "SS-015", "SS-016",
-                "SS-017", "SS-029", "SS-031", "SS-033"
+                "SS-017", "SS-018", "SS-029", "SS-031", "SS-033"
             ]
         );
     }

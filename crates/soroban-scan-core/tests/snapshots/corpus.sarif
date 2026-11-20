@@ -3832,6 +3832,64 @@
           "ruleId": "SS-017"
         },
         {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-018/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 27,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `read` can panic: env . storage () . instance () . get (& Key :: Amount) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "d03576c9681e54fab2518b57847ce5fc"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-018/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked integer cast — unchecked cast of parameter from `i128` to `u32` in entry point `set_amount`: amount as u32 (use `TryFrom`/`try_into`)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "d3e81400b6b03ecab8bdc2b9535f6669"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "remediation": "Use fallible conversion: `u32::try_from(value)` / `value.try_into()` and handle the error with a typed contract error. Reserve `as` for casts whose range has already been checked.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-018"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -4388,6 +4446,34 @@
               },
               "shortDescription": {
                 "text": "Authorization after state mutation"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A public contract entry point narrows an integer with `as`, where the operand comes from a function parameter or a storage read. In Rust an `as` cast between integers truncates the high bits and wraps instead of reporting an error, so an out-of-range amount, timestamp, or counter can become a small unintended value. Widenings and same-width casts are ignored. This is a syntactic heuristic and reports low confidence."
+              },
+              "help": {
+                "markdown": "## Unchecked integer cast\n\nA public contract entry point narrows an integer with `as`, where the operand comes from a function parameter or a storage read. In Rust an `as` cast between integers truncates the high bits and wraps instead of reporting an error, so an out-of-range amount, timestamp, or counter can become a small unintended value. Widenings and same-width casts are ignored. This is a syntactic heuristic and reports low confidence.\n\n### Remediation\n\nUse fallible conversion: `u32::try_from(value)` / `value.try_into()` and handle the error with a typed contract error. Reserve `as` for casts whose range has already been checked.\n\n### References\n\n- https://doc.rust-lang.org/reference/expressions/operator-expr.html#type-cast-expressions\n- https://doc.rust-lang.org/std/convert/trait.TryFrom.html",
+                "text": "A public contract entry point narrows an integer with `as`, where the operand comes from a function parameter or a storage read. In Rust an `as` cast between integers truncates the high bits and wraps instead of reporting an error, so an out-of-range amount, timestamp, or counter can become a small unintended value. Widenings and same-width casts are ignored. This is a syntactic heuristic and reports low confidence.\n\nRemediation: Use fallible conversion: `u32::try_from(value)` / `value.try_into()` and handle the error with a typed contract error. Reserve `as` for casts whose range has already been checked."
+              },
+              "helpUri": "https://doc.rust-lang.org/reference/expressions/operator-expr.html#type-cast-expressions",
+              "id": "SS-018",
+              "name": "Unchecked integer cast",
+              "properties": {
+                "category": "arithmetic",
+                "confidence": "low",
+                "references": [
+                  "https://doc.rust-lang.org/reference/expressions/operator-expr.html#type-cast-expressions",
+                  "https://doc.rust-lang.org/std/convert/trait.TryFrom.html"
+                ],
+                "remediation": "Use fallible conversion: `u32::try_from(value)` / `value.try_into()` and handle the error with a typed contract error. Reserve `as` for casts whose range has already been checked.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unchecked integer cast"
               }
             },
             {

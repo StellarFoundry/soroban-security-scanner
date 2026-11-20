@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- SS-018 "Unchecked integer cast" (medium/low): flags narrowing `as` casts of
+  function parameters and storage reads, ignores widening and same-width casts,
+  and recommends `TryFrom`/`try_into` (`#117`).
 - SS-031 "Event topic derived from a caller-controlled parameter" (medium/low):
   flags event topics built from function parameters, which lets callers choose
   the topic trusted indexers see; constant topics and payload-only parameters do
