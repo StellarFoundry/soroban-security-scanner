@@ -37,6 +37,7 @@ Start here.
 - [Repository Automation (xtask)](development/xtask.md)
 - [Mutation Testing](development/mutation-testing.md)
 - [Testing](development/testing.md)
+- [Corpus licensing and provenance](corpus-provenance.md)
 - [Benchmarks](development/benchmarks.md)
 - [Writing Rules](contributors/writing-rules.md)
 - [Adding a Language Frontend](contributors/adding-a-frontend.md) - experimental until reviewed.
