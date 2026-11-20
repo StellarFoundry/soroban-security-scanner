@@ -39,7 +39,9 @@ harness in `tests/conformance/mod.rs` against the Rust frontend. It checks the
 trait contract: a stable name, deterministic discovery inside the scan root,
 non-fatal diagnostics for unparseable files, item extraction, and valid source
 spans. A future frontend includes the same module from its own integration test
-and supplies a valid fixture plus one that fails to parse.
+and supplies a valid fixture plus one that fails to parse. See
+[Adding a language frontend](../contributors/adding-a-frontend.md) for the full
+contract, skeleton, fixtures, and experimental-status rules.
 
 ## Rules for security-sensitive tests
 
