@@ -398,6 +398,10 @@ struct ScanArgs {
     #[arg(long)]
     unsupported_syntax: bool,
 
+    /// Allow unsigned rule packs. Disabled by default (fail closed).
+    #[arg(long)]
+    allow_unsigned_packs: bool,
+
     /// Report at most N findings, after sorting. The exit gate still considers
     /// every finding, and the report states how many were omitted.
     #[arg(long, value_name = "N")]
@@ -779,6 +783,7 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
     config.mode = args.mode.into();
     config.target_analysis |= args.target_analysis;
     config.unsupported_syntax |= args.unsupported_syntax;
+    config.packs.allow_unsigned |= args.allow_unsigned_packs;
     config.exclude.extend(args.exclude.iter().cloned());
     config.exclude_tests |= args.exclude_tests;
     config.include_cfg_test |= args.include_cfg_test;

@@ -313,6 +313,66 @@ pub(crate) fn utc_date_from_unix(seconds: i64) -> String {
     format!("{year:04}-{month:02}-{day:02}")
 }
 
+/// Rule pack signing and verification configuration.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct PacksConfig {
+    /// Allow unsigned packs. Disabled by default (fail closed).
+    pub allow_unsigned: bool,
+    /// Trusted public keys for pack signature verification.
+    pub trusted_keys: Vec<TrustedKeyConfig>,
+}
+
+impl PacksConfig {
+    /// Returns the verification policy based on `allow_unsigned`.
+    pub fn policy(&self) -> crate::pack::VerificationPolicy {
+        if self.allow_unsigned {
+            crate::pack::VerificationPolicy::AllowUnsigned
+        } else {
+            crate::pack::VerificationPolicy::EnforceSigned
+        }
+    }
+
+    /// Builds a `KeyRing` from the configured trusted keys.
+    pub fn build_keyring(&self) -> Result<crate::pack::KeyRing, String> {
+        let mut keyring = crate::pack::KeyRing::new();
+        for k in &self.trusted_keys {
+            let status = match k.status.as_deref().map(str::to_ascii_lowercase).as_deref() {
+                Some("active") | None => crate::pack::KeyStatus::Active,
+                Some("retired") => crate::pack::KeyStatus::Retired,
+                Some("revoked") => crate::pack::KeyStatus::Revoked,
+                Some(other) => {
+                    return Err(format!(
+                        "unknown key status '{other}' for key '{}'",
+                        k.key_id
+                    ))
+                }
+            };
+            let mut key = crate::pack::TrustedKey::new(&k.key_id, &k.public_key);
+            key.status = status;
+            key.revocation_reason = k.revocation_reason.clone();
+            keyring.add_key(key);
+        }
+        Ok(keyring)
+    }
+}
+
+/// A trusted key declared in configuration.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct TrustedKeyConfig {
+    /// Key identifier.
+    pub key_id: String,
+    /// Hex-encoded 32-byte Ed25519 public key.
+    pub public_key: String,
+    /// Status: "active", "retired", or "revoked".
+    #[serde(default)]
+    pub status: Option<String>,
+    /// Optional revocation reason if revoked.
+    #[serde(default)]
+    pub revocation_reason: Option<String>,
+}
+
 /// Complete scan configuration.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
@@ -353,6 +413,8 @@ pub struct ScanConfig {
     pub rules: RulesConfig,
     /// Optional assistance layer configuration (disabled by default).
     pub ai: AiConfig,
+    /// Rule pack verification configuration.
+    pub packs: PacksConfig,
 }
 
 impl Default for ScanConfig {
@@ -374,6 +436,7 @@ impl Default for ScanConfig {
             redact: Vec::new(),
             rules: RulesConfig::default(),
             ai: AiConfig::default(),
+            packs: PacksConfig::default(),
         }
     }
 }

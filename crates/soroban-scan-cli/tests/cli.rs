@@ -2852,3 +2852,16 @@ fn dashboard_rejects_a_malformed_report() {
 
     let _ = std::fs::remove_dir_all(&dir);
 }
+
+#[test]
+fn scan_accepts_allow_unsigned_packs_flag() {
+    let target = fixture("corpus/SS-001");
+    let out = run(&[
+        "scan",
+        target.to_str().unwrap(),
+        "--fail-on",
+        "none",
+        "--allow-unsigned-packs",
+    ]);
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+}

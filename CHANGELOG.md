@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Rule pack signing and verification: verify detached Ed25519 signatures (`pack.sig`)
+  against trusted keyrings, reject unsigned packs unless allowed via `--allow-unsigned-packs`,
+  and support key rotation and revocation (`#362`).
 - SS-018 "Unchecked integer cast" (medium/low): flags narrowing `as` casts of
   function parameters and storage reads, ignores widening and same-width casts,
   and recommends `TryFrom`/`try_into` (`#117`).

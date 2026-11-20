@@ -245,6 +245,10 @@
       "backoff_ms": 250,
       "max_backoff_ms": 4000,
       "failure_threshold": 3
+    },
+    "packs": {
+      "allow_unsigned": false,
+      "trusted_keys": []
     }
   },
   "findings": [
