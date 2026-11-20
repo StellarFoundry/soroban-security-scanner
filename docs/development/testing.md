@@ -32,6 +32,15 @@ Run a single test:
 cargo test -p soroban-scan-core -- --nocapture some_test_name
 ```
 
+## Frontend conformance
+
+`crates/soroban-scan-core/tests/frontend_conformance.rs` runs the reusable
+harness in `tests/conformance/mod.rs` against the Rust frontend. It checks the
+trait contract: a stable name, deterministic discovery inside the scan root,
+non-fatal diagnostics for unparseable files, item extraction, and valid source
+spans. A future frontend includes the same module from its own integration test
+and supplies a valid fixture plus one that fails to parse.
+
 ## Rules for security-sensitive tests
 
 - Every rule ships with at least one **positive** fixture (must trigger) and one

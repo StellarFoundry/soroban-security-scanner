@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A reusable frontend conformance suite pins the `Frontend` trait contract for
+  discovery, items, spans, and diagnostics, and runs it against the Rust
+  frontend in CI (`#386`).
 - `--unsupported-syntax` / `unsupported_syntax` reports bounded `SYNTAX-001`
   diagnostics when source files in other languages are skipped. Diagnostics are
   aggregated by language, capped at 8 kinds, and never read or include source

@@ -51,6 +51,11 @@ language never requires forking the engine, not as a promise of support for
 another language. A frontend may read files below the scan root and parse them,
 but never executes, builds, fetches, or mutates the project.
 
+The trait contract is pinned by a reusable conformance suite: stable name,
+deterministic discovery inside the scan root, non-fatal diagnostics for
+unparseable files, item extraction, and valid source spans. See
+[Testing](../development/testing.md#frontend-conformance).
+
 Locates repositories, `Cargo.toml` manifests, workspaces, and Rust source files.
 Classifies a project as **generic Rust**, **likely Soroban**, or **confirmed
 Soroban** based on evidence (Soroban dependencies, `#[contract]` /
