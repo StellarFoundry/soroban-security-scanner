@@ -7,9 +7,11 @@ corpus. They are **not** production code.
 
 ```
 fixtures/
-  projects/   # whole mini-projects: Cargo.toml + src/
-  corpus/     # regression fixtures grouped by rule/category
-  reports/    # JSON scan reports used by comparison and dashboard tests
+  projects/        # whole mini-projects: Cargo.toml + src/
+  corpus/          # regression fixtures grouped by rule/category
+  cross-language/  # valid non-Rust projects that must fail safely
+  sdk-matrix/      # SDK version compatibility fixtures
+  reports/         # JSON scan reports used by comparison and dashboard tests
 ```
 
 ## Rules for fixtures

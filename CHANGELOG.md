@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Cross-language fixtures (TypeScript, Solidity, plain Cargo) prove unsupported
+  input fails safely: no panic, no partial parse, and a clear aggregated
+  diagnostic when `--unsupported-syntax` is enabled (`#385`).
 - A reusable frontend conformance suite pins the `Frontend` trait contract for
   discovery, items, spans, and diagnostics, and runs it against the Rust
   frontend in CI (`#386`).
