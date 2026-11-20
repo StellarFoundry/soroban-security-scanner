@@ -259,6 +259,13 @@ Contributions are welcome. Start with [`CONTRIBUTING.md`](CONTRIBUTING.md) and t
 How the project is run, how decisions are recorded as ADRs, and how contentious
 changes are decided is described in [`GOVERNANCE.md`](GOVERNANCE.md).
 
+## Editor integration
+
+Use the scanner inside your editor via the language server.
+See [Editor setup (VS Code and Neovim)](docs/editors.md).
+
 ## License
 
 [MIT](LICENSE) © 2026 AyinkxLab
+
+
