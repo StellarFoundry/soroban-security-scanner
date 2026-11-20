@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Hover content for rule IDs (`soroban_scan_core::hover`): severity, confidence,
+  and short remediation for every shipped rule, with a graceful fallback for
+  unknown IDs; offline and bounded (`#335`).
 - SS-018 "Unchecked integer cast" (medium/low): flags narrowing `as` casts of
   function parameters and storage reads, ignores widening and same-width casts,
   and recommends `TryFrom`/`try_into` (`#117`).

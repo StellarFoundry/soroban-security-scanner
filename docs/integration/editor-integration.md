@@ -29,7 +29,7 @@ keeping the deterministic CLI as the source of truth.
 ## Non-goals (for the first milestone)
 
 - Code actions or autofixes.
-- Hover documentation, completion, formatting, rename, or refactoring.
+- Completion, formatting, rename, or refactoring.
 - A hosted service, telemetry, or multi-user state.
 - Background scanning of unrelated repositories.
 - Replacing CI gating or the `--fail-on` policy.
@@ -66,7 +66,10 @@ A deliberately small subset of LSP:
 - `textDocument/publishDiagnostics`;
 - optional `workspace/didChangeConfiguration` later.
 
-No code actions, hover, completion, or custom requests in v1. This keeps the
+Hover on rule IDs is served by `soroban_scan_core::hover` (severity,
+confidence, and short remediation from built-in metadata; offline and bounded;
+unknown IDs get a generic fallback). No code actions, completion, or custom
+requests in v1. This keeps the
 protocol surface small enough to test with JSON-RPC fixtures, while giving every
 LSP-capable editor useful diagnostics immediately. It can grow into option A
 without changing the editor side.

@@ -29,6 +29,7 @@ pub mod engine;
 pub mod error;
 pub mod finding;
 pub mod frontend;
+pub mod hover;
 pub mod imports;
 pub mod manifest;
 pub mod model;

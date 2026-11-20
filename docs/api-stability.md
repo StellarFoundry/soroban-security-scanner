@@ -24,7 +24,8 @@ is enforced by the `api_stability` integration test.
 - `target` (static Cargo target analysis).
 - `sdk_matrix` (supported Soroban SDK range and `SDK-001` warnings) and
   `unsupported` (bounded `SYNTAX-001` diagnostics for other languages).
-- `imports` (best-effort, per-file `use` resolution), `ai`, `baseline`,
+- `hover` (offline rule-ID hover content for editor integrations),
+  `imports` (best-effort, per-file `use` resolution), `ai`, `baseline`,
   `compare`, `context`, `error`, and `redaction` support modules.
 - The `analysis`/pipeline implementation details and any `pub(crate)` item.
 - Internal utility modules (`rules::util`, `test_support`).
