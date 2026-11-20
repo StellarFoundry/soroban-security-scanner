@@ -49,6 +49,7 @@ Start here.
 - [Architecture Decision Records](architecture/adr/README.md)
 - [Compatibility](compatibility.md)
 - [Supply-chain verification](supply-chain.md) — checksums, attestations, dependencies.
+- [Kubernetes manifests](kubernetes.md) — scheduled and one-off scans.
 - [Security Model](security/security-model.md)
 - [Threat Model](security/threat-model.md)
 - [Project Status](PROJECT_STATUS.md)

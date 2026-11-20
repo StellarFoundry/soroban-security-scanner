@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: soroban-scan
+  labels:
+    app.kubernetes.io/name: soroban-scan
+    app.kubernetes.io/part-of: soroban-scan

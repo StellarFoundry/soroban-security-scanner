@@ -235,6 +235,7 @@ we'll help wire it up.
 - [CLI Reference](docs/cli.md) · [Configuration](docs/configuration.md)
 - [Upgrading](docs/upgrading.md)
 - [Supply-chain verification](docs/supply-chain.md)
+- [Kubernetes manifests](docs/kubernetes.md) — scheduled and one-off scans
 - [Rules](docs/rules/README.md) · [Baselines](docs/baselines.md)
 - [Policy and Reporting](docs/policy.md) — policy schema, precedence, waivers, formats
 - [Report Retention](docs/retention.md) — artifact naming and retention guidance

@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: soroban-scan-config
+  namespace: soroban-scan
+  labels:
+    app.kubernetes.io/name: soroban-scan
+    app.kubernetes.io/part-of: soroban-scan
+data:
+  # Mounted at /etc/soroban-scan/soroban-scan.toml. The scanner treats this
+  # file as untrusted input: unknown fields and rule ids are rejected.
+  soroban-scan.toml: |
+    min_severity = "info"
+    min_confidence = "low"
+    exclude = ["target/**", "vendor/**"]
+    exclude_tests = true
+    include_cfg_test = false
+    follow_symlinks = false
+    target_analysis = false
+
+    [rules]
+    disabled = []
+    enabled = []

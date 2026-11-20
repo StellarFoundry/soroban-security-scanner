@@ -1,0 +1,86 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: soroban-scan-once
+  namespace: soroban-scan
+  labels:
+    app.kubernetes.io/name: soroban-scan
+    app.kubernetes.io/component: scan
+    app.kubernetes.io/part-of: soroban-scan
+spec:
+  # A one-off scan. Use this to validate the image, source volume, and config
+  # before creating the CronJob, or after upgrading the scanner.
+  backoffLimit: 0
+  activeDeadlineSeconds: 1800
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: soroban-scan
+        app.kubernetes.io/component: scan
+        app.kubernetes.io/part-of: soroban-scan
+    spec:
+      automountServiceAccountToken: false
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: soroban-scan
+          # Build this image from the release archive or a checkout and set the
+          # tag you deployed. The project does not publish a container image.
+          image: soroban-scan:0.2.0
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c"]
+          args:
+            - >-
+              exec soroban-scan scan /workspace/src
+              --config /etc/soroban-scan/soroban-scan.toml
+              --format json
+              --output "/reports/${POD_NAME}.json"
+              --fail-on high
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          volumeMounts:
+            - name: source
+              mountPath: /workspace/src
+              readOnly: true
+            - name: reports
+              mountPath: /reports
+            - name: config
+              mountPath: /etc/soroban-scan
+              readOnly: true
+      volumes:
+        - name: source
+          persistentVolumeClaim:
+            claimName: soroban-scan-source
+            readOnly: true
+        - name: reports
+          persistentVolumeClaim:
+            claimName: soroban-scan-reports
+        - name: config
+          configMap:
+            name: soroban-scan-config
+            items:
+              - key: soroban-scan.toml
+                path: soroban-scan.toml
