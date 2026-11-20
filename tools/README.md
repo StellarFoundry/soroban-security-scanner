@@ -7,6 +7,7 @@ out-of-band automation such as:
 - Generating and validating the contributor backlog.
 - Maintaining the security fixture corpus.
 - Validating the pinned Soroban SDK compatibility matrix.
+- Validating the published OpenAPI 3.1.0 contract (`check_openapi.py`).
 - Release and changelog automation.
 
 ## Requirements

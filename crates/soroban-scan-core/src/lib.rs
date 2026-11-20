@@ -32,6 +32,7 @@ pub mod frontend;
 pub mod imports;
 pub mod manifest;
 pub mod model;
+pub mod openapi;
 pub mod project;
 pub mod redaction;
 pub mod registry;

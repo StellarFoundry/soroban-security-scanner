@@ -23,6 +23,7 @@ use soroban_scan_core::config::{AnalysisMode, ScanConfig};
 use soroban_scan_core::engine;
 use soroban_scan_core::frontend::{self, Frontend};
 use soroban_scan_core::model::DiagnosticCode;
+use soroban_scan_core::openapi;
 use soroban_scan_core::redaction;
 use soroban_scan_core::registry::RuleRegistry;
 use soroban_scan_core::report::{self, OutputFormat};
@@ -330,6 +331,8 @@ enum Command {
     Dashboard(DashboardArgs),
     /// Print the canonical artifact name for a report.
     ArtifactName(ArtifactNameArgs),
+    /// Generate or validate the OpenAPI 3.1.0 contract from the implemented routes.
+    Openapi(OpenapiArgs),
     /// Generate a shell completion script (bash, zsh, fish, powershell).
     #[command(hide = true)]
     Completions(CompletionsArgs),
@@ -604,6 +607,20 @@ struct ArtifactNameArgs {
     format: FormatArg,
 }
 
+#[derive(Debug, Args)]
+#[command(after_help = "Examples:\n  \
+    soroban-scan openapi --output docs/integration/openapi.json\n  \
+    soroban-scan openapi --check docs/integration/openapi.json")]
+struct OpenapiArgs {
+    /// Write the generated OpenAPI JSON document to a file instead of stdout.
+    #[arg(long, value_name = "FILE", conflicts_with = "check")]
+    output: Option<PathBuf>,
+
+    /// Verify that an existing OpenAPI file validates and matches the implemented routes.
+    #[arg(long, value_name = "FILE")]
+    check: Option<PathBuf>,
+}
+
 /// Argument value for `compare --format`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
 enum CompareFormatArg {
@@ -730,6 +747,7 @@ fn run(cli: Cli) -> CliResult<u8> {
         Command::Compare(args) => run_compare(args),
         Command::Dashboard(args) => run_dashboard(args),
         Command::ArtifactName(args) => run_artifact_name(args),
+        Command::Openapi(args) => run_openapi(args),
         Command::Completions(args) => {
             let mut command = <Cli as clap::CommandFactory>::command();
             let name = command.get_name().to_string();
@@ -1648,6 +1666,67 @@ fn run_artifact_name(args: ArtifactNameArgs) -> CliResult<u8> {
     )
     .map_err(CliError::Usage)?;
     println!("{name}");
+    Ok(EXIT_SUCCESS)
+}
+
+fn run_openapi(args: OpenapiArgs) -> CliResult<u8> {
+    let routes = openapi::implemented_routes();
+    let canonical_doc = openapi::generate_openapi_from_routes(&routes).map_err(runtime)?;
+    if let Err(errors) = openapi::validate_openapi(&canonical_doc, &routes) {
+        return Err(CliError::Runtime(format!(
+            "generated OpenAPI document failed validation: {}",
+            errors.join("; ")
+        )));
+    }
+    let canonical_text = openapi::render_openapi_json().map_err(runtime)?;
+
+    if let Some(path) = &args.check {
+        let metadata = std::fs::metadata(path).map_err(|e| {
+            CliError::Runtime(format!(
+                "cannot read OpenAPI document {}: {e}",
+                path.display()
+            ))
+        })?;
+        if metadata.len() > openapi::MAX_OPENAPI_BYTES as u64 {
+            return Err(CliError::Runtime(format!(
+                "OpenAPI document {} is too large ({} bytes; limit {} bytes)",
+                path.display(),
+                metadata.len(),
+                openapi::MAX_OPENAPI_BYTES
+            )));
+        }
+        let existing_text = std::fs::read_to_string(path).map_err(|e| {
+            CliError::Runtime(format!(
+                "cannot read OpenAPI document {}: {e}",
+                path.display()
+            ))
+        })?;
+        let existing_doc: serde_json::Value =
+            serde_json::from_str(&existing_text).map_err(|e| {
+                CliError::Runtime(format!("invalid OpenAPI JSON in {}: {e}", path.display()))
+            })?;
+        if let Err(errors) = openapi::validate_openapi(&existing_doc, &routes) {
+            return Err(CliError::Runtime(format!(
+                "OpenAPI validation failed for {}: {}",
+                path.display(),
+                errors.join("; ")
+            )));
+        }
+        if existing_text.replace("\r\n", "\n") != canonical_text.replace("\r\n", "\n") {
+            return Err(CliError::Runtime(format!(
+                "OpenAPI document {} has drifted from implemented routes; regenerate with `soroban-scan openapi --output {}`",
+                path.display(),
+                path.display()
+            )));
+        }
+        return Ok(EXIT_SUCCESS);
+    }
+
+    match &args.output {
+        Some(path) => std::fs::write(path, canonical_text)
+            .map_err(|e| CliError::Runtime(format!("cannot write {}: {e}", path.display())))?,
+        None => print!("{canonical_text}"),
+    }
     Ok(EXIT_SUCCESS)
 }
 

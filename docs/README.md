@@ -23,6 +23,7 @@ Start here.
 - [GitHub Action](github-action.md) — inputs, outputs, and usage examples.
 - [CI Recipes](ci-recipes.md) — copy-paste snippets for common CI systems and hooks.
 - [Observatory Integration](integration/observatory.md) — the stable, versioned report contract.
+- [OpenAPI Contract](integration/openapi.md) — route-driven OpenAPI 3.1.0 generation and CI drift checks.
 - [Editor integration (LSP spike)](integration/editor-integration.md) — diagnostics-in-editor scope and plan.
 - [Optional AI Assistance](ai.md) — off by default, never authoritative.
 - [AI privacy and data flow](ai-privacy.md) — exactly what can leave the machine.
