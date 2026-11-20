@@ -41,6 +41,7 @@ Start here.
 - [Writing Rules](contributors/writing-rules.md)
 - [Adding a Language Frontend](contributors/adding-a-frontend.md) - experimental until reviewed.
 - [Rule Template](rules/TEMPLATE.md)
+- [Rule Quality Checklist](rules/quality-checklist.md)
 - [Contributor Roadmap](contributors/roadmap.md)
 
 ## Project
