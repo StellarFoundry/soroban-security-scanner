@@ -233,6 +233,7 @@ we'll help wire it up.
 - [Documentation index](docs/README.md)
 - [Getting Started](docs/getting-started.md) · [Installation](docs/installation.md)
 - [CLI Reference](docs/cli.md) · [Configuration](docs/configuration.md)
+- [Upgrading](docs/upgrading.md)
 - [Rules](docs/rules/README.md) · [Baselines](docs/baselines.md)
 - [Policy and Reporting](docs/policy.md) — policy schema, precedence, waivers, formats
 - [Report Retention](docs/retention.md) — artifact naming and retention guidance

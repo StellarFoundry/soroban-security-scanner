@@ -221,7 +221,7 @@ Supporting work:
 - [x] Compatibility matrix: Rust, OS, Soroban SDK, machine-readable formats,
       exit codes.
 - [x] Release process ([`development/release.md`](development/release.md)) and
-      upgrade guidance ([`development/upgrading.md`](development/upgrading.md)).
+      upgrade guidance ([`upgrading.md`](upgrading.md)).
 - [x] Production-readiness audit ([`development/audit.md`](development/audit.md))
       with honest Verified/Partial/Planned statuses.
 - [x] Documentation link checker (`tools/check_docs.py`); 42 Markdown files

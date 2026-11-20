@@ -63,7 +63,7 @@ python tools/check_sdk_matrix.py sdk-21.json --sdk 21.7.7
 
 | Format | Version | Stability |
 | ------ | ------- | --------- |
-| JSON report | tool version | Stable shape; additive changes only within a minor line. |
+| JSON report | `schema_version: "1"` in current development builds; `0.2.0` and earlier omit the field. | Stable shape; additive changes only within a minor line. |
 | SARIF | 2.1.0 | Stable. |
 | Baseline file | `version: 1` | Versioned; unsupported versions are rejected. |
 | Configuration | schema v0 | Unknown fields are rejected; additive changes are announced. |

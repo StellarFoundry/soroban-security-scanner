@@ -613,6 +613,60 @@ fn ineffective_overrides_emit_diagnostics() {
 }
 
 #[test]
+fn documented_upgrade_dry_run_commands_succeed() {
+    let version = run(&["version"]);
+    assert_eq!(version.code, 0, "stderr: {}", version.stderr);
+    assert!(version.stdout.contains(soroban_scan_core::VERSION));
+
+    let flag = run(&["--version"]);
+    assert_eq!(flag.code, 0, "stderr: {}", flag.stderr);
+    assert!(flag.stdout.contains(soroban_scan_core::VERSION));
+
+    let dir = std::env::temp_dir().join(format!(
+        "soroban-scan-cli-upgrade-dry-run-{}",
+        std::process::id()
+    ));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+
+    let init = run_in(&dir, &["init"]);
+    assert_eq!(init.code, 0, "stderr: {}", init.stderr);
+
+    let validate = run_in(
+        &dir,
+        &["config", "validate", "--config", "soroban-scan.toml"],
+    );
+    assert_eq!(validate.code, 0, "stderr: {}", validate.stderr);
+    assert!(validate.stdout.contains("configuration is valid"));
+
+    let baseline = dir.join("pre-upgrade-baseline.json");
+    let before = run(&[
+        "scan",
+        fixture("corpus/SS-001").to_str().unwrap(),
+        "--write-baseline",
+        baseline.to_str().unwrap(),
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(before.code, 0, "stderr: {}", before.stderr);
+    assert!(baseline.is_file());
+
+    let after = run(&[
+        "scan",
+        fixture("corpus/SS-001").to_str().unwrap(),
+        "--baseline",
+        baseline.to_str().unwrap(),
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(after.code, 0, "stderr: {}", after.stderr);
+
+    let _ = std::fs::remove_dir_all(&dir);
+}
+
+#[test]
 fn scan_positive_fixture_fails_the_gate() {
     let out = run(&[
         "scan",
