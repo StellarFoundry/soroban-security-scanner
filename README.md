@@ -42,7 +42,8 @@ cargo build --release
 ```
 
 Requires a stable Rust toolchain. See [Getting Started](docs/getting-started.md)
-for installation, machine-readable output, and CI usage.
+for installation, machine-readable output, and CI usage. To run the scanner
+without a local toolchain, build the opt-in [Docker image](docs/docker.md).
 
 ## What it detects
 
@@ -238,6 +239,7 @@ we'll help wire it up.
 - [Upgrading](docs/upgrading.md)
 - [Supply-chain verification](docs/supply-chain.md)
 - [Kubernetes manifests](docs/kubernetes.md) — scheduled and one-off scans
+- [Docker image](docs/docker.md) — build, run, and verify the CLI container
 - [Rules](docs/rules/README.md) · [Baselines](docs/baselines.md)
 - [Policy and Reporting](docs/policy.md) — policy schema, precedence, waivers, formats
 - [Report Retention](docs/retention.md) — artifact naming and retention guidance

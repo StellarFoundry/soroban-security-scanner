@@ -106,10 +106,17 @@ repos:
 
 ## Docker
 
+Build the opt-in image once, then scan a read-only checkout without network
+access:
+
 ```bash
-docker run --rm -v "$PWD:/src" -w /src rust:latest sh -c \
-  "cargo build --release -p soroban-scan-cli && ./target/release/soroban-scan scan . --fail-on high"
+docker build --tag soroban-scan:local .
+docker run --rm --network none -v "$PWD:/src:ro" \
+  soroban-scan:local scan /src --fail-on high
 ```
+
+See [Docker image](docker.md) for the entry point, non-root user, report mounts,
+and health check.
 
 ## Makefile
 
