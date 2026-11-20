@@ -72,20 +72,18 @@ documented in [`docs/api-stability.md`](../api-stability.md).
 
 ## Artifacts
 
-Source is the primary artifact. The tag workflow also builds a Linux
-`soroban-scan` binary, generates a CycloneDX JSON SBOM with `cargo-cyclonedx`,
-attests build provenance with GitHub artifact attestations, and attaches both
-files to the GitHub release.
+Source is the primary artifact, and the tag workflow publishes crate packages in
+lockstep. The `binaries` job also builds release archives for
+`x86_64-unknown-linux-gnu`, `x86_64-unknown-linux-musl`,
+`x86_64-apple-darwin`, `aarch64-apple-darwin`, and
+`x86_64-pc-windows-msvc`, writes a `.sha256` file for each archive, and attests
+build provenance with GitHub artifact attestations. The `release-assets` job
+merges the per-archive checksums into `SHA256SUMS`, verifies it, attests the
+merged file, and uploads the archives plus `SHA256SUMS`. A CycloneDX JSON SBOM
+is generated with `cargo-cyclonedx` and uploaded to the same release.
 
-Verify a downloaded artifact with the GitHub CLI:
-
-```bash
-gh attestation verify soroban-scan-x86_64-unknown-linux-gnu.tar.gz \
-  --repo StellarFoundry/soroban-security-scanner
-```
-
-Prebuilt binaries for macOS and Windows are added once cross-compilation is
-wired into the release workflow (tracked as future work).
+Verification commands, including what is and is not signed, are in
+[`docs/supply-chain.md`](../supply-chain.md).
 
 ## Package publishing
 

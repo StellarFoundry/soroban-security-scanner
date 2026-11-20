@@ -48,6 +48,7 @@ Start here.
 - [Workspace layout and module map](architecture/workspace-layout.md)
 - [Architecture Decision Records](architecture/adr/README.md)
 - [Compatibility](compatibility.md)
+- [Supply-chain verification](supply-chain.md) — checksums, attestations, dependencies.
 - [Security Model](security/security-model.md)
 - [Threat Model](security/threat-model.md)
 - [Project Status](PROJECT_STATUS.md)
