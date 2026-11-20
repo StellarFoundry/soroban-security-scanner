@@ -2,7 +2,8 @@
 
 This guide walks through adding a detector to the Soroban Security Scanner. Read
 [`../rules/README.md`](../rules/README.md) first for the severity and confidence
-semantics.
+semantics. For how a rule moves from proposal to release, including who
+approves each stage, see the [rule lifecycle](rule-lifecycle.md).
 
 ## 0. Define the problem before writing code
 
