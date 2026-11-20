@@ -25,33 +25,42 @@
   are used to confirm contract projects.
 - **Detector targeting:** the built-in detectors model the modern Soroban SDK
   storage and authorization APIs (`env.storage().persistent()/instance()/temporary()`,
-  `Address::require_auth`, generated `*Client` constructors). These correspond to
-  SDK v20 and later.
-- **Verified against fixtures pinned to** `soroban-sdk = "20.5.0"`,
-  `"21.7.7"`, and `"29.0.1"` under `fixtures/sdk-matrix/`.
+  `Address::require_auth`, generated `*Client` constructors).
+- **Supported range:** `soroban-sdk >= 20.5.0, < 30.0.0`. This is the only
+  range the rule suite claims to support. A declared version outside it still
+  scans, but emits an `SDK-001` warning because rule coverage may be inaccurate.
+  The scanner never downloads, builds, or executes an SDK.
 
 ### SDK compatibility matrix
 
-The CI `sdk-matrix` job scans the pinned fixture for each version and asserts
-that:
+The CI `sdk-matrix` job runs the rule suite once per matrix version (setting
+`SOROBAN_SDK_MATRIX` for the `sdk_matrix` test target) and scans the pinned
+fixture. It asserts that:
 
 - the fixture is classified as `confirmed_soroban`;
-- the pinned version is detected in `project.soroban_sdk_versions`; and
+- the pinned version is detected in `project.soroban_sdk_versions`;
 - the SS-001 (missing authorization) and SS-008 (unchecked arithmetic) findings
-  are still reported.
+  are still reported; and
+- no `SDK-001` warning is emitted for a supported version.
 
 | SDK version | Fixture | Status |
 | ----------- | ------- | ------ |
 | 20.5.0 (oldest supported line) | `fixtures/sdk-matrix/soroban-sdk-20` | Verified |
 | 21.7.7 (last v21 release) | `fixtures/sdk-matrix/soroban-sdk-21` | Verified |
 | 29.0.1 (current release) | `fixtures/sdk-matrix/soroban-sdk-29` | Verified |
+| 19.0.0 | `fixtures/sdk-matrix/soroban-sdk-19` | Unsupported; must warn (`SDK-001`) |
+| 30.0.0 | `fixtures/sdk-matrix/soroban-sdk-30` | Unsupported; must warn (`SDK-001`) |
 
-The matrix exercises scanner behavior, not contract compilation. The shared
-fixture source deliberately sticks to APIs stable across these releases, so a
-failure indicates detector or project-detection drift rather than an SDK build
-problem. Run the same check locally after building the scanner:
+Other releases inside the supported range are not individually tested; only the
+pinned versions above are verified. The matrix exercises scanner behavior, not
+contract compilation. The shared fixture source deliberately sticks to APIs
+stable across these releases, so a failure indicates detector or
+project-detection drift rather than an SDK build problem. Run the same checks
+locally:
 
 ```bash
+cargo test -p soroban-scan-core --test sdk_matrix
+SOROBAN_SDK_MATRIX=21.7.7 cargo test -p soroban-scan-core --test sdk_matrix
 soroban-scan scan fixtures/sdk-matrix/soroban-sdk-21 \
   --format json \
   --output sdk-21.json \

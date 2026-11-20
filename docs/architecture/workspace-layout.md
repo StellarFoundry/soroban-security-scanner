@@ -74,13 +74,15 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `registry` | Registration, lookup, and deterministic metadata ordering for rules. | `category`, `rule`. |
 | `config` | Layered `ScanConfig` and validation; repository config is untrusted input. | `ai`, `category`, `confidence`, `severity`. |
 | `manifest` | Syntactic `Cargo.toml` parsing (no execution or fetching). | `error`, `model`. |
-| `discovery` | Deterministic, symlink-safe filesystem traversal and exclude globs. | `error`. |
+| `discovery` | Deterministic, symlink-safe filesystem traversal, exclude globs, and opt-in counting of unsupported source kinds. | `error`, `unsupported`. |
 | `frontend` | Bounded parser frontend trait and the default Rust frontend. | `discovery`, `error`, `project`. |
 | `detection` | Language and project-type evidence; incomplete evidence is marked weak. | `frontend`, `model`, `soroban`, `source`. |
 | `target` | Static Cargo target analysis and target-scoped dependency filtering. | `discovery`, `model`. |
+| `sdk_matrix` | Supported Soroban SDK range, verified matrix, and `SDK-001` warnings. | `model`. |
+| `unsupported` | Bounded `SYNTAX-001` diagnostics for source languages the frontend cannot analyze. | `model`. |
 | `source` | `syn` parsing, spans, module paths, crate-root membership, contract evidence, suppressions. | `error`, `imports`, `model`, `soroban`. |
 | `imports` | Best-effort per-file `use` import map and path canonicalization. | Nothing in the crate. |
-| `project` | Orchestrates discovery, manifest loading, source parsing, Soroban classification, detection evidence, and optional target analysis. | `detection`, `discovery`, `error`, `manifest`, `model`, `soroban`, `source`, `target`. |
+| `project` | Orchestrates discovery, manifest loading, source parsing, Soroban classification, detection evidence, SDK matrix warnings, and optional target analysis. | `detection`, `discovery`, `error`, `manifest`, `model`, `sdk_matrix`, `soroban`, `source`, `target`, `unsupported`. |
 | `soroban` | Soroban evidence and project classification; never executes contracts. | `model`. |
 | `context` | Immutable `AnalysisContext` passed to rules. | `model`, `source`. |
 | `rules` | Built-in detectors, rule metadata validation, and shared analysis helpers. | `category`, `confidence`, `context`, `finding`, `rule`, `severity`, `source`. |

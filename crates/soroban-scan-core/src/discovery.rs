@@ -6,12 +6,14 @@
 //! * user-supplied exclude globs are applied,
 //! * results are sorted for deterministic ordering.
 
+use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use globset::{Glob, GlobSet, GlobSetBuilder};
 use walkdir::WalkDir;
 
 use crate::error::ScanError;
+use crate::unsupported;
 
 /// Directory names that are always skipped during discovery.
 pub const DEFAULT_IGNORED_DIRS: &[&str] = &[
@@ -44,6 +46,9 @@ pub struct DiscoveryOptions {
     pub exclude_generated: bool,
     /// Read Cargo target configuration and filter target-scoped dependencies.
     pub target_analysis: bool,
+    /// Count source files in other languages and report them as unsupported.
+    /// Disabled by default; source text is never read.
+    pub unsupported_syntax: bool,
 }
 
 /// Files discovered during a scan.
@@ -53,6 +58,11 @@ pub struct Discovered {
     pub manifests: Vec<PathBuf>,
     /// Paths to Rust source files.
     pub rust_files: Vec<PathBuf>,
+    /// Counts of recognized non-Rust source files, keyed by language.
+    ///
+    /// Populated only when [`DiscoveryOptions::unsupported_syntax`] is enabled.
+    /// Counts are aggregates; file paths and source text are never stored.
+    pub unsupported_sources: BTreeMap<String, usize>,
 }
 
 /// Compiles exclude patterns into a [`GlobSet`].
@@ -134,6 +144,9 @@ pub fn discover(root: &Path, opts: &DiscoveryOptions) -> Result<Discovered, Scan
         match path.file_name().and_then(|n| n.to_str()) {
             Some("Cargo.toml") => discovered.manifests.push(path.to_path_buf()),
             Some(name) if name.ends_with(".rs") => discovered.rust_files.push(path.to_path_buf()),
+            _ if opts.unsupported_syntax => {
+                unsupported::note_source(&mut discovered.unsupported_sources, path);
+            }
             _ => {}
         }
     }
@@ -209,6 +222,7 @@ mod tests {
             include_cfg_test: false,
             exclude_generated: false,
             target_analysis: false,
+            unsupported_syntax: false,
         };
         let found = discover(&root, &opts).unwrap();
         assert_eq!(found.rust_files.len(), 1);
@@ -244,6 +258,7 @@ mod tests {
             include_cfg_test: false,
             exclude_generated: false,
             target_analysis: false,
+            unsupported_syntax: false,
         };
         assert!(matches!(discover(&root, &opts), Err(ScanError::Config(_))));
         let _ = std::fs::remove_dir_all(&root);

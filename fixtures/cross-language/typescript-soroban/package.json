@@ -1,0 +1,11 @@
+{
+  "name": "cross-language-typescript-soroban",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

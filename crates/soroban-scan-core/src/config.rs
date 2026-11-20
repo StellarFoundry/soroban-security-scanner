@@ -326,6 +326,9 @@ pub struct ScanConfig {
     /// Read Cargo target configuration and adjust and filter target-scoped
     /// dependencies. Disabled by default; never builds or executes the project.
     pub target_analysis: bool,
+    /// Report bounded `SYNTAX-001` diagnostics for source files in other
+    /// languages. Disabled by default; source text is never read or reported.
+    pub unsupported_syntax: bool,
     /// Glob patterns (relative to the scan root) to exclude from discovery.
     pub exclude: Vec<String>,
     /// Skip items gated behind `#[cfg(test)]` and test directories.
@@ -359,6 +362,7 @@ impl Default for ScanConfig {
             min_confidence: Confidence::Low,
             mode: AnalysisMode::Soroban,
             target_analysis: false,
+            unsupported_syntax: false,
             exclude: Vec::new(),
             exclude_tests: false,
             include_cfg_test: false,
@@ -384,6 +388,7 @@ impl ScanConfig {
             include_cfg_test: self.include_cfg_test,
             exclude_generated: self.exclude_generated,
             target_analysis: self.target_analysis,
+            unsupported_syntax: self.unsupported_syntax,
         }
     }
 

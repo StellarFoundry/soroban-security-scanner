@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- The Soroban SDK support matrix (`>=20.5.0, <30.0.0`) is documented, covered by
+  fixtures, and run once per pinned version in CI. Declared versions outside the
+  matrix emit an `SDK-001` warning instead of claiming support (`#383`).
+- Cross-language fixtures (TypeScript, Solidity, plain Cargo) prove unsupported
+  input fails safely: no panic, no partial parse, and a clear aggregated
+  diagnostic when `--unsupported-syntax` is enabled (`#385`).
+- A reusable frontend conformance suite pins the `Frontend` trait contract for
+  discovery, items, spans, and diagnostics, and runs it against the Rust
+  frontend in CI (`#386`).
+- `--unsupported-syntax` / `unsupported_syntax` reports bounded `SYNTAX-001`
+  diagnostics when source files in other languages are skipped. Diagnostics are
+  aggregated by language, capped at 8 kinds, and never read or include source
+  text; the check is off by default (`#387`).
 - Language detection evidence is recorded for the selected frontend and project
   type and exposed as `stats.detection` in JSON. Incomplete evidence is marked
   `weak`, and no language is guessed when nothing is recognized (`#384`).

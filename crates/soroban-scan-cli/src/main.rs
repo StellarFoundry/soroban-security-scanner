@@ -75,6 +75,10 @@ minimum_soroban_sdk = "21.0.0"
 # Disabled by default; never builds or executes the project.
 target_analysis = false
 
+# Report bounded diagnostics for source files in languages the Rust frontend
+# cannot analyze. Disabled by default; source text is never read or reported.
+unsupported_syntax = false
+
 # Path- and rule-scoped suppressions. Every entry is reported, even when it
 # matches nothing. `path` is a relative glob, `rule` is an SS-### id or "all".
 # [[suppressions]]
@@ -388,6 +392,11 @@ struct ScanArgs {
     /// executes the project, and reports unsupported targets clearly.
     #[arg(long)]
     target_analysis: bool,
+
+    /// Report bounded diagnostics for source files in languages the Rust
+    /// frontend cannot analyze. Disabled by default; source text is never read.
+    #[arg(long)]
+    unsupported_syntax: bool,
 
     /// Report at most N findings, after sorting. The exit gate still considers
     /// every finding, and the report states how many were omitted.
@@ -769,6 +778,7 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
     }
     config.mode = args.mode.into();
     config.target_analysis |= args.target_analysis;
+    config.unsupported_syntax |= args.unsupported_syntax;
     config.exclude.extend(args.exclude.iter().cloned());
     config.exclude_tests |= args.exclude_tests;
     config.include_cfg_test |= args.include_cfg_test;

@@ -7,9 +7,11 @@ use crate::discovery::{self, DiscoveryOptions};
 use crate::error::ScanError;
 use crate::manifest;
 use crate::model::{Diagnostic, DiagnosticCode, Project};
+use crate::sdk_matrix;
 use crate::soroban;
 use crate::source::{self, ParsedSource};
 use crate::target;
+use crate::unsupported;
 
 /// A fully loaded project: metadata plus parsed sources.
 pub struct LoadedProject {
@@ -29,7 +31,7 @@ pub struct LoadedProject {
 pub fn load(root: &Path, opts: &DiscoveryOptions) -> Result<LoadedProject, ScanError> {
     let discovered = discovery::discover(root, opts)?;
     let mut manifests = Vec::new();
-    let mut diagnostics = Vec::new();
+    let mut diagnostics = unsupported::diagnostics(&discovered.unsupported_sources);
 
     for path in &discovered.manifests {
         match manifest::load_manifest(path) {
@@ -72,6 +74,7 @@ pub fn load(root: &Path, opts: &DiscoveryOptions) -> Result<LoadedProject, ScanE
     diagnostics.extend(loaded.diagnostics);
 
     let soroban = soroban::analyze_manifests(&manifests);
+    diagnostics.extend(sdk_matrix::diagnostics(&manifests));
     let mut project = Project {
         root: root.to_path_buf(),
         kind: soroban::classify(&soroban),
@@ -159,6 +162,7 @@ pub fn load_files_with_options(
     diagnostics.extend(loaded.diagnostics);
 
     let soroban = soroban::analyze_manifests(&manifests);
+    diagnostics.extend(sdk_matrix::diagnostics(&manifests));
     let mut project = Project {
         root: root.to_path_buf(),
         kind: soroban::classify(&soroban),
