@@ -24,6 +24,7 @@ Start here.
 - [CI Recipes](ci-recipes.md) — copy-paste snippets for common CI systems and hooks.
 - [Observatory Integration](integration/observatory.md) — the stable, versioned report contract.
 - [Editor integration (LSP spike)](integration/editor-integration.md) — diagnostics-in-editor scope and plan.
+- [Editor setup (VS Code, Neovim)](integration/editor-setup.md) — LSP configuration, capabilities, and limitations.
 - [Optional AI Assistance](ai.md) — off by default, never authoritative.
 - [AI privacy and data flow](ai-privacy.md) — exactly what can leave the machine.
 - [FAQ](faq.md) — common questions about false positives, CI gating, and versions.

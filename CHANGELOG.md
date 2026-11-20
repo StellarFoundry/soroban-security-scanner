@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Editor setup guide for VS Code and Neovim with supported LSP capabilities and
+  known limitations, linked from the README (`#337`).
 - SS-018 "Unchecked integer cast" (medium/low): flags narrowing `as` casts of
   function parameters and storage reads, ignores widening and same-width casts,
   and recommends `TryFrom`/`try_into` (`#117`).
