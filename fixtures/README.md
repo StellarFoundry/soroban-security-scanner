@@ -12,6 +12,8 @@ fixtures/
   adversarial/     # per-rule samples with unusual but valid syntax
   cross-language/  # valid non-Rust projects that must fail safely
   sdk-matrix/      # SDK version compatibility fixtures
+  third-party/     # third-party contracts; each needs PROVENANCE.toml
+  provenance-checks/ # fixtures for the provenance validator
   reports/         # JSON scan reports used by comparison and dashboard tests
 ```
 
@@ -24,6 +26,7 @@ fixtures/
   result (`trigger` or a documented `no-trigger` limit) lives in
   `adversarial/expectations.toml`.
 - Never include real secrets or real contract addresses.
-- Prefer synthetic examples over copied third-party code.
+- Prefer synthetic examples over copied third-party code. Third-party code
+  requires provenance; see [`docs/corpus-provenance.md`](../docs/corpus-provenance.md).
 
 Exact formats and the expected-findings schema are defined in Phase 5.

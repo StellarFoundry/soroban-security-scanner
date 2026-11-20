@@ -1,0 +1,2 @@
+source_url = "https://github.com/example/contract"
+expected_findings = "expected.toml"
