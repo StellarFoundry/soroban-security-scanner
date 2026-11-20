@@ -212,6 +212,14 @@ jobs:
         run: python -m pip install PyYAML==6.0.3
       - name: Run tests
         run: python -m unittest discover -s tests -v
+      - name: Validate OpenAPI contract
+        run: python tools/check_openapi.py docs/integration/openapi.json
+      - name: Upload OpenAPI contract
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: openapi-spec
+          path: docs/integration/openapi.json
+          if-no-files-found: error
 
   deny:
     name: Dependency audit

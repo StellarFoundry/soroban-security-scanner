@@ -91,6 +91,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `baseline` | Fingerprint baselines, JSON/TOML parsing, merge/prune, unknown-rule diagnostics. | `error`, `finding`, `model`, `registry`, `severity`. |
 | `report` | Terminal, JSON, SARIF, Markdown, HTML, and GitHub renderers. | `config`, `engine`, `finding`, `model`, `registry`, `rule`, `severity`. |
 | `redaction` | Opt-in hashing of selected report fields at render time; fingerprints stay intact. | `baseline`, `engine`, `finding`. |
+| `openapi` | Deterministic OpenAPI 3.1.0 contract generation and route/schema validation; excludes internal endpoints. | `error`. |
 | `ai` | Optional, advisory assistance; deterministic engine remains authoritative. | `category`, `finding`, `rule`, `severity`. |
 
 ## Subsystem submodules

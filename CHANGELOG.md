@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Route-driven OpenAPI 3.1.0 contract generation (`soroban_scan_core::openapi`,
+  `soroban-scan openapi`, and `docs/integration/openapi.json`): generates the
+  machine-readable API specification from the route table, excludes internal
+  endpoints, validates schema references and route drift in CI, and publishes the
+  contract as a CI workflow artifact (`#355`).
 - Corpus licensing and provenance policy: third-party entries require a compatible
   license, source URL, and expected-findings manifest, enforced by tests in CI (`#328`).
 - SS-018 "Unchecked integer cast" (medium/low): flags narrowing `as` casts of

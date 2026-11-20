@@ -18,6 +18,7 @@ soroban-scan <COMMAND>
 | `compare` | Compare two JSON scan reports by finding fingerprint. |
 | `dashboard` | Render a static trend dashboard from several JSON scan reports. |
 | `artifact-name` | Print the canonical, deterministic report artifact name. |
+| `openapi` | Generate or validate the OpenAPI 3.1.0 contract from the implemented routes. |
 | `config show` / `config validate` | Inspect or validate configuration. |
 
 ---
@@ -586,6 +587,25 @@ soroban-scan artifact-name --project "Vault Contract" \
 The name is deterministic for the same inputs and contains no secrets. See
 [Report retention and artifact naming](retention.md) for the scheme and the
 recommended retention policy.
+
+## `openapi`
+
+```text
+soroban-scan openapi [--output FILE | --check FILE]
+```
+
+Generates the deterministic OpenAPI 3.1.0 JSON specification from the route
+table (`soroban_scan_core::openapi::implemented_routes()`) or checks an existing
+specification for validity and route drift. Internal operator endpoints are
+never included.
+
+| Option | Description |
+| ------ | ----------- |
+| `--output <FILE>` | Write the generated OpenAPI JSON document to a file instead of stdout. |
+| `--check <FILE>` | Verify that an existing OpenAPI file validates and matches the implemented routes (exits `3` on drift or validation errors). |
+
+See [OpenAPI contract generation](integration/openapi.md) and the published
+contract at [`docs/integration/openapi.json`](integration/openapi.json).
 
 ## `completions`
 
