@@ -137,7 +137,8 @@ soroban-scan dashboard scans/*.json --output trend.html
 ```
 
 See [`docs/cli.md`](docs/cli.md) for the full reference, including configuration
-and stable exit codes.
+and stable exit codes. For in-editor diagnostics, see the
+[editor setup guide](docs/integration/editor-setup.md) (VS Code and Neovim).
 
 ## Demo
 
