@@ -135,6 +135,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   full regression corpus, with a documented update procedure (`#66`).
 - The README quickstart now lists the four commands needed for a first scan and
   links to Getting Started for the remaining workflows (`#34`).
+- Add a documented, tested LSP diagnostics severity mapping policy with a
+  stable default, validated per-severity overrides, and opt-in low-confidence
+  demotion (`#338`).
 - Add an editor integration (LSP) spike covering a minimal diagnostics provider,
   core-library reuse, protocol scope, security, testing, and follow-up tasks
   (`#168`).
