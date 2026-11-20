@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: soroban-scan-source
+  namespace: soroban-scan
+  labels:
+    app.kubernetes.io/name: soroban-scan
+    app.kubernetes.io/part-of: soroban-scan
+spec:
+  # Populate this claim with the source tree you want to scan. The manifests
+  # mount it read-only; the scanner never writes to the scanned repository.
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: soroban-scan-reports
+  namespace: soroban-scan
+  labels:
+    app.kubernetes.io/name: soroban-scan
+    app.kubernetes.io/part-of: soroban-scan
+spec:
+  # Reports are written here. Retention is your responsibility; see
+  # docs/kubernetes.md and docs/retention.md.
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

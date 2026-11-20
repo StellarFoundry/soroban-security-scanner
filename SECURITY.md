@@ -28,12 +28,14 @@ Please include:
 
 ## Supported versions
 
-The project is pre-1.0. Security fixes are applied to the latest `main` and the
-most recent released version once releases begin.
+The project is pre-1.0. Security fixes are applied to the latest released
+`0.x` minor line and to `main`. Older minors are not backported by default.
+See [Releases and support](docs/releases.md) for the full policy.
 
 | Version | Supported |
 | ------- | --------- |
-| 0.1.x   | Yes       |
+| 0.2.x   | Yes       |
+| 0.1.x   | No        |
 
 ## Scope
 

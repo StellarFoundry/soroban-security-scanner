@@ -6,6 +6,7 @@ Start here.
 
 - [Installation](installation.md) — build and install the scanner.
 - [Getting Started](getting-started.md) — your first scan.
+- [Upgrading](upgrading.md) — dry run, compatibility, rollback, and unsupported upgrades.
 - [CLI Reference](cli.md) — every command, option, and exit code.
 - [Configuration](configuration.md) — configuration file reference.
 - [Doctor](doctor.md) — explain classification, excludes, and effective configuration.
@@ -47,6 +48,9 @@ Start here.
 - [Workspace layout and module map](architecture/workspace-layout.md)
 - [Architecture Decision Records](architecture/adr/README.md)
 - [Compatibility](compatibility.md)
+- [Releases and Support](releases.md) — cadence, support windows, security targets.
+- [Supply-chain verification](supply-chain.md) — checksums, attestations, dependencies.
+- [Kubernetes manifests](kubernetes.md) — scheduled and one-off scans.
 - [Security Model](security/security-model.md)
 - [Threat Model](security/threat-model.md)
 - [Project Status](PROJECT_STATUS.md)
@@ -57,5 +61,4 @@ Start here.
 ## Maintainers
 
 - [Release Process](development/release.md)
-- [Upgrading](development/upgrading.md)
 - [Production Readiness Audit](development/audit.md)

@@ -60,6 +60,10 @@ gh attestation verify soroban-scan-x86_64-unknown-linux-gnu.tar.gz \
   --repo AyinkxLab/soroban-security-scanner
 ```
 
+The attestation proves which workflow and commit produced the digest; it is not
+a detached GPG signature. See [Supply-chain verification](supply-chain.md) for
+the exact checksum commands per platform, what is attested, and what is not.
+
 ## Verify the installation
 
 ```bash

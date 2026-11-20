@@ -225,6 +225,8 @@ we'll help wire it up.
   acceptance criteria; PRs are reviewed before merge. This project participates
   in open-source contribution waves via [Drips Wave](docs/WAVE.md).
 - **Releases:** tagged releases with a maintained [`CHANGELOG.md`](CHANGELOG.md).
+  Cadence, support windows, and security response targets are in
+  [Releases and support](docs/releases.md).
 - **Security:** please follow [`SECURITY.md`](SECURITY.md) for responsible
   disclosure.
 
@@ -233,6 +235,9 @@ we'll help wire it up.
 - [Documentation index](docs/README.md)
 - [Getting Started](docs/getting-started.md) · [Installation](docs/installation.md)
 - [CLI Reference](docs/cli.md) · [Configuration](docs/configuration.md)
+- [Upgrading](docs/upgrading.md)
+- [Supply-chain verification](docs/supply-chain.md)
+- [Kubernetes manifests](docs/kubernetes.md) — scheduled and one-off scans
 - [Rules](docs/rules/README.md) · [Baselines](docs/baselines.md)
 - [Policy and Reporting](docs/policy.md) — policy schema, precedence, waivers, formats
 - [Report Retention](docs/retention.md) — artifact naming and retention guidance
