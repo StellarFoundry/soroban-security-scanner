@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `--unsupported-syntax` / `unsupported_syntax` reports bounded `SYNTAX-001`
+  diagnostics when source files in other languages are skipped. Diagnostics are
+  aggregated by language, capped at 8 kinds, and never read or include source
+  text; the check is off by default (`#387`).
 - Language detection evidence is recorded for the selected frontend and project
   type and exposed as `stats.detection` in JSON. Incomplete evidence is marked
   `weak`, and no language is guessed when nothing is recognized (`#384`).

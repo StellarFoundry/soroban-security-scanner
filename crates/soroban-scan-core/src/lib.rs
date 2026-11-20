@@ -43,6 +43,7 @@ pub mod soroban;
 pub mod source;
 pub mod suppression;
 pub mod target;
+pub mod unsupported;
 
 /// Crate version, sourced from Cargo at compile time.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

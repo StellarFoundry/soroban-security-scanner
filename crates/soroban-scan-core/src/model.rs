@@ -271,6 +271,9 @@ pub enum DiagnosticCode {
     /// Cargo target configuration could not be read and was ignored.
     #[serde(rename = "TARGET-003")]
     TargetConfigUnreadable,
+    /// A source file uses a language or syntax the selected frontend cannot analyze.
+    #[serde(rename = "SYNTAX-001")]
+    UnsupportedSyntax,
 }
 
 impl DiagnosticCode {
@@ -302,6 +305,7 @@ impl DiagnosticCode {
             DiagnosticCode::TargetUnsupported => "TARGET-001",
             DiagnosticCode::TargetDetected => "TARGET-002",
             DiagnosticCode::TargetConfigUnreadable => "TARGET-003",
+            DiagnosticCode::UnsupportedSyntax => "SYNTAX-001",
         }
     }
 }

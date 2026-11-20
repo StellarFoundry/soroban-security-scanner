@@ -39,6 +39,7 @@ roots in one run.
 | `--min-confidence <LEVEL>` | Only report findings at or above this confidence. |
 | `--mode <soroban\|generic\|auto>` | Project analysis mode (default `soroban`). `generic` is opt-in and skips Soroban-only rules; `auto` uses generic mode only for plain Rust projects. The effective mode is always shown. |
 | `--target-analysis` | Read Cargo target configuration and filter target-scoped dependencies (default off). Only wasm32 is understood; unsupported targets are reported. Never builds or executes the project. |
+| `--unsupported-syntax` | Report bounded `SYNTAX-001` diagnostics for source files in languages the Rust frontend cannot analyze (default off). Aggregated by language; source text is never read or reported. |
 | `--max-findings <N>` | Report at most N findings after sorting; the exit gate is unaffected and the report states how many were omitted. |
 | `--redact <FIELD>` | Replace a report field with a stable hash at render time (repeatable; see [Report redaction](#report-redaction)). |
 | `--exclude <GLOB>` | Exclude a glob relative to the scan root (repeatable). |
@@ -100,6 +101,22 @@ on the scanned project.
 The static result appears in terminal and Markdown output as `Target:` and in
 JSON as `stats.target`. The same setting is available as
 `target_analysis = true` in `soroban-scan.toml`.
+
+### Unsupported syntax
+
+`--unsupported-syntax` (or `unsupported_syntax = true`) reports when a scan
+silently covers less than expected. Only the Rust frontend ships, so files with
+recognized non-Rust source extensions (for example `.ts`, `.tsx`, `.sol`,
+`.go`, or `.py`) are skipped rather than partially parsed.
+
+- One `SYNTAX-001` warning is emitted per language, with a count — not one per
+  file.
+- At most 8 language kinds are listed, plus one warning stating how many were
+  omitted, so output stays bounded.
+- Only file extensions are inspected. Source text is never read, echoed, or
+  stored in the diagnostic.
+- Known Rust inputs (`Cargo.toml` and `.rs` files) are never flagged.
+- The check is off by default.
 
 ### Detection manifest
 

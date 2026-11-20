@@ -10,6 +10,7 @@ use crate::model::{Diagnostic, DiagnosticCode, Project};
 use crate::soroban;
 use crate::source::{self, ParsedSource};
 use crate::target;
+use crate::unsupported;
 
 /// A fully loaded project: metadata plus parsed sources.
 pub struct LoadedProject {
@@ -29,7 +30,7 @@ pub struct LoadedProject {
 pub fn load(root: &Path, opts: &DiscoveryOptions) -> Result<LoadedProject, ScanError> {
     let discovered = discovery::discover(root, opts)?;
     let mut manifests = Vec::new();
-    let mut diagnostics = Vec::new();
+    let mut diagnostics = unsupported::diagnostics(&discovered.unsupported_sources);
 
     for path in &discovered.manifests {
         match manifest::load_manifest(path) {
