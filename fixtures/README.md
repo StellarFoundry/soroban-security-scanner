@@ -25,6 +25,7 @@ fixtures/
   result (`trigger` or a documented `no-trigger` limit) lives in
   `adversarial/expectations.toml`.
 - Never include real secrets or real contract addresses.
-- Prefer synthetic examples over copied third-party code.
+- Prefer synthetic examples over copied third-party code. Third-party code
+  requires provenance; see [`docs/corpus-provenance.md`](../docs/corpus-provenance.md).
 
 Exact formats and the expected-findings schema are defined in Phase 5.
