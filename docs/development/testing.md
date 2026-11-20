@@ -47,6 +47,11 @@ contract, skeleton, fixtures, and experimental-status rules.
 
 - Every rule ships with at least one **positive** fixture (must trigger) and one
   **negative** fixture (must not trigger).
+- Every rule also ships with an **adversarial** sample under
+  `fixtures/adversarial/`. `tests/adversarial_corpus.rs` derives the rule list
+  from the registry and checks the recorded `trigger`/`no-trigger` result, so a
+  new detector without a sample fails. See
+  [`fixtures/adversarial/README.md`](../../fixtures/adversarial/README.md).
 - False-positive tests are as important as true-positive tests.
 - Parser features require malformed-input tests.
 - Any future network/CI integration requires permission and error-path tests.

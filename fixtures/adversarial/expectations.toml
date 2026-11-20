@@ -1,0 +1,104 @@
+# Adversarial fixture expectations (#143).
+#
+# Every built-in detector must have exactly one entry here. The test derives the
+# rule list from RuleRegistry, so a new detector without an entry fails.
+#
+# `expect` is either "trigger" (the rule must report at least one finding for
+# this sample) or "no-trigger" (the rule must report nothing). The `why` field
+# records the expected behaviour and, for no-trigger cases, the known limit.
+# Paths are relative to this directory.
+
+[SS-001]
+file = "SS-001/spaced_chain.rs"
+expect = "trigger"
+why = "Aliased crate and whitespace inside the storage method chain still form a storage write in an entry point with no authorization."
+
+[SS-002]
+file = "SS-002/aliased_client.rs"
+expect = "trigger"
+why = "The client type is imported as Tok, but import canonicalization resolves it back to the Soroban token Client, so the unauthenticated constructor is still reported."
+
+[SS-003]
+file = "SS-003/split_iterator.rs"
+expect = "trigger"
+why = "A storage keys() iterator split across lines is still unbounded storage iteration in an entry point."
+
+[SS-004]
+file = "SS-004/spaced_panic.rs"
+expect = "trigger"
+why = "Whitespace between the panic macro name and its delimiter does not hide the panic-prone construct."
+
+[SS-005]
+file = "SS-005/spaced_unsafe.rs"
+expect = "trigger"
+why = "Spaced core::ptr::read inside an unsafe block is still unsafe code in a contract implementation."
+
+[SS-006]
+file = "SS-006/aliased_key_macro.rs"
+expect = "trigger"
+why = "Aliasing symbol_short as key does not hide the persistent write, and no TTL manager is present."
+
+[SS-007]
+file = "SS-007/raw_string_address.rs"
+expect = "trigger"
+why = "A raw string literal with the Stellar address shape is still a hardcoded address."
+
+[SS-008]
+file = "SS-008/split_subtraction.rs"
+expect = "trigger"
+why = "A subtraction split across lines is still unchecked binary arithmetic in an entry point."
+
+[SS-009]
+file = "SS-009/spaced_ledger.rs"
+expect = "trigger"
+why = "Spaced ledger().timestamp() used in a modulo expression is still predictable randomness."
+
+[SS-010]
+file = "SS-010/spaced_symbol_macro.rs"
+expect = "trigger"
+why = "The privileged ADMIN key is visible through a spaced symbol_short macro invocation and no event is published."
+
+[SS-011]
+file = "SS-011/spaced_key.rs"
+expect = "trigger"
+why = "An initialize entry point with spaced DataKey paths writes storage with no guard and no authorization."
+
+[SS-012]
+file = "SS-012/aliased_vec.rs"
+expect = "trigger"
+why = "Aliasing Vec as SdkVec does not hide push_back growth after a storage read."
+
+[SS-013]
+file = "SS-013/spaced_constructor.rs"
+expect = "trigger"
+why = "A spaced TokenClient::new constructor still marks a cross-contract call before the state update."
+
+[SS-014]
+file = "SS-014/shadowed_amount.rs"
+expect = "trigger"
+why = "A shadowed amount binding is still a caller-supplied transfer amount with no zero or negative guard."
+
+[SS-015]
+file = "SS-015/inline_table.toml"
+expect = "trigger"
+why = "An inline dependency table with a deprecated soroban-sdk version still triggers the manifest rule."
+
+[SS-016]
+file = "SS-016/spaced_instance_keys.rs"
+expect = "trigger"
+why = "Two distinct spaced instance-storage keys are repeated instance-storage writes."
+
+[SS-017]
+file = "SS-017/split_auth.rs"
+expect = "trigger"
+why = "Authorization split across lines still occurs after the storage mutation."
+
+[SS-029]
+file = "SS-029/raw_identifier.rs"
+expect = "trigger"
+why = "A raw identifier for the environment argument does not hide the public debug_ entry point name."
+
+[SS-033]
+file = "SS-033/split_glob.rs"
+expect = "trigger"
+why = "A wildcard import split after the soroban_sdk separator is still a wildcard SDK import."

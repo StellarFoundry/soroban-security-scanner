@@ -72,7 +72,8 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-033](detectors/SS-033.md) | Wildcard import from the Soroban SDK | low | high | dependencies |
 
 Each detector has a positive and negative fixture under
-`fixtures/corpus/<RULE-ID>/`.
+`fixtures/corpus/<RULE-ID>/`, plus an adversarial sample and recorded expected
+result under `fixtures/adversarial/`.
 
 The table above can be regenerated from the rule registry instead of being
 edited by hand:

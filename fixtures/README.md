@@ -9,6 +9,7 @@ corpus. They are **not** production code.
 fixtures/
   projects/        # whole mini-projects: Cargo.toml + src/
   corpus/          # regression fixtures grouped by rule/category
+  adversarial/     # per-rule samples with unusual but valid syntax
   cross-language/  # valid non-Rust projects that must fail safely
   sdk-matrix/      # SDK version compatibility fixtures
   reports/         # JSON scan reports used by comparison and dashboard tests
@@ -19,6 +20,9 @@ fixtures/
 - Keep them minimal and readable.
 - Each positive fixture (should trigger) is paired with a negative fixture
   (should not trigger).
+- Every rule also has an adversarial sample under `adversarial/`. Its expected
+  result (`trigger` or a documented `no-trigger` limit) lives in
+  `adversarial/expectations.toml`.
 - Never include real secrets or real contract addresses.
 - Prefer synthetic examples over copied third-party code.
 
