@@ -1,0 +1,17 @@
+apiVersion: v2
+name: soroban-scan
+description: >-
+  Batch Job and CronJob resources for the soroban-scan CLI scanner. This chart
+  deploys no server: the scanner is a one-shot command with no network service.
+type: application
+version: 0.1.0
+appVersion: "0.2.0"
+kubeVersion: ">=1.25.0-0"
+keywords:
+  - security
+  - soroban
+  - stellar
+  - scanner
+home: https://github.com/StellarFoundry/soroban-security-scanner
+sources:
+  - https://github.com/StellarFoundry/soroban-security-scanner

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "soroban-scan.fullname" . }}-config
+  labels:
+    {{- include "soroban-scan.labels" . | nindent 4 }}
+data:
+  soroban-scan.toml: |
+    {{- .Values.config | nindent 4 }}
