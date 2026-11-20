@@ -2,12 +2,14 @@
 
 use std::path::{Path, PathBuf};
 
+use crate::detection;
 use crate::discovery::{self, DiscoveryOptions};
 use crate::error::ScanError;
 use crate::manifest;
 use crate::model::{Diagnostic, DiagnosticCode, Project};
 use crate::soroban;
 use crate::source::{self, ParsedSource};
+use crate::target;
 
 /// A fully loaded project: metadata plus parsed sources.
 pub struct LoadedProject {
@@ -48,6 +50,15 @@ pub fn load(root: &Path, opts: &DiscoveryOptions) -> Result<LoadedProject, ScanE
 
     manifest::resolve_workspace_dependencies(&mut manifests);
 
+    let target = if opts.target_analysis {
+        let (info, target_diagnostics) = target::analyze(root, &manifests);
+        diagnostics.extend(target_diagnostics);
+        target::filter_dependencies(&mut manifests, &info);
+        Some(info)
+    } else {
+        None
+    };
+
     let loaded = source::load_sources_with_options(
         &discovered.rust_files,
         &manifests,
@@ -66,10 +77,19 @@ pub fn load(root: &Path, opts: &DiscoveryOptions) -> Result<LoadedProject, ScanE
         kind: soroban::classify(&soroban),
         manifests,
         soroban,
+        target,
+        detection: Default::default(),
         source_files: discovered.rust_files.len(),
         diagnostics,
     };
     source::apply_source_evidence(&mut project, &sources);
+    project.detection = detection::detect(
+        root,
+        &project.manifests,
+        &sources,
+        &project.soroban,
+        discovered.rust_files.len(),
+    );
 
     Ok(LoadedProject {
         project,
@@ -117,6 +137,15 @@ pub fn load_files_with_options(
 
     manifest::resolve_workspace_dependencies(&mut manifests);
 
+    let target = if opts.target_analysis {
+        let (info, target_diagnostics) = target::analyze(root, &manifests);
+        diagnostics.extend(target_diagnostics);
+        target::filter_dependencies(&mut manifests, &info);
+        Some(info)
+    } else {
+        None
+    };
+
     let loaded = source::load_sources_with_options(
         files,
         &manifests,
@@ -135,10 +164,19 @@ pub fn load_files_with_options(
         kind: soroban::classify(&soroban),
         manifests,
         soroban,
+        target,
+        detection: Default::default(),
         source_files: files.len(),
         diagnostics,
     };
     source::apply_source_evidence(&mut project, &sources);
+    project.detection = detection::detect(
+        root,
+        &project.manifests,
+        &sources,
+        &project.soroban,
+        files.len(),
+    );
 
     Ok(LoadedProject {
         project,

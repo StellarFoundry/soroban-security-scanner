@@ -37,6 +37,8 @@ roots in one run.
 | `--output <FILE>` | Write the report to a file instead of stdout. |
 | `--min-severity <LEVEL>` | Only report findings at or above this severity. |
 | `--min-confidence <LEVEL>` | Only report findings at or above this confidence. |
+| `--mode <soroban\|generic\|auto>` | Project analysis mode (default `soroban`). `generic` is opt-in and skips Soroban-only rules; `auto` uses generic mode only for plain Rust projects. The effective mode is always shown. |
+| `--target-analysis` | Read Cargo target configuration and filter target-scoped dependencies (default off). Only wasm32 is understood; unsupported targets are reported. Never builds or executes the project. |
 | `--max-findings <N>` | Report at most N findings after sorting; the exit gate is unaffected and the report states how many were omitted. |
 | `--redact <FIELD>` | Replace a report field with a stable hash at render time (repeatable; see [Report redaction](#report-redaction)). |
 | `--exclude <GLOB>` | Exclude a glob relative to the scan root (repeatable). |
@@ -63,6 +65,66 @@ roots in one run.
 | `--log-level <off\|error\|warn\|info\|debug>` | Emit structured JSON log lines to stderr (default `off`). Stdout stays reserved for the report; logs never include source text, environment values, or absolute home paths. |
 | `--pager <auto\|never\|always>` | Page long terminal reports through `$PAGER` (default `auto`); never affects JSON/SARIF/Markdown/GitHub output. |
 | `--color <auto\|always\|never>` | Colorize terminal output (default `auto`). Machine formats never contain ANSI escapes. |
+
+### Analysis modes
+
+The default `soroban` mode runs the full rule set. `--mode generic` is opt-in:
+it skips every rule that is Soroban-only (all built-in detectors today), so a
+plain Rust project never receives Soroban-flavored claims. `--mode auto` applies
+generic mode only when the project is classified as `generic_rust`.
+
+The effective mode is printed as `Mode:` in terminal and Markdown reports and
+stored as `stats.mode` in JSON. Generic mode also emits a `MODE-001`
+informational diagnostic naming the project classification and the number of
+rules skipped, so a mode change is never silent. The same setting is available
+as `mode = "soroban"` in `soroban-scan.toml`.
+
+### Target analysis
+
+`--target-analysis` is opt-in. It reads, without running Cargo:
+
+- `[lib] crate-type` and `[target.<key>.*]` tables in discovered `Cargo.toml`
+  manifests;
+- `[build] target` and `[target.<key>]` tables in `.cargo/config.toml` or
+  `.cargo/config` (capped at 1 MiB; unreadable or invalid files emit
+  `TARGET-003`).
+
+Only `wasm32*` targets are understood. When an explicit target is configured,
+dependencies scoped to a different target are removed before rule evaluation,
+so a host-only dependency cannot produce a false Soroban dependency finding in
+a wasm build. An explicit non-wasm target emits a `TARGET-001` warning saying
+that target analysis is unsupported; a detected wasm32 target emits an
+informational `TARGET-002`. The scanner never builds, runs, or invokes `cargo`
+on the scanned project.
+
+The static result appears in terminal and Markdown output as `Target:` and in
+JSON as `stats.target`. The same setting is available as
+`target_analysis = true` in `soroban-scan.toml`.
+
+### Detection manifest
+
+Every report records why a language and project type were selected. Only the
+Rust frontend ships today, and the manifest never claims another language. JSON
+exposes it as `stats.detection`:
+
+```json
+{
+  "language": "rust",
+  "frontend": "rust",
+  "project_type": "confirmed_soroban",
+  "confidence": "strong",
+  "evidence": [
+    { "kind": "manifest", "path": "Cargo.toml", "detail": "Cargo.toml manifest" },
+    { "kind": "source", "path": "src/lib.rs", "detail": "1 Rust source file(s) discovered" }
+  ]
+}
+```
+
+Evidence is bounded and contains only relative paths and short labels — never
+source text, environment values, or secrets. When a manifest or source signal is
+missing, `confidence` is `weak`; when no recognized evidence exists at all, the
+language and project type are `unknown`. The same selection is printed as
+`Detection:` in terminal and Markdown reports and by `doctor`.
 
 ### Structured logs
 
@@ -571,7 +633,8 @@ network access.
   independent of the tool version. The `effective_config` object records the
   settings used for the scan, excluding environment data and secrets. `stats`
   includes `files_parsed`, `files_failed`, and `files_skipped` so coverage gaps
-  are visible. When `--max-findings` omits findings, a `truncation` object
+  are visible, plus the effective `mode`, the opt-in `target` record, and the
+  `detection` manifest. When `--max-findings` omits findings, a `truncation` object
   reports the counts. The published JSON Schema is
   [`docs/integration/report.schema.json`](integration/report.schema.json); a
   CLI test validates a real report against it on every run.

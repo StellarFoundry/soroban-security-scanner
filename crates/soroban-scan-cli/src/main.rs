@@ -19,10 +19,10 @@ use soroban_scan_core::baseline::{self, Baseline, BaselineReport};
 use soroban_scan_core::category::Category;
 use soroban_scan_core::compare;
 use soroban_scan_core::confidence::Confidence;
-use soroban_scan_core::config::ScanConfig;
+use soroban_scan_core::config::{AnalysisMode, ScanConfig};
 use soroban_scan_core::engine;
+use soroban_scan_core::frontend::{self, Frontend};
 use soroban_scan_core::model::DiagnosticCode;
-use soroban_scan_core::project;
 use soroban_scan_core::redaction;
 use soroban_scan_core::registry::RuleRegistry;
 use soroban_scan_core::report::{self, OutputFormat};
@@ -70,6 +70,10 @@ follow_symlinks = false
 
 # Minimum supported soroban-sdk version for SS-015.
 minimum_soroban_sdk = "21.0.0"
+
+# Read Cargo target configuration and filter target-scoped dependencies.
+# Disabled by default; never builds or executes the project.
+target_analysis = false
 
 # Path- and rule-scoped suppressions. Every entry is reported, even when it
 # matches nothing. `path` is a relative glob, `rule` is an SS-### id or "all".
@@ -225,6 +229,27 @@ impl FailOnArg {
     }
 }
 
+/// Argument value for `--mode`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+enum ModeArg {
+    /// Run the Soroban rule set (default).
+    Soroban,
+    /// Skip Soroban-only rules for a generic Rust project.
+    Generic,
+    /// Use generic mode only when the project is classified as plain Rust.
+    Auto,
+}
+
+impl From<ModeArg> for AnalysisMode {
+    fn from(value: ModeArg) -> Self {
+        match value {
+            ModeArg::Soroban => AnalysisMode::Soroban,
+            ModeArg::Generic => AnalysisMode::Generic,
+            ModeArg::Auto => AnalysisMode::Auto,
+        }
+    }
+}
+
 /// Argument value for `--baseline-format`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
 enum BaselineFormatArg {
@@ -351,6 +376,18 @@ struct ScanArgs {
     /// Only report findings at or above this confidence.
     #[arg(long, value_name = "LEVEL")]
     min_confidence: Option<Confidence>,
+
+    /// Project analysis mode. `generic` is opt-in and skips Soroban-only rules;
+    /// `auto` uses generic mode only for plain Rust projects. The effective mode
+    /// is always shown in the report.
+    #[arg(long, value_enum, value_name = "MODE", default_value_t = ModeArg::Soroban)]
+    mode: ModeArg,
+
+    /// Read Cargo target configuration (manifests and `.cargo/config`) and
+    /// filter target-scoped dependencies. Disabled by default; never builds or
+    /// executes the project, and reports unsupported targets clearly.
+    #[arg(long)]
+    target_analysis: bool,
 
     /// Report at most N findings, after sorting. The exit gate still considers
     /// every finding, and the report states how many were omitted.
@@ -730,6 +767,8 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
     if let Some(confidence) = args.min_confidence {
         config.min_confidence = confidence;
     }
+    config.mode = args.mode.into();
+    config.target_analysis |= args.target_analysis;
     config.exclude.extend(args.exclude.iter().cloned());
     config.exclude_tests |= args.exclude_tests;
     config.include_cfg_test |= args.include_cfg_test;
@@ -768,7 +807,8 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
             ));
         }
         let files = read_file_list(list, path)?;
-        let loaded = project::load_files_with_options(path, &files, &config.discovery_options())
+        let loaded = frontend::default_frontend()
+            .load_files(path, &files, &config.discovery_options())
             .map_err(runtime)?;
         engine::scan(&loaded, registry, &config)
     } else if multiple {
@@ -1391,7 +1431,9 @@ fn run_doctor(args: DoctorArgs, registry: &RuleRegistry) -> CliResult<u8> {
         args.path.clone()
     };
     let config = load_config(args.config.as_deref(), &root, !args.no_config)?;
-    let loaded = project::load(&root, &config.discovery_options()).map_err(runtime)?;
+    let loaded = frontend::default_frontend()
+        .load(&root, &config.discovery_options())
+        .map_err(runtime)?;
 
     let root_label = display_root(&root);
     let manifests: Vec<String> = loaded
@@ -1422,6 +1464,8 @@ fn run_doctor(args: DoctorArgs, registry: &RuleRegistry) -> CliResult<u8> {
             let value = serde_json::json!({
                 "root": root_label,
                 "classification": loaded.project.kind.to_string(),
+                "detection": &loaded.project.detection,
+                "target": &loaded.project.target,
                 "manifests": manifests,
                 "classification_evidence": evidence,
                 "source_files": loaded.project.source_files,
@@ -1444,6 +1488,20 @@ fn run_doctor(args: DoctorArgs, registry: &RuleRegistry) -> CliResult<u8> {
             println!("soroban-scan doctor");
             println!("Root: {root_label}");
             println!("Classification: {}", loaded.project.kind);
+            println!(
+                "Detection: {} ({}) -> {}",
+                loaded.project.detection.language,
+                loaded.project.detection.confidence.as_str(),
+                loaded.project.detection.project_type
+            );
+            if let Some(target) = &loaded.project.target {
+                println!(
+                    "Target: {} (wasm32: {}, supported: {})",
+                    target.requested.as_deref().unwrap_or("not configured"),
+                    target.wasm32,
+                    target.supported
+                );
+            }
             println!(
                 "Manifests: {}",
                 if manifests.is_empty() {
@@ -1750,7 +1808,8 @@ fn scan_path(
             .parent()
             .unwrap_or_else(|| Path::new("."))
             .to_path_buf();
-        let loaded = project::load_files_with_options(&root, &[file], &config.discovery_options())
+        let loaded = frontend::default_frontend()
+            .load_files(&root, &[file], &config.discovery_options())
             .map_err(runtime)?;
         Ok(engine::scan(&loaded, registry, config))
     } else {

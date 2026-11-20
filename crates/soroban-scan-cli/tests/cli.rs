@@ -325,6 +325,100 @@ fn doctor_json_is_machine_readable() {
     assert!(!value["enabled_rules"].as_array().unwrap().is_empty());
     assert!(!out.stdout.contains(env!("CARGO_MANIFEST_DIR")));
 }
+
+#[test]
+fn generic_mode_is_opt_in_and_visible_in_output() {
+    let generic = fixture("projects/generic-rust");
+    let out = run(&[
+        "scan",
+        generic.to_str().unwrap(),
+        "--mode",
+        "generic",
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+    let value: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
+    assert_eq!(value["stats"]["mode"], "generic");
+    assert_eq!(value["stats"]["rules_run"], 0);
+    assert!(value["diagnostics"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .any(|diagnostic| diagnostic["code"] == "MODE-001"));
+
+    let default = run(&[
+        "scan",
+        generic.to_str().unwrap(),
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+    ]);
+    let value: serde_json::Value = serde_json::from_str(&default.stdout).unwrap();
+    assert_eq!(value["stats"]["mode"], "soroban");
+    assert_eq!(value["stats"]["rules_run"], 19);
+}
+
+#[test]
+fn target_analysis_is_opt_in_and_reported() {
+    let root = fixture("targets/wasm32");
+    let out = run(&[
+        "scan",
+        root.to_str().unwrap(),
+        "--target-analysis",
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+    let value: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
+    assert_eq!(
+        value["stats"]["target"]["requested"],
+        "wasm32-unknown-unknown"
+    );
+    assert_eq!(value["stats"]["target"]["supported"], true);
+
+    let default = run(&[
+        "scan",
+        root.to_str().unwrap(),
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+    ]);
+    let value: serde_json::Value = serde_json::from_str(&default.stdout).unwrap();
+    assert!(value["stats"].get("target").is_none());
+}
+
+#[test]
+fn detection_manifest_is_exposed_in_json_stats() {
+    let out = run(&[
+        "scan",
+        fixture("detection/rust-soroban").to_str().unwrap(),
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+    let value: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
+    assert_eq!(value["stats"]["detection"]["language"], "rust");
+    assert_eq!(
+        value["stats"]["detection"]["project_type"],
+        "confirmed_soroban"
+    );
+    assert_eq!(value["stats"]["detection"]["confidence"], "strong");
+    assert!(value["stats"]["detection"]["evidence"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .all(|item| item["detail"].as_str().is_some()));
+}
+
 #[test]
 fn scan_help_includes_copy_pasteable_examples() {
     let out = run(&["scan", "--help"]);

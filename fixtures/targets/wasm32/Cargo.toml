@@ -1,0 +1,17 @@
+[package]
+name = "fixture-target-wasm32"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+serde = "1"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+soroban-sdk = "21.0.0"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+soroban-sdk = "20.0.0"

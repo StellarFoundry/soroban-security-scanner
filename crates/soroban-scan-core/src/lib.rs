@@ -23,10 +23,12 @@ pub mod compare;
 pub mod confidence;
 pub mod config;
 pub mod context;
+pub mod detection;
 pub mod discovery;
 pub mod engine;
 pub mod error;
 pub mod finding;
+pub mod frontend;
 pub mod imports;
 pub mod manifest;
 pub mod model;
@@ -40,6 +42,7 @@ pub mod severity;
 pub mod soroban;
 pub mod source;
 pub mod suppression;
+pub mod target;
 
 /// Crate version, sourced from Cargo at compile time.
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

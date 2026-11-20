@@ -25,6 +25,9 @@ pub const DEFAULT_IGNORED_DIRS: &[&str] = &[
     ".cargo",
 ];
 
+/// Maximum size of a Cargo config file read for target analysis (1 MiB).
+pub const MAX_CARGO_CONFIG_BYTES: u64 = 1024 * 1024;
+
 /// Options controlling discovery behavior.
 #[derive(Debug, Clone, Default)]
 pub struct DiscoveryOptions {
@@ -39,6 +42,8 @@ pub struct DiscoveryOptions {
     pub include_cfg_test: bool,
     /// Exclude source files marked as generated instead of marking them.
     pub exclude_generated: bool,
+    /// Read Cargo target configuration and filter target-scoped dependencies.
+    pub target_analysis: bool,
 }
 
 /// Files discovered during a scan.
@@ -203,6 +208,7 @@ mod tests {
             exclude_tests: false,
             include_cfg_test: false,
             exclude_generated: false,
+            target_analysis: false,
         };
         let found = discover(&root, &opts).unwrap();
         assert_eq!(found.rust_files.len(), 1);
@@ -237,6 +243,7 @@ mod tests {
             exclude_tests: false,
             include_cfg_test: false,
             exclude_generated: false,
+            target_analysis: false,
         };
         assert!(matches!(discover(&root, &opts), Err(ScanError::Config(_))));
         let _ = std::fs::remove_dir_all(&root);

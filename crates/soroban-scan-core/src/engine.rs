@@ -13,18 +13,23 @@ use std::time::{Duration, Instant};
 use globset::Glob;
 use serde::Serialize;
 
-use crate::config::{ScanConfig, SuppressionRule, WaiverRule};
+use crate::config::{AnalysisMode, ScanConfig, SuppressionRule, WaiverRule};
 use crate::context::AnalysisContext;
 use crate::error::ScanError;
 use crate::finding::Finding;
-use crate::model::{Diagnostic, DiagnosticCode, Project, ProjectKind, SorobanInfo};
-use crate::project::{self, LoadedProject};
+use crate::frontend::{self, Frontend, LoadedProject};
+use crate::model::{
+    DetectionConfidence, DetectionEvidence, DetectionInfo, Diagnostic, DiagnosticCode, Project,
+    ProjectKind, SorobanInfo, TargetInfo,
+};
 use crate::registry::RuleRegistry;
 use crate::suppression::Suppression;
 
 /// Statistics about a scan.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct ScanStats {
+    /// Effective project analysis mode.
+    pub analysis_mode: AnalysisMode,
     /// Number of rules executed.
     pub rules_run: usize,
     /// Number of rules skipped by configuration.
@@ -652,10 +657,35 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
             .map(|manifest| normalize_rel(&ctx.relative_path(&manifest.path))),
     );
 
+    let analysis_mode = match config.mode {
+        AnalysisMode::Auto if loaded.project.kind == ProjectKind::GenericRust => {
+            AnalysisMode::Generic
+        }
+        AnalysisMode::Auto => AnalysisMode::Soroban,
+        mode => mode,
+    };
+    let soroban_only_rules = registry
+        .rules()
+        .iter()
+        .filter(|rule| rule.soroban_only())
+        .count();
+
     let mut diagnostics = loaded.project.diagnostics.clone();
     diagnostics.extend(override_diagnostics(config, registry));
+    if analysis_mode == AnalysisMode::Generic {
+        diagnostics.push(Diagnostic::info(
+            DiagnosticCode::GenericMode,
+            format!(
+                "generic mode: {soroban_only_rules} Soroban-only rule(s) disabled; \
+                 project classified as {}",
+                loaded.project.kind
+            ),
+            None,
+        ));
+    }
     let mut findings: Vec<Finding> = Vec::new();
     let mut stats = ScanStats {
+        analysis_mode,
         files_analyzed: loaded.sources.len(),
         files_parsed: loaded
             .sources
@@ -689,6 +719,10 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
     for rule in rules {
         let meta = rule.metadata();
         if !rule.enabled_by_default() || !config.rules.is_rule_enabled(meta.id, meta.category) {
+            stats.rules_skipped += 1;
+            continue;
+        }
+        if analysis_mode == AnalysisMode::Generic && rule.soroban_only() {
             stats.rules_skipped += 1;
             continue;
         }
@@ -987,13 +1021,23 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
     }
 }
 
-/// Loads and scans a directory in one step.
+/// Loads and scans a directory in one step through the default Rust frontend.
 pub fn run_scan(
     root: &Path,
     config: &ScanConfig,
     registry: &RuleRegistry,
 ) -> Result<ScanOutcome, ScanError> {
-    let loaded = project::load(root, &config.discovery_options())?;
+    run_scan_with_frontend(root, config, registry, &frontend::default_frontend())
+}
+
+/// Loads and scans a directory through an explicit frontend.
+pub fn run_scan_with_frontend(
+    root: &Path,
+    config: &ScanConfig,
+    registry: &RuleRegistry,
+    frontend: &dyn Frontend,
+) -> Result<ScanOutcome, ScanError> {
+    let loaded = frontend.load(root, &config.discovery_options())?;
     Ok(scan(&loaded, registry, config))
 }
 
@@ -1051,6 +1095,11 @@ pub fn merge(outcomes: Vec<ScanOutcome>, labels: &[String]) -> ScanOutcome {
         suppressed.append(&mut outcome.suppressed);
         config_suppressions.append(&mut outcome.config_suppressions);
         waivers.append(&mut outcome.waivers);
+        stats.analysis_mode = if projects.is_empty() {
+            outcome.stats.analysis_mode
+        } else {
+            merge_analysis_mode(stats.analysis_mode, outcome.stats.analysis_mode)
+        };
         merge_stats(&mut stats, &outcome.stats);
         for timing in &outcome.rule_timings {
             let entry = timings
@@ -1101,6 +1150,15 @@ pub fn merge(outcomes: Vec<ScanOutcome>, labels: &[String]) -> ScanOutcome {
         waivers: merge_waiver_reports(waivers),
         truncation: None,
         rule_timings,
+    }
+}
+
+/// Keeps the Soroban rule set when roots requested different effective modes.
+fn merge_analysis_mode(a: AnalysisMode, b: AnalysisMode) -> AnalysisMode {
+    if a == AnalysisMode::Soroban || b == AnalysisMode::Soroban {
+        AnalysisMode::Soroban
+    } else {
+        AnalysisMode::Generic
     }
 }
 
@@ -1257,13 +1315,17 @@ fn merge_projects(projects: Vec<Project>) -> Project {
     let mut manifests = Vec::new();
     let mut diagnostics = Vec::new();
     let mut soroban = SorobanInfo::default();
+    let mut target: Option<TargetInfo> = None;
+    let mut detections = Vec::new();
     let mut source_files = 0usize;
 
     for project in projects {
+        detections.push(project.detection);
         if kind_rank(project.kind) > kind_rank(kind) {
             kind = project.kind;
         }
         source_files += project.source_files;
+        target = merge_targets(target, project.target);
         soroban.has_sdk_dependency |= project.soroban.has_sdk_dependency;
         soroban.contract_macros_found |= project.soroban.contract_macros_found;
         for version in project.soroban.sdk_versions {
@@ -1287,8 +1349,99 @@ fn merge_projects(projects: Vec<Project>) -> Project {
         kind,
         manifests,
         soroban,
+        target,
+        detection: merge_detections(detections, kind),
         source_files,
         diagnostics,
+    }
+}
+
+/// Combines per-root detection evidence; an unknown root keeps the result weak.
+fn merge_detections(detections: Vec<DetectionInfo>, kind: ProjectKind) -> DetectionInfo {
+    if detections.is_empty() {
+        return DetectionInfo::default();
+    }
+    let mut evidence = Vec::new();
+    let mut seen = BTreeSet::new();
+    for detection in &detections {
+        for item in &detection.evidence {
+            if seen.insert((item.kind.clone(), item.path.clone(), item.detail.clone())) {
+                evidence.push(item.clone());
+            }
+        }
+    }
+    evidence.sort_by(|a, b| {
+        (a.kind.as_str(), a.path.as_deref(), a.detail.as_str()).cmp(&(
+            b.kind.as_str(),
+            b.path.as_deref(),
+            b.detail.as_str(),
+        ))
+    });
+    if evidence.len() > crate::detection::MAX_DETECTION_EVIDENCE {
+        evidence.truncate(crate::detection::MAX_DETECTION_EVIDENCE - 1);
+        evidence.push(DetectionEvidence {
+            kind: "limit".to_string(),
+            path: None,
+            detail: format!(
+                "additional evidence omitted (limit {})",
+                crate::detection::MAX_DETECTION_EVIDENCE
+            ),
+        });
+    }
+
+    let language = if detections
+        .iter()
+        .any(|detection| detection.language == crate::frontend::RUST_LANGUAGE)
+    {
+        crate::frontend::RUST_LANGUAGE
+    } else {
+        "unknown"
+    };
+    let confidence = if detections
+        .iter()
+        .all(|detection| detection.confidence == DetectionConfidence::Strong)
+    {
+        DetectionConfidence::Strong
+    } else {
+        DetectionConfidence::Weak
+    };
+    DetectionInfo {
+        frontend: if language == crate::frontend::RUST_LANGUAGE {
+            crate::frontend::RUST_LANGUAGE.to_string()
+        } else {
+            "unknown".to_string()
+        },
+        language: language.to_string(),
+        project_type: if language == crate::frontend::RUST_LANGUAGE {
+            kind.as_str().to_string()
+        } else {
+            "unknown".to_string()
+        },
+        confidence,
+        evidence,
+    }
+}
+
+/// Combines per-root target metadata; any unsupported target stays visible.
+fn merge_targets(left: Option<TargetInfo>, right: Option<TargetInfo>) -> Option<TargetInfo> {
+    match (left, right) {
+        (None, right) => right,
+        (left, None) => left,
+        (Some(mut left), Some(right)) => {
+            left.requested = left.requested.or(right.requested);
+            left.wasm32 |= right.wasm32;
+            left.supported &= right.supported;
+            left.crate_types.extend(right.crate_types);
+            left.crate_types.sort();
+            left.crate_types.dedup();
+            left.targets.extend(right.targets);
+            left.targets.sort();
+            left.targets.dedup();
+            left.evidence.extend(right.evidence);
+            left.evidence.sort();
+            left.evidence.dedup();
+            Some(left)
+        }
     }
 }
 
@@ -1362,12 +1515,15 @@ pub fn synthetic_loaded_with_options(
         crate::soroban::note_contract_definition(&mut info, location);
     }
     let kind = crate::soroban::classify(&info);
+    let detection = crate::detection::detect(&root, &[], std::slice::from_ref(&parsed), &info, 1);
 
     let project = Project {
         root,
         kind,
         manifests: Vec::new(),
         soroban: info,
+        target: None,
+        detection,
         source_files: 1,
         diagnostics,
     };
@@ -1433,11 +1589,15 @@ pub fn scan_manifest_str(
     let manifest = crate::manifest::parse_manifest(Path::new(file_name), content)?;
     let manifests = vec![manifest];
     let soroban = crate::soroban::analyze_manifests(&manifests);
+    let root = PathBuf::from(".");
+    let detection = crate::detection::detect(&root, &manifests, &[], &soroban, 0);
     let project = Project {
-        root: PathBuf::from("."),
+        root,
         kind: crate::soroban::classify(&soroban),
         manifests,
         soroban,
+        target: None,
+        detection,
         source_files: 0,
         diagnostics: Vec::new(),
     };
@@ -1455,6 +1615,7 @@ mod tests {
     use crate::category::Category;
     use crate::confidence::Confidence;
     use crate::finding::SourceLocation;
+    use crate::project;
     use crate::rule::{Rule, RuleMetadata};
     use crate::severity::Severity;
     use std::path::PathBuf;

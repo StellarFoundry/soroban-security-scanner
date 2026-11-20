@@ -90,6 +90,35 @@ impl RulesConfig {
     }
 }
 
+/// Project analysis mode.
+///
+/// The default preserves the Soroban rule set. `Generic` is opt-in and skips
+/// rules that only make sense for Soroban contracts; `Auto` selects `Generic`
+/// only when the project is classified as plain Rust. The effective mode is
+/// always reported, so switching modes never silently changes behavior.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AnalysisMode {
+    /// Run the Soroban rule set (default).
+    #[default]
+    Soroban,
+    /// Skip Soroban-only rules for a generic Rust project.
+    Generic,
+    /// Use `Generic` for plain Rust projects and `Soroban` otherwise.
+    Auto,
+}
+
+impl AnalysisMode {
+    /// Stable lowercase name used in reports.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            AnalysisMode::Soroban => "soroban",
+            AnalysisMode::Generic => "generic",
+            AnalysisMode::Auto => "auto",
+        }
+    }
+}
+
 /// Literal that matches every rule in a configured suppression.
 pub const ALL_SUPPRESSION_RULES: &str = "all";
 
@@ -292,6 +321,11 @@ pub struct ScanConfig {
     pub min_severity: Severity,
     /// Minimum confidence to report.
     pub min_confidence: Confidence,
+    /// Project analysis mode. Defaults to the Soroban rule set.
+    pub mode: AnalysisMode,
+    /// Read Cargo target configuration and adjust and filter target-scoped
+    /// dependencies. Disabled by default; never builds or executes the project.
+    pub target_analysis: bool,
     /// Glob patterns (relative to the scan root) to exclude from discovery.
     pub exclude: Vec<String>,
     /// Skip items gated behind `#[cfg(test)]` and test directories.
@@ -323,6 +357,8 @@ impl Default for ScanConfig {
         ScanConfig {
             min_severity: Severity::Info,
             min_confidence: Confidence::Low,
+            mode: AnalysisMode::Soroban,
+            target_analysis: false,
             exclude: Vec::new(),
             exclude_tests: false,
             include_cfg_test: false,
@@ -347,6 +383,7 @@ impl ScanConfig {
             exclude_tests: self.exclude_tests,
             include_cfg_test: self.include_cfg_test,
             exclude_generated: self.exclude_generated,
+            target_analysis: self.target_analysis,
         }
     }
 
