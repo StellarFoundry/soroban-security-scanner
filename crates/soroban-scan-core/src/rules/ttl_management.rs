@@ -30,6 +30,7 @@ time-to-live with `storage().persistent().extend_ttl(...)` after the write. \
 Prefer a single, well-documented TTL policy for the contract. If TTL is managed \
 centrally, suppress this rule for the function.",
     references: &["https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"],
+    deprecated: false,
 };
 
 /// Detects persistent writes without TTL management in the same entry point.

@@ -27,6 +27,7 @@ parameters, and validate them against stored configuration. If an address must \
 be a compile-time constant, document the operational plan for rotation and key \
 compromise.",
     references: &["https://developers.stellar.org/docs/learn/encyclopedia/security"],
+    deprecated: false,
 };
 
 /// Detects hardcoded Stellar strkeys in contract source.

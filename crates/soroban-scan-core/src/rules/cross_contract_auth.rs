@@ -31,6 +31,7 @@ invoking another contract on the contract's behalf, and bind the approval to the
 specific arguments of the operation. Verify that any address used to construct \
 the client is the expected contract.",
     references: &["https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"],
+    deprecated: false,
 };
 
 /// Detects unauthenticated cross-contract calls from entry points.

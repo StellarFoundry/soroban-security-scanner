@@ -28,6 +28,7 @@ scale. Constant configuration is a better fit for instance storage.",
     remediation: "Keep instance storage for small, fixed configuration. Store \
 growing collections in persistent storage, and bound their size explicitly.",
     references: &["https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"],
+    deprecated: false,
 };
 
 /// Detects repeated instance-storage keys and collection growth.

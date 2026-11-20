@@ -37,7 +37,9 @@ can classify or suppress them without parsing the human-readable message.
 | `CONFIG-002` | warning | A configured suppression is invalid and was not applied. |
 | `CONFIG-003` | error | A configured waiver has expired; it no longer suppresses findings and the run fails unless `--fail-on none` is set. |
 | `CONFIG-004` | error | A configured waiver is invalid (missing owner, reason, or valid expiry) and was not applied. |
+| `CONFIG-005` | warning | Configuration references a deprecated rule. The rule is skipped by default but the id remains resolvable during the deprecation window. |
 | `BASELINE-001` | warning | A baseline references a rule id that is no longer registered; the entry remains forward compatible. |
+| `BASELINE-002` | warning | A baseline references a deprecated rule. The id remains resolvable; refresh the baseline to drop stale entries. |
 | `AI-001` | warning | The optional assistance layer reached its configured request budget; the scan continued without further AI calls. |
 | `AI-002` | warning | Repeated provider failures opened the assistance circuit breaker; the scan continued without further AI calls. |
 | `MODE-001` | info | Generic mode is active; Soroban-only rules were skipped. The diagnostic names the project classification and how many rules were disabled. |

@@ -25,6 +25,12 @@ pub struct RuleMetadata {
     pub remediation: &'static str,
     /// External references.
     pub references: &'static [&'static str],
+    /// Whether the rule is deprecated.
+    ///
+    /// A deprecated rule keeps its stable id and metadata so existing baselines
+    /// and configuration stay resolvable, but it is excluded from default
+    /// execution. See `docs/rules/deprecation.md` for the lifecycle.
+    pub deprecated: bool,
 }
 
 impl RuleMetadata {
@@ -47,6 +53,7 @@ impl RuleMetadata {
             default_confidence,
             remediation,
             references: &[],
+            deprecated: false,
         }
     }
 
@@ -54,6 +61,20 @@ impl RuleMetadata {
     pub fn with_references(mut self, references: &'static [&'static str]) -> Self {
         self.references = references;
         self
+    }
+
+    /// Marks the rule as deprecated.
+    ///
+    /// Deprecated rules keep their id so baselines and configuration remain
+    /// resolvable, but they are skipped unless explicitly re-enabled.
+    pub fn with_deprecated(mut self, deprecated: bool) -> Self {
+        self.deprecated = deprecated;
+        self
+    }
+
+    /// Whether this rule is deprecated.
+    pub fn is_deprecated(&self) -> bool {
+        self.deprecated
     }
 }
 
@@ -69,9 +90,12 @@ pub trait Rule: Send + Sync {
     /// Analyzes the context, appending findings.
     fn analyze(&self, ctx: &AnalysisContext<'_>, out: &mut Vec<Finding>);
 
-    /// Whether the rule is enabled by default. Defaults to `true`.
+    /// Whether the rule is enabled by default.
+    ///
+    /// Deprecated rules are skipped by default. Override this only for rules
+    /// that are intentionally opt-in for another reason.
     fn enabled_by_default(&self) -> bool {
-        true
+        !self.metadata().is_deprecated()
     }
 
     /// Whether the rule only makes sense for Soroban projects.
@@ -103,5 +127,35 @@ mod tests {
         assert_eq!(meta.id, "SS-999");
         assert_eq!(meta.references.len(), 1);
         assert_eq!(meta.default_confidence, Confidence::Medium);
+        assert!(!meta.is_deprecated());
+    }
+
+    #[test]
+    fn deprecated_metadata_is_flagged_and_opt_out_of_default_execution() {
+        struct DeprecatedRule {
+            meta: RuleMetadata,
+        }
+
+        impl Rule for DeprecatedRule {
+            fn metadata(&self) -> &RuleMetadata {
+                &self.meta
+            }
+            fn analyze(&self, _ctx: &AnalysisContext<'_>, _out: &mut Vec<Finding>) {}
+        }
+
+        let rule = DeprecatedRule {
+            meta: RuleMetadata::new(
+                "SS-999",
+                "Retired",
+                "desc",
+                Category::Authorization,
+                Severity::Low,
+                Confidence::Low,
+                "upgrade",
+            )
+            .with_deprecated(true),
+        };
+        assert!(rule.metadata().is_deprecated());
+        assert!(!rule.enabled_by_default());
     }
 }

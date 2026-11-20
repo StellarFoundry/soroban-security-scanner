@@ -31,6 +31,7 @@ pub mod finding;
 pub mod frontend;
 pub mod imports;
 pub mod manifest;
+pub mod metrics;
 pub mod model;
 pub mod project;
 pub mod redaction;

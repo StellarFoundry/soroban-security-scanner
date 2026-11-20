@@ -17,6 +17,9 @@ Start here.
 - [Rules](rules/README.md) — severity, confidence, and the built-in detectors.
 - [Analysis Methodology](analysis-methodology.md) — what static analysis can and cannot prove.
 - [Baselines](baselines.md) - track new vs. known findings.
+- [Scan metrics](metrics.md) - opt-in Prometheus counters and histograms.
+- [Operations runbook](operations-runbook.md) - health checks, logs, metrics, backlog, rollback, escalation, and retention.
+- [Reproducible build verification](reproducible-builds.md) - rebuild and compare a release binary.
 - [Policy and Reporting](policy.md) - policy schema, precedence, waivers, and report formats.
 - [Report Retention](retention.md) - deterministic artifact names and retention guidance.
 - [GitHub Integration](github-integration.md) — Action, SARIF, PR scanning.
@@ -39,6 +42,7 @@ Start here.
 - [Testing](development/testing.md)
 - [Benchmarks](development/benchmarks.md)
 - [Writing Rules](contributors/writing-rules.md)
+- [Rule deprecation](rules/deprecation.md)
 - [Adding a Language Frontend](contributors/adding-a-frontend.md) - experimental until reviewed.
 - [Rule Template](rules/TEMPLATE.md)
 - [Contributor Roadmap](contributors/roadmap.md)

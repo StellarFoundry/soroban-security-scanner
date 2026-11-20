@@ -26,6 +26,7 @@ is enforced by the `api_stability` integration test.
   `unsupported` (bounded `SYNTAX-001` diagnostics for other languages).
 - `imports` (best-effort, per-file `use` resolution), `ai`, `baseline`,
   `compare`, `context`, `error`, and `redaction` support modules.
+- `metrics` (opt-in, presentation-only scan metrics with a bounded shape).
 - The `analysis`/pipeline implementation details and any `pub(crate)` item.
 - Internal utility modules (`rules::util`, `test_support`).
 

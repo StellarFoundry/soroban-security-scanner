@@ -63,6 +63,7 @@ roots in one run.
 | `--quiet`, `-q` | Compact output; suppresses the header. |
 | `--verbose`, `-v` | Include diagnostics (see [diagnostics.md](diagnostics.md)). |
 | `--timings` | Print per-rule wall-clock time to stderr. Presentation-only: never appears in JSON/SARIF/Markdown/GitHub output and never changes findings, ordering, fingerprints or the exit gate. |
+| `--metrics` | Print bounded metrics to stderr in Prometheus text format (see [metrics.md](metrics.md)). Opt-in and presentation-only; never changes findings or the exit code. |
 | `--log-level <off\|error\|warn\|info\|debug>` | Emit structured JSON log lines to stderr (default `off`). Stdout stays reserved for the report; logs never include source text, environment values, or absolute home paths. |
 | `--pager <auto\|never\|always>` | Page long terminal reports through `$PAGER` (default `auto`); never affects JSON/SARIF/Markdown/GitHub output. |
 | `--color <auto\|always\|never>` | Colorize terminal output (default `auto`). Machine formats never contain ANSI escapes. |
@@ -172,6 +173,16 @@ The status is `completed`, `timed_out` (the rule exceeded
 `rules.time_budget_ms`), or `panicked` (isolated by the engine). Timings are
 wall-clock measurements, so they intentionally never enter machine-readable
 reports; the scan report is byte-identical with or without the flag.
+
+### Scan metrics
+
+`--metrics` writes a Prometheus text snapshot to stderr. It contains only
+counters and fixed-bucket duration histograms, with rule ids and timing status
+as the only labels. Project names, paths, source text, and secrets are never
+included, so cardinality is bounded by the rule set. The scan report is
+byte-identical with or without the flag. See [metrics.md](metrics.md) for the
+metric names and [operations-runbook.md](operations-runbook.md) for how to use
+them during an incident.
 
 ### Inline suppressions
 

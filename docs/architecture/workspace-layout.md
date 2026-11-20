@@ -90,6 +90,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `suppression` | Inline `ignore` directives and source ranges. | `finding`-adjacent data only. |
 | `baseline` | Fingerprint baselines, JSON/TOML parsing, merge/prune, unknown-rule diagnostics. | `error`, `finding`, `model`, `registry`, `severity`. |
 | `report` | Terminal, JSON, SARIF, Markdown, HTML, and GitHub renderers. | `config`, `engine`, `finding`, `model`, `registry`, `rule`, `severity`. |
+| `metrics` | Opt-in, bounded scan metrics for Prometheus text output; never part of the deterministic reports. | `engine`. |
 | `redaction` | Opt-in hashing of selected report fields at render time; fingerprints stay intact. | `baseline`, `engine`, `finding`. |
 | `ai` | Optional, advisory assistance; deterministic engine remains authoritative. | `category`, `finding`, `rule`, `severity`. |
 

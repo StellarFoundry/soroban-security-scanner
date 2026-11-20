@@ -22,6 +22,7 @@ use soroban_scan_core::confidence::Confidence;
 use soroban_scan_core::config::{AnalysisMode, ScanConfig};
 use soroban_scan_core::engine;
 use soroban_scan_core::frontend::{self, Frontend};
+use soroban_scan_core::metrics;
 use soroban_scan_core::model::DiagnosticCode;
 use soroban_scan_core::redaction;
 use soroban_scan_core::registry::RuleRegistry;
@@ -496,6 +497,14 @@ struct ScanArgs {
     #[arg(long)]
     timings: bool,
 
+    /// Print bounded scan metrics to stderr in Prometheus text format.
+    ///
+    /// Disabled by default. Metrics contain only counts and timing histograms;
+    /// they never include project names, paths, source text, or secrets, and
+    /// they never change findings, ordering, fingerprints, or the exit gate.
+    #[arg(long)]
+    metrics: bool,
+
     /// Emit structured JSON log lines to stderr. Disabled by default; stdout is
     /// reserved for the report. Logs never include source text or secrets.
     #[arg(long, value_enum, default_value_t = LogLevelArg::Off)]
@@ -884,7 +893,7 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
         let baseline = Baseline::merge(&baselines);
         outcome
             .diagnostics
-            .extend(baseline.unknown_rule_diagnostics(registry));
+            .extend(baseline.rule_status_diagnostics(registry));
         let comparison = baseline::compare(&outcome.findings, &baseline);
         let resolved = if args.incremental {
             0
@@ -1022,6 +1031,12 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
                 timing.status.as_str()
             );
         }
+    }
+
+    if args.metrics {
+        // Metrics are opt-in and presentation-only. They go to stderr so stdout
+        // stays reserved for the report, matching `--timings`.
+        eprint!("{}", metrics::snapshot(&outcome).to_prometheus());
     }
 
     if args.guidance {

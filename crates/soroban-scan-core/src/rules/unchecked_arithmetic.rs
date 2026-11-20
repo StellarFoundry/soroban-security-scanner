@@ -32,6 +32,7 @@ operations for balances, amounts, and counters derived from user input.",
         "https://doc.rust-lang.org/reference/expressions/operator-expr.html#overflow",
         "https://developers.stellar.org/docs",
     ],
+    deprecated: false,
 };
 
 /// Detects unchecked binary arithmetic inside contract entry points.

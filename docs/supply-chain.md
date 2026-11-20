@@ -5,6 +5,9 @@ download, and how dependencies are controlled. It separates what exists today
 from what does **not** exist, so a missing signature is not mistaken for an
 oversight in the instructions.
 
+To corroborate a published binary against the source, follow
+[reproducible build verification](reproducible-builds.md).
+
 ## What a release publishes
 
 The release workflow in

@@ -38,6 +38,7 @@ imports should likewise name each item instead of ending in `*`.",
         "https://doc.rust-lang.org/book/ch07-04-bringing-paths-into-scope-with-the-use-keyword.html",
         "https://developers.stellar.org/docs",
     ],
+    deprecated: false,
 };
 
 /// Detects wildcard imports rooted at `soroban_sdk`.
