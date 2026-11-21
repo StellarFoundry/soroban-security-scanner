@@ -6,6 +6,10 @@
 
 use libfuzzer_sys::fuzz_target;
 
+use soroban_scan_core::config::ScanConfig;
+use soroban_scan_core::engine;
+use soroban_scan_core::registry::RuleRegistry;
+
 const MAX_INPUT_BYTES: usize = 64 * 1024;
 
 fuzz_target!(|data: &[u8]| {
@@ -15,9 +19,8 @@ fuzz_target!(|data: &[u8]| {
     let Ok(source) = std::str::from_utf8(data) else {
         return;
     };
-    let Ok(parsed) = CRATE::PARSE_FN(source) else {
-        return;
-    };
+    let registry = RuleRegistry::with_default_rules();
+    let config = ScanConfig::default();
     // Output ignored on purpose: this target never constructs findings or edges.
-    let _ = CRATE::RULES_FN(&parsed);
+    let _ = engine::scan_source_str(source, "fuzz.rs", &config, &registry);
 });
