@@ -10,7 +10,17 @@ GitHub CLI (`gh api`) and therefore need network access and a workflow token.
 | `check_run.py` | Create a check run with inline annotations from a JSON report. | `checks: write` |
 
 Both scripts never print or persist the token; `gh` reads it from `GH_TOKEN`.
-They support `--dry-run` for local inspection. Run the tests with:
+They support `--dry-run` for local inspection.
+
+`github_api.py` is the shared `gh api` wrapper. It reads an installation with
+`get_installation` when a GitHub App caller needs the installation id (the
+workflows use `GITHUB_TOKEN` and do not). Read-only requests retry transient
+failures (HTTP 429/5xx, timeouts, connection resets) up to three attempts.
+Mutating requests are never retried, because GitHub does not deduplicate
+comment or check-run creation.
+
+Tests use a deterministic in-memory mock instead of `gh`; they need no token
+and make no network calls. Run them with:
 
 ```bash
 python -m unittest discover -s tests/github -v
