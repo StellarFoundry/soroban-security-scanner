@@ -98,7 +98,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `api_auth` | Framework-independent bearer token parsing and verification for API integrations. | Nothing in the crate. |
 | `corpus` | Read-only detector fixture, documentation, and must-trigger coverage reporting. | `registry`. |
 | `telemetry` | Opt-in, bounded telemetry and crash-event payloads with no source text or paths. | `config`, `engine`, `error`, `model`, `severity`. |
-| `service` | In-process, bounded job storage for an embedding service. No listener or network access. | `error`. |
+| `service` | Transport-agnostic scan API adapter and bounded job storage for an embedding service. No listener or network access. | `api_auth`, `config`, `engine`, `error`, `registry`, `report`. |
 
 ## Subsystem submodules
 
@@ -107,6 +107,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `ai::cache` | Bounded, deterministic LRU cache for advisory assistance. |
 | `ai::http` | Opt-in provider transport; compiled only with the `ai-http` feature. |
 | `ai::redaction` | Deterministic redaction of credential-like text before assistance. |
+| `service::api` | Transport-independent request/response mapping, bearer checks, and a synchronous worker hook. |
 | `service::jobs` | Thread-safe job lifecycle, count and payload caps, and terminal-job retention. |
 | `report` | Single renderer module (`report::render`, `render_*` helpers). |
 | `rules::*` | One module per detector (for example `rules::missing_authorization`), plus `rules::util` for shared syntax helpers and `rules::validation` for metadata/docs checks. |

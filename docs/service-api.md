@@ -8,13 +8,43 @@ and worker loop.
 
 ## What exists
 
+- A transport-agnostic API adapter (`service::api`) that maps plain request and
+  response values to a job lifecycle.
 - A bounded job store (`service::jobs`) with fixed caps on job count, payload
   size, report size, and retention.
 - Bearer authentication for API adapters (`api_auth`), independent of any web
   framework.
 
 No HTTP listener, queue daemon, database, or remote worker exists in this
-repository.
+repository. Passing `ApiRequest` values to `ScanApi::handle` and writing the
+returned `ApiResponse` is the caller's transport job.
+
+## API surface
+
+| Method and path | Behavior |
+| --------------- | -------- |
+| `POST /v1/scans` | Accepts `{"source": "...", "file": "lib.rs"}`. `file` defaults to `input.rs` and must be a plain `.rs` name. Returns `202` with `job_id` and `status: "queued"`. |
+| `GET /v1/jobs/{id}` | Returns `202` while queued or running, then `200` with either `report` (completed) or a structured `error` (failed). |
+
+Every request is authenticated first. Missing or wrong credentials return
+`401` with `{"error":{"code":"unauthorized",...}}`; an API without a configured
+token fails closed with `503 authentication_not_configured`. Unknown routes
+return `404 not_found`.
+
+Work is not executed on submission. An embedding worker calls
+`ScanApi::run_next()` to process the oldest queued job synchronously and
+repeatedly. This keeps the adapter free of threads, timers, and background
+state the caller did not ask for.
+
+Submission errors:
+
+| Status | Code | Cause |
+| ------ | ---- | ----- |
+| `400` | `invalid_request` | Body is not UTF-8 JSON, the schema is wrong, or `file` is unsafe. |
+| `413` | `payload_too_large` | Body or source exceeds the job payload cap. |
+| `503` | `store_full` | The bounded store is at `max_jobs`. |
+
+The API response never echoes the bearer token or the submitted source.
 
 ## Bounds
 
@@ -82,10 +112,13 @@ store.complete(&id, report_json)?;
 
 The module includes a load-style test that submits 1,000 jobs, verifies the cap
 holds for another 1,000 submissions, and checks that every retained job keeps
-its state. Run it with:
+its state. The API end-to-end suite submits a real fixture, polls the job,
+validates the report, and covers authentication and oversized-input failures.
+Everything runs offline.
 
 ```bash
-cargo test -p soroban-scan-core --lib service::jobs
+cargo test -p soroban-scan-core --lib service::
+cargo test -p soroban-scan-core --test api_e2e
 ```
 
 ## Related
