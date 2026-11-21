@@ -17,6 +17,7 @@ use crate::config::{AnalysisMode, ScanConfig, SuppressionRule, WaiverRule};
 use crate::context::AnalysisContext;
 use crate::error::ScanError;
 use crate::finding::Finding;
+use crate::fingerprint::FingerprintStrategy;
 use crate::frontend::{self, Frontend, LoadedProject};
 use crate::model::{
     DetectionConfidence, DetectionEvidence, DetectionInfo, Diagnostic, DiagnosticCode, Project,
@@ -281,8 +282,8 @@ pub struct ConfigSuppressionReport {
 
 /// A finding excluded from the gate by an inline suppression directive.
 ///
-/// Suppressed findings are still reported — with the directive and the reason
-/// that suppressed them — so a suppression can never hide a finding silently.
+/// Suppressed findings are still reported â€” with the directive and the reason
+/// that suppressed them â€” so a suppression can never hide a finding silently.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct SuppressedFinding {
     /// The suppressed finding, serialized inline.
@@ -834,7 +835,7 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
             return false;
         }
 
-        finding.refresh_fingerprint();
+        finding.refresh_fingerprint_with(config.fingerprint);
         finding.severity.meets(config.min_severity) && finding.confidence >= config.min_confidence
     });
 
@@ -1071,10 +1072,10 @@ pub fn merge(outcomes: Vec<ScanOutcome>, labels: &[String]) -> ScanOutcome {
     for (mut outcome, label) in outcomes.into_iter().zip(labels.iter()) {
         if let Some(prefix) = prefix_for(label) {
             for finding in &mut outcome.findings {
-                prepend_location(finding, &prefix);
+                prepend_location(finding, &prefix, config.fingerprint);
             }
             for entry in &mut outcome.suppressed {
-                prepend_location(&mut entry.finding, &prefix);
+                prepend_location(&mut entry.finding, &prefix, config.fingerprint);
                 entry.suppression.file = prefix_path(&entry.suppression.file, &prefix);
             }
             for suppression in &mut outcome.suppressions {
@@ -1195,10 +1196,10 @@ fn prefix_path(path: &str, prefix: &str) -> String {
 }
 
 /// Rewrites a finding's location to sit under `prefix` and refreshes its hash.
-fn prepend_location(finding: &mut Finding, prefix: &str) {
+fn prepend_location(finding: &mut Finding, prefix: &str, strategy: FingerprintStrategy) {
     let file = finding.location.file.to_string_lossy().into_owned();
     finding.location.file = PathBuf::from(prefix_path(&file, prefix));
-    finding.refresh_fingerprint();
+    finding.refresh_fingerprint_with(strategy);
 }
 
 /// Merges identical configured suppression audit entries across roots.

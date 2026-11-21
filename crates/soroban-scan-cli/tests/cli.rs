@@ -359,7 +359,7 @@ fn generic_mode_is_opt_in_and_visible_in_output() {
     ]);
     let value: serde_json::Value = serde_json::from_str(&default.stdout).unwrap();
     assert_eq!(value["stats"]["mode"], "soroban");
-    assert_eq!(value["stats"]["rules_run"], 21);
+    assert_eq!(value["stats"]["rules_run"], 23);
 }
 
 #[test]
@@ -2864,4 +2864,62 @@ fn scan_accepts_allow_unsigned_packs_flag() {
         "--allow-unsigned-packs",
     ]);
     assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+}
+
+#[test]
+fn fingerprint_strategy_changes_fingerprints() {
+    let target = fixture("corpus/SS-032/positive.rs");
+    let default = run(&[
+        "scan",
+        target.to_str().unwrap(),
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(default.code, 0, "stderr: {}", default.stderr);
+    let default: serde_json::Value = serde_json::from_str(&default.stdout).unwrap();
+    let default_findings = default["findings"].as_array().unwrap();
+    assert!(!default_findings.is_empty());
+    let default_fingerprint = default_findings[0]["fingerprint"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    let path_independent = run(&[
+        "scan",
+        target.to_str().unwrap(),
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+        "--fingerprint-strategy",
+        "path-independent",
+    ]);
+    assert_eq!(
+        path_independent.code, 0,
+        "stderr: {}",
+        path_independent.stderr
+    );
+    let path_independent: serde_json::Value =
+        serde_json::from_str(&path_independent.stdout).unwrap();
+    let path_independent_fingerprint = path_independent["findings"][0]["fingerprint"]
+        .as_str()
+        .unwrap();
+    assert_ne!(default_fingerprint, path_independent_fingerprint);
+    assert_eq!(
+        default_findings[0]["rule_id"],
+        path_independent["findings"][0]["rule_id"]
+    );
+
+    let invalid = run(&[
+        "scan",
+        target.to_str().unwrap(),
+        "--fingerprint-strategy",
+        "nope",
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(invalid.code, 2, "stderr: {}", invalid.stderr);
+    assert!(invalid.stderr.contains("unknown fingerprint strategy"));
 }

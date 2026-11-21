@@ -71,7 +71,9 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-018](detectors/SS-018.md) | Unchecked integer cast | medium | low | arithmetic |
 | [SS-029](detectors/SS-029.md) | Public test or debug hook in a contract entry point | medium | medium | access-control |
 | [SS-031](detectors/SS-031.md) | Event topic derived from a caller-controlled parameter | medium | low | events |
+| [SS-032](detectors/SS-032.md) | Redundant require_auth in loop | low | medium | authorization |
 | [SS-033](detectors/SS-033.md) | Wildcard import from the Soroban SDK | low | high | dependencies |
+| [SS-037](detectors/SS-037.md) | Competing authorization calls | medium | low | authorization |
 
 Each detector has a positive and negative fixture under
 `fixtures/corpus/<RULE-ID>/`, plus an adversarial sample and recorded expected

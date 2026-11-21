@@ -127,6 +127,7 @@ max_output_tokens = 1024
 | `suppressions` | array of tables | `[]` | Path- and rule-scoped suppressions (`path`, `rule`, optional `reason`). |
 | `waivers` | array of tables | `[]` | Time-limited suppressions (`path`, `rule`, `owner`, `reason`, `expires`). See [Waivers](cli.md#waivers-with-expiry). |
 | `redact` | array of fields | `[]` | Report fields hashed at render time. See [Report redaction](cli.md#report-redaction). |
+| `fingerprint` | `rule-file-evidence`, `rule-file-line-evidence`, `rule-file-line-column-evidence`, `path-independent` | `rule-file-evidence` | Which fields contribute to a finding fingerprint. The default is backward compatible; changing it invalidates existing baselines. See [Fingerprint strategies](baselines.md#fingerprint-strategies). |
 | `rules.disabled` | array of ids | `[]` | Rules never run. |
 | `rules.enabled` | array of ids | `[]` | If non-empty, the only rules that run. |
 | `rules.disabled_categories` | array of categories | `[]` | Rules in these categories never run. |

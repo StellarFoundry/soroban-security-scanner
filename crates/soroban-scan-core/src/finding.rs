@@ -120,7 +120,18 @@ impl Finding {
 
     /// Recomputes the fingerprint (after mutating location/evidence).
     pub fn refresh_fingerprint(&mut self) {
-        self.fingerprint = fingerprint_of(&self.rule_id, &self.location.file, &self.evidence);
+        self.refresh_fingerprint_with(crate::fingerprint::FingerprintStrategy::default());
+    }
+
+    /// Recomputes the fingerprint using an explicit strategy.
+    pub fn refresh_fingerprint_with(&mut self, strategy: crate::fingerprint::FingerprintStrategy) {
+        self.fingerprint = strategy.compute(
+            &self.rule_id,
+            &self.location.file,
+            self.location.line,
+            self.location.column,
+            &self.evidence,
+        );
     }
 
     /// Deterministic sort key: file, line, column, rule id, fingerprint.
