@@ -17,13 +17,17 @@
 //! keys are rejected immediately.
 
 use std::collections::BTreeMap;
+use std::io::Read;
 use std::path::Path;
 
 use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use serde::{Deserialize, Serialize};
 
+use super::manifest::PackManifest;
+
 /// Maximum allowed pack file size for verification (10 MiB) to prevent DoS.
 pub const MAX_VERIFY_PAYLOAD_SIZE: usize = 10 * 1024 * 1024;
+const MAX_SIGNATURE_FILE_SIZE: usize = 16 * 1024;
 
 /// Supported signature algorithms.
 pub const ALGORITHM_ED25519: &str = "ed25519";
@@ -260,6 +264,9 @@ pub enum PackVerificationError {
     #[error("tampered pack: signature verification failed for key '{0}'")]
     SignatureMismatch(String),
 
+    #[error("invalid pack manifest: {0}")]
+    MalformedManifest(String),
+
     #[error("io error reading pack: {0}")]
     Io(String),
 }
@@ -340,29 +347,55 @@ impl PackVerifier {
         policy: VerificationPolicy,
     ) -> Result<VerificationResult, PackVerificationError> {
         let manifest_path = dir.join("pack.toml");
-        let payload = std::fs::read(&manifest_path).map_err(|e| {
+        let mut manifest_file = std::fs::File::open(&manifest_path).map_err(|error| {
             PackVerificationError::Io(format!(
-                "missing or unreadable pack.toml at {}: {e}",
+                "missing or unreadable pack.toml at {}: {error}",
                 manifest_path.display()
             ))
         })?;
-
+        let mut payload = Vec::new();
+        manifest_file
+            .by_ref()
+            .take((MAX_VERIFY_PAYLOAD_SIZE + 1) as u64)
+            .read_to_end(&mut payload)
+            .map_err(|error| PackVerificationError::Io(error.to_string()))?;
+        if payload.len() > MAX_VERIFY_PAYLOAD_SIZE {
+            return Err(PackVerificationError::PayloadTooLarge(
+                MAX_VERIFY_PAYLOAD_SIZE,
+            ));
+        }
         let sig_path = dir.join("pack.sig");
         let detached_sig = if sig_path.exists() {
-            let sig_text = std::fs::read_to_string(&sig_path).map_err(|e| {
-                PackVerificationError::Io(format!("cannot read {}: {e}", sig_path.display()))
-            })?;
-            Some(DetachedSignature::from_toml(&sig_text).map_err(|e| {
+            let mut signature_file = std::fs::File::open(&sig_path)
+                .map_err(|error| PackVerificationError::Io(error.to_string()))?;
+            let mut signature_payload = Vec::new();
+            signature_file
+                .by_ref()
+                .take((MAX_SIGNATURE_FILE_SIZE + 1) as u64)
+                .read_to_end(&mut signature_payload)
+                .map_err(|error| PackVerificationError::Io(error.to_string()))?;
+            if signature_payload.len() > MAX_SIGNATURE_FILE_SIZE {
+                return Err(PackVerificationError::MalformedSignature(
+                    "signature file exceeds the 16384-byte limit".to_string(),
+                ));
+            }
+            let sig_text = String::from_utf8(signature_payload)
+                .map_err(|error| PackVerificationError::MalformedSignature(error.to_string()))?;
+            Some(DetachedSignature::from_toml(&sig_text).map_err(|error| {
                 PackVerificationError::MalformedSignature(format!(
-                    "invalid TOML in {}: {e}",
+                    "invalid TOML in {}: {error}",
                     sig_path.display()
                 ))
             })?)
         } else {
             None
         };
-
-        Self::verify(&payload, detached_sig.as_ref(), keyring, policy)
+        let verification = Self::verify(&payload, detached_sig.as_ref(), keyring, policy)?;
+        let manifest_text = std::str::from_utf8(&payload)
+            .map_err(|error| PackVerificationError::MalformedManifest(error.to_string()))?;
+        PackManifest::parse_str(manifest_text)
+            .map_err(|error| PackVerificationError::MalformedManifest(error.to_string()))?;
+        Ok(verification)
     }
 }
 
