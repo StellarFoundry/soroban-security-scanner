@@ -123,3 +123,15 @@ why = "Reproduces the documented 'Wildcard import from the Soroban SDK' pattern;
 file = "SS-037.rs"
 why = "Reproduces the documented 'Competing authorization calls' pattern; this sample must always trigger SS-037."
 
+[SS-020]
+file = "SS-020.rs"
+why = "Reproduces the documented 'Unvalidated XDR or bytes deserialization' pattern; this sample must always trigger SS-020."
+
+[SS-022]
+file = "SS-022.rs"
+why = "Reproduces the documented 'Unsafe symbol_short key' pattern; this sample must always trigger SS-022."
+
+[SS-041]
+file = "SS-041.rs"
+why = "Reproduces the documented 'Authorization check inside a loop' pattern; this sample must always trigger SS-041."
+

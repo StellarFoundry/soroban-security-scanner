@@ -156,3 +156,18 @@ why = "Nested for/loop bodies still count as lexically inside a loop, and requir
 file = "SS-037/sample.rs"
 expect = "trigger"
 why = "Parenthesized and borrowed receivers still render as two distinct actors, so the competing-authorization signal is preserved."
+
+[SS-020]
+file = "SS-020/spaced_from_xdr.rs"
+expect = "trigger"
+why = "Whitespace inside the associated deserialization path does not hide caller-derived bytes being decoded without a length or result check."
+
+[SS-022]
+file = "SS-022/spaced_symbol_short.rs"
+expect = "trigger"
+why = "Whitespace between the symbol_short macro name and its delimiter does not hide an overlong short-symbol literal."
+
+[SS-041]
+file = "SS-041/conditional_while.rs"
+expect = "trigger"
+why = "A spaced require_auth nested in an if branch inside a while loop is still a conditional authorization check inside a loop."

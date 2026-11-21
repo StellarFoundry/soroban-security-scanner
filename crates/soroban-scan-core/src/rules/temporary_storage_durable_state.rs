@@ -12,9 +12,7 @@ use crate::finding::Finding;
 use crate::rule::{Rule, RuleMetadata};
 use crate::severity::Severity;
 
-use super::util::{
-    contract_entry_functions, facts_from_block_with_imports, location_for, CallFact,
-};
+use super::util::{contract_entry_functions, location_for, CallFact};
 use crate::source::ParsedSource;
 
 /// Rule metadata.
@@ -77,7 +75,7 @@ impl Rule for TemporaryStorageForDurableState {
                 if !func.is_public {
                     continue;
                 }
-                let facts = facts_from_block_with_imports(func.block, &source.imports);
+                let facts = ctx.facts_for_function(source, &func);
 
                 // `env.storage().temporary().set(key, value)`.
                 for call in &facts.method_calls {

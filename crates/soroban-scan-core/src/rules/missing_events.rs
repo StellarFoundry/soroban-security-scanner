@@ -7,7 +7,7 @@ use crate::finding::Finding;
 use crate::rule::{Rule, RuleMetadata};
 use crate::severity::Severity;
 
-use super::util::{contract_entry_functions, facts_from_block_with_imports, location_for};
+use super::util::{contract_entry_functions, location_for};
 
 /// Storage-key substrings that usually identify privileged configuration.
 pub const PRIVILEGED_KEY_HINTS: &[&str] = &[
@@ -63,7 +63,7 @@ impl Rule for MissingEvents {
                 if !func.is_public {
                     continue;
                 }
-                let facts = facts_from_block_with_imports(func.block, &source.imports);
+                let facts = ctx.facts_for_function(source, &func);
                 let publishes_event = facts.method_calls.iter().any(|call| {
                     call.name == "publish" && call.context.to_ascii_lowercase().contains("event")
                 });

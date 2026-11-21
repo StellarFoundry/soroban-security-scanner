@@ -1,7 +1,5 @@
 //! SS-018: unchecked integer cast.
 
-use std::collections::BTreeMap;
-
 use crate::category::Category;
 use crate::confidence::Confidence;
 use crate::context::AnalysisContext;
@@ -10,7 +8,7 @@ use crate::rule::{Rule, RuleMetadata};
 use crate::severity::Severity;
 
 use super::util::{
-    cast_facts, contract_entry_functions, integer_bit_width, location_for, CastFact, CastOrigin,
+    contract_entry_functions, integer_bit_width, location_for, CastFact, CastOrigin,
 };
 
 /// Rule metadata.
@@ -55,9 +53,7 @@ impl Rule for UncheckedIntegerCast {
                 if !func.is_public {
                     continue;
                 }
-                let param_types: BTreeMap<String, String> =
-                    func.param_types.iter().cloned().collect();
-                for cast in cast_facts(func.block, &param_types) {
+                for cast in ctx.cast_facts_for_function(source, &func).iter() {
                     if let Some(finding) = classify(&cast, &func.name) {
                         let location = location_for(ctx, source, cast.line, cast.column);
                         out.push(Finding::new(&METADATA, location, finding));

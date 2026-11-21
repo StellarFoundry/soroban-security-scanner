@@ -7,7 +7,7 @@ use crate::finding::Finding;
 use crate::rule::{Rule, RuleMetadata};
 use crate::severity::Severity;
 
-use super::util::{contract_entry_functions, facts_from_block_with_imports, location_for};
+use super::util::{contract_entry_functions, location_for};
 
 /// Rule metadata.
 pub const METADATA: RuleMetadata = RuleMetadata {
@@ -54,7 +54,7 @@ impl Rule for UncheckedArithmetic {
                 if !func.is_public {
                     continue;
                 }
-                let facts = facts_from_block_with_imports(func.block, &source.imports);
+                let facts = ctx.facts_for_function(source, &func);
                 // If the entry point already uses explicit overflow-aware
                 // arithmetic anywhere, assume the author is managing it
                 // deliberately and stay quiet to avoid false positives.

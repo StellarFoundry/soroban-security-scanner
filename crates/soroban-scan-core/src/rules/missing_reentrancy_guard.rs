@@ -7,7 +7,7 @@ use crate::finding::Finding;
 use crate::rule::{Rule, RuleMetadata};
 use crate::severity::Severity;
 
-use super::util::{contract_entry_functions, facts_from_block_with_imports, location_for, Facts};
+use super::util::{contract_entry_functions, location_for, Facts};
 
 /// Rule metadata.
 pub const METADATA: RuleMetadata = RuleMetadata {
@@ -52,7 +52,7 @@ impl Rule for MissingReentrancyGuard {
                 if !func.is_public {
                     continue;
                 }
-                let facts = facts_from_block_with_imports(func.block, &source.imports);
+                let facts = ctx.facts_for_function(source, &func);
                 let mutations = facts.storage_mutations();
                 for call in facts.ordered_cross_contract_calls() {
                     let Some(mutation) = mutations
