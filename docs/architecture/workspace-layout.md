@@ -86,6 +86,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `project` | Orchestrates discovery, manifest loading, source parsing, Soroban classification, detection evidence, SDK matrix warnings, and optional target analysis. | `detection`, `discovery`, `error`, `manifest`, `model`, `sdk_matrix`, `soroban`, `source`, `target`, `unsupported`. |
 | `soroban` | Soroban evidence and project classification; never executes contracts. | `model`. |
 | `context` | Read-only `AnalysisContext` passed to rules, with a per-source/per-function memoized fact cache (interior mutability is used only for memoization; results stay deterministic and file-scoped). | `model`, `rules::util`, `source`. |
+| `corpus` | Read-only corpus coverage reporting: per-rule positive/negative fixture counts, documentation, and must-trigger samples. | `registry`. |
 | `rules` | Built-in detectors, rule metadata validation, and shared analysis helpers. | `category`, `confidence`, `context`, `finding`, `rule`, `severity`, `source`. |
 | `engine` | Runs enabled rules, collects/sorts/deduplicates findings, applies suppressions and baselines, and loads projects through the frontend trait. | `config`, `context`, `error`, `finding`, `frontend`, `model`, `registry`, `suppression`. |
 | `suppression` | Inline `ignore` directives and source ranges. | `finding`-adjacent data only. |
@@ -93,6 +94,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `report` | Terminal, JSON, SARIF, Markdown, HTML, and GitHub renderers. | `config`, `engine`, `finding`, `model`, `registry`, `rule`, `severity`. |
 | `redaction` | Opt-in hashing of selected report fields at render time; fingerprints stay intact. | `baseline`, `engine`, `finding`. |
 | `pack` | Rule pack manifest parsing, detached signature verification, keyrings, and rotation/revocation. | `config`, `error`. |
+| `policy` | Versioned policy documents for fail/report thresholds and suppressions; unknown keys are errors. | `confidence`, `config`, `error`, `severity`. |
 | `ai` | Optional, advisory assistance; deterministic engine remains authoritative. | `category`, `finding`, `rule`, `severity`. |
 | `api_auth` | Framework-independent bearer token parsing and verification for API integrations. | Nothing in the crate. |
 

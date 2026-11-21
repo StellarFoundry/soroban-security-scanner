@@ -4501,7 +4501,7 @@
       "title": "Authorization check inside a loop",
       "description": "A contract entry point performs `require_auth` (or `require_auth_for_args`) inside a loop body in a position that does not clearly cover every iteration: the check is conditional, or it runs only after a state-changing operation. A single check in that position can leave later iterations or earlier side effects unauthorized. Unconditional checks at the top of a loop are ambiguous and are deliberately not reported by this rule.",
       "severity": "medium",
-      "confidence": "low",
+      "confidence": "medium",
       "category": "authorization",
       "location": {
         "file": "SS-041/positive.rs",
@@ -4598,7 +4598,7 @@
       "title": "Authorization check inside a loop",
       "description": "A contract entry point performs `require_auth` (or `require_auth_for_args`) inside a loop body in a position that does not clearly cover every iteration: the check is conditional, or it runs only after a state-changing operation. A single check in that position can leave later iterations or earlier side effects unauthorized. Unconditional checks at the top of a loop are ambiguous and are deliberately not reported by this rule.",
       "severity": "medium",
-      "confidence": "low",
+      "confidence": "medium",
       "category": "authorization",
       "location": {
         "file": "SS-041/positive.rs",

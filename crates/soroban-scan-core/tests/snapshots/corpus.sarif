@@ -6377,7 +6377,7 @@
           },
           "properties": {
             "category": "authorization",
-            "confidence": "low",
+            "confidence": "medium",
             "remediation": "Authorize the actor before any state change and outside any conditional branch that can skip iterations, or authorize each distinct actor explicitly for every loop item with `require_auth_for_args`. Document intentional per-item authorization.",
             "severity": "medium"
           },
@@ -6522,7 +6522,7 @@
           },
           "properties": {
             "category": "authorization",
-            "confidence": "low",
+            "confidence": "medium",
             "remediation": "Authorize the actor before any state change and outside any conditional branch that can skip iterations, or authorize each distinct actor explicitly for every loop item with `require_auth_for_args`. Document intentional per-item authorization.",
             "severity": "medium"
           },
@@ -7435,7 +7435,7 @@
               "name": "Authorization check inside a loop",
               "properties": {
                 "category": "authorization",
-                "confidence": "low",
+                "confidence": "medium",
                 "references": [
                   "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
                   "https://developers.stellar.org/docs/learn/encyclopedia/security"

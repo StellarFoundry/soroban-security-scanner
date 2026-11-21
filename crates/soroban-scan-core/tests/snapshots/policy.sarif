@@ -1096,7 +1096,7 @@
               "name": "Authorization check inside a loop",
               "properties": {
                 "category": "authorization",
-                "confidence": "low",
+                "confidence": "medium",
                 "references": [
                   "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
                   "https://developers.stellar.org/docs/learn/encyclopedia/security"

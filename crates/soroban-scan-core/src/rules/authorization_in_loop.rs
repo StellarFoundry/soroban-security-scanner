@@ -25,7 +25,7 @@ iterations or earlier side effects unauthorized. Unconditional checks at the top
 of a loop are ambiguous and are deliberately not reported by this rule.",
     category: Category::Authorization,
     default_severity: Severity::Medium,
-    default_confidence: Confidence::Low,
+    default_confidence: Confidence::Medium,
     remediation: "Authorize the actor before any state change and outside any \
 conditional branch that can skip iterations, or authorize each distinct actor \
 explicitly for every loop item with `require_auth_for_args`. Document intentional \

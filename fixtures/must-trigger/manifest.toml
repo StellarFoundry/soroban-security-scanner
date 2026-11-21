@@ -95,3 +95,43 @@ why = "Reproduces the documented 'Wildcard import from the Soroban SDK' pattern;
 file = "SS-037.rs"
 why = "Reproduces the documented 'Competing authorization calls' pattern; this sample must always trigger SS-037."
 
+[SS-020]
+file = "SS-020.rs"
+why = "Reproduces the documented 'Unvalidated XDR or bytes deserialization' pattern; this sample must always trigger SS-020."
+
+[SS-021]
+file = "SS-021.rs"
+why = "Reproduces the documented 'Durable data written to temporary storage' pattern; this sample must always trigger SS-021."
+
+[SS-022]
+file = "SS-022.rs"
+why = "Reproduces the documented 'Unsafe symbol_short key' pattern; this sample must always trigger SS-022."
+
+[SS-023]
+file = "SS-023.rs"
+why = "Reproduces the documented 'Sensitive-looking data published in events' pattern; this sample must always trigger SS-023."
+
+[SS-025]
+file = "SS-025.rs"
+why = "Reproduces the documented 'Unbounded string/bytes persisted from caller input' pattern; this sample must always trigger SS-025."
+
+[SS-027]
+file = "SS-027.rs"
+why = "Reproduces the documented 'Contract's own address used as an authorization subject' pattern; this sample must always trigger SS-027."
+
+[SS-028]
+file = "SS-028.rs"
+why = "Reproduces the documented 'Cross-contract call without a reentrancy guard' pattern; this sample must always trigger SS-028."
+
+[SS-030]
+file = "SS-030.rs"
+why = "Reproduces the documented 'Token client built from an unvalidated caller address' pattern; this sample must always trigger SS-030."
+
+[SS-035]
+file = "SS-035.rs"
+why = "Reproduces the documented 'Ignored checked-arithmetic result' pattern; this sample must always trigger SS-035."
+
+[SS-041]
+file = "SS-041.rs"
+why = "Reproduces the documented 'Authorization check inside a loop' pattern; this sample must always trigger SS-041."
+
