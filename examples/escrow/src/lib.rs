@@ -110,13 +110,13 @@ impl Escrow {
             .get(&DataKey::Amount)
             .ok_or(EscrowError::NotInitialized)?;
 
-        let client = token::Client::new(&env, &token_id);
-        client.transfer(&buyer, &env.current_contract_address(), &amount);
-
         env.storage().instance().set(&DataKey::Funded, &true);
         env.storage()
             .instance()
             .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
+
+        let client = token::Client::new(&env, &token_id);
+        client.transfer(&buyer, &env.current_contract_address(), &amount);
         Funded { buyer, amount }.publish(&env);
         Ok(())
     }
@@ -164,13 +164,13 @@ impl Escrow {
             .get(&DataKey::Amount)
             .ok_or(EscrowError::NotInitialized)?;
 
-        let client = token::Client::new(&env, &token_id);
-        client.transfer(&env.current_contract_address(), &seller, &amount);
-
         env.storage().instance().set(&DataKey::Released, &true);
         env.storage()
             .instance()
             .extend_ttl(INSTANCE_LIFETIME_THRESHOLD, INSTANCE_BUMP_AMOUNT);
+
+        let client = token::Client::new(&env, &token_id);
+        client.transfer(&env.current_contract_address(), &seller, &amount);
         Released { seller, amount }.publish(&env);
         Ok(())
     }
