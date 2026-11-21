@@ -61,21 +61,7 @@ fn generate_and_verify_all_rule_pack_fixtures() {
     let root = fixtures_root();
     std::fs::create_dir_all(&root).unwrap();
 
-    let valid_manifest = r#"[pack]
-name = "soroban-defi-rules"
-version = "0.1.0"
-description = "Community rules for common Soroban DeFi attack vectors"
-authors = ["Stellar Foundry <security@stellarfoundry.org>"]
-min_scanner_version = "0.2.0"
-
-[[rules]]
-id = "COMM-001"
-title = "Unbounded slippage in swap invocation"
-category = "defi"
-default_severity = "high"
-default_confidence = "medium"
-description = "Flags swap calls where max_slippage is unconstrained or zero."
-"#;
+    let valid_manifest = include_str!("../../../fixtures/rule-packs/valid-signed/pack.toml");
 
     // 1. Valid signed pack
     let valid_dir = root.join("valid-signed");
