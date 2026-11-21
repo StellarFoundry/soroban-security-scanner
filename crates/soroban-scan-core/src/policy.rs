@@ -179,8 +179,10 @@ reason = "test-only fixture"
 
     #[test]
     fn rejects_bad_versions_and_thresholds() {
-        let mut policy = PolicyDocument::default();
-        policy.schema_version = 99;
+        let policy = PolicyDocument {
+            schema_version: 99,
+            ..PolicyDocument::default()
+        };
         assert!(policy.validate().is_err());
 
         let policy = PolicyDocument {
