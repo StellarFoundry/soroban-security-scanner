@@ -75,6 +75,10 @@ why = "Reproduces the documented 'Authorization after state mutation' pattern; t
 file = "SS-018.rs"
 why = "Reproduces the documented 'Unchecked integer cast' pattern; this sample must always trigger SS-018."
 
+[SS-021]
+file = "SS-021.rs"
+why = "Reproduces the documented durable-owner key written to expiring temporary storage; this sample must always trigger SS-021."
+
 [SS-029]
 file = "SS-029.rs"
 why = "Reproduces the documented 'Public test or debug hook in a contract entry point' pattern; this sample must always trigger SS-029."
