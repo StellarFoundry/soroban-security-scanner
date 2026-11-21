@@ -20,6 +20,7 @@ Start here.
 - [Policy and Reporting](policy.md) - policy schema, precedence, waivers, and report formats.
 - [Rule Pack Signing and Verification](rule-pack-signing.md) - detached Ed25519 signatures, keyrings, and verification.
 - [Report Retention](retention.md) - deterministic artifact names and retention guidance.
+- [In-process scan service](service-api.md) - bounded job storage for an embedding service.
 - [GitHub Integration](github-integration.md) — Action, SARIF, PR scanning.
 - [GitHub Action](github-action.md) — inputs, outputs, and usage examples.
 - [CI Recipes](ci-recipes.md) — copy-paste snippets for common CI systems and hooks.
@@ -27,6 +28,7 @@ Start here.
 - [Editor integration (LSP spike)](integration/editor-integration.md) — diagnostics-in-editor scope and plan.
 - [Optional AI Assistance](ai.md) — off by default, never authoritative.
 - [AI privacy and data flow](ai-privacy.md) — exactly what can leave the machine.
+- [Opt-in telemetry](telemetry.md) — off by default; bounded event schema and retention.
 - [FAQ](faq.md) — common questions about false positives, CI gating, and versions.
 - [Troubleshooting](troubleshooting.md) — common problems.
 
