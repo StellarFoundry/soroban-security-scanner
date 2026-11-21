@@ -6,10 +6,7 @@ use soroban_scan_core::api_auth::{
 
 #[test]
 fn configured_bearer_token_is_accepted() {
-    let config = ApiAuthConfig::from_toml(
-        "[api]\nbearer_token = \"opaque-token_123\"\n",
-    )
-    .unwrap();
+    let config = ApiAuthConfig::from_toml("[api]\nbearer_token = \"opaque-token_123\"\n").unwrap();
 
     assert_eq!(config.authenticate(Some("Bearer opaque-token_123")), Ok(()));
     assert_eq!(config.authenticate(Some("bearer opaque-token_123")), Ok(()));

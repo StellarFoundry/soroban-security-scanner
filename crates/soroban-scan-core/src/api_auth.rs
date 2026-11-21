@@ -83,9 +83,7 @@ impl ApiAuthConfig {
             .as_deref()
             .ok_or(ApiAuthError::NotConfigured)?;
         let header = authorization.ok_or(ApiAuthError::Unauthorized)?;
-        let (scheme, provided) = header
-            .split_once(' ')
-            .ok_or(ApiAuthError::Unauthorized)?;
+        let (scheme, provided) = header.split_once(' ').ok_or(ApiAuthError::Unauthorized)?;
         if !scheme.eq_ignore_ascii_case("Bearer") || !valid_bearer_token(provided) {
             return Err(ApiAuthError::Unauthorized);
         }
@@ -104,13 +102,12 @@ fn valid_bearer_token(token: &str) -> bool {
     let bytes = token.as_bytes();
     let first_padding = bytes.iter().position(|byte| *byte == b'=');
     let body = first_padding.map_or(bytes, |index| &bytes[..index]);
-    let padding_is_valid = first_padding
-        .is_none_or(|index| bytes[index..].iter().all(|byte| *byte == b'='));
+    let padding_is_valid =
+        first_padding.is_none_or(|index| bytes[index..].iter().all(|byte| *byte == b'='));
     !body.is_empty()
         && padding_is_valid
         && body.iter().all(|byte| {
-            byte.is_ascii_alphanumeric()
-                || matches!(*byte, b'-' | b'.' | b'_' | b'~' | b'+' | b'/')
+            byte.is_ascii_alphanumeric() || matches!(*byte, b'-' | b'.' | b'_' | b'~' | b'+' | b'/')
         })
 }
 
