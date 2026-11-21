@@ -27,6 +27,7 @@ Start here.
 - [Editor integration (LSP spike)](integration/editor-integration.md) — diagnostics-in-editor scope and plan.
 - [Optional AI Assistance](ai.md) — off by default, never authoritative.
 - [AI privacy and data flow](ai-privacy.md) — exactly what can leave the machine.
+- [Opt-in telemetry](telemetry.md) — off by default; bounded event schema and retention.
 - [FAQ](faq.md) — common questions about false positives, CI gating, and versions.
 - [Troubleshooting](troubleshooting.md) — common problems.
 

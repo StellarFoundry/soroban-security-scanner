@@ -97,6 +97,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `ai` | Optional, advisory assistance; deterministic engine remains authoritative. | `category`, `finding`, `rule`, `severity`. |
 | `api_auth` | Framework-independent bearer token parsing and verification for API integrations. | Nothing in the crate. |
 | `corpus` | Read-only detector fixture, documentation, and must-trigger coverage reporting. | `registry`. |
+| `telemetry` | Opt-in, bounded telemetry and crash-event payloads with no source text or paths. | `config`, `engine`, `error`, `model`, `severity`. |
 
 ## Subsystem submodules
 
