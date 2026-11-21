@@ -17,7 +17,8 @@ is enforced by the `api_stability` integration test.
 
 ## Unstable
 
-- `source`, `project`, `discovery`, `manifest`, `suppression`, `soroban`, and
+- `api_auth` (framework-independent API bearer authentication), `source`, `project`,
+  `discovery`, `manifest`, `suppression`, `soroban`, and
   `rules` internals.
 - `detection` (language and project-type evidence).
 - `frontend` (the parser frontend boundary and the default Rust frontend).
