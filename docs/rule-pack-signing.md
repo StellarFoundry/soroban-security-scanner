@@ -12,10 +12,82 @@ rule packs can be signed by trusted authors using Ed25519 detached signatures.
 By default, the scanner fails closed: unsigned packs are rejected unless
 explicitly permitted by configuration or the `--allow-unsigned-packs` flag.
 
+## Manifest schema v1
+
+`pack.toml` is a closed, data-only TOML document. The top-level `schema_version`
+selects its format (`1` is currently supported); unknown fields and unsupported
+schema versions are rejected. V1 carries rule metadata only. It has no script,
+plugin, command, or binary field, and loading it never executes pack-supplied
+code.
+
+```toml
+schema_version = 1
+
+[pack]
+name = "soroban-defi-rules"
+version = "0.1.0"
+description = "Community rule metadata for common Soroban DeFi attack vectors"
+authors = ["Stellar Foundry"]
+min_scanner_version = "0.2.0"
+capabilities = ["rust_source_analysis"]
+
+[[rules]]
+id = "COMM-001"
+title = "Unbounded slippage in swap invocation"
+category = "defi"
+default_severity = "high"
+default_confidence = "medium"
+description = "Flags swap calls where max_slippage is unconstrained or zero."
+remediation = "Require an explicit nonzero slippage bound."
+checksum = "sha256:41b4971ca5a0aa656406c4e86985de006119bac6a9aa36410eb2038f016c1e61"
+```
+
+The sample manifest is `fixtures/rule-packs/sample/pack.toml` and is
+loaded and validated by:
+
+```bash
+cargo test -p soroban-scan-core --test pack_manifest
+```
+
+### Required metadata and compatibility
+
+- `schema_version` must be `1`.
+- `pack.name` uses 1-64 lowercase ASCII letters or digits separated by single
+  hyphens. `pack.version`, `min_scanner_version`, and optional
+  `max_scanner_version` use stable `MAJOR.MINOR.PATCH` versions. The inclusive
+  scanner range must not be inverted.
+- `pack.capabilities` is a non-empty, duplicate-free list of required scanner
+  capabilities. V1 accepts only `rust_source_analysis` and
+  `cargo_manifest_analysis`; these identify input support and grant no execution
+  or filesystem/network permissions.
+- A pack must contain at least one rule. Rule IDs use an uppercase prefix and a
+  numeric suffix, such as `COMM-001`; IDs must be unique within the pack.
+- Each rule needs non-empty title, category, and description, plus a required
+  checksum. The checksum is lowercase `sha256:` plus 64 hex digits.
+
+`PackManifest::load_file` and `PackManifest::parse_str` validate the full
+schema, versions, identifiers, unique IDs and capabilities, and checksums.
+`check_compatibility` additionally checks a scanner's version against the
+inclusive min/max bounds and confirms it provides each required capability.
+Manifest input is capped at 10 MiB before TOML parsing. Detached signature files are capped at 16 KiB.
+
+### Rule checksums
+
+A rule checksum is SHA-256 over the UTF-8 bytes of the compact JSON serialization
+of its metadata, excluding `checksum`. Schema v1 serializes fields in this exact
+order: `id`, `title`, `category`, `default_severity`, `default_confidence`,
+`description`, and optional `remediation` (omitted when absent). Severity and
+confidence use their lowercase names. JSON escaping and field order are fixed by
+the v1 serializer. Prefix the lowercase hexadecimal digest with `sha256:`.
+
+A checksum detects accidental or malicious metadata edits when compared with a
+trusted expected checksum. It is not proof of publisher identity; `pack.sig`
+provides authenticity for the complete raw manifest bytes when signature
+verification is enabled.
 ## Pack format and detached signatures
 
 A rule pack consists of:
-1. `pack.toml`: The pack manifest describing metadata, compatibility, and rules.
+1. `pack.toml`: The versioned, validated metadata manifest described above.
 2. `pack.sig`: A detached signature file in TOML format:
 
 ```toml
