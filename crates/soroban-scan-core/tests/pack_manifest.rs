@@ -22,11 +22,17 @@ fn sample_pack_loads_and_checks_compatibility() {
     assert_eq!(manifest.schema_version, 1);
     assert_eq!(manifest.rules.len(), 1);
     assert_eq!(manifest.rules[0].id, "COMM-001");
-    assert_eq!(manifest.rules[0].checksum, manifest.rules[0].expected_checksum());
+    assert_eq!(
+        manifest.rules[0].checksum,
+        manifest.rules[0].expected_checksum()
+    );
     assert!(manifest
         .check_compatibility(
             "0.2.0",
-            &[PackCapability::RustSourceAnalysis, PackCapability::CargoManifestAnalysis],
+            &[
+                PackCapability::RustSourceAnalysis,
+                PackCapability::CargoManifestAnalysis
+            ],
         )
         .is_ok());
 }
@@ -92,7 +98,10 @@ fn rejects_inverted_compatibility_ranges_and_duplicate_entries() {
     assert!(manifest.validate().is_err());
 
     let mut manifest = PackManifest::parse_str(sample_manifest_text()).unwrap();
-    manifest.pack.capabilities.push(PackCapability::RustSourceAnalysis);
+    manifest
+        .pack
+        .capabilities
+        .push(PackCapability::RustSourceAnalysis);
     assert!(manifest.validate().is_err());
 
     let mut manifest = PackManifest::parse_str(sample_manifest_text()).unwrap();
@@ -107,11 +116,8 @@ fn pack_directory_verification_rejects_invalid_schema() {
     let invalid = sample_manifest_text().replace("schema_version = 1", "schema_version = 99");
     fs::write(dir.join("pack.toml"), invalid).expect("write invalid manifest");
 
-    let result = PackVerifier::verify_pack_dir(
-        &dir,
-        &KeyRing::new(),
-        VerificationPolicy::AllowUnsigned,
-    );
+    let result =
+        PackVerifier::verify_pack_dir(&dir, &KeyRing::new(), VerificationPolicy::AllowUnsigned);
     fs::remove_dir_all(&dir).expect("remove temporary pack directory");
     assert!(matches!(
         result,
