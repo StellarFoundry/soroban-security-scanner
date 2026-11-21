@@ -30,6 +30,8 @@ Start here.
 - [FAQ](faq.md) — common questions about false positives, CI gating, and versions.
 - [Troubleshooting](troubleshooting.md) — common problems.
 
+- [Evaluation Methodology](evaluation-methodology.md) - fixture labels, metric definitions, benchmark commands, and limits.
+
 ## Contributing
 
 - [Contributing](../CONTRIBUTING.md)

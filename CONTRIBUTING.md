@@ -36,6 +36,9 @@ If you are contributing through an open-source wave:
 
 See [`docs/WAVE.md`](docs/WAVE.md) for the full process.
 
+See [`docs/evaluation-methodology.md`](docs/evaluation-methodology.md) for fixture
+labels, expected outcomes, metric definitions, benchmark commands, and limits.
+
 ## Development setup
 
 See [`docs/development/setup.md`](docs/development/setup.md).
