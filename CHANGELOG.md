@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Framework-independent bearer auth for the scan API, with fail-closed configuration,
+  constant-time comparison, and redacted secrets (#352).
+
 - Rule pack signing and verification: verify detached Ed25519 signatures (`pack.sig`)
   against trusted keyrings, reject unsigned packs unless allowed via `--allow-unsigned-packs`,
   and support key rotation and revocation (`#362`).
