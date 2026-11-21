@@ -1,13 +1,9 @@
-// SS-023 positive: a secret parameter is published in an event.
-
+// SS-023 positive: secret material is published permanently in a ledger event.
 #![no_std]
-
-use soroban_sdk::{contractimpl, Bytes, Env};
-
-pub struct Commitments;
-
+use soroban_sdk::{contractimpl, Env, Bytes};
+pub struct C;
 #[contractimpl]
-impl Commitments {
+impl C {
     pub fn commit(env: Env, secret: Bytes) {
         env.events().publish(symbol_short!("commit"), secret);
     }

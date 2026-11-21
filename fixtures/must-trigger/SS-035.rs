@@ -1,14 +1,10 @@
-// SS-035 positive: the checked result is discarded into `_`.
-
+// SS-035 positive: the checked arithmetic result is discarded.
 #![no_std]
-
 use soroban_sdk::{contractimpl, Env};
-
-pub struct Vault;
-
+pub struct C;
 #[contractimpl]
-impl Vault {
-    pub fn deposit(env: Env, amount: i128) {
-        let _ = amount.checked_add(1);
+impl C {
+    pub fn add(_env: Env, amount: i128) {
+        amount.checked_add(1);
     }
 }
