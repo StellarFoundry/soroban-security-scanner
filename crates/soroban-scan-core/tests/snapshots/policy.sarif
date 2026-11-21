@@ -694,6 +694,118 @@
                 "level": "warning"
               },
               "fullDescription": {
+                "text": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence."
+              },
+              "help": {
+                "markdown": "## Durable data written to temporary storage\n\nTemporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.\n\n### Remediation\n\nWrite durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival",
+                "text": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.\n\nRemediation: Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-021",
+              "name": "Durable data written to temporary storage",
+              "properties": {
+                "category": "storage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+                ],
+                "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Durable data written to temporary storage"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Events are public on the ledger forever. Publishing a value whose name suggests a secret (secret, key, seed, proof) risks an irreversible disclosure. This is a name-based heuristic over parameters and string literals and reports low confidence."
+              },
+              "help": {
+                "markdown": "## Sensitive-looking data published in events\n\nEvents are public on the ledger forever. Publishing a value whose name suggests a secret (secret, key, seed, proof) risks an irreversible disclosure. This is a name-based heuristic over parameters and string literals and reports low confidence.\n\n### Remediation\n\nDo not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/events\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Events are public on the ledger forever. Publishing a value whose name suggests a secret (secret, key, seed, proof) risks an irreversible disclosure. This is a name-based heuristic over parameters and string literals and reports low confidence.\n\nRemediation: Do not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/events",
+              "id": "SS-023",
+              "name": "Sensitive-looking data published in events",
+              "properties": {
+                "category": "events",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/events",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Do not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Sensitive-looking data published in events"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Persisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write."
+              },
+              "help": {
+                "markdown": "## Unbounded string/bytes persisted from caller input\n\nPersisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write.\n\n### Remediation\n\nReject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Persisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write.\n\nRemediation: Reject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-025",
+              "name": "Unbounded string/bytes persisted from caller input",
+              "properties": {
+                "category": "storage",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Reject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unbounded string/bytes persisted from caller input"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "Passing `env.current_contract_address()` to `require_auth` authorizes the contract itself instead of the caller. This is almost always a logic error: the check succeeds for anyone who can invoke the contract, so it does not provide the intended access control."
+              },
+              "help": {
+                "markdown": "## Contract's own address used as an authorization subject\n\nPassing `env.current_contract_address()` to `require_auth` authorizes the contract itself instead of the caller. This is almost always a logic error: the check succeeds for anyone who can invoke the contract, so it does not provide the intended access control.\n\n### Remediation\n\nAuthorize the actual caller instead: take an `Address` parameter and call `caller.require_auth()`, or call `require_auth` on the stored owner/admin address. Reserve `current_contract_address()` for checks that really concern this contract's identity.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Passing `env.current_contract_address()` to `require_auth` authorizes the contract itself instead of the caller. This is almost always a logic error: the check succeeds for anyone who can invoke the contract, so it does not provide the intended access control.\n\nRemediation: Authorize the actual caller instead: take an `Address` parameter and call `caller.require_auth()`, or call `require_auth` on the stored owner/admin address. Reserve `current_contract_address()` for checks that really concern this contract's identity."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-027",
+              "name": "Contract's own address used as an authorization subject",
+              "properties": {
+                "category": "authorization",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Authorize the actual caller instead: take an `Address` parameter and call `caller.require_auth()`, or call `require_auth` on the stored owner/admin address. Reserve `current_contract_address()` for checks that really concern this contract's identity.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Contract's own address used as an authorization subject"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
                 "text": "A public contract entry point is named like a test or debug backdoor (a `test`, `debug`, `dev`, `mock`, or `dummy` name segment). Backdoor entry points that remain callable in a production deployment let anyone invoke privileged behavior, and are a well-known way on-chain contracts are compromised. This is a name-based heuristic and may flag a legitimately named function."
               },
               "help": {
