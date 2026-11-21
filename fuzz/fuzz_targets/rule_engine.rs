@@ -5,11 +5,7 @@
 //! Offline and deterministic: no network, clock, RNG, or filesystem access.
 
 use libfuzzer_sys::fuzz_target;
-use soroban_scan_core::{
-    config::ScanConfig,
-    engine,
-    registry::RuleRegistry,
-};
+use soroban_scan_core::{config::ScanConfig, engine, registry::RuleRegistry};
 
 const MAX_INPUT_BYTES: usize = 64 * 1024;
 
@@ -19,5 +15,9 @@ fuzz_target!(|data: &[u8]| {
     }
     let source = String::from_utf8_lossy(data);
     let loaded = engine::synthetic_loaded(&source, "src/lib.rs");
-    let _ = engine::scan(&loaded, &RuleRegistry::with_default_rules(), &ScanConfig::default());
+    let _ = engine::scan(
+        &loaded,
+        &RuleRegistry::with_default_rules(),
+        &ScanConfig::default(),
+    );
 });

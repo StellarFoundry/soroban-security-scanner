@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - A bounded local rule-pack registry validates names, versions, manifest checksums,
   and safe relative paths before exposing discoverable entries (#361).
+- Framework-independent bearer auth for the scan API, with fail-closed configuration,
+  constant-time comparison, and redacted secrets (#352).
 
 - Rule pack signing and verification: verify detached Ed25519 signatures (`pack.sig`)
   against trusted keyrings, reject unsigned packs unless allowed via `--allow-unsigned-packs`,
