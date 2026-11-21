@@ -1,11 +1,7 @@
-// SS-030 positive: a token client is built from a parameter address.
-
+// SS-030 positive: a token client trusts an unvalidated caller-supplied address.
 #![no_std]
-
-use soroban_sdk::{contractimpl, token, Address, Env};
-
+use soroban_sdk::{contractimpl, Address, Env};
 pub struct Vault;
-
 #[contractimpl]
 impl Vault {
     pub fn payout(env: Env, token_id: Address, to: Address, amount: i128) {

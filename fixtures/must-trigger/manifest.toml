@@ -75,6 +75,34 @@ why = "Reproduces the documented 'Authorization after state mutation' pattern; t
 file = "SS-018.rs"
 why = "Reproduces the documented 'Unchecked integer cast' pattern; this sample must always trigger SS-018."
 
+[SS-021]
+file = "SS-021.rs"
+why = "Reproduces the documented durable-owner key written to expiring temporary storage; this sample must always trigger SS-021."
+
+[SS-035]
+file = "SS-035.rs"
+why = "Reproduces the documented vulnerable pattern; this sample must always trigger SS-035."
+
+[SS-030]
+file = "SS-030.rs"
+why = "Reproduces the documented vulnerable pattern; this sample must always trigger SS-030."
+
+[SS-028]
+file = "SS-028.rs"
+why = "Reproduces the documented vulnerable pattern; this sample must always trigger SS-028."
+
+[SS-027]
+file = "SS-027.rs"
+why = "Reproduces the documented vulnerable pattern; this sample must always trigger SS-027."
+
+[SS-025]
+file = "SS-025.rs"
+why = "Reproduces the documented vulnerable pattern; this sample must always trigger SS-025."
+
+[SS-023]
+file = "SS-023.rs"
+why = "Reproduces the documented vulnerable pattern; this sample must always trigger SS-023."
+
 [SS-029]
 file = "SS-029.rs"
 why = "Reproduces the documented 'Public test or debug hook in a contract entry point' pattern; this sample must always trigger SS-029."
@@ -94,33 +122,4 @@ why = "Reproduces the documented 'Wildcard import from the Soroban SDK' pattern;
 [SS-037]
 file = "SS-037.rs"
 why = "Reproduces the documented 'Competing authorization calls' pattern; this sample must always trigger SS-037."
-
-
-[SS-021]
-file = "SS-021.rs"
-why = "Reproduces the documented detector pattern; this sample must always trigger SS-021."
-
-[SS-023]
-file = "SS-023.rs"
-why = "Reproduces the documented detector pattern; this sample must always trigger SS-023."
-
-[SS-025]
-file = "SS-025.rs"
-why = "Reproduces the documented detector pattern; this sample must always trigger SS-025."
-
-[SS-027]
-file = "SS-027.rs"
-why = "Reproduces the documented detector pattern; this sample must always trigger SS-027."
-
-[SS-028]
-file = "SS-028.rs"
-why = "Reproduces the documented detector pattern; this sample must always trigger SS-028."
-
-[SS-030]
-file = "SS-030.rs"
-why = "Reproduces the documented detector pattern; this sample must always trigger SS-030."
-
-[SS-035]
-file = "SS-035.rs"
-why = "Reproduces the documented detector pattern; this sample must always trigger SS-035."
 

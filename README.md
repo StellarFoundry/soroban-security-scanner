@@ -279,5 +279,3 @@ See [Editor setup (VS Code and Neovim)](docs/editors.md).
 ## License
 
 [MIT](LICENSE) © 2026 AyinkxLab
-
-

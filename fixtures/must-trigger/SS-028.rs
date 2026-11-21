@@ -1,11 +1,7 @@
-// SS-028 positive: a cross-contract call precedes a state update with no guard.
-
+// SS-028 positive: an external call precedes a state mutation without a guard.
 #![no_std]
-
 use soroban_sdk::{contractimpl, Address, Env};
-
 pub struct Vault;
-
 #[contractimpl]
 impl Vault {
     pub fn withdraw(env: Env, token: Address, amount: i128) {

@@ -17,6 +17,7 @@
 //!   assistance is advisory only.
 
 pub mod ai;
+pub mod api_auth;
 pub mod baseline;
 pub mod category;
 pub mod compare;
