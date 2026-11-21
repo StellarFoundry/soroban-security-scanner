@@ -117,6 +117,20 @@ why = "Whitespace inside the storage method chain still shows an unbounded Strin
 file = "SS-027/spaced_self_auth.rs"
 expect = "trigger"
 why = "A spaced self-authorization chain still passes the contract's own address to require_auth."
+[SS-028]
+file = "SS-028/spaced_unguarded.rs"
+expect = "trigger"
+why = "Whitespace in the call and storage chains does not hide the unguarded cross-contract call before a state update."
+
+[SS-030]
+file = "SS-030/aliased_token_client.rs"
+expect = "trigger"
+why = "An aliased token client import resolves back to the token client, and the constructor still receives a caller-supplied address."
+
+[SS-035]
+file = "SS-035/spaced_checked.rs"
+expect = "trigger"
+why = "Spacing around the checked call does not hide that its result is discarded."
 
 [SS-031]
 file = "SS-031/spaced_publish.rs"
