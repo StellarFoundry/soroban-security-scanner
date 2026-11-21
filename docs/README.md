@@ -20,6 +20,7 @@ Start here.
 - [Policy and Reporting](policy.md) - policy schema, precedence, waivers, and report formats.
 - [Rule Pack Signing and Verification](rule-pack-signing.md) - detached Ed25519 signatures, keyrings, and verification.
 - [Report Retention](retention.md) - deterministic artifact names and retention guidance.
+- [In-process scan service](service-api.md) - bounded job storage for an embedding service.
 - [GitHub Integration](github-integration.md) — Action, SARIF, PR scanning.
 - [GitHub Action](github-action.md) — inputs, outputs, and usage examples.
 - [CI Recipes](ci-recipes.md) — copy-paste snippets for common CI systems and hooks.

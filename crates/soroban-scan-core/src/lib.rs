@@ -44,6 +44,7 @@ pub mod report;
 pub mod rule;
 pub mod rules;
 pub mod sdk_matrix;
+pub mod service;
 pub mod severity;
 pub mod soroban;
 pub mod source;
