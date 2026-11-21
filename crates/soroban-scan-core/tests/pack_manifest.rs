@@ -116,11 +116,8 @@ fn pack_directory_verification_rejects_invalid_schema() {
     let invalid = sample_manifest_text().replace("schema_version = 1", "schema_version = 99");
     fs::write(dir.join("pack.toml"), invalid).expect("write invalid manifest");
 
-    let result = PackVerifier::verify_pack_dir(
-        &dir,
-        &KeyRing::new(),
-        VerificationPolicy::AllowUnsigned,
-    );
+    let result =
+        PackVerifier::verify_pack_dir(&dir, &KeyRing::new(), VerificationPolicy::AllowUnsigned);
     fs::remove_dir_all(&dir).expect("remove temporary pack directory");
     assert!(matches!(
         result,

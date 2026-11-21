@@ -50,7 +50,7 @@ jobs:
 
       - name: Gate on the clean examples
         run: |
-          for example in clean-contract vault stellar-classic; do
+          for example in clean-contract; do
             echo "::group::scan examples/${example}"
             ./target/release/soroban-scan scan "examples/${example}" \
               --fail-on high \
@@ -60,7 +60,7 @@ jobs:
 
       - name: Report on examples with expected findings
         run: |
-          for example in token escrow; do
+          for example in token escrow vault stellar-classic; do
             echo "::group::scan expected example"
             ./target/release/soroban-scan scan "examples/$example" \
               --fail-on none \

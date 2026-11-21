@@ -3,5 +3,5 @@ schema_version = 1
 [[packs]]
 name = "soroban-defi-rules"
 version = "0.1.0"
-checksum = "sha256:b47c32029760f09206ace1e228a2067cdd3e652608c06239cc83c45ef8ea06c7"
+checksum = "sha256:c8fe3e1a53d5f02dbe898f42804529b801eb1dd524d6369badf689e263c9e0cf"
 manifest = "valid-signed/pack.toml"
