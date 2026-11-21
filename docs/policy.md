@@ -208,6 +208,42 @@ Document a time-limited risk acceptance in the repository configuration:
 An expired waiver emits `CONFIG-003` and fails this step even if no finding
 crosses the threshold, because the step does not pass `--fail-on none`.
 
+## Policy files
+
+Fail thresholds, report thresholds, and suppressions can live in one versioned
+document instead of scattered flags:
+
+```toml
+schema_version = 1
+fail_on = "high"          # none | info | low | medium | high | critical
+min_severity = "low"
+min_confidence = "medium"
+
+[[suppressions]]
+path = "tests/**"
+rule = "SS-001"
+reason = "test-only fixture"
+```
+
+```bash
+soroban-scan scan ./contracts --policy-file soroban-policy.toml
+```
+
+- TOML and JSON are supported; the extension selects the parser.
+- Unknown keys are errors. `schema_version` must be `1`.
+- `fail_on` accepts the same levels as `--fail-on`, plus `none`.
+- Suppressions are auditable and use the same path/rule validation as
+  configuration.
+- Precedence is: built-in defaults < discovered configuration < policy file <
+  explicit CLI flags. `--min-severity`, `--min-confidence`, and `--fail-on`
+  always win.
+- When a policy file is used, the effective policy is printed to stderr:
+  `effective policy: fail_on=high min_severity=low min_confidence=medium`.
+
+Per-confidence reporting is controlled by `min_confidence`; per-severity
+reporting by `min_severity`. Both are applied deterministically by the engine
+before rendering, so the gate and the report always agree.
+
 ## Limitations
 
 - The scanner is static: it reports evidence it can see, not runtime behaviour,

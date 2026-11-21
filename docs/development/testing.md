@@ -56,6 +56,32 @@ contract, skeleton, fixtures, and experimental-status rules.
 - Parser features require malformed-input tests.
 - Any future network/CI integration requires permission and error-path tests.
 
+## Must-trigger samples
+
+Every detector also has one known-vulnerable **must-trigger** sample under
+`fixtures/must-trigger/<RULE-ID>.rs` (or `.toml` for manifest rules), recorded in
+`fixtures/must-trigger/manifest.toml` with a short rationale. This guards recall:
+a refactor must not stop detecting a real vulnerability.
+
+`crates/soroban-scan-core/tests/must_trigger.rs` derives the rule list from the
+registry, requires exactly one entry per detector, and scans each sample. A new
+detector without a sample fails the suite.
+
+## Corpus coverage report
+
+The read-only coverage report lists, for every rule, its positive/negative
+fixture counts, detector documentation, and must-trigger sample:
+
+```bash
+cargo run -p soroban-scan-core --example corpus_coverage -- --format terminal
+cargo run -p soroban-scan-core --example corpus_coverage -- --format markdown
+```
+
+`crates/soroban-scan-core/tests/corpus_coverage.rs` asserts every rule has at
+least one positive, three negatives, documentation, and a must-trigger sample.
+The report is generated on demand and exits non-zero when any rule is
+incomplete.
+
 ## Fixture conventions
 
 Fixtures live under `fixtures/` and are grouped by purpose:
