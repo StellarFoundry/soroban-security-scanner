@@ -2923,3 +2923,81 @@ fn fingerprint_strategy_changes_fingerprints() {
     assert_eq!(invalid.code, 2, "stderr: {}", invalid.stderr);
     assert!(invalid.stderr.contains("unknown fingerprint strategy"));
 }
+
+#[test]
+fn policy_file_applies_thresholds_and_reports_effective_policy() {
+    let policy = std::env::temp_dir().join(format!("soroban-policy-{}.toml", std::process::id()));
+    std::fs::write(
+        &policy,
+        "schema_version = 1\nfail_on = \"critical\"\nmin_severity = \"high\"\n",
+    )
+    .unwrap();
+    let target = fixture("corpus/SS-016");
+    let policy_arg = policy.to_str().unwrap();
+
+    let out = run(&[
+        "scan",
+        target.to_str().unwrap(),
+        "--policy-file",
+        policy_arg,
+        "--fail-on",
+        "none",
+        "--format",
+        "json",
+    ]);
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+    assert!(
+        out.stderr
+            .contains("effective policy: fail_on=none min_severity=high"),
+        "stderr: {}",
+        out.stderr
+    );
+    let value: serde_json::Value = serde_json::from_str(&out.stdout).unwrap();
+    let filtered = value["findings"].as_array().unwrap();
+    assert!(
+        filtered
+            .iter()
+            .all(|finding| { matches!(finding["severity"].as_str(), Some("high" | "critical")) }),
+        "policy min_severity should filter findings below high: {filtered:?}"
+    );
+
+    let overridden = run(&[
+        "scan",
+        target.to_str().unwrap(),
+        "--policy-file",
+        policy_arg,
+        "--min-severity",
+        "info",
+        "--fail-on",
+        "none",
+        "--format",
+        "json",
+    ]);
+    assert!(
+        overridden.stderr.contains("min_severity=info"),
+        "explicit flag should override the policy: {}",
+        overridden.stderr
+    );
+    let value: serde_json::Value = serde_json::from_str(&overridden.stdout).unwrap();
+    assert!(
+        value["findings"].as_array().unwrap().len() > filtered.len(),
+        "explicit min_severity=info should restore lower-severity findings"
+    );
+
+    let invalid = std::env::temp_dir().join(format!(
+        "soroban-policy-invalid-{}.toml",
+        std::process::id()
+    ));
+    std::fs::write(&invalid, "schema_version = 1\nmystery = true\n").unwrap();
+    let error = run(&[
+        "scan",
+        target.to_str().unwrap(),
+        "--policy-file",
+        invalid.to_str().unwrap(),
+    ]);
+    assert_eq!(error.code, 2, "stderr: {}", error.stderr);
+    assert!(error.stderr.contains("invalid policy"));
+
+    std::fs::remove_file(policy).ok();
+    std::fs::remove_file(invalid).ok();
+}
