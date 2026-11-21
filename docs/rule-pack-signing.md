@@ -94,5 +94,16 @@ If a private key is leaked or compromised:
 ## Security considerations
 
 - **Offline operation**: Verification runs entirely offline without network requests or external authority queries.
-- **Bounded execution**: Manifest and payload sizes are capped at 10 MiB to prevent resource exhaustion attacks.
+- **Bounded execution**: Manifest and payload sizes are capped (1 MiB for `pack.toml`, 64 KiB for `pack.sig`, 256 KiB for `conformance.toml`, max 256 rules) to prevent resource exhaustion attacks, and symlinks or path-escaping targets are rejected.
 - **Zero secrets**: The scanner only reads and stores public keys. Private signing keys are never required or retained by the scanner.
+
+## Safe loading and conformance tests
+
+`PackLoader::load_dir` verifies signatures (fail-closed by default), rejects symlinks and oversized files, validates rule metadata, and enforces `pack.min_scanner_version <= current_version`.
+
+To run the pack signing and conformance suites locally:
+
+```bash
+cargo test -p soroban-scan-core --test pack_signing
+cargo test -p soroban-scan-core --test pack_conformance
+```

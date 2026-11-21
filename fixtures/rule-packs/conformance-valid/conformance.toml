@@ -1,0 +1,12 @@
+target = "contract"
+forbidden_rules = ["SS-005"]
+
+[[expected_findings]]
+rule_id = "SS-001"
+severity = "high"
+min_count = 1
+
+[[expected_findings]]
+rule_id = "SS-008"
+severity = "high"
+min_count = 1

@@ -1,0 +1,13 @@
+[pack]
+name = "broken-expectations-pack"
+version = "0.1.0"
+description = "Fixture pack whose expected findings do not match the scanned target"
+min_scanner_version = "0.2.0"
+
+[[rules]]
+id = "BROKEN-EXP-001"
+title = "Missing expected finding fixture"
+category = "testing"
+default_severity = "high"
+default_confidence = "high"
+description = "Expects SS-999 which does not fire on the clean target."
