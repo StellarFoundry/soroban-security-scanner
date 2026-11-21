@@ -21,6 +21,7 @@ use soroban_scan_core::compare;
 use soroban_scan_core::confidence::Confidence;
 use soroban_scan_core::config::{AnalysisMode, ScanConfig};
 use soroban_scan_core::engine;
+use soroban_scan_core::fingerprint::FingerprintStrategy;
 use soroban_scan_core::frontend::{self, Frontend};
 use soroban_scan_core::model::DiagnosticCode;
 use soroban_scan_core::redaction;
@@ -412,6 +413,14 @@ struct ScanArgs {
     #[arg(long, value_name = "FIELD")]
     redact: Vec<String>,
 
+    /// Fingerprint strategy for baselines. `rule-file-evidence` is the default
+    /// and keeps existing baselines valid. `rule-file-line-evidence` and
+    /// `rule-file-line-column-evidence` add position sensitivity.
+    /// `path-independent` omits the file path so renamed files keep matching,
+    /// at a higher collision risk.
+    #[arg(long, value_name = "STRATEGY")]
+    fingerprint_strategy: Option<String>,
+
     /// Exclude a glob (relative to the scan root). Repeatable.
     #[arg(long = "exclude", value_name = "GLOB")]
     exclude: Vec<String>,
@@ -793,6 +802,9 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
         config.rules.rule_time_budget_ms = Some(budget);
     }
     config.redact.extend(args.redact.iter().cloned());
+    if let Some(strategy) = &args.fingerprint_strategy {
+        config.fingerprint = FingerprintStrategy::parse(strategy).map_err(CliError::Usage)?;
+    }
     let redaction = redaction::validate_fields(&config.redact).map_err(CliError::Usage)?;
 
     validate_rule_ids(&config, registry)?;

@@ -60,10 +60,8 @@ fn sample_registry_discovers_and_resolves_installed_packs() {
 
 #[test]
 fn rejects_checksum_and_manifest_identity_mismatches() {
-    let root = std::env::temp_dir().join(format!(
-        "soroban-registry-{}-checksum",
-        std::process::id()
-    ));
+    let root =
+        std::env::temp_dir().join(format!("soroban-registry-{}-checksum", std::process::id()));
     write_registry(&root, MANIFEST, "sample-pack", "1.2.3", "packs/pack.toml");
     let index = fs::read_to_string(root.join("registry.toml")).unwrap();
     fs::write(
@@ -89,10 +87,8 @@ fn rejects_checksum_and_manifest_identity_mismatches() {
 
 #[test]
 fn rejects_unsafe_paths_invalid_metadata_duplicates_and_unknown_fields() {
-    let root = std::env::temp_dir().join(format!(
-        "soroban-registry-{}-invalid",
-        std::process::id()
-    ));
+    let root =
+        std::env::temp_dir().join(format!("soroban-registry-{}-invalid", std::process::id()));
     write_registry(&root, MANIFEST, "sample-pack", "1.2.3", "../outside.toml");
     assert!(matches!(
         PackRegistry::load(&root.join("registry.toml")),
@@ -114,7 +110,11 @@ fn rejects_unsafe_paths_invalid_metadata_duplicates_and_unknown_fields() {
         Err(PackRegistryError::Validation(_))
     ));
 
-    fs::write(root.join("registry.toml"), "schema_version = 1\nexec = \"run\"\n").unwrap();
+    fs::write(
+        root.join("registry.toml"),
+        "schema_version = 1\nexec = \"run\"\n",
+    )
+    .unwrap();
     assert!(matches!(
         PackRegistry::load(&root.join("registry.toml")),
         Err(PackRegistryError::Parse(_))
@@ -124,13 +124,11 @@ fn rejects_unsafe_paths_invalid_metadata_duplicates_and_unknown_fields() {
 
 #[test]
 fn rejects_unsupported_schema_and_oversized_index() {
-    let root = std::env::temp_dir().join(format!(
-        "soroban-registry-{}-bounded",
-        std::process::id()
-    ));
+    let root =
+        std::env::temp_dir().join(format!("soroban-registry-{}-bounded", std::process::id()));
     fs::create_dir_all(&root).unwrap();
     let path = root.join("registry.toml");
-    fs::write(&path, "schema_version = 2\n").unwrap();
+    fs::write(&path, "schema_version = 2\npacks = []\n").unwrap();
     assert!(matches!(
         PackRegistry::load(&path),
         Err(PackRegistryError::Validation(_))

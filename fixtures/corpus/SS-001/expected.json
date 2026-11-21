@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "rule_id": "SS-001",
+  "fixtures": [
+    {
+      "file": "negative.rs",
+      "findings": [
+        {
+          "rule_id": "SS-006",
+          "count": 3,
+          "severity": "low",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-010",
+          "count": 1,
+          "severity": "low",
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "file": "negative2.rs",
+      "findings": [
+        {
+          "rule_id": "SS-006",
+          "count": 3,
+          "severity": "low",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-010",
+          "count": 1,
+          "severity": "low",
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "file": "negative3.rs",
+      "findings": [
+        {
+          "rule_id": "SS-006",
+          "count": 3,
+          "severity": "low",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-010",
+          "count": 1,
+          "severity": "low",
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "file": "positive.rs",
+      "findings": [
+        {
+          "rule_id": "SS-001",
+          "count": 2,
+          "severity": "high",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-006",
+          "count": 2,
+          "severity": "low",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-008",
+          "count": 1,
+          "severity": "medium",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-010",
+          "count": 1,
+          "severity": "low",
+          "confidence": null
+        }
+      ]
+    }
+  ]
+}

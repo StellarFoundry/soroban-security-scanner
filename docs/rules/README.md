@@ -69,9 +69,18 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-016](detectors/SS-016.md) | Unbounded data stored in instance storage | medium | low | storage |
 | [SS-017](detectors/SS-017.md) | Authorization after state mutation | medium | medium | authorization |
 | [SS-018](detectors/SS-018.md) | Unchecked integer cast | medium | low | arithmetic |
+| [SS-021](detectors/SS-021.md) | Durable data written to temporary storage | medium | low | storage |
+| [SS-023](detectors/SS-023.md) | Sensitive-looking data published in events | medium | low | events |
+| [SS-025](detectors/SS-025.md) | Unbounded string/bytes persisted from caller input | medium | medium | storage |
+| [SS-027](detectors/SS-027.md) | Contract's own address used as an authorization subject | high | medium | authorization |
+| [SS-028](detectors/SS-028.md) | Cross-contract call without a reentrancy guard | high | low | cross-contract |
 | [SS-029](detectors/SS-029.md) | Public test or debug hook in a contract entry point | medium | medium | access-control |
+| [SS-030](detectors/SS-030.md) | Token client built from an unvalidated caller address | high | low | token |
 | [SS-031](detectors/SS-031.md) | Event topic derived from a caller-controlled parameter | medium | low | events |
+| [SS-032](detectors/SS-032.md) | Redundant require_auth in loop | low | medium | authorization |
 | [SS-033](detectors/SS-033.md) | Wildcard import from the Soroban SDK | low | high | dependencies |
+| [SS-035](detectors/SS-035.md) | Ignored checked-arithmetic result | high | medium | arithmetic |
+| [SS-037](detectors/SS-037.md) | Competing authorization calls | medium | low | authorization |
 
 Each detector has a positive and negative fixture under
 `fixtures/corpus/<RULE-ID>/`, plus an adversarial sample and recorded expected

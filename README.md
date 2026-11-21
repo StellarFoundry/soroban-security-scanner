@@ -46,8 +46,8 @@ for installation, machine-readable output, and CI usage.
 
 ## What it detects
 
-Nineteen Soroban-aware detectors ship today (from `SS-001` to `SS-033`). Severity
-and confidence are independent and always reported honestly.
+Thirty Soroban-aware detectors ship today (from `SS-001` to `SS-037`).
+Severity and confidence are independent and always reported honestly.
 
 | Rule | Title | Severity | Confidence | Category |
 | ---- | ----- | -------- | ---------- | -------- |
@@ -68,8 +68,19 @@ and confidence are independent and always reported honestly.
 | [SS-015](docs/rules/detectors/SS-015.md) | Deprecated Soroban SDK version | low | medium | dependencies |
 | [SS-016](docs/rules/detectors/SS-016.md) | Unbounded data stored in instance storage | medium | low | storage |
 | [SS-017](docs/rules/detectors/SS-017.md) | Authorization after state mutation | medium | medium | authorization |
+| [SS-018](docs/rules/detectors/SS-018.md) | Unchecked integer cast | medium | low | arithmetic |
+| [SS-021](docs/rules/detectors/SS-021.md) | Durable data written to temporary storage | medium | low | storage |
+| [SS-023](docs/rules/detectors/SS-023.md) | Sensitive-looking data published in events | medium | low | events |
+| [SS-025](docs/rules/detectors/SS-025.md) | Unbounded string/bytes persisted from caller input | medium | medium | storage |
+| [SS-027](docs/rules/detectors/SS-027.md) | Contract's own address used as an authorization subject | high | medium | authorization |
+| [SS-028](docs/rules/detectors/SS-028.md) | Cross-contract call without a reentrancy guard | high | low | cross-contract |
 | [SS-029](docs/rules/detectors/SS-029.md) | Public test or debug hook in a contract entry point | medium | medium | access-control |
+| [SS-030](docs/rules/detectors/SS-030.md) | Token client built from an unvalidated caller address | high | low | token |
+| [SS-031](docs/rules/detectors/SS-031.md) | Event topic derived from a caller-controlled parameter | medium | low | events |
+| [SS-032](docs/rules/detectors/SS-032.md) | Redundant require_auth in loop | low | medium | authorization |
 | [SS-033](docs/rules/detectors/SS-033.md) | Wildcard import from the Soroban SDK | low | high | dependencies |
+| [SS-035](docs/rules/detectors/SS-035.md) | Ignored checked-arithmetic result | high | medium | arithmetic |
+| [SS-037](docs/rules/detectors/SS-037.md) | Competing authorization calls | medium | low | authorization |
 
 Rule identifiers are stable (never reused or renumbered). See
 [`docs/rules/README.md`](docs/rules/README.md) for the full rule system.
@@ -94,7 +105,7 @@ Rule identifiers are stable (never reused or renumbered). See
 
 - Deterministic project discovery and Soroban classification.
 - `syn`-based Rust parsing with source locations.
-- Nineteen security detectors (from `SS-001` to `SS-033`) with fixtures and documentation.
+- Thirty security detectors (from `SS-001` to `SS-037`) with fixtures and documentation.
 - CLI: `scan`, `rules`, `explain`, `version`, `init`, `config`.
 - Output formats: terminal, JSON, SARIF 2.1.0, Markdown, and GitHub workflow annotations.
 - Configurable rule selection, thresholds, and excludes.
@@ -239,6 +250,7 @@ we'll help wire it up.
 - [Supply-chain verification](docs/supply-chain.md)
 - [Kubernetes manifests](docs/kubernetes.md) — scheduled and one-off scans
 - [Rules](docs/rules/README.md) · [Baselines](docs/baselines.md)
+- [Evaluation methodology](docs/evaluation-methodology.md) · [Benchmarks](docs/development/benchmarks.md)
 - [Adding a language frontend](docs/contributors/adding-a-frontend.md) - experimental; trait, skeleton, and conformance suite
 - [Policy and Reporting](docs/policy.md) — policy schema, precedence, waivers, formats
 - [Report Retention](docs/retention.md) — artifact naming and retention guidance
@@ -258,6 +270,11 @@ Contributions are welcome. Start with [`CONTRIBUTING.md`](CONTRIBUTING.md) and t
 
 How the project is run, how decisions are recorded as ADRs, and how contentious
 changes are decided is described in [`GOVERNANCE.md`](GOVERNANCE.md).
+
+## Editor integration
+
+Use the scanner inside your editor via the language server.
+See [Editor setup (VS Code and Neovim)](docs/editors.md).
 
 ## License
 

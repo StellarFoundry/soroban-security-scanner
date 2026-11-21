@@ -7,7 +7,10 @@ pub mod manifest;
 pub mod registry;
 pub mod signing;
 
-pub use manifest::{PackManifest, PackMetadata, PackRuleMetadata};
+pub use manifest::{
+    PackCapability, PackManifest, PackManifestError, PackMetadata, PackRuleMetadata,
+    MAX_PACK_MANIFEST_BYTES, PACK_MANIFEST_SCHEMA_VERSION,
+};
 pub use registry::{
     PackRegistry, PackRegistryEntry, PackRegistryError, PACK_REGISTRY_SCHEMA_VERSION,
 };

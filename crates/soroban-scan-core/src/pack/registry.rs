@@ -46,7 +46,10 @@ struct RegistryDocument {
 #[derive(Debug, thiserror::Error)]
 pub enum PackRegistryError {
     #[error("cannot read {path}: {source}")]
-    Io { path: String, source: std::io::Error },
+    Io {
+        path: String,
+        source: std::io::Error,
+    },
     #[error("input at {path} exceeds the {limit}-byte limit")]
     TooLarge { path: String, limit: usize },
     #[error("invalid registry TOML: {0}")]
@@ -85,10 +88,8 @@ impl PackRegistry {
             }
             let manifest_path = resolve_manifest(&root, &entry.manifest)?;
             let manifest_bytes = read_bounded(&manifest_path, MAX_REGISTRY_MANIFEST_BYTES)?;
-            let actual_checksum = format!(
-                "sha256:{}",
-                hex::encode(Sha256::digest(&manifest_bytes)),
-            );
+            let actual_checksum =
+                format!("sha256:{}", hex::encode(Sha256::digest(&manifest_bytes)),);
             if entry.checksum != actual_checksum {
                 return Err(PackRegistryError::Validation(format!(
                     "checksum mismatch for pack {}@{}",
@@ -116,9 +117,8 @@ impl PackRegistry {
     /// Return every validated entry, sorted by name and version.
     pub fn entries(&self) -> Vec<&PackRegistryEntry> {
         let mut entries: Vec<_> = self.entries.iter().collect();
-        entries.sort_by(|left, right| {
-            (&left.name, &left.version).cmp(&(&right.name, &right.version))
-        });
+        entries
+            .sort_by(|left, right| (&left.name, &left.version).cmp(&(&right.name, &right.version)));
         entries
     }
 
