@@ -8,7 +8,7 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 82,
+    "source_files": 118,
     "soroban_sdk_versions": []
   },
   "stats": {
@@ -179,13 +179,13 @@
         }
       ]
     },
-    "files_analyzed": 82,
-    "files_parsed": 82,
+    "files_analyzed": 118,
+    "files_parsed": 118,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 21,
+    "rules_run": 30,
     "rules_skipped": 0,
-    "findings_raw": 137,
+    "findings_raw": 204,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -197,16 +197,16 @@
     "generated_files_excluded": 0,
     "findings_by_category": {
       "access-control": 10,
-      "arithmetic": 7,
-      "authorization": 28,
+      "arithmetic": 8,
+      "authorization": 43,
       "configuration": 2,
-      "cross-contract": 6,
+      "cross-contract": 15,
       "dependencies": 2,
-      "error-handling": 12,
-      "events": 14,
+      "error-handling": 17,
+      "events": 17,
       "resource-usage": 2,
-      "storage": 42,
-      "token": 11,
+      "storage": 52,
+      "token": 35,
       "unsafe": 1
     }
   },
@@ -225,6 +225,7 @@
     "suppressions": [],
     "waivers": [],
     "redact": [],
+    "fingerprint": "rule-file-evidence",
     "rules": {
       "disabled": [],
       "enabled": [],
@@ -596,6 +597,26 @@
       "fingerprint": "081e0141f5201a517f311d3ea111a6c4"
     },
     {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-002/negative.rs",
+        "line": 10,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: TokenClient :: new (& env , & token_id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "8ca3cdfa6ccf47df8093428159bf690e"
+    },
+    {
       "rule_id": "SS-014",
       "title": "Token transfer amount without validation",
       "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
@@ -614,6 +635,26 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "d5475c0cbf4d93267f0783dbf8255c86"
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-002/negative.rs",
+        "line": 20,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token_id` without a stored-configuration check in `route`: TokenClient :: new (& env , & token_id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "82b039fcd6e1f58153ce79b2709a6ae9"
     },
     {
       "rule_id": "SS-014",
@@ -715,6 +756,26 @@
       "fingerprint": "547dea37a4cd38f87a0e74848ce1949d"
     },
     {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-002/negative3.rs",
+        "line": 10,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: TokenClient :: new (& env , & token_id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "2b43a42c040d6d8663860fc22cf6b36d"
+    },
+    {
       "rule_id": "SS-014",
       "title": "Token transfer amount without validation",
       "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
@@ -733,6 +794,26 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "e8bbd271b173fc302e7875bd7557d93b"
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-002/negative3.rs",
+        "line": 20,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token_id` without a stored-configuration check in `route`: TokenClient :: new (& env , & token_id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "df61f85c0bd0d4eceab2246c0913dd0b"
     },
     {
       "rule_id": "SS-014",
@@ -772,6 +853,26 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
       "fingerprint": "c399badb33485c8496d429125c15e476"
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-002/positive.rs",
+        "line": 9,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: TokenClient :: new (& env , & token_id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "74cf86ad21eed79956679865289208da"
     },
     {
       "rule_id": "SS-014",
@@ -1909,6 +2010,26 @@
       "fingerprint": "28fd1b7c89283ed13d151e50de739072"
     },
     {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-013/negative.rs",
+        "line": 6,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `to` without a stored-configuration check in `withdraw`: TokenClient :: new (& env , & to)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "3ad6e609e43b4242f70de844c8b072fa"
+    },
+    {
       "rule_id": "SS-014",
       "title": "Token transfer amount without validation",
       "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
@@ -1946,6 +2067,26 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
       "fingerprint": "5fdcc5ba111ac7bed47f4d170941ec83"
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-013/negative2.rs",
+        "line": 5,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `id` without a stored-configuration check in `balance`: TokenClient :: new (& env , & id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "898dec5e2d22a423180cfe2bdb77234d"
     },
     {
       "rule_id": "SS-001",
@@ -2005,6 +2146,26 @@
       "fingerprint": "627c340067eaeb267b1fd346c78dda42"
     },
     {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-013/negative3.rs",
+        "line": 6,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `to` without a stored-configuration check in `withdraw`: TokenClient :: new (& env , & to)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "c3a8b4bbe274a02826b05c8a7eb26bdc"
+    },
+    {
       "rule_id": "SS-014",
       "title": "Token transfer amount without validation",
       "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
@@ -2042,6 +2203,26 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
       "fingerprint": "f76644376aad7f3084b884153534e79e"
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-013/positive.rs",
+        "line": 4,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `to` without a stored-configuration check in `withdraw`: TokenClient :: new (& env , & to)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "ba27766e93f440e49c92c70b74da3f6c"
     },
     {
       "rule_id": "SS-013",
@@ -2082,6 +2263,26 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "a540d0552854c83a2e514ebe3addb904"
+    },
+    {
+      "rule_id": "SS-028",
+      "title": "Cross-contract call without a reentrancy guard",
+      "description": "A public entry point makes a cross-contract call and then mutates storage without a visible reentrancy guard. Soroban permits reentrancy, so a malicious callee can re-enter while state is inconsistent. The detector recognizes a documented guard pattern: a storage flag with a lock/guard-style key is read and set before the call.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-013/positive.rs",
+        "line": 6,
+        "column": 9
+      },
+      "evidence": "cross-contract call in `withdraw` at line 6 precedes storage mutation `set` at line 7 with no reentrancy guard: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Before the external call, read a lock flag from storage, reject when it is already set, and set it; clear it after the state update. Or follow checks-effects-interactions and update all state before calling out.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs"
+      ],
+      "fingerprint": "2a86e785ad5ffa58b7b6fe74a5c7ee64"
     },
     {
       "rule_id": "SS-001",
@@ -2142,6 +2343,26 @@
       "fingerprint": "c816c3f652afe99b5c5cc1c345f26b95"
     },
     {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-014/negative.rs",
+        "line": 17,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "e558aa7e6ec4363b688b5a374ebb8149"
+    },
+    {
       "rule_id": "SS-004",
       "title": "Panic-prone construct in a contract entry point",
       "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
@@ -2162,6 +2383,26 @@
       "fingerprint": "fa2381818fcd85efdde26e59e8f2c653"
     },
     {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-014/negative2.rs",
+        "line": 17,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "239f51d2ae09b388a7c43287b36fb964"
+    },
+    {
       "rule_id": "SS-004",
       "title": "Panic-prone construct in a contract entry point",
       "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
@@ -2180,6 +2421,46 @@
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
       "fingerprint": "efe35dd5c831d97cf66e1ef6cb49173d"
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-014/negative3.rs",
+        "line": 17,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "0844da756fa17bf3abe018e1be8ae34f"
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-014/positive.rs",
+        "line": 17,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "3c9595e61965acac8e1016affd7b6490"
     },
     {
       "rule_id": "SS-014",
@@ -2832,6 +3113,723 @@
       "fingerprint": "d3e81400b6b03ecab8bdc2b9535f6669"
     },
     {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-021/negative.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `set_owner`: env . storage () . persistent () . set (& DataKey :: Owner , & owner)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "d30a4b1e82ff740a5dc33d6af6a6fc3c"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-021/negative.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set_owner`: env . storage () . persistent () . set (& DataKey :: Owner , & owner)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "7322879d377122e5338cb715ae0c4186"
+    },
+    {
+      "rule_id": "SS-010",
+      "title": "Privileged state change without an event",
+      "description": "A contract entry point mutates a storage key that looks like privileged configuration (for example admin, owner, pause, params, fees, or oracle) without publishing an event. Off-chain indexers and users rely on events to observe critical changes; without one, the change is invisible to monitoring and incident response.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "events",
+      "location": {
+        "file": "SS-021/negative.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "privileged storage change without an event in `set_owner`: env . storage () . persistent () . set (& DataKey :: Owner , & owner)",
+      "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events"
+      ],
+      "fingerprint": "9f645cbf384d9657ac5bbcdadeeb9144"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-021/negative2.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `cache`: env . storage () . temporary () . set (& DataKey :: Session , & value)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "16f816f3b5c8684cac499e395b0c9770"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-021/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `set_owner`: env . storage () . temporary () . set (& DataKey :: Owner , & owner)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "e0649fc59d351d8af0c99fbb38dc4663"
+    },
+    {
+      "rule_id": "SS-010",
+      "title": "Privileged state change without an event",
+      "description": "A contract entry point mutates a storage key that looks like privileged configuration (for example admin, owner, pause, params, fees, or oracle) without publishing an event. Off-chain indexers and users rely on events to observe critical changes; without one, the change is invisible to monitoring and incident response.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "events",
+      "location": {
+        "file": "SS-021/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "privileged storage change without an event in `set_owner`: env . storage () . temporary () . set (& DataKey :: Owner , & owner)",
+      "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events"
+      ],
+      "fingerprint": "aa9c9ef26230bfef934d82ca38df7b15"
+    },
+    {
+      "rule_id": "SS-021",
+      "title": "Durable data written to temporary storage",
+      "description": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-021/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "durable-looking key written to temporary storage in `set_owner`: env . storage () . temporary () . set (& DataKey :: Owner , & owner)",
+      "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+      ],
+      "fingerprint": "852b64bc1ec2a632158cd1bb5757b199"
+    },
+    {
+      "rule_id": "SS-023",
+      "title": "Sensitive-looking data published in events",
+      "description": "Events are public on the ledger forever. Publishing a value whose name suggests a secret (secret, key, seed, proof) risks an irreversible disclosure. This is a name-based heuristic over parameters and string literals and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "events",
+      "location": {
+        "file": "SS-023/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "event publishes sensitive-looking parameter `secret` in entry point `commit`: env . events () . publish (symbol_short ! (\"commit\") , secret)",
+      "remediation": "Do not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "4c7bb8c7dcd42d55faab7be992707e40"
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-025/negative.rs",
+        "line": 13,
+        "column": 13
+      },
+      "evidence": "`panic` in `set_name` can panic: panic ! (\"name too long\")",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "6c4a97ba1ecd48ac7fef516a0555513f"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-025/negative.rs",
+        "line": 15,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& DataKey :: Name , & name)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "ea12d748478dea8b32f212d3b2255611"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-025/negative.rs",
+        "line": 15,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& DataKey :: Name , & name)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "896f4cd2636fb46c5dc433890edbed13"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-025/negative2.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `set_amount`: env . storage () . persistent () . set (& DataKey :: Amount , & amount)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "de237e99f4ef0c7e6a885edc04d2e57b"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-025/negative2.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set_amount`: env . storage () . persistent () . set (& DataKey :: Amount , & amount)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "6fc60f6ec5780151995fae2f56cdc771"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-025/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& DataKey :: Name , & name)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "11d86bada61e82188159d467e30aab12"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-025/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& DataKey :: Name , & name)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "ade9c6081a006f620a73a3e72655568d"
+    },
+    {
+      "rule_id": "SS-025",
+      "title": "Unbounded string/bytes persisted from caller input",
+      "description": "Persisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "storage",
+      "location": {
+        "file": "SS-025/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "user-controlled `String` parameter `name` persisted without a length bound in `set_name`: env . storage () . persistent () . set (& DataKey :: Name , & name)",
+      "remediation": "Reject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "431c0acb156f003e5e1979a7221ee718"
+    },
+    {
+      "rule_id": "SS-027",
+      "title": "Contract's own address used as an authorization subject",
+      "description": "Passing `env.current_contract_address()` to `require_auth` authorizes the contract itself instead of the caller. This is almost always a logic error: the check succeeds for anyone who can invoke the contract, so it does not provide the intended access control.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-027/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "`require_auth` authorizes the contract's own address instead of the caller in `guarded`: env . current_contract_address () . require_auth ()",
+      "remediation": "Authorize the actual caller instead: take an `Address` parameter and call `caller.require_auth()`, or call `require_auth` on the stored owner/admin address. Reserve `current_contract_address()` for checks that really concern this contract's identity.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "1f7f3e243f93db8fd61fce39df4b1842"
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-028/negative.rs",
+        "line": 14,
+        "column": 13
+      },
+      "evidence": "`panic` in `withdraw` can panic: panic ! (\"reentrant\")",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "35bcca1b5c66fe21911ef802669d2a31"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-028/negative.rs",
+        "line": 16,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `withdraw`: env . storage () . persistent () . set (& Key :: Locked , & true)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "cfe0afbc3ca2c5f32e7bd65fae6e9294"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-028/negative.rs",
+        "line": 16,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `withdraw`: env . storage () . persistent () . set (& Key :: Locked , & true)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "1d1db31d573676e9ed1bf9f0b4df12da"
+    },
+    {
+      "rule_id": "SS-002",
+      "title": "Cross-contract call without caller authorization",
+      "description": "A public contract function constructs and calls another contract client but does not call require_auth in its body or in the intra-file helper functions it calls. If the contract acts on funds or privileges it controls, an attacker may be able to trigger cross-contract effects without the caller's approval. This is a heuristic: the called contract may itself enforce authorization, or the invocation may be intentionally permissionless.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/negative.rs",
+        "line": 17,
+        "column": 22
+      },
+      "evidence": "cross-contract client constructed with no authorization in `withdraw`: TokenClient :: new (& env , & token)",
+      "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "8a5f043f6501f9d291b36d7d1b4565e1"
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-028/negative.rs",
+        "line": 17,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token` without a stored-configuration check in `withdraw`: TokenClient :: new (& env , & token)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "a6833cca85cdefc6c3c3d976037c98b2"
+    },
+    {
+      "rule_id": "SS-014",
+      "title": "Token transfer amount without validation",
+      "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-028/negative.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "`transfer` transfers unchecked amount `amount` in entry point `withdraw`",
+      "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "b246a6af181e82c822350ad4e63a1c99"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-028/negative.rs",
+        "line": 19,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `withdraw`: env . storage () . persistent () . set (& Key :: Balance , & amount)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "0a689d578d918651ed75f62df2df4563"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-028/negative.rs",
+        "line": 19,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `withdraw`: env . storage () . persistent () . set (& Key :: Balance , & amount)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "b83c4a6cd821a6c273aef3c46054e728"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-028/negative2.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `withdraw`: env . storage () . persistent () . set (& Key :: Balance , & amount)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "196cae8847f246987eea0907886b2346"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-028/negative2.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `withdraw`: env . storage () . persistent () . set (& Key :: Balance , & amount)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "d2cc256db0361c3c0abd6cc3133ceca3"
+    },
+    {
+      "rule_id": "SS-002",
+      "title": "Cross-contract call without caller authorization",
+      "description": "A public contract function constructs and calls another contract client but does not call require_auth in its body or in the intra-file helper functions it calls. If the contract acts on funds or privileges it controls, an attacker may be able to trigger cross-contract effects without the caller's approval. This is a heuristic: the called contract may itself enforce authorization, or the invocation may be intentionally permissionless.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/negative2.rs",
+        "line": 13,
+        "column": 22
+      },
+      "evidence": "cross-contract client constructed with no authorization in `withdraw`: TokenClient :: new (& env , & token)",
+      "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "256239d6165e9a6f5b11ea7beca1009e"
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-028/negative2.rs",
+        "line": 13,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token` without a stored-configuration check in `withdraw`: TokenClient :: new (& env , & token)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "bc7f8d6006ab176203f70ac24ed3c3c8"
+    },
+    {
+      "rule_id": "SS-014",
+      "title": "Token transfer amount without validation",
+      "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-028/negative2.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "`transfer` transfers unchecked amount `amount` in entry point `withdraw`",
+      "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "3b059e2094045bb07bd10904f219b6cb"
+    },
+    {
+      "rule_id": "SS-002",
+      "title": "Cross-contract call without caller authorization",
+      "description": "A public contract function constructs and calls another contract client but does not call require_auth in its body or in the intra-file helper functions it calls. If the contract acts on funds or privileges it controls, an attacker may be able to trigger cross-contract effects without the caller's approval. This is a heuristic: the called contract may itself enforce authorization, or the invocation may be intentionally permissionless.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/positive.rs",
+        "line": 12,
+        "column": 22
+      },
+      "evidence": "cross-contract client constructed with no authorization in `withdraw`: TokenClient :: new (& env , & token)",
+      "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "c87f9f55c61c007cfebbe82a8ef54571"
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-028/positive.rs",
+        "line": 12,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token` without a stored-configuration check in `withdraw`: TokenClient :: new (& env , & token)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "469ced2b262aa986c5c7ad98822b5dd8"
+    },
+    {
+      "rule_id": "SS-013",
+      "title": "Cross-contract call before state update",
+      "description": "A public contract entry point makes a cross-contract call before its first storage write. Soroban permits reentrancy, so a malicious callee can be invoked while the caller's state still reflects the pre-call values and may re-enter or observe inconsistent state. This is a heuristic ordering check: it only compares call and mutation positions within the same function and cannot prove that reentrancy is reachable or exploitable.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "cross-contract call in `withdraw` at line 13 (byte 313) precedes the first storage write `set` at line 14 (byte 388)",
+      "remediation": "Follow checks-effects-interactions: validate inputs, update all relevant contract state, and only then invoke another contract. If an external call must happen first, add an explicit reentrancy guard and document why the intermediate state is safe to observe.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs"
+      ],
+      "fingerprint": "91372358a70638073c121aa93fb854ad"
+    },
+    {
+      "rule_id": "SS-014",
+      "title": "Token transfer amount without validation",
+      "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-028/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "`transfer` transfers unchecked amount `amount` in entry point `withdraw`",
+      "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "ee16d4000bb6d884c3d94aa068300561"
+    },
+    {
+      "rule_id": "SS-028",
+      "title": "Cross-contract call without a reentrancy guard",
+      "description": "A public entry point makes a cross-contract call and then mutates storage without a visible reentrancy guard. Soroban permits reentrancy, so a malicious callee can re-enter while state is inconsistent. The detector recognizes a documented guard pattern: a storage flag with a lock/guard-style key is read and set before the call.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "cross-contract call in `withdraw` at line 13 precedes storage mutation `set` at line 14 with no reentrancy guard: client . transfer (& env . current_contract_address () , & token , & amount)",
+      "remediation": "Before the external call, read a lock flag from storage, reject when it is already set, and set it; clear it after the state update. Or follow checks-effects-interactions and update all state before calling out.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs"
+      ],
+      "fingerprint": "dabd871e475d6d115bb8025943652d89"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-028/positive.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `withdraw`: env . storage () . persistent () . set (& Key :: Balance , & amount)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "757ee1e079580fab11d10dcb83ded1a8"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-028/positive.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `withdraw`: env . storage () . persistent () . set (& Key :: Balance , & amount)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "3860def458a71ab0ee0e2e0899610264"
+    },
+    {
       "rule_id": "SS-029",
       "title": "Public test or debug hook in a contract entry point",
       "description": "A public contract entry point is named like a test or debug backdoor (a `test`, `debug`, `dev`, `mock`, or `dummy` name segment). Backdoor entry points that remain callable in a production deployment let anyone invoke privileged behavior, and are a well-known way on-chain contracts are compromised. This is a name-based heuristic and may flag a legitimately named function.",
@@ -2849,6 +3847,203 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "c2c7192fdfffc7b7c5fc6951261f5cb4"
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-030/negative.rs",
+        "line": 12,
+        "column": 35
+      },
+      "evidence": "`unwrap` in `payout` can panic: env . storage () . persistent () . get (& Key :: Token) . unwrap ()",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "e71091ffde52f91a460ccdedbbbfd0bd"
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-030/negative.rs",
+        "line": 14,
+        "column": 13
+      },
+      "evidence": "`panic` in `payout` can panic: panic ! (\"unexpected token\")",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "de35d5cbe0f9a44397924d1ae6437e73"
+    },
+    {
+      "rule_id": "SS-002",
+      "title": "Cross-contract call without caller authorization",
+      "description": "A public contract function constructs and calls another contract client but does not call require_auth in its body or in the intra-file helper functions it calls. If the contract acts on funds or privileges it controls, an attacker may be able to trigger cross-contract effects without the caller's approval. This is a heuristic: the called contract may itself enforce authorization, or the invocation may be intentionally permissionless.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-030/negative.rs",
+        "line": 16,
+        "column": 22
+      },
+      "evidence": "cross-contract client constructed with no authorization in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "5d31bf4207eb98132b763ac25bc52f4c"
+    },
+    {
+      "rule_id": "SS-014",
+      "title": "Token transfer amount without validation",
+      "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-030/negative.rs",
+        "line": 17,
+        "column": 9
+      },
+      "evidence": "`transfer` transfers unchecked amount `amount` in entry point `payout`",
+      "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "c24246d25d23e1c883acfad3de5e9585"
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-030/negative2.rs",
+        "line": 12,
+        "column": 33
+      },
+      "evidence": "`unwrap` in `payout` can panic: env . storage () . persistent () . get (& Key :: Token) . unwrap ()",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "a7f66e471208cdd28bbd07198e4ceb34"
+    },
+    {
+      "rule_id": "SS-002",
+      "title": "Cross-contract call without caller authorization",
+      "description": "A public contract function constructs and calls another contract client but does not call require_auth in its body or in the intra-file helper functions it calls. If the contract acts on funds or privileges it controls, an attacker may be able to trigger cross-contract effects without the caller's approval. This is a heuristic: the called contract may itself enforce authorization, or the invocation may be intentionally permissionless.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-030/negative2.rs",
+        "line": 13,
+        "column": 22
+      },
+      "evidence": "cross-contract client constructed with no authorization in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "cc83f628eb1bb4540aa8bf4a49ea5bbe"
+    },
+    {
+      "rule_id": "SS-014",
+      "title": "Token transfer amount without validation",
+      "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-030/negative2.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "`transfer` transfers unchecked amount `amount` in entry point `payout`",
+      "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "e935aa3e1867c9fce22f03b037bf4e26"
+    },
+    {
+      "rule_id": "SS-002",
+      "title": "Cross-contract call without caller authorization",
+      "description": "A public contract function constructs and calls another contract client but does not call require_auth in its body or in the intra-file helper functions it calls. If the contract acts on funds or privileges it controls, an attacker may be able to trigger cross-contract effects without the caller's approval. This is a heuristic: the called contract may itself enforce authorization, or the invocation may be intentionally permissionless.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-030/positive.rs",
+        "line": 12,
+        "column": 22
+      },
+      "evidence": "cross-contract client constructed with no authorization in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "2020f41b706098cbe1d7748dadd463cc"
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-030/positive.rs",
+        "line": 12,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "b343b1171b31c9a5b9a58a8a01dd08ac"
+    },
+    {
+      "rule_id": "SS-014",
+      "title": "Token transfer amount without validation",
+      "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-030/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "`transfer` transfers unchecked amount `amount` in entry point `payout`",
+      "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "e4d1d7c7329ff42ad1330aa88e145a75"
     },
     {
       "rule_id": "SS-031",
@@ -2871,6 +4066,86 @@
       "fingerprint": "c2bc01d7f6cdb99f4bee7aa471df5ba5"
     },
     {
+      "rule_id": "SS-032",
+      "title": "Redundant require_auth in loop",
+      "description": "A contract entry point calls `require_auth` (or `require_auth_for_args`) inside a loop body. Each iteration repeats an expensive authorization check for the same operation, and the repeated per-item check often means the authorization should be hoisted and bound to the operation's arguments once. This is a resource-efficiency heuristic, not a proof of a security bug.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-032/positive.rs",
+        "line": 13,
+        "column": 13
+      },
+      "evidence": "`require_auth` called inside a loop in entry point `pay`: admin . require_auth ()",
+      "remediation": "Authorize once before the loop, for example `admin.require_auth();` followed by the loop, or use `require_auth_for_args` with the complete argument set the operation depends on. If every iteration genuinely authorizes a different actor, document why the per-iteration check is required.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "e958de6eb749dfb68c30d9e853bf64e4"
+    },
+    {
+      "rule_id": "SS-037",
+      "title": "Competing authorization calls",
+      "description": "A contract entry point calls `require_auth` for two or more distinct actors. Multiple separate approvals in a single operation usually indicate confused authorization semantics: it is hard to tell which actor is actually required, and a missing check elsewhere may be masked. Legitimate multi-party flows exist, so review each finding in context.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "authorization",
+      "location": {
+        "file": "SS-032/positive.rs",
+        "line": 13,
+        "column": 13
+      },
+      "evidence": "entry point `pay` authorizes 2 distinct actors with separate `require_auth` calls: `admin`, `recipient`",
+      "remediation": "Prefer a single, explicit authorization for the actor whose operation this is, or bind all required parties through one documented multi-sig pattern. If the flow genuinely requires several independent approvals, document the policy and suppress the finding with a justified inline directive.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "e346c1fe2a11ac05f6c6d4b4690d64a6"
+    },
+    {
+      "rule_id": "SS-032",
+      "title": "Redundant require_auth in loop",
+      "description": "A contract entry point calls `require_auth` (or `require_auth_for_args`) inside a loop body. Each iteration repeats an expensive authorization check for the same operation, and the repeated per-item check often means the authorization should be hoisted and bound to the operation's arguments once. This is a resource-efficiency heuristic, not a proof of a security bug.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-032/positive.rs",
+        "line": 14,
+        "column": 13
+      },
+      "evidence": "`require_auth` called inside a loop in entry point `pay`: recipient . require_auth ()",
+      "remediation": "Authorize once before the loop, for example `admin.require_auth();` followed by the loop, or use `require_auth_for_args` with the complete argument set the operation depends on. If every iteration genuinely authorizes a different actor, document why the per-iteration check is required.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "72fafc452ff283431d58ebd4c8423a82"
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-033/negative3.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "token client constructed from caller-supplied address `env` without a stored-configuration check in `client`: TokenClient :: new (& env , & env . current_contract_address ())",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "d25a27333d6e76194fc2a91554474e76"
+    },
+    {
       "rule_id": "SS-033",
       "title": "Wildcard import from the Soroban SDK",
       "description": "A source file imports everything from `soroban_sdk` with a glob (`use soroban_sdk::*;` or a nested glob). Wildcard imports obscure which SDK items are used and can silently include deprecated or unsafe APIs when the SDK changes. This is a readability and reviewability signal, not proof of a security defect.",
@@ -2889,6 +4164,46 @@
         "https://developers.stellar.org/docs"
       ],
       "fingerprint": "f3f0a4aadf0de5b0abe020564befef9a"
+    },
+    {
+      "rule_id": "SS-035",
+      "title": "Ignored checked-arithmetic result",
+      "description": "A `checked_add`/`checked_sub`/`checked_mul` (or similar) result is discarded or bound without being inspected. Overflow then silently produces `None`, reintroducing the bug the checked API exists to prevent. The detector reports calls whose result is not directly consumed by `?`, `match`, or an `unwrap`/`unwrap_or`-style handler.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "arithmetic",
+      "location": {
+        "file": "SS-035/positive.rs",
+        "line": 12,
+        "column": 17
+      },
+      "evidence": "checked-arithmetic result is not handled in entry point `deposit`: amount . checked_add (1)",
+      "remediation": "Handle the checked result: use `?` to propagate it, match on `Some`/`None`, or supply a fallback with `unwrap_or`/`unwrap_or_else`. Never use `checked_*` as a bare statement or discard it into `_`.",
+      "references": [
+        "https://doc.rust-lang.org/std/primitive.i128.html#method.checked_add",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "c0a7f9835ef546f2d4e5470d088a672c"
+    },
+    {
+      "rule_id": "SS-037",
+      "title": "Competing authorization calls",
+      "description": "A contract entry point calls `require_auth` for two or more distinct actors. Multiple separate approvals in a single operation usually indicate confused authorization semantics: it is hard to tell which actor is actually required, and a missing check elsewhere may be masked. Legitimate multi-party flows exist, so review each finding in context.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "authorization",
+      "location": {
+        "file": "SS-037/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "entry point `move_funds` authorizes 2 distinct actors with separate `require_auth` calls: `from`, `to`",
+      "remediation": "Prefer a single, explicit authorization for the actor whose operation this is, or bind all required parties through one documented multi-sig pattern. If the flow genuinely requires several independent approvals, document the policy and suppress the finding with a justified inline directive.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "9a2bf4fc43569320ef2a8fb8f1d691a2"
     }
   ],
   "suppressed": [],
@@ -3020,6 +4335,55 @@
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: panic",
       "path": "SS-014/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-023/negative.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-023/negative2.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-023/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-023/positive.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: panic",
+      "path": "SS-025/negative.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: panic",
+      "path": "SS-028/negative.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: panic",
+      "path": "SS-030/negative.rs",
       "line": null
     },
     {

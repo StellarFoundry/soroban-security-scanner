@@ -526,6 +526,35 @@
           "ruleId": "SS-006"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 10
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: TokenClient :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "8ca3cdfa6ccf47df8093428159bf690e"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -553,6 +582,35 @@
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 20
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token_id` without a stored-configuration check in `route`: TokenClient :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "82b039fcd6e1f58153ce79b2709a6ae9"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
         },
         {
           "level": "warning",
@@ -700,6 +758,35 @@
           "ruleId": "SS-014"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 10
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: TokenClient :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2b43a42c040d6d8663860fc22cf6b36d"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -727,6 +814,35 @@
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 20
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token_id` without a stored-configuration check in `route`: TokenClient :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "df61f85c0bd0d4eceab2246c0913dd0b"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
         },
         {
           "level": "warning",
@@ -785,6 +901,35 @@
             "severity": "high"
           },
           "ruleId": "SS-002"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/positive.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 9
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: TokenClient :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "74cf86ad21eed79956679865289208da"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
         },
         {
           "level": "warning",
@@ -2498,6 +2643,35 @@
           "ruleId": "SS-002"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/negative.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 6
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `to` without a stored-configuration check in `withdraw`: TokenClient :: new (& env , & to)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "3ad6e609e43b4242f70de844c8b072fa"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -2554,6 +2728,35 @@
             "severity": "high"
           },
           "ruleId": "SS-002"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 5
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `id` without a stored-configuration check in `balance`: TokenClient :: new (& env , & id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "898dec5e2d22a423180cfe2bdb77234d"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
         },
         {
           "level": "error",
@@ -2643,6 +2846,35 @@
           "ruleId": "SS-002"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 6
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `to` without a stored-configuration check in `withdraw`: TokenClient :: new (& env , & to)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c3a8b4bbe274a02826b05c8a7eb26bdc"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -2709,6 +2941,35 @@
                   "uri": "SS-013/positive.rs"
                 },
                 "region": {
+                  "startColumn": 22,
+                  "startLine": 4
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `to` without a stored-configuration check in `withdraw`: TokenClient :: new (& env , & to)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ba27766e93f440e49c92c70b74da3f6c"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/positive.rs"
+                },
+                "region": {
                   "startColumn": 9,
                   "startLine": 6
                 }
@@ -2757,6 +3018,35 @@
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 6
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call without a reentrancy guard — cross-contract call in `withdraw` at line 6 precedes storage mutation `set` at line 7 with no reentrancy guard: client . transfer (& env . current_contract_address () , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2a86e785ad5ffa58b7b6fe74a5c7ee64"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "remediation": "Before the external call, read a lock flag from storage, reject when it is already set, and set it; clear it after the state update. Or follow checks-effects-interactions and update all state before calling out.",
+            "severity": "high"
+          },
+          "ruleId": "SS-028"
         },
         {
           "level": "error",
@@ -2846,6 +3136,35 @@
           "ruleId": "SS-004"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-014/negative.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e558aa7e6ec4363b688b5a374ebb8149"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
           "level": "note",
           "locations": [
             {
@@ -2875,6 +3194,35 @@
           "ruleId": "SS-004"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-014/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "239f51d2ae09b388a7c43287b36fb964"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
           "level": "note",
           "locations": [
             {
@@ -2902,6 +3250,64 @@
             "severity": "low"
           },
           "ruleId": "SS-004"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-014/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "0844da756fa17bf3abe018e1be8ae34f"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-014/positive.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "3c9595e61965acac8e1016affd7b6490"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
         },
         {
           "level": "warning",
@@ -3890,6 +4296,1079 @@
           "ruleId": "SS-018"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-021/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_owner`: env . storage () . persistent () . set (& DataKey :: Owner , & owner)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "d30a4b1e82ff740a5dc33d6af6a6fc3c"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-021/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_owner`: env . storage () . persistent () . set (& DataKey :: Owner , & owner)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "7322879d377122e5338cb715ae0c4186"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-021/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `set_owner`: env . storage () . persistent () . set (& DataKey :: Owner , & owner)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "9f645cbf384d9657ac5bbcdadeeb9144"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-021/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `cache`: env . storage () . temporary () . set (& DataKey :: Session , & value)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "16f816f3b5c8684cac499e395b0c9770"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-021/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_owner`: env . storage () . temporary () . set (& DataKey :: Owner , & owner)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e0649fc59d351d8af0c99fbb38dc4663"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-021/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `set_owner`: env . storage () . temporary () . set (& DataKey :: Owner , & owner)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "aa9c9ef26230bfef934d82ca38df7b15"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-021/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_owner`: env . storage () . temporary () . set (& DataKey :: Owner , & owner)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "852b64bc1ec2a632158cd1bb5757b199"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-023/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Sensitive-looking data published in events — event publishes sensitive-looking parameter `secret` in entry point `commit`: env . events () . publish (symbol_short ! (\"commit\") , secret)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "4c7bb8c7dcd42d55faab7be992707e40"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "remediation": "Do not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-023"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/negative.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `panic` in `set_name` can panic: panic ! (\"name too long\")"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6c4a97ba1ecd48ac7fef516a0555513f"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& DataKey :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ea12d748478dea8b32f212d3b2255611"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& DataKey :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "896f4cd2636fb46c5dc433890edbed13"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_amount`: env . storage () . persistent () . set (& DataKey :: Amount , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "de237e99f4ef0c7e6a885edc04d2e57b"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_amount`: env . storage () . persistent () . set (& DataKey :: Amount , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6fc60f6ec5780151995fae2f56cdc771"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& DataKey :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "11d86bada61e82188159d467e30aab12"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& DataKey :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ade9c6081a006f620a73a3e72655568d"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unbounded string/bytes persisted from caller input — user-controlled `String` parameter `name` persisted without a length bound in `set_name`: env . storage () . persistent () . set (& DataKey :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "431c0acb156f003e5e1979a7221ee718"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "medium",
+            "remediation": "Reject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-025"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-027/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Contract's own address used as an authorization subject — `require_auth` authorizes the contract's own address instead of the caller in `guarded`: env . current_contract_address () . require_auth ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "1f7f3e243f93db8fd61fce39df4b1842"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Authorize the actual caller instead: take an `Address` parameter and call `caller.require_auth()`, or call `require_auth` on the stored owner/admin address. Reserve `current_contract_address()` for checks that really concern this contract's identity.",
+            "severity": "high"
+          },
+          "ruleId": "SS-027"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `panic` in `withdraw` can panic: panic ! (\"reentrant\")"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "35bcca1b5c66fe21911ef802669d2a31"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `withdraw`: env . storage () . persistent () . set (& Key :: Locked , & true)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "cfe0afbc3ca2c5f32e7bd65fae6e9294"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `withdraw`: env . storage () . persistent () . set (& Key :: Locked , & true)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "1d1db31d573676e9ed1bf9f0b4df12da"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call without caller authorization — cross-contract client constructed with no authorization in `withdraw`: TokenClient :: new (& env , & token)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "8a5f043f6501f9d291b36d7d1b4565e1"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+            "severity": "high"
+          },
+          "ruleId": "SS-002"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token` without a stored-configuration check in `withdraw`: TokenClient :: new (& env , & token)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "a6833cca85cdefc6c3c3d976037c98b2"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token transfer amount without validation — `transfer` transfers unchecked amount `amount` in entry point `withdraw`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b246a6af181e82c822350ad4e63a1c99"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-014"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `withdraw`: env . storage () . persistent () . set (& Key :: Balance , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "0a689d578d918651ed75f62df2df4563"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `withdraw`: env . storage () . persistent () . set (& Key :: Balance , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b83c4a6cd821a6c273aef3c46054e728"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `withdraw`: env . storage () . persistent () . set (& Key :: Balance , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "196cae8847f246987eea0907886b2346"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `withdraw`: env . storage () . persistent () . set (& Key :: Balance , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "d2cc256db0361c3c0abd6cc3133ceca3"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call without caller authorization — cross-contract client constructed with no authorization in `withdraw`: TokenClient :: new (& env , & token)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "256239d6165e9a6f5b11ea7beca1009e"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+            "severity": "high"
+          },
+          "ruleId": "SS-002"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token` without a stored-configuration check in `withdraw`: TokenClient :: new (& env , & token)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "bc7f8d6006ab176203f70ac24ed3c3c8"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token transfer amount without validation — `transfer` transfers unchecked amount `amount` in entry point `withdraw`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "3b059e2094045bb07bd10904f219b6cb"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-014"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/positive.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call without caller authorization — cross-contract client constructed with no authorization in `withdraw`: TokenClient :: new (& env , & token)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c87f9f55c61c007cfebbe82a8ef54571"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+            "severity": "high"
+          },
+          "ruleId": "SS-002"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/positive.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token` without a stored-configuration check in `withdraw`: TokenClient :: new (& env , & token)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "469ced2b262aa986c5c7ad98822b5dd8"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call before state update — cross-contract call in `withdraw` at line 13 (byte 313) precedes the first storage write `set` at line 14 (byte 388)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "91372358a70638073c121aa93fb854ad"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "remediation": "Follow checks-effects-interactions: validate inputs, update all relevant contract state, and only then invoke another contract. If an external call must happen first, add an explicit reentrancy guard and document why the intermediate state is safe to observe.",
+            "severity": "high"
+          },
+          "ruleId": "SS-013"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token transfer amount without validation — `transfer` transfers unchecked amount `amount` in entry point `withdraw`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ee16d4000bb6d884c3d94aa068300561"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-014"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call without a reentrancy guard — cross-contract call in `withdraw` at line 13 precedes storage mutation `set` at line 14 with no reentrancy guard: client . transfer (& env . current_contract_address () , & token , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "dabd871e475d6d115bb8025943652d89"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "remediation": "Before the external call, read a lock flag from storage, reject when it is already set, and set it; clear it after the state update. Or follow checks-effects-interactions and update all state before calling out.",
+            "severity": "high"
+          },
+          "ruleId": "SS-028"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `withdraw`: env . storage () . persistent () . set (& Key :: Balance , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "757ee1e079580fab11d10dcb83ded1a8"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `withdraw`: env . storage () . persistent () . set (& Key :: Balance , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "3860def458a71ab0ee0e2e0899610264"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -3917,6 +5396,296 @@
             "severity": "medium"
           },
           "ruleId": "SS-029"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/negative.rs"
+                },
+                "region": {
+                  "startColumn": 35,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `payout` can panic: env . storage () . persistent () . get (& Key :: Token) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e71091ffde52f91a460ccdedbbbfd0bd"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/negative.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `panic` in `payout` can panic: panic ! (\"unexpected token\")"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "de35d5cbe0f9a44397924d1ae6437e73"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/negative.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call without caller authorization — cross-contract client constructed with no authorization in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "5d31bf4207eb98132b763ac25bc52f4c"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+            "severity": "high"
+          },
+          "ruleId": "SS-002"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token transfer amount without validation — `transfer` transfers unchecked amount `amount` in entry point `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c24246d25d23e1c883acfad3de5e9585"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-014"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 33,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `payout` can panic: env . storage () . persistent () . get (& Key :: Token) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "a7f66e471208cdd28bbd07198e4ceb34"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call without caller authorization — cross-contract client constructed with no authorization in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "cc83f628eb1bb4540aa8bf4a49ea5bbe"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+            "severity": "high"
+          },
+          "ruleId": "SS-002"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token transfer amount without validation — `transfer` transfers unchecked amount `amount` in entry point `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e935aa3e1867c9fce22f03b037bf4e26"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-014"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/positive.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call without caller authorization — cross-contract client constructed with no authorization in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2020f41b706098cbe1d7748dadd463cc"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+            "severity": "high"
+          },
+          "ruleId": "SS-002"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/positive.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b343b1171b31c9a5b9a58a8a01dd08ac"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token transfer amount without validation — `transfer` transfers unchecked amount `amount` in entry point `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e4d1d7c7329ff42ad1330aa88e145a75"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-014"
         },
         {
           "level": "warning",
@@ -3953,6 +5722,122 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-032/positive.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Redundant require_auth in loop — `require_auth` called inside a loop in entry point `pay`: admin . require_auth ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e958de6eb749dfb68c30d9e853bf64e4"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Authorize once before the loop, for example `admin.require_auth();` followed by the loop, or use `require_auth_for_args` with the complete argument set the operation depends on. If every iteration genuinely authorizes a different actor, document why the per-iteration check is required.",
+            "severity": "low"
+          },
+          "ruleId": "SS-032"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-032/positive.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Competing authorization calls — entry point `pay` authorizes 2 distinct actors with separate `require_auth` calls: `admin`, `recipient`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e346c1fe2a11ac05f6c6d4b4690d64a6"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "low",
+            "remediation": "Prefer a single, explicit authorization for the actor whose operation this is, or bind all required parties through one documented multi-sig pattern. If the flow genuinely requires several independent approvals, document the policy and suppress the finding with a justified inline directive.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-037"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-032/positive.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Redundant require_auth in loop — `require_auth` called inside a loop in entry point `pay`: recipient . require_auth ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "72fafc452ff283431d58ebd4c8423a82"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Authorize once before the loop, for example `admin.require_auth();` followed by the loop, or use `require_auth_for_args` with the complete argument set the operation depends on. If every iteration genuinely authorizes a different actor, document why the per-iteration check is required.",
+            "severity": "low"
+          },
+          "ruleId": "SS-032"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-033/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `env` without a stored-configuration check in `client`: TokenClient :: new (& env , & env . current_contract_address ())"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "d25a27333d6e76194fc2a91554474e76"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-033/positive.rs"
                 },
                 "region": {
@@ -3975,6 +5860,64 @@
             "severity": "low"
           },
           "ruleId": "SS-033"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-035/positive.rs"
+                },
+                "region": {
+                  "startColumn": 17,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored checked-arithmetic result — checked-arithmetic result is not handled in entry point `deposit`: amount . checked_add (1)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c0a7f9835ef546f2d4e5470d088a672c"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "medium",
+            "remediation": "Handle the checked result: use `?` to propagate it, match on `Some`/`None`, or supply a fallback with `unwrap_or`/`unwrap_or_else`. Never use `checked_*` as a bare statement or discard it into `_`.",
+            "severity": "high"
+          },
+          "ruleId": "SS-035"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-037/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Competing authorization calls — entry point `move_funds` authorizes 2 distinct actors with separate `require_auth` calls: `from`, `to`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "9a2bf4fc43569320ef2a8fb8f1d691a2"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "low",
+            "remediation": "Prefer a single, explicit authorization for the actor whose operation this is, or bind all required parties through one documented multi-sig pattern. If the flow genuinely requires several independent approvals, document the policy and suppress the finding with a justified inline directive.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-037"
         }
       ],
       "tool": {
@@ -4481,6 +6424,146 @@
                 "level": "warning"
               },
               "fullDescription": {
+                "text": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence."
+              },
+              "help": {
+                "markdown": "## Durable data written to temporary storage\n\nTemporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.\n\n### Remediation\n\nWrite durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival",
+                "text": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.\n\nRemediation: Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-021",
+              "name": "Durable data written to temporary storage",
+              "properties": {
+                "category": "storage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+                ],
+                "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Durable data written to temporary storage"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Events are public on the ledger forever. Publishing a value whose name suggests a secret (secret, key, seed, proof) risks an irreversible disclosure. This is a name-based heuristic over parameters and string literals and reports low confidence."
+              },
+              "help": {
+                "markdown": "## Sensitive-looking data published in events\n\nEvents are public on the ledger forever. Publishing a value whose name suggests a secret (secret, key, seed, proof) risks an irreversible disclosure. This is a name-based heuristic over parameters and string literals and reports low confidence.\n\n### Remediation\n\nDo not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/events\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Events are public on the ledger forever. Publishing a value whose name suggests a secret (secret, key, seed, proof) risks an irreversible disclosure. This is a name-based heuristic over parameters and string literals and reports low confidence.\n\nRemediation: Do not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/events",
+              "id": "SS-023",
+              "name": "Sensitive-looking data published in events",
+              "properties": {
+                "category": "events",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/events",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Do not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Sensitive-looking data published in events"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Persisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write."
+              },
+              "help": {
+                "markdown": "## Unbounded string/bytes persisted from caller input\n\nPersisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write.\n\n### Remediation\n\nReject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Persisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write.\n\nRemediation: Reject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-025",
+              "name": "Unbounded string/bytes persisted from caller input",
+              "properties": {
+                "category": "storage",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Reject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unbounded string/bytes persisted from caller input"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "Passing `env.current_contract_address()` to `require_auth` authorizes the contract itself instead of the caller. This is almost always a logic error: the check succeeds for anyone who can invoke the contract, so it does not provide the intended access control."
+              },
+              "help": {
+                "markdown": "## Contract's own address used as an authorization subject\n\nPassing `env.current_contract_address()` to `require_auth` authorizes the contract itself instead of the caller. This is almost always a logic error: the check succeeds for anyone who can invoke the contract, so it does not provide the intended access control.\n\n### Remediation\n\nAuthorize the actual caller instead: take an `Address` parameter and call `caller.require_auth()`, or call `require_auth` on the stored owner/admin address. Reserve `current_contract_address()` for checks that really concern this contract's identity.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Passing `env.current_contract_address()` to `require_auth` authorizes the contract itself instead of the caller. This is almost always a logic error: the check succeeds for anyone who can invoke the contract, so it does not provide the intended access control.\n\nRemediation: Authorize the actual caller instead: take an `Address` parameter and call `caller.require_auth()`, or call `require_auth` on the stored owner/admin address. Reserve `current_contract_address()` for checks that really concern this contract's identity."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-027",
+              "name": "Contract's own address used as an authorization subject",
+              "properties": {
+                "category": "authorization",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Authorize the actual caller instead: take an `Address` parameter and call `caller.require_auth()`, or call `require_auth` on the stored owner/admin address. Reserve `current_contract_address()` for checks that really concern this contract's identity.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Contract's own address used as an authorization subject"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A public entry point makes a cross-contract call and then mutates storage without a visible reentrancy guard. Soroban permits reentrancy, so a malicious callee can re-enter while state is inconsistent. The detector recognizes a documented guard pattern: a storage flag with a lock/guard-style key is read and set before the call."
+              },
+              "help": {
+                "markdown": "## Cross-contract call without a reentrancy guard\n\nA public entry point makes a cross-contract call and then mutates storage without a visible reentrancy guard. Soroban permits reentrancy, so a malicious callee can re-enter while state is inconsistent. The detector recognizes a documented guard pattern: a storage flag with a lock/guard-style key is read and set before the call.\n\n### Remediation\n\nBefore the external call, read a lock flag from storage, reject when it is already set, and set it; clear it after the state update. Or follow checks-effects-interactions and update all state before calling out.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security\n- https://developers.stellar.org/docs",
+                "text": "A public entry point makes a cross-contract call and then mutates storage without a visible reentrancy guard. Soroban permits reentrancy, so a malicious callee can re-enter while state is inconsistent. The detector recognizes a documented guard pattern: a storage flag with a lock/guard-style key is read and set before the call.\n\nRemediation: Before the external call, read a lock flag from storage, reject when it is already set, and set it; clear it after the state update. Or follow checks-effects-interactions and update all state before calling out."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-028",
+              "name": "Cross-contract call without a reentrancy guard",
+              "properties": {
+                "category": "cross-contract",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security",
+                  "https://developers.stellar.org/docs"
+                ],
+                "remediation": "Before the external call, read a lock flag from storage, reject when it is already set, and set it; clear it after the state update. Or follow checks-effects-interactions and update all state before calling out.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Cross-contract call without a reentrancy guard"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
                 "text": "A public contract entry point is named like a test or debug backdoor (a `test`, `debug`, `dev`, `mock`, or `dummy` name segment). Backdoor entry points that remain callable in a production deployment let anyone invoke privileged behavior, and are a well-known way on-chain contracts are compromised. This is a name-based heuristic and may flag a legitimately named function."
               },
               "help": {
@@ -4501,6 +6584,34 @@
               },
               "shortDescription": {
                 "text": "Public test or debug hook in a contract entry point"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction."
+              },
+              "help": {
+                "markdown": "## Token client built from an unvalidated caller address\n\nA `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.\n\n### Remediation\n\nCompare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.\n\n### References\n\n- https://developers.stellar.org/docs/tokens/token-interface\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.\n\nRemediation: Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client."
+              },
+              "helpUri": "https://developers.stellar.org/docs/tokens/token-interface",
+              "id": "SS-030",
+              "name": "Token client built from an unvalidated caller address",
+              "properties": {
+                "category": "token",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/tokens/token-interface",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Token client built from an unvalidated caller address"
               }
             },
             {
@@ -4536,6 +6647,34 @@
                 "level": "note"
               },
               "fullDescription": {
+                "text": "A contract entry point calls `require_auth` (or `require_auth_for_args`) inside a loop body. Each iteration repeats an expensive authorization check for the same operation, and the repeated per-item check often means the authorization should be hoisted and bound to the operation's arguments once. This is a resource-efficiency heuristic, not a proof of a security bug."
+              },
+              "help": {
+                "markdown": "## Redundant require_auth in loop\n\nA contract entry point calls `require_auth` (or `require_auth_for_args`) inside a loop body. Each iteration repeats an expensive authorization check for the same operation, and the repeated per-item check often means the authorization should be hoisted and bound to the operation's arguments once. This is a resource-efficiency heuristic, not a proof of a security bug.\n\n### Remediation\n\nAuthorize once before the loop, for example `admin.require_auth();` followed by the loop, or use `require_auth_for_args` with the complete argument set the operation depends on. If every iteration genuinely authorizes a different actor, document why the per-iteration check is required.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A contract entry point calls `require_auth` (or `require_auth_for_args`) inside a loop body. Each iteration repeats an expensive authorization check for the same operation, and the repeated per-item check often means the authorization should be hoisted and bound to the operation's arguments once. This is a resource-efficiency heuristic, not a proof of a security bug.\n\nRemediation: Authorize once before the loop, for example `admin.require_auth();` followed by the loop, or use `require_auth_for_args` with the complete argument set the operation depends on. If every iteration genuinely authorizes a different actor, document why the per-iteration check is required."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-032",
+              "name": "Redundant require_auth in loop",
+              "properties": {
+                "category": "authorization",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Authorize once before the loop, for example `admin.require_auth();` followed by the loop, or use `require_auth_for_args` with the complete argument set the operation depends on. If every iteration genuinely authorizes a different actor, document why the per-iteration check is required.",
+                "severity": "low"
+              },
+              "shortDescription": {
+                "text": "Redundant require_auth in loop"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "fullDescription": {
                 "text": "A source file imports everything from `soroban_sdk` with a glob (`use soroban_sdk::*;` or a nested glob). Wildcard imports obscure which SDK items are used and can silently include deprecated or unsafe APIs when the SDK changes. This is a readability and reviewability signal, not proof of a security defect."
               },
               "help": {
@@ -4557,6 +6696,62 @@
               },
               "shortDescription": {
                 "text": "Wildcard import from the Soroban SDK"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A `checked_add`/`checked_sub`/`checked_mul` (or similar) result is discarded or bound without being inspected. Overflow then silently produces `None`, reintroducing the bug the checked API exists to prevent. The detector reports calls whose result is not directly consumed by `?`, `match`, or an `unwrap`/`unwrap_or`-style handler."
+              },
+              "help": {
+                "markdown": "## Ignored checked-arithmetic result\n\nA `checked_add`/`checked_sub`/`checked_mul` (or similar) result is discarded or bound without being inspected. Overflow then silently produces `None`, reintroducing the bug the checked API exists to prevent. The detector reports calls whose result is not directly consumed by `?`, `match`, or an `unwrap`/`unwrap_or`-style handler.\n\n### Remediation\n\nHandle the checked result: use `?` to propagate it, match on `Some`/`None`, or supply a fallback with `unwrap_or`/`unwrap_or_else`. Never use `checked_*` as a bare statement or discard it into `_`.\n\n### References\n\n- https://doc.rust-lang.org/std/primitive.i128.html#method.checked_add\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A `checked_add`/`checked_sub`/`checked_mul` (or similar) result is discarded or bound without being inspected. Overflow then silently produces `None`, reintroducing the bug the checked API exists to prevent. The detector reports calls whose result is not directly consumed by `?`, `match`, or an `unwrap`/`unwrap_or`-style handler.\n\nRemediation: Handle the checked result: use `?` to propagate it, match on `Some`/`None`, or supply a fallback with `unwrap_or`/`unwrap_or_else`. Never use `checked_*` as a bare statement or discard it into `_`."
+              },
+              "helpUri": "https://doc.rust-lang.org/std/primitive.i128.html#method.checked_add",
+              "id": "SS-035",
+              "name": "Ignored checked-arithmetic result",
+              "properties": {
+                "category": "arithmetic",
+                "confidence": "medium",
+                "references": [
+                  "https://doc.rust-lang.org/std/primitive.i128.html#method.checked_add",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Handle the checked result: use `?` to propagate it, match on `Some`/`None`, or supply a fallback with `unwrap_or`/`unwrap_or_else`. Never use `checked_*` as a bare statement or discard it into `_`.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Ignored checked-arithmetic result"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract entry point calls `require_auth` for two or more distinct actors. Multiple separate approvals in a single operation usually indicate confused authorization semantics: it is hard to tell which actor is actually required, and a missing check elsewhere may be masked. Legitimate multi-party flows exist, so review each finding in context."
+              },
+              "help": {
+                "markdown": "## Competing authorization calls\n\nA contract entry point calls `require_auth` for two or more distinct actors. Multiple separate approvals in a single operation usually indicate confused authorization semantics: it is hard to tell which actor is actually required, and a missing check elsewhere may be masked. Legitimate multi-party flows exist, so review each finding in context.\n\n### Remediation\n\nPrefer a single, explicit authorization for the actor whose operation this is, or bind all required parties through one documented multi-sig pattern. If the flow genuinely requires several independent approvals, document the policy and suppress the finding with a justified inline directive.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A contract entry point calls `require_auth` for two or more distinct actors. Multiple separate approvals in a single operation usually indicate confused authorization semantics: it is hard to tell which actor is actually required, and a missing check elsewhere may be masked. Legitimate multi-party flows exist, so review each finding in context.\n\nRemediation: Prefer a single, explicit authorization for the actor whose operation this is, or bind all required parties through one documented multi-sig pattern. If the flow genuinely requires several independent approvals, document the policy and suppress the finding with a justified inline directive."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-037",
+              "name": "Competing authorization calls",
+              "properties": {
+                "category": "authorization",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Prefer a single, explicit authorization for the actor whose operation this is, or bind all required parties through one documented multi-sig pattern. If the flow genuinely requires several independent approvals, document the policy and suppress the finding with a justified inline directive.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Competing authorization calls"
               }
             }
           ],

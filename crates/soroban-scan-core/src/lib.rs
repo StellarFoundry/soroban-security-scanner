@@ -29,6 +29,7 @@ pub mod discovery;
 pub mod engine;
 pub mod error;
 pub mod finding;
+pub mod fingerprint;
 pub mod frontend;
 pub mod imports;
 pub mod manifest;
