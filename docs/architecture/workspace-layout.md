@@ -93,6 +93,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `report` | Terminal, JSON, SARIF, Markdown, HTML, and GitHub renderers. | `config`, `engine`, `finding`, `model`, `registry`, `rule`, `severity`. |
 | `redaction` | Opt-in hashing of selected report fields at render time; fingerprints stay intact. | `baseline`, `engine`, `finding`. |
 | `pack` | Rule pack manifest parsing, detached signature verification, keyrings, and rotation/revocation. | `config`, `error`. |
+| `policy` | Policy document parsing, validation, and deterministic evaluation. | `config`, `error`, `model`. |
 | `ai` | Optional, advisory assistance; deterministic engine remains authoritative. | `category`, `finding`, `rule`, `severity`. |
 | `api_auth` | Framework-independent bearer token parsing and verification for API integrations. | Nothing in the crate. |
 | `corpus` | Read-only detector fixture, documentation, and must-trigger coverage reporting. | `registry`. |
@@ -127,7 +128,7 @@ external consumers is narrower:
 - `baseline` (`Baseline`, `compare`, `serialize`/`parse`)
 - `finding`, `model`, `severity`, `confidence`, `category`, `rule`
 
-Modules such as `api_auth`, `corpus`, `discovery`, `manifest`, `source`, `soroban`, `context`,
+Modules such as `api_auth`, `corpus`, `discovery`, `policy`, `manifest`, `source`, `soroban`, `context`,
 `suppression`, `rules`, and `ai` are public for testing and contributor use.
 Changing their signatures is allowed in a `0.x` release but should be called out
 in `CHANGELOG.md`.
