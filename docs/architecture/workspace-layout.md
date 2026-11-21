@@ -70,6 +70,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `category` | `Category` enum and parsing. | Nothing in the crate. |
 | `model` | Serializable project/manifest/diagnostic data model. | Nothing in the crate. |
 | `finding` | `Finding`, `SourceLocation`, fingerprints, identity, and sort keys. | `category`, `confidence`, `rule`, `severity`. |
+| `fingerprint` | Configurable fingerprint strategies, including the backward-compatible default and path-independent mode. | `finding`. |
 | `rule` | `Rule` trait and `RuleMetadata`. | `category`, `confidence`, `context`, `finding`, `severity`. |
 | `registry` | Registration, lookup, and deterministic metadata ordering for rules. | `category`, `rule`. |
 | `config` | Layered `ScanConfig` and validation; repository config is untrusted input. | `ai`, `category`, `confidence`, `severity`. |

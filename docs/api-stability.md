@@ -25,7 +25,8 @@ is enforced by the `api_stability` integration test.
 - `sdk_matrix` (supported Soroban SDK range and `SDK-001` warnings) and
   `unsupported` (bounded `SYNTAX-001` diagnostics for other languages).
 - `imports` (best-effort, per-file `use` resolution), `ai`, `baseline`,
-  `compare`, `context`, `error`, `pack`, and `redaction` support modules.
+  `compare`, `context`, `error`, `fingerprint`, `pack`, and `redaction` support
+  modules.
 - The `analysis`/pipeline implementation details and any `pub(crate)` item.
 - Internal utility modules (`rules::util`, `test_support`).
 

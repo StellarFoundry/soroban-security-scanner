@@ -112,3 +112,13 @@ why = "A raw identifier for the environment argument does not hide the public de
 file = "SS-033/split_glob.rs"
 expect = "trigger"
 why = "A wildcard import split after the soroban_sdk separator is still a wildcard SDK import."
+
+[SS-032]
+file = "SS-032/sample.rs"
+expect = "trigger"
+why = "Nested for/loop bodies still count as lexically inside a loop, and require_auth_for_args is treated like require_auth."
+
+[SS-037]
+file = "SS-037/sample.rs"
+expect = "trigger"
+why = "Parenthesized and borrowed receivers still render as two distinct actors, so the competing-authorization signal is preserved."
