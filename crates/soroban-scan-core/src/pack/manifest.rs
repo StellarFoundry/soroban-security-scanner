@@ -131,8 +131,8 @@ impl PackManifest {
         if text.len() > MAX_PACK_MANIFEST_BYTES {
             return Err(PackManifestError::TooLarge);
         }
-        let manifest: Self = toml::from_str(text)
-            .map_err(|error| PackManifestError::Parse(error.to_string()))?;
+        let manifest: Self =
+            toml::from_str(text).map_err(|error| PackManifestError::Parse(error.to_string()))?;
         manifest.validate()?;
         Ok(manifest)
     }
@@ -171,11 +171,12 @@ impl PackManifest {
         parse_stable_version(&self.pack.version).ok_or_else(|| {
             PackManifestError::Validation("pack.version must be a stable X.Y.Z version".to_string())
         })?;
-        let min_version = parse_stable_version(&self.pack.min_scanner_version).ok_or_else(|| {
-            PackManifestError::Validation(
-                "pack.min_scanner_version must be a stable X.Y.Z version".to_string(),
-            )
-        })?;
+        let min_version =
+            parse_stable_version(&self.pack.min_scanner_version).ok_or_else(|| {
+                PackManifestError::Validation(
+                    "pack.min_scanner_version must be a stable X.Y.Z version".to_string(),
+                )
+            })?;
         let max_version = self
             .pack
             .max_scanner_version
@@ -264,12 +265,13 @@ impl PackManifest {
         if scanner_version < min_version {
             return Err(PackManifestError::Validation(format!(
                 "scanner version {} is below required minimum {}",
-                format_version(scanner_version), self.pack.min_scanner_version
+                format_version(scanner_version),
+                self.pack.min_scanner_version
             )));
         }
         if let Some(max_version) = self.pack.max_scanner_version.as_deref() {
-            let parsed_max = parse_stable_version(max_version)
-                .expect("validate checks max version");
+            let parsed_max =
+                parse_stable_version(max_version).expect("validate checks max version");
             if scanner_version > parsed_max {
                 return Err(PackManifestError::Validation(format!(
                     "scanner version {} exceeds supported maximum {}",
@@ -310,7 +312,9 @@ fn valid_rule_id(id: &str) -> bool {
         return false;
     };
     !prefix.is_empty()
-        && prefix.bytes().all(|byte| byte.is_ascii_uppercase() || byte.is_ascii_digit())
+        && prefix
+            .bytes()
+            .all(|byte| byte.is_ascii_uppercase() || byte.is_ascii_digit())
         && suffix.len() >= 3
         && suffix.bytes().all(|byte| byte.is_ascii_digit())
 }
