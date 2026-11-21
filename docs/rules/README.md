@@ -69,6 +69,10 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-016](detectors/SS-016.md) | Unbounded data stored in instance storage | medium | low | storage |
 | [SS-017](detectors/SS-017.md) | Authorization after state mutation | medium | medium | authorization |
 | [SS-018](detectors/SS-018.md) | Unchecked integer cast | medium | low | arithmetic |
+| [SS-021](detectors/SS-021.md) | Durable data written to temporary storage | medium | low | storage |
+| [SS-023](detectors/SS-023.md) | Sensitive-looking data published in events | medium | low | events |
+| [SS-025](detectors/SS-025.md) | Unbounded string/bytes persisted from caller input | medium | medium | storage |
+| [SS-027](detectors/SS-027.md) | Contract's own address used as an authorization subject | high | medium | authorization |
 | [SS-029](detectors/SS-029.md) | Public test or debug hook in a contract entry point | medium | medium | access-control |
 | [SS-031](detectors/SS-031.md) | Event topic derived from a caller-controlled parameter | medium | low | events |
 | [SS-032](detectors/SS-032.md) | Redundant require_auth in loop | low | medium | authorization |

@@ -46,8 +46,8 @@ for installation, machine-readable output, and CI usage.
 
 ## What it detects
 
-Nineteen Soroban-aware detectors ship today (from `SS-001` to `SS-033`). Severity
-and confidence are independent and always reported honestly.
+Twenty-five Soroban-aware detectors ship today (from `SS-001` to `SS-033`).
+Severity and confidence are independent and always reported honestly.
 
 | Rule | Title | Severity | Confidence | Category |
 | ---- | ----- | -------- | ---------- | -------- |
@@ -68,6 +68,11 @@ and confidence are independent and always reported honestly.
 | [SS-015](docs/rules/detectors/SS-015.md) | Deprecated Soroban SDK version | low | medium | dependencies |
 | [SS-016](docs/rules/detectors/SS-016.md) | Unbounded data stored in instance storage | medium | low | storage |
 | [SS-017](docs/rules/detectors/SS-017.md) | Authorization after state mutation | medium | medium | authorization |
+| [SS-018](docs/rules/detectors/SS-018.md) | Unchecked integer cast | medium | low | arithmetic |
+| [SS-021](docs/rules/detectors/SS-021.md) | Durable data written to temporary storage | medium | low | storage |
+| [SS-023](docs/rules/detectors/SS-023.md) | Sensitive-looking data published in events | medium | low | events |
+| [SS-025](docs/rules/detectors/SS-025.md) | Unbounded string/bytes persisted from caller input | medium | medium | storage |
+| [SS-027](docs/rules/detectors/SS-027.md) | Contract's own address used as an authorization subject | high | medium | authorization |
 | [SS-029](docs/rules/detectors/SS-029.md) | Public test or debug hook in a contract entry point | medium | medium | access-control |
 | [SS-033](docs/rules/detectors/SS-033.md) | Wildcard import from the Soroban SDK | low | high | dependencies |
 
@@ -94,7 +99,7 @@ Rule identifiers are stable (never reused or renumbered). See
 
 - Deterministic project discovery and Soroban classification.
 - `syn`-based Rust parsing with source locations.
-- Nineteen security detectors (from `SS-001` to `SS-033`) with fixtures and documentation.
+- Twenty-five security detectors (from `SS-001` to `SS-033`) with fixtures and documentation.
 - CLI: `scan`, `rules`, `explain`, `version`, `init`, `config`.
 - Output formats: terminal, JSON, SARIF 2.1.0, Markdown, and GitHub workflow annotations.
 - Configurable rule selection, thresholds, and excludes.

@@ -3890,6 +3890,499 @@
           "ruleId": "SS-018"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-021/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_owner`: env . storage () . persistent () . set (& DataKey :: Owner , & owner)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "d30a4b1e82ff740a5dc33d6af6a6fc3c"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-021/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_owner`: env . storage () . persistent () . set (& DataKey :: Owner , & owner)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "7322879d377122e5338cb715ae0c4186"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-021/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `set_owner`: env . storage () . persistent () . set (& DataKey :: Owner , & owner)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "9f645cbf384d9657ac5bbcdadeeb9144"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-021/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `cache`: env . storage () . temporary () . set (& DataKey :: Session , & value)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "16f816f3b5c8684cac499e395b0c9770"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-021/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_owner`: env . storage () . temporary () . set (& DataKey :: Owner , & owner)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e0649fc59d351d8af0c99fbb38dc4663"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-021/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `set_owner`: env . storage () . temporary () . set (& DataKey :: Owner , & owner)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "aa9c9ef26230bfef934d82ca38df7b15"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-021/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_owner`: env . storage () . temporary () . set (& DataKey :: Owner , & owner)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "852b64bc1ec2a632158cd1bb5757b199"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-023/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Sensitive-looking data published in events — event publishes sensitive-looking parameter `secret` in entry point `commit`: env . events () . publish (symbol_short ! (\"commit\") , secret)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "4c7bb8c7dcd42d55faab7be992707e40"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "remediation": "Do not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-023"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/negative.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `panic` in `set_name` can panic: panic ! (\"name too long\")"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6c4a97ba1ecd48ac7fef516a0555513f"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& DataKey :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ea12d748478dea8b32f212d3b2255611"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& DataKey :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "896f4cd2636fb46c5dc433890edbed13"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_amount`: env . storage () . persistent () . set (& DataKey :: Amount , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "de237e99f4ef0c7e6a885edc04d2e57b"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_amount`: env . storage () . persistent () . set (& DataKey :: Amount , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6fc60f6ec5780151995fae2f56cdc771"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& DataKey :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "11d86bada61e82188159d467e30aab12"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& DataKey :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ade9c6081a006f620a73a3e72655568d"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-025/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unbounded string/bytes persisted from caller input — user-controlled `String` parameter `name` persisted without a length bound in `set_name`: env . storage () . persistent () . set (& DataKey :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "431c0acb156f003e5e1979a7221ee718"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "medium",
+            "remediation": "Reject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-025"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-027/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Contract's own address used as an authorization subject — `require_auth` authorizes the contract's own address instead of the caller in `guarded`: env . current_contract_address () . require_auth ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "1f7f3e243f93db8fd61fce39df4b1842"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "remediation": "Authorize the actual caller instead: take an `Address` parameter and call `caller.require_auth()`, or call `require_auth` on the stored owner/admin address. Reserve `current_contract_address()` for checks that really concern this contract's identity.",
+            "severity": "high"
+          },
+          "ruleId": "SS-027"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -4590,6 +5083,118 @@
               },
               "shortDescription": {
                 "text": "Unchecked integer cast"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence."
+              },
+              "help": {
+                "markdown": "## Durable data written to temporary storage\n\nTemporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.\n\n### Remediation\n\nWrite durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival",
+                "text": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.\n\nRemediation: Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-021",
+              "name": "Durable data written to temporary storage",
+              "properties": {
+                "category": "storage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+                ],
+                "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Durable data written to temporary storage"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Events are public on the ledger forever. Publishing a value whose name suggests a secret (secret, key, seed, proof) risks an irreversible disclosure. This is a name-based heuristic over parameters and string literals and reports low confidence."
+              },
+              "help": {
+                "markdown": "## Sensitive-looking data published in events\n\nEvents are public on the ledger forever. Publishing a value whose name suggests a secret (secret, key, seed, proof) risks an irreversible disclosure. This is a name-based heuristic over parameters and string literals and reports low confidence.\n\n### Remediation\n\nDo not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/events\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Events are public on the ledger forever. Publishing a value whose name suggests a secret (secret, key, seed, proof) risks an irreversible disclosure. This is a name-based heuristic over parameters and string literals and reports low confidence.\n\nRemediation: Do not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/events",
+              "id": "SS-023",
+              "name": "Sensitive-looking data published in events",
+              "properties": {
+                "category": "events",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/events",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Do not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Sensitive-looking data published in events"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Persisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write."
+              },
+              "help": {
+                "markdown": "## Unbounded string/bytes persisted from caller input\n\nPersisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write.\n\n### Remediation\n\nReject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Persisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write.\n\nRemediation: Reject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-025",
+              "name": "Unbounded string/bytes persisted from caller input",
+              "properties": {
+                "category": "storage",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Reject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unbounded string/bytes persisted from caller input"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "Passing `env.current_contract_address()` to `require_auth` authorizes the contract itself instead of the caller. This is almost always a logic error: the check succeeds for anyone who can invoke the contract, so it does not provide the intended access control."
+              },
+              "help": {
+                "markdown": "## Contract's own address used as an authorization subject\n\nPassing `env.current_contract_address()` to `require_auth` authorizes the contract itself instead of the caller. This is almost always a logic error: the check succeeds for anyone who can invoke the contract, so it does not provide the intended access control.\n\n### Remediation\n\nAuthorize the actual caller instead: take an `Address` parameter and call `caller.require_auth()`, or call `require_auth` on the stored owner/admin address. Reserve `current_contract_address()` for checks that really concern this contract's identity.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Passing `env.current_contract_address()` to `require_auth` authorizes the contract itself instead of the caller. This is almost always a logic error: the check succeeds for anyone who can invoke the contract, so it does not provide the intended access control.\n\nRemediation: Authorize the actual caller instead: take an `Address` parameter and call `caller.require_auth()`, or call `require_auth` on the stored owner/admin address. Reserve `current_contract_address()` for checks that really concern this contract's identity."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-027",
+              "name": "Contract's own address used as an authorization subject",
+              "properties": {
+                "category": "authorization",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Authorize the actual caller instead: take an `Address` parameter and call `caller.require_auth()`, or call `require_auth` on the stored owner/admin address. Reserve `current_contract_address()` for checks that really concern this contract's identity.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Contract's own address used as an authorization subject"
               }
             },
             {
