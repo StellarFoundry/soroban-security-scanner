@@ -4,9 +4,13 @@
 //! distributed, and verified cryptographically without modifying the core scanner.
 
 pub mod manifest;
+pub mod registry;
 pub mod signing;
 
 pub use manifest::{PackManifest, PackMetadata, PackRuleMetadata};
+pub use registry::{
+    PackRegistry, PackRegistryEntry, PackRegistryError, PACK_REGISTRY_SCHEMA_VERSION,
+};
 pub use signing::{
     DetachedSignature, KeyRing, KeyStatus, PackSigner, PackVerificationError, PackVerifier,
     TrustedKey, VerificationPolicy, VerificationResult, ALGORITHM_ED25519, MAX_VERIFY_PAYLOAD_SIZE,

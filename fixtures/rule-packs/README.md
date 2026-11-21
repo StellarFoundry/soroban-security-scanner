@@ -1,12 +1,13 @@
 # Rule pack fixtures
 
 This directory contains test fixtures for external rule packs, detached signatures,
-and cryptographic verification.
+cryptographic verification, and the local registry.
 
 ## Layout
 
 ```
 fixtures/rule-packs/
+  registry.toml     # Local index fixture referencing valid-signed
   valid-signed/     # Valid pack.toml with valid detached pack.sig signed by active key
   tampered/         # pack.toml content altered after signing (signature mismatch)
   unsigned/         # pack.toml without a pack.sig (rejected by default, allowed with opt-in)

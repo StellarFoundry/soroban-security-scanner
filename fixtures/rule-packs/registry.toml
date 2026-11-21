@@ -1,0 +1,7 @@
+schema_version = 1
+
+[[packs]]
+name = "soroban-defi-rules"
+version = "0.1.0"
+checksum = "sha256:b47c32029760f09206ace1e228a2067cdd3e652608c06239cc83c45ef8ea06c7"
+manifest = "valid-signed/pack.toml"
