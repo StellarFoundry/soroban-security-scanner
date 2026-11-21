@@ -1,0 +1,13 @@
+[pack]
+name = "incompatible-version-pack"
+version = "0.1.0"
+description = "Requires a future scanner version"
+min_scanner_version = "99.0.0"
+
+[[rules]]
+id = "FUTURE-001"
+title = "Future scanner rule"
+category = "testing"
+default_severity = "medium"
+default_confidence = "medium"
+description = "Requires scanner >= 99.0.0 and must be rejected clearly."

@@ -1,0 +1,5 @@
+target = "contract"
+
+[[expected_findings]]
+rule_id = "SS-999"
+min_count = 1
