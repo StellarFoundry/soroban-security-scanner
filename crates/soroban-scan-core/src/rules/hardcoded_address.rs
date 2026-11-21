@@ -7,7 +7,7 @@ use crate::finding::Finding;
 use crate::rule::{Rule, RuleMetadata};
 use crate::severity::Severity;
 
-use super::util::{facts_from_file_with_imports, location_for, looks_like_stellar_address};
+use super::util::{location_for, looks_like_stellar_address};
 
 /// Rule metadata.
 pub const METADATA: RuleMetadata = RuleMetadata {
@@ -42,10 +42,10 @@ impl Rule for HardcodedAddress {
             return;
         }
         for source in ctx.sources() {
-            let Some(file) = &source.syntax else {
+            if source.syntax.is_none() {
                 continue;
-            };
-            let facts = facts_from_file_with_imports(file, &source.imports);
+            }
+            let facts = ctx.facts_for_source(source);
             for literal in &facts.strings {
                 if !looks_like_stellar_address(&literal.value) {
                     continue;

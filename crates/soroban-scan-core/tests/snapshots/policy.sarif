@@ -694,6 +694,34 @@
                 "level": "warning"
               },
               "fullDescription": {
+                "text": "A contract entry point decodes caller-supplied bytes or XDR (`from_xdr`, `from_bytes`, or `try_from`) without checking the input length or handling a fallible decode result. Malformed or attacker-chosen payloads can yield unexpected values, panic the contract, or bypass validation that was assumed to happen during decoding. This is a syntactic heuristic and reports low confidence."
+              },
+              "help": {
+                "markdown": "## Unvalidated XDR or bytes deserialization\n\nA contract entry point decodes caller-supplied bytes or XDR (`from_xdr`, `from_bytes`, or `try_from`) without checking the input length or handling a fallible decode result. Malformed or attacker-chosen payloads can yield unexpected values, panic the contract, or bypass validation that was assumed to happen during decoding. This is a syntactic heuristic and reports low confidence.\n\n### Remediation\n\nValidate the payload length before decoding and handle the decode result explicitly with `match`, `?`, or a fallible helper that maps errors to a typed contract error. Reject trailing bytes and values outside the expected range.\n\n### References\n\n- https://doc.rust-lang.org/std/convert/trait.TryFrom.html\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A contract entry point decodes caller-supplied bytes or XDR (`from_xdr`, `from_bytes`, or `try_from`) without checking the input length or handling a fallible decode result. Malformed or attacker-chosen payloads can yield unexpected values, panic the contract, or bypass validation that was assumed to happen during decoding. This is a syntactic heuristic and reports low confidence.\n\nRemediation: Validate the payload length before decoding and handle the decode result explicitly with `match`, `?`, or a fallible helper that maps errors to a typed contract error. Reject trailing bytes and values outside the expected range."
+              },
+              "helpUri": "https://doc.rust-lang.org/std/convert/trait.TryFrom.html",
+              "id": "SS-020",
+              "name": "Unvalidated XDR or bytes deserialization",
+              "properties": {
+                "category": "error-handling",
+                "confidence": "low",
+                "references": [
+                  "https://doc.rust-lang.org/std/convert/trait.TryFrom.html",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Validate the payload length before decoding and handle the decode result explicitly with `match`, `?`, or a fallible helper that maps errors to a typed contract error. Reject trailing bytes and values outside the expected range.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unvalidated XDR or bytes deserialization"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
                 "text": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence."
               },
               "help": {
@@ -715,6 +743,34 @@
               },
               "shortDescription": {
                 "text": "Durable data written to temporary storage"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract uses `symbol_short!` with a literal longer than the nine-character short-symbol limit, or builds the symbol from caller-controlled input. Overlong literals do not describe the symbol the author expects once truncated or fail to compile, while caller-built short symbols can deliberately collide with another key and overwrite or misread storage. This is a syntactic heuristic and reports medium confidence."
+              },
+              "help": {
+                "markdown": "## Unsafe symbol_short key\n\nA contract uses `symbol_short!` with a literal longer than the nine-character short-symbol limit, or builds the symbol from caller-controlled input. Overlong literals do not describe the symbol the author expects once truncated or fail to compile, while caller-built short symbols can deliberately collide with another key and overwrite or misread storage. This is a syntactic heuristic and reports medium confidence.\n\n### Remediation\n\nUse a constant literal of at most nine characters such as `symbol_short!(\"transfer\")`, or use `Symbol::new(&env, value)` for longer or dynamic values. Never derive a storage key directly from caller input; map it through an allowlist of known keys.\n\n### References\n\n- https://docs.rs/soroban-sdk/latest/soroban_sdk/macro.symbol_short.html\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A contract uses `symbol_short!` with a literal longer than the nine-character short-symbol limit, or builds the symbol from caller-controlled input. Overlong literals do not describe the symbol the author expects once truncated or fail to compile, while caller-built short symbols can deliberately collide with another key and overwrite or misread storage. This is a syntactic heuristic and reports medium confidence.\n\nRemediation: Use a constant literal of at most nine characters such as `symbol_short!(\"transfer\")`, or use `Symbol::new(&env, value)` for longer or dynamic values. Never derive a storage key directly from caller input; map it through an allowlist of known keys."
+              },
+              "helpUri": "https://docs.rs/soroban-sdk/latest/soroban_sdk/macro.symbol_short.html",
+              "id": "SS-022",
+              "name": "Unsafe symbol_short key",
+              "properties": {
+                "category": "storage",
+                "confidence": "medium",
+                "references": [
+                  "https://docs.rs/soroban-sdk/latest/soroban_sdk/macro.symbol_short.html",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Use a constant literal of at most nine characters such as `symbol_short!(\"transfer\")`, or use `Symbol::new(&env, value)` for longer or dynamic values. Never derive a storage key directly from caller input; map it through an allowlist of known keys.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unsafe symbol_short key"
               }
             },
             {
@@ -1022,6 +1078,34 @@
               },
               "shortDescription": {
                 "text": "Competing authorization calls"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract entry point performs `require_auth` (or `require_auth_for_args`) inside a loop body in a position that does not clearly cover every iteration: the check is conditional, or it runs only after a state-changing operation. A single check in that position can leave later iterations or earlier side effects unauthorized. Unconditional checks at the top of a loop are ambiguous and are deliberately not reported by this rule."
+              },
+              "help": {
+                "markdown": "## Authorization check inside a loop\n\nA contract entry point performs `require_auth` (or `require_auth_for_args`) inside a loop body in a position that does not clearly cover every iteration: the check is conditional, or it runs only after a state-changing operation. A single check in that position can leave later iterations or earlier side effects unauthorized. Unconditional checks at the top of a loop are ambiguous and are deliberately not reported by this rule.\n\n### Remediation\n\nAuthorize the actor before any state change and outside any conditional branch that can skip iterations, or authorize each distinct actor explicitly for every loop item with `require_auth_for_args`. Document intentional per-item authorization.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A contract entry point performs `require_auth` (or `require_auth_for_args`) inside a loop body in a position that does not clearly cover every iteration: the check is conditional, or it runs only after a state-changing operation. A single check in that position can leave later iterations or earlier side effects unauthorized. Unconditional checks at the top of a loop are ambiguous and are deliberately not reported by this rule.\n\nRemediation: Authorize the actor before any state change and outside any conditional branch that can skip iterations, or authorize each distinct actor explicitly for every loop item with `require_auth_for_args`. Document intentional per-item authorization."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-041",
+              "name": "Authorization check inside a loop",
+              "properties": {
+                "category": "authorization",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Authorize the actor before any state change and outside any conditional branch that can skip iterations, or authorize each distinct actor explicitly for every loop item with `require_auth_for_args`. Document intentional per-item authorization.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Authorization check inside a loop"
               }
             }
           ],

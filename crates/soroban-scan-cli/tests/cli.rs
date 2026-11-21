@@ -359,7 +359,7 @@ fn generic_mode_is_opt_in_and_visible_in_output() {
     ]);
     let value: serde_json::Value = serde_json::from_str(&default.stdout).unwrap();
     assert_eq!(value["stats"]["mode"], "soroban");
-    assert_eq!(value["stats"]["rules_run"], 30);
+    assert_eq!(value["stats"]["rules_run"], 33);
 }
 
 #[test]

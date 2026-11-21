@@ -8,7 +8,7 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 118,
+    "source_files": 130,
     "soroban_sdk_versions": []
   },
   "stats": {
@@ -179,13 +179,13 @@
         }
       ]
     },
-    "files_analyzed": 118,
-    "files_parsed": 118,
+    "files_analyzed": 130,
+    "files_parsed": 130,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 30,
+    "rules_run": 33,
     "rules_skipped": 0,
-    "findings_raw": 204,
+    "findings_raw": 225,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -198,14 +198,14 @@
     "findings_by_category": {
       "access-control": 10,
       "arithmetic": 8,
-      "authorization": 43,
+      "authorization": 54,
       "configuration": 2,
       "cross-contract": 15,
       "dependencies": 2,
-      "error-handling": 17,
-      "events": 17,
+      "error-handling": 19,
+      "events": 18,
       "resource-usage": 2,
-      "storage": 52,
+      "storage": 59,
       "token": 35,
       "unsafe": 1
     }
@@ -3113,6 +3113,46 @@
       "fingerprint": "d3e81400b6b03ecab8bdc2b9535f6669"
     },
     {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-020/negative3.rs",
+        "line": 12,
+        "column": 30
+      },
+      "evidence": "`unwrap` in `decode` can panic: env . storage () . instance () . get (& Key :: Data) . unwrap ()",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "d878bbcfd8394161f8366b864b49ab5d"
+    },
+    {
+      "rule_id": "SS-020",
+      "title": "Unvalidated XDR or bytes deserialization",
+      "description": "A contract entry point decodes caller-supplied bytes or XDR (`from_xdr`, `from_bytes`, or `try_from`) without checking the input length or handling a fallible decode result. Malformed or attacker-chosen payloads can yield unexpected values, panic the contract, or bypass validation that was assumed to happen during decoding. This is a syntactic heuristic and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-020/positive.rs",
+        "line": 12,
+        "column": 21
+      },
+      "evidence": "`from_xdr` decodes caller-controlled bytes `payload` in entry point `decode` without a prior length check or handled decode result: u32 :: from_xdr (& env , & payload)",
+      "remediation": "Validate the payload length before decoding and handle the decode result explicitly with `match`, `?`, or a fallible helper that maps errors to a typed contract error. Reject trailing bytes and values outside the expected range.",
+      "references": [
+        "https://doc.rust-lang.org/std/convert/trait.TryFrom.html",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "04bf4e0c28ba3f559c5889f304225bfe"
+    },
+    {
       "rule_id": "SS-001",
       "title": "State-changing entry point without caller authorization",
       "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
@@ -3245,6 +3285,141 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
       ],
       "fingerprint": "852b64bc1ec2a632158cd1bb5757b199"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-022/negative.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `store`: env . storage () . instance () . set (& key , & 1)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "3d9f051e57b36ef3d7b75cba1f8157d8"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-022/negative2.rs",
+        "line": 15,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `store`: env . storage () . instance () . set (& key , & 1)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "b49b79b343b59900a4c81cb42c6b3a5c"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-022/negative3.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `store`: env . storage () . instance () . set (& symbol , & 1)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "932370e9634c4eaa3c514c22b02adc24"
+    },
+    {
+      "rule_id": "SS-022",
+      "title": "Unsafe symbol_short key",
+      "description": "A contract uses `symbol_short!` with a literal longer than the nine-character short-symbol limit, or builds the symbol from caller-controlled input. Overlong literals do not describe the symbol the author expects once truncated or fail to compile, while caller-built short symbols can deliberately collide with another key and overwrite or misread storage. This is a syntactic heuristic and reports medium confidence.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "storage",
+      "location": {
+        "file": "SS-022/positive.rs",
+        "line": 12,
+        "column": 19
+      },
+      "evidence": "unsafe short symbol in entry point `store`: `symbol_short!(\"this_is_too_long\")` is 16 characters, longer than the 9-character short-symbol limit",
+      "remediation": "Use a constant literal of at most nine characters such as `symbol_short!(\"transfer\")`, or use `Symbol::new(&env, value)` for longer or dynamic values. Never derive a storage key directly from caller input; map it through an allowlist of known keys.",
+      "references": [
+        "https://docs.rs/soroban-sdk/latest/soroban_sdk/macro.symbol_short.html",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "0f62769aa68303799bfc41e2a79f8861"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-022/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `store`: env . storage () . instance () . set (& key , & 1)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "1c44dedf7609d76135e1e2acc13067ac"
+    },
+    {
+      "rule_id": "SS-022",
+      "title": "Unsafe symbol_short key",
+      "description": "A contract uses `symbol_short!` with a literal longer than the nine-character short-symbol limit, or builds the symbol from caller-controlled input. Overlong literals do not describe the symbol the author expects once truncated or fail to compile, while caller-built short symbols can deliberately collide with another key and overwrite or misread storage. This is a syntactic heuristic and reports medium confidence.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "storage",
+      "location": {
+        "file": "SS-022/positive.rs",
+        "line": 17,
+        "column": 22
+      },
+      "evidence": "unsafe short symbol in entry point `store_dynamic`: `symbol_short!` key is built from caller-controlled `key`: key",
+      "remediation": "Use a constant literal of at most nine characters such as `symbol_short!(\"transfer\")`, or use `Symbol::new(&env, value)` for longer or dynamic values. Never derive a storage key directly from caller input; map it through an allowlist of known keys.",
+      "references": [
+        "https://docs.rs/soroban-sdk/latest/soroban_sdk/macro.symbol_short.html",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "73041493412dc2e5c7f7f7bfe515c335"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-022/positive.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `store_dynamic`: env . storage () . instance () . set (& symbol , & 1)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "d678ee90fd3bd753a68752cfbca298f7"
     },
     {
       "rule_id": "SS-023",
@@ -4204,6 +4379,239 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "9a2bf4fc43569320ef2a8fb8f1d691a2"
+    },
+    {
+      "rule_id": "SS-032",
+      "title": "Redundant require_auth in loop",
+      "description": "A contract entry point calls `require_auth` (or `require_auth_for_args`) inside a loop body. Each iteration repeats an expensive authorization check for the same operation, and the repeated per-item check often means the authorization should be hoisted and bound to the operation's arguments once. This is a resource-efficiency heuristic, not a proof of a security bug.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-041/negative.rs",
+        "line": 13,
+        "column": 13
+      },
+      "evidence": "`require_auth` called inside a loop in entry point `batch`: admin . require_auth ()",
+      "remediation": "Authorize once before the loop, for example `admin.require_auth();` followed by the loop, or use `require_auth_for_args` with the complete argument set the operation depends on. If every iteration genuinely authorizes a different actor, document why the per-iteration check is required.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "06399ceb1ec0000b5a42f1651c8a15d6"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-041/negative.rs",
+        "line": 14,
+        "column": 13
+      },
+      "evidence": "persistent storage write without TTL extension in `batch`: env . storage () . persistent () . set (recipient , & 1)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "2f4160b3f2cb9cfdc09e0c45ac4e36ed"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-041/negative2.rs",
+        "line": 14,
+        "column": 13
+      },
+      "evidence": "persistent storage write without TTL extension in `batch`: env . storage () . persistent () . set (recipient , & 1)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "036285fffae816c47a2702ecc395b56c"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-041/negative3.rs",
+        "line": 15,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set`: env . storage () . persistent () . set (& admin , & 1)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "b156a84476d6d0f6988436db73bac1fd"
+    },
+    {
+      "rule_id": "SS-010",
+      "title": "Privileged state change without an event",
+      "description": "A contract entry point mutates a storage key that looks like privileged configuration (for example admin, owner, pause, params, fees, or oracle) without publishing an event. Off-chain indexers and users rely on events to observe critical changes; without one, the change is invisible to monitoring and incident response.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "events",
+      "location": {
+        "file": "SS-041/negative3.rs",
+        "line": 15,
+        "column": 9
+      },
+      "evidence": "privileged storage change without an event in `set`: env . storage () . persistent () . set (& admin , & 1)",
+      "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events"
+      ],
+      "fingerprint": "3d1713dded003cdfe150fb7b71eacfae"
+    },
+    {
+      "rule_id": "SS-032",
+      "title": "Redundant require_auth in loop",
+      "description": "A contract entry point calls `require_auth` (or `require_auth_for_args`) inside a loop body. Each iteration repeats an expensive authorization check for the same operation, and the repeated per-item check often means the authorization should be hoisted and bound to the operation's arguments once. This is a resource-efficiency heuristic, not a proof of a security bug.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-041/positive.rs",
+        "line": 14,
+        "column": 17
+      },
+      "evidence": "`require_auth` called inside a loop in entry point `batch_conditional`: admin . require_auth ()",
+      "remediation": "Authorize once before the loop, for example `admin.require_auth();` followed by the loop, or use `require_auth_for_args` with the complete argument set the operation depends on. If every iteration genuinely authorizes a different actor, document why the per-iteration check is required.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "c91230c765f00d51d0a61cafccfb855e"
+    },
+    {
+      "rule_id": "SS-041",
+      "title": "Authorization check inside a loop",
+      "description": "A contract entry point performs `require_auth` (or `require_auth_for_args`) inside a loop body in a position that does not clearly cover every iteration: the check is conditional, or it runs only after a state-changing operation. A single check in that position can leave later iterations or earlier side effects unauthorized. Unconditional checks at the top of a loop are ambiguous and are deliberately not reported by this rule.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "authorization",
+      "location": {
+        "file": "SS-041/positive.rs",
+        "line": 14,
+        "column": 17
+      },
+      "evidence": "`admin . require_auth ()` inside `for` loop at line 12 in entry point `batch_conditional` is conditional, so iterations that skip the branch are not authorized; one check may not be sufficient: admin . require_auth ()",
+      "remediation": "Authorize the actor before any state change and outside any conditional branch that can skip iterations, or authorize each distinct actor explicitly for every loop item with `require_auth_for_args`. Document intentional per-item authorization.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "08233f12c8d4d043bb78f7fc8f06cbaa"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-041/positive.rs",
+        "line": 16,
+        "column": 13
+      },
+      "evidence": "persistent storage write without TTL extension in `batch_conditional`: env . storage () . persistent () . set (recipient , & 1)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "b4aaf589c86370d5661188b310cf95a1"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-041/positive.rs",
+        "line": 22,
+        "column": 13
+      },
+      "evidence": "persistent storage write without TTL extension in `batch_after_write`: env . storage () . persistent () . set (recipient , & 1)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "5e9e1aa866e0cc01c89f8120bf293ab7"
+    },
+    {
+      "rule_id": "SS-017",
+      "title": "Authorization after state mutation",
+      "description": "A contract entry point mutates storage before calling `require_auth`. The authorization check must run before the effect, otherwise a rejected call may already have changed state on some paths and the ordering indicates a logic bug.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-041/positive.rs",
+        "line": 22,
+        "column": 13
+      },
+      "evidence": "storage mutation before authorization in `batch_after_write`: env . storage () . persistent () . set (recipient , & 1)",
+      "remediation": "Authorize the caller at the start of the entry point, before any storage read or write that depends on the caller. Call `require_auth` or `require_auth_for_args` first, then perform the state change.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "9f2c4935ab37dd019c335356cd993ec4"
+    },
+    {
+      "rule_id": "SS-032",
+      "title": "Redundant require_auth in loop",
+      "description": "A contract entry point calls `require_auth` (or `require_auth_for_args`) inside a loop body. Each iteration repeats an expensive authorization check for the same operation, and the repeated per-item check often means the authorization should be hoisted and bound to the operation's arguments once. This is a resource-efficiency heuristic, not a proof of a security bug.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-041/positive.rs",
+        "line": 23,
+        "column": 13
+      },
+      "evidence": "`require_auth` called inside a loop in entry point `batch_after_write`: admin . require_auth ()",
+      "remediation": "Authorize once before the loop, for example `admin.require_auth();` followed by the loop, or use `require_auth_for_args` with the complete argument set the operation depends on. If every iteration genuinely authorizes a different actor, document why the per-iteration check is required.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "f4561253eafb06f8a5fbde545cad9bd8"
+    },
+    {
+      "rule_id": "SS-041",
+      "title": "Authorization check inside a loop",
+      "description": "A contract entry point performs `require_auth` (or `require_auth_for_args`) inside a loop body in a position that does not clearly cover every iteration: the check is conditional, or it runs only after a state-changing operation. A single check in that position can leave later iterations or earlier side effects unauthorized. Unconditional checks at the top of a loop are ambiguous and are deliberately not reported by this rule.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "authorization",
+      "location": {
+        "file": "SS-041/positive.rs",
+        "line": 23,
+        "column": 13
+      },
+      "evidence": "`admin . require_auth ()` inside `for` loop at line 21 in entry point `batch_after_write` runs after a state-changing operation, so earlier side effects are unauthorized; one check may not be sufficient: admin . require_auth ()",
+      "remediation": "Authorize the actor before any state change and outside any conditional branch that can skip iterations, or authorize each distinct actor explicitly for every loop item with `require_auth_for_args`. Document intentional per-item authorization.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "97095df6a92c90808cb51a3985f5c3dc"
     }
   ],
   "suppressed": [],
@@ -4335,6 +4743,27 @@
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: panic",
       "path": "SS-014/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-022/negative.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-022/negative2.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "2 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-022/positive.rs",
       "line": null
     },
     {

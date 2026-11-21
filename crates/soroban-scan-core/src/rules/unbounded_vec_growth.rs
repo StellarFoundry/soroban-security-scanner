@@ -7,7 +7,7 @@ use crate::finding::Finding;
 use crate::rule::{Rule, RuleMetadata};
 use crate::severity::Severity;
 
-use super::util::{contract_entry_functions, facts_from_block_with_imports, location_for};
+use super::util::{contract_entry_functions, location_for};
 
 const GROWTH_METHODS: &[&str] = &["push", "push_back", "push_front"];
 
@@ -50,7 +50,7 @@ impl Rule for UnboundedVecGrowth {
                 if !func.is_public {
                     continue;
                 }
-                let facts = facts_from_block_with_imports(func.block, &source.imports);
+                let facts = ctx.facts_for_function(source, &func);
                 if facts.storage_mutations().is_empty() || has_length_guard(&facts) {
                     continue;
                 }

@@ -10,6 +10,7 @@ pub mod util;
 pub mod validation;
 
 mod authorization_after_mutation;
+mod authorization_in_loop;
 mod competing_authorization_calls;
 mod cross_contract_auth;
 mod cross_contract_before_state_update;
@@ -26,6 +27,7 @@ mod panic_prone;
 mod public_test_hooks;
 mod redundant_require_auth_in_loop;
 mod sensitive_data_in_events;
+mod symbol_short_key_collision;
 mod temporary_storage_durable_state;
 mod token_transfer_amount;
 mod ttl_management;
@@ -36,6 +38,7 @@ mod unchecked_arithmetic;
 mod unchecked_integer_cast;
 mod unprotected_initializer;
 mod unsafe_code;
+mod unvalidated_deserialization;
 mod unvalidated_token_address;
 mod user_controlled_event_topic;
 mod wildcard_sdk_import;
@@ -94,7 +97,14 @@ pub fn register_all(registry: &mut RuleRegistry) -> Result<(), RegistryError> {
     ))?;
     registry.register(Box::new(ignored_checked_result::IgnoredCheckedResult))?;
     registry.register(Box::new(missing_reentrancy_guard::MissingReentrancyGuard))?;
+    registry.register(Box::new(
+        unvalidated_deserialization::UnvalidatedDeserialization,
+    ))?;
     registry.register(Box::new(unvalidated_token_address::UnvalidatedTokenAddress))?;
+    registry.register(Box::new(
+        symbol_short_key_collision::SymbolShortKeyCollision,
+    ))?;
+    registry.register(Box::new(authorization_in_loop::AuthorizationInLoop))?;
     Ok(())
 }
 
@@ -111,8 +121,9 @@ mod tests {
             vec![
                 "SS-001", "SS-002", "SS-003", "SS-004", "SS-005", "SS-006", "SS-007", "SS-008",
                 "SS-009", "SS-010", "SS-011", "SS-012", "SS-013", "SS-014", "SS-015", "SS-016",
-                "SS-017", "SS-018", "SS-021", "SS-023", "SS-025", "SS-027", "SS-028", "SS-029",
-                "SS-030", "SS-031", "SS-032", "SS-033", "SS-035", "SS-037"
+                "SS-017", "SS-018", "SS-020", "SS-021", "SS-022", "SS-023", "SS-025", "SS-027",
+                "SS-028", "SS-029", "SS-030", "SS-031", "SS-032", "SS-033", "SS-035", "SS-037",
+                "SS-041"
             ]
         );
     }

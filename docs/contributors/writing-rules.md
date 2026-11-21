@@ -79,6 +79,13 @@ registry.register(Box::new(my_rule::MyRule))?;
 - `location_for(ctx, source, line, column)` — builds a scan-relative location.
 - `looks_like_stellar_address`.
 
+Prefer the memoized `AnalysisContext` accessors in rules so facts are computed
+once per scan: `ctx.facts_for_source(source)`, `ctx.facts_for_function(source,
+&func)`, `ctx.helper_facts_for_function(source, &func)`,
+`ctx.function_facts_for_source(source)`, and
+`ctx.cast_facts_for_function(source, &func)`. The cache is keyed by source path
+and function span, so facts never leak across files.
+
 ## 3. Add fixtures
 
 Create:
