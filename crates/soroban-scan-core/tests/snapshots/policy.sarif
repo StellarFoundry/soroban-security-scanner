@@ -694,6 +694,146 @@
                 "level": "warning"
               },
               "fullDescription": {
+                "text": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence."
+              },
+              "help": {
+                "markdown": "## Durable data written to temporary storage\n\nTemporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.\n\n### Remediation\n\nWrite durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival",
+                "text": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.\n\nRemediation: Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-021",
+              "name": "Durable data written to temporary storage",
+              "properties": {
+                "category": "storage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+                ],
+                "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Durable data written to temporary storage"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Events are public on the ledger forever. Publishing a value whose name suggests a secret (secret, key, seed, proof) risks an irreversible disclosure. This is a name-based heuristic over parameters and string literals and reports low confidence."
+              },
+              "help": {
+                "markdown": "## Sensitive-looking data published in events\n\nEvents are public on the ledger forever. Publishing a value whose name suggests a secret (secret, key, seed, proof) risks an irreversible disclosure. This is a name-based heuristic over parameters and string literals and reports low confidence.\n\n### Remediation\n\nDo not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/events\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Events are public on the ledger forever. Publishing a value whose name suggests a secret (secret, key, seed, proof) risks an irreversible disclosure. This is a name-based heuristic over parameters and string literals and reports low confidence.\n\nRemediation: Do not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/events",
+              "id": "SS-023",
+              "name": "Sensitive-looking data published in events",
+              "properties": {
+                "category": "events",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/events",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Do not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Sensitive-looking data published in events"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Persisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write."
+              },
+              "help": {
+                "markdown": "## Unbounded string/bytes persisted from caller input\n\nPersisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write.\n\n### Remediation\n\nReject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Persisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write.\n\nRemediation: Reject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-025",
+              "name": "Unbounded string/bytes persisted from caller input",
+              "properties": {
+                "category": "storage",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Reject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unbounded string/bytes persisted from caller input"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "Passing `env.current_contract_address()` to `require_auth` authorizes the contract itself instead of the caller. This is almost always a logic error: the check succeeds for anyone who can invoke the contract, so it does not provide the intended access control."
+              },
+              "help": {
+                "markdown": "## Contract's own address used as an authorization subject\n\nPassing `env.current_contract_address()` to `require_auth` authorizes the contract itself instead of the caller. This is almost always a logic error: the check succeeds for anyone who can invoke the contract, so it does not provide the intended access control.\n\n### Remediation\n\nAuthorize the actual caller instead: take an `Address` parameter and call `caller.require_auth()`, or call `require_auth` on the stored owner/admin address. Reserve `current_contract_address()` for checks that really concern this contract's identity.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Passing `env.current_contract_address()` to `require_auth` authorizes the contract itself instead of the caller. This is almost always a logic error: the check succeeds for anyone who can invoke the contract, so it does not provide the intended access control.\n\nRemediation: Authorize the actual caller instead: take an `Address` parameter and call `caller.require_auth()`, or call `require_auth` on the stored owner/admin address. Reserve `current_contract_address()` for checks that really concern this contract's identity."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-027",
+              "name": "Contract's own address used as an authorization subject",
+              "properties": {
+                "category": "authorization",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Authorize the actual caller instead: take an `Address` parameter and call `caller.require_auth()`, or call `require_auth` on the stored owner/admin address. Reserve `current_contract_address()` for checks that really concern this contract's identity.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Contract's own address used as an authorization subject"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A public entry point makes a cross-contract call and then mutates storage without a visible reentrancy guard. Soroban permits reentrancy, so a malicious callee can re-enter while state is inconsistent. The detector recognizes a documented guard pattern: a storage flag with a lock/guard-style key is read and set before the call."
+              },
+              "help": {
+                "markdown": "## Cross-contract call without a reentrancy guard\n\nA public entry point makes a cross-contract call and then mutates storage without a visible reentrancy guard. Soroban permits reentrancy, so a malicious callee can re-enter while state is inconsistent. The detector recognizes a documented guard pattern: a storage flag with a lock/guard-style key is read and set before the call.\n\n### Remediation\n\nBefore the external call, read a lock flag from storage, reject when it is already set, and set it; clear it after the state update. Or follow checks-effects-interactions and update all state before calling out.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security\n- https://developers.stellar.org/docs",
+                "text": "A public entry point makes a cross-contract call and then mutates storage without a visible reentrancy guard. Soroban permits reentrancy, so a malicious callee can re-enter while state is inconsistent. The detector recognizes a documented guard pattern: a storage flag with a lock/guard-style key is read and set before the call.\n\nRemediation: Before the external call, read a lock flag from storage, reject when it is already set, and set it; clear it after the state update. Or follow checks-effects-interactions and update all state before calling out."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-028",
+              "name": "Cross-contract call without a reentrancy guard",
+              "properties": {
+                "category": "cross-contract",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security",
+                  "https://developers.stellar.org/docs"
+                ],
+                "remediation": "Before the external call, read a lock flag from storage, reject when it is already set, and set it; clear it after the state update. Or follow checks-effects-interactions and update all state before calling out.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Cross-contract call without a reentrancy guard"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
                 "text": "A public contract entry point is named like a test or debug backdoor (a `test`, `debug`, `dev`, `mock`, or `dummy` name segment). Backdoor entry points that remain callable in a production deployment let anyone invoke privileged behavior, and are a well-known way on-chain contracts are compromised. This is a name-based heuristic and may flag a legitimately named function."
               },
               "help": {
@@ -714,6 +854,34 @@
               },
               "shortDescription": {
                 "text": "Public test or debug hook in a contract entry point"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction."
+              },
+              "help": {
+                "markdown": "## Token client built from an unvalidated caller address\n\nA `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.\n\n### Remediation\n\nCompare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.\n\n### References\n\n- https://developers.stellar.org/docs/tokens/token-interface\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.\n\nRemediation: Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client."
+              },
+              "helpUri": "https://developers.stellar.org/docs/tokens/token-interface",
+              "id": "SS-030",
+              "name": "Token client built from an unvalidated caller address",
+              "properties": {
+                "category": "token",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/tokens/token-interface",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Token client built from an unvalidated caller address"
               }
             },
             {
@@ -798,6 +966,34 @@
               },
               "shortDescription": {
                 "text": "Wildcard import from the Soroban SDK"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A `checked_add`/`checked_sub`/`checked_mul` (or similar) result is discarded or bound without being inspected. Overflow then silently produces `None`, reintroducing the bug the checked API exists to prevent. The detector reports calls whose result is not directly consumed by `?`, `match`, or an `unwrap`/`unwrap_or`-style handler."
+              },
+              "help": {
+                "markdown": "## Ignored checked-arithmetic result\n\nA `checked_add`/`checked_sub`/`checked_mul` (or similar) result is discarded or bound without being inspected. Overflow then silently produces `None`, reintroducing the bug the checked API exists to prevent. The detector reports calls whose result is not directly consumed by `?`, `match`, or an `unwrap`/`unwrap_or`-style handler.\n\n### Remediation\n\nHandle the checked result: use `?` to propagate it, match on `Some`/`None`, or supply a fallback with `unwrap_or`/`unwrap_or_else`. Never use `checked_*` as a bare statement or discard it into `_`.\n\n### References\n\n- https://doc.rust-lang.org/std/primitive.i128.html#method.checked_add\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A `checked_add`/`checked_sub`/`checked_mul` (or similar) result is discarded or bound without being inspected. Overflow then silently produces `None`, reintroducing the bug the checked API exists to prevent. The detector reports calls whose result is not directly consumed by `?`, `match`, or an `unwrap`/`unwrap_or`-style handler.\n\nRemediation: Handle the checked result: use `?` to propagate it, match on `Some`/`None`, or supply a fallback with `unwrap_or`/`unwrap_or_else`. Never use `checked_*` as a bare statement or discard it into `_`."
+              },
+              "helpUri": "https://doc.rust-lang.org/std/primitive.i128.html#method.checked_add",
+              "id": "SS-035",
+              "name": "Ignored checked-arithmetic result",
+              "properties": {
+                "category": "arithmetic",
+                "confidence": "medium",
+                "references": [
+                  "https://doc.rust-lang.org/std/primitive.i128.html#method.checked_add",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Handle the checked result: use `?` to propagate it, match on `Some`/`None`, or supply a fallback with `unwrap_or`/`unwrap_or_else`. Never use `checked_*` as a bare statement or discard it into `_`.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Ignored checked-arithmetic result"
               }
             },
             {

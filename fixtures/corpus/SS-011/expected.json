@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "rule_id": "SS-011",
+  "fixtures": [
+    {
+      "file": "negative.rs",
+      "findings": [
+        {
+          "rule_id": "SS-001",
+          "count": 1,
+          "severity": "high",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-006",
+          "count": 1,
+          "severity": "low",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-010",
+          "count": 1,
+          "severity": "low",
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "file": "negative2.rs",
+      "findings": [
+        {
+          "rule_id": "SS-001",
+          "count": 1,
+          "severity": "high",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-006",
+          "count": 1,
+          "severity": "low",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-010",
+          "count": 1,
+          "severity": "low",
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "file": "negative3.rs",
+      "findings": [
+        {
+          "rule_id": "SS-001",
+          "count": 1,
+          "severity": "high",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-006",
+          "count": 1,
+          "severity": "low",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-010",
+          "count": 1,
+          "severity": "low",
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "file": "positive.rs",
+      "findings": [
+        {
+          "rule_id": "SS-001",
+          "count": 1,
+          "severity": "high",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-006",
+          "count": 1,
+          "severity": "low",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-010",
+          "count": 1,
+          "severity": "low",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-011",
+          "count": 1,
+          "severity": "high",
+          "confidence": null
+        }
+      ]
+    }
+  ]
+}
