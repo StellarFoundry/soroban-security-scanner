@@ -9,9 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- A minimal stdio language server (`soroban-scan lsp`) publishes diagnostics
-  and document symbols for contracts, functions, structs, and events. It uses
-  full-document sync and no network access (`#334`).
+- A minimal stdio language server (`soroban-scan lsp`) publishes diagnostics,
+  document symbols for contracts, functions, structs, and events, and offline
+  hover text for every registered `SS-###` rule id. It uses full-document sync
+  and no network access (`#334`, `#335`).
 - Related-findings correlation links findings that share a source span or a
   concrete symbol, with sorted, bounded `related` fingerprints in JSON and
   `properties.relatedIds` in SARIF. Ambiguous relations are recorded instead of

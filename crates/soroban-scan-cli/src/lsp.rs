@@ -48,7 +48,8 @@ pub fn run(registry: &RuleRegistry) -> Result<u8, String> {
                 json!({
                     "capabilities": {
                         "textDocumentSync": { "openClose": true, "change": 1 },
-                        "documentSymbolProvider": true
+                        "documentSymbolProvider": true,
+                        "hoverProvider": true
                     },
                     "serverInfo": {
                         "name": "soroban-scan",
@@ -106,7 +107,19 @@ pub fn run(registry: &RuleRegistry) -> Result<u8, String> {
                     .unwrap_or_else(|| json!([]));
                 respond(&mut writer, id, result)?;
             }
-            Some("textDocument/hover") => respond(&mut writer, id, Value::Null)?,
+            Some("textDocument/hover") => {
+                let result = params
+                    .pointer("/textDocument/uri")
+                    .and_then(Value::as_str)
+                    .and_then(|uri| documents.get(uri))
+                    .and_then(|text| {
+                        let line = params.pointer("/position/line")?.as_u64()? as usize;
+                        let character = params.pointer("/position/character")?.as_u64()? as usize;
+                        hover(registry, text, line, character)
+                    })
+                    .unwrap_or(Value::Null);
+                respond(&mut writer, id, result)?;
+            }
             Some(_) => {
                 if id.is_some() {
                     respond_error(&mut writer, id, -32601, "method not found")?;
@@ -264,6 +277,80 @@ fn diagnostics_for(registry: &RuleRegistry, uri: &str, text: &str) -> Vec<Value>
     }
 
     diagnostics
+}
+
+/// Returns hover content for the rule id under the cursor, or `None`.
+///
+/// Rule metadata comes from the in-process registry, so hover works offline and
+/// never reads a file or fetches documentation.
+fn hover(registry: &RuleRegistry, text: &str, line: usize, character: usize) -> Option<Value> {
+    let line_text = text.lines().nth(line)?;
+    let (start, end, id) = find_rule_ids(line_text)
+        .into_iter()
+        .find(|(start, end, _)| character >= *start && character < *end)?;
+    Some(json!({
+        "contents": {
+            "kind": "markdown",
+            "value": hover_text(registry, &id)
+        },
+        "range": {
+            "start": { "line": line, "character": start },
+            "end": { "line": line, "character": end }
+        }
+    }))
+}
+
+fn hover_text(registry: &RuleRegistry, id: &str) -> String {
+    let normalized = id.to_ascii_uppercase();
+    let Some(rule) = registry.by_id(&normalized) else {
+        return format!(
+            "### {normalized}\n\nNo rule with this id is registered. \
+             Run `soroban-scan rules` to list the shipped rule ids."
+        );
+    };
+    let meta = rule.metadata();
+    format!(
+        "### {} — {}\n\n**Severity:** {}  \n**Confidence:** {}  \n**Category:** {}\n\n{}\n\n**Remediation:** {}",
+        meta.id,
+        meta.title,
+        meta.default_severity.as_str(),
+        meta.default_confidence.as_str(),
+        meta.category.as_str(),
+        meta.description,
+        meta.remediation
+    )
+}
+
+/// Finds `SS-###` tokens and their character offsets on one line.
+fn find_rule_ids(line: &str) -> Vec<(usize, usize, String)> {
+    const PREFIX: &[char] = &['S', 'S', '-'];
+    let chars: Vec<char> = line.chars().collect();
+    let mut found = Vec::new();
+    let mut index = 0;
+    while index + 6 <= chars.len() {
+        let prefix_matches = PREFIX
+            .iter()
+            .zip(&chars[index..])
+            .all(|(expected, actual)| expected.eq_ignore_ascii_case(actual));
+        let boundary_before = index == 0 || !chars[index - 1].is_ascii_alphanumeric();
+        let digits = &chars[index + 3..index + 6];
+        let boundary_after = index + 6 == chars.len() || !chars[index + 6].is_ascii_alphanumeric();
+        if prefix_matches
+            && boundary_before
+            && boundary_after
+            && digits.iter().all(char::is_ascii_digit)
+        {
+            found.push((
+                index,
+                index + 6,
+                chars[index..index + 6].iter().collect::<String>(),
+            ));
+            index += 6;
+        } else {
+            index += 1;
+        }
+    }
+    found
 }
 
 /// Returns a JSON document-symbol array for one source text.
@@ -478,6 +565,50 @@ mod tests {
             )
         });
         assert_eq!(expected, actual);
+    }
+
+    #[test]
+    fn hover_covers_every_registered_rule() {
+        let registry = RuleRegistry::with_default_rules();
+        for meta in registry.metadata() {
+            let content = hover_text(&registry, meta.id);
+            assert!(content.contains(meta.id), "missing id for {}", meta.id);
+            assert!(
+                content.contains(meta.default_severity.as_str()),
+                "missing severity for {}",
+                meta.id
+            );
+            assert!(
+                content.contains(meta.default_confidence.as_str()),
+                "missing confidence for {}",
+                meta.id
+            );
+            assert!(
+                content.contains(meta.remediation),
+                "missing remediation for {}",
+                meta.id
+            );
+        }
+    }
+
+    #[test]
+    fn hover_finds_rule_id_at_cursor() {
+        let registry = RuleRegistry::with_default_rules();
+        let result = hover(&registry, "// see SS-001 for details", 0, 9).expect("hover");
+        let value = result["contents"]["value"].as_str().unwrap();
+        assert!(value.contains("SS-001"));
+        assert_eq!(result["range"]["start"]["character"], 7);
+        assert_eq!(result["range"]["end"]["character"], 13);
+        assert!(hover(&registry, "// see SS-001 for details", 0, 0).is_none());
+    }
+
+    #[test]
+    fn unknown_rule_hover_falls_back() {
+        let registry = RuleRegistry::with_default_rules();
+        let result = hover(&registry, "// SS-999", 0, 4).expect("hover");
+        let value = result["contents"]["value"].as_str().unwrap();
+        assert!(value.contains("SS-999"));
+        assert!(value.contains("No rule with this id is registered"));
     }
 
     #[test]
