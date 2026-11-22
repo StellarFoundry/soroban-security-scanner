@@ -22,6 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `examples/external-rule-pack` provides a two-rule data-only pack with
   per-rule fixtures, a checksum validation script, signing/verification
   instructions, and Rust and Python tests (`#369`).
+- Opt-in `soroban-scan serve` HTTP API for submitting source scans and receiving
+  the standard CLI JSON report. The bounded server requires a bearer token and
+  enforces loopback-only binding (`#350`).
 - Additive engine pipeline stages (`discovery`, `parsing`, `analysis`,
   `post_processing`) with optional observation-only `PipelineHooks`. The default
   pipeline is unchanged, and hooks receive only a read-only `StageSummary` with

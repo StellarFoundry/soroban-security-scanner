@@ -14,12 +14,40 @@ soroban-scan <COMMAND>
 | `explain <RULE-ID>` | Explain a rule in detail. |
 | `version` | Print the scanner name and version. |
 | `lsp` | Start the editor language server on stdio (see [editors.md](editors.md)). |
+| `serve` | Start the opt-in loopback HTTP scan API. |
 | `init` | Write a starter configuration file. |
 | `doctor` | Explain project classification, excludes, and effective configuration. |
 | `compare` | Compare two JSON scan reports by finding fingerprint. |
 | `dashboard` | Render a static trend dashboard from several JSON scan reports. |
 | `artifact-name` | Print the canonical, deterministic report artifact name. |
 | `config show` / `config validate` | Inspect or validate configuration. |
+
+---
+
+## `serve`
+
+```text
+SOROBAN_SCAN_API_TOKEN='replace-with-a-long-random-token' \
+  soroban-scan serve [--bind 127.0.0.1:8080] [--config FILE | --no-config]
+```
+
+Starts a sequential HTTP/1.1 server bound to loopback only. The token must be
+provided through `SOROBAN_SCAN_API_TOKEN`; it is never accepted on the command
+line or included in responses. `POST /v1/scans` accepts
+`{"source":"...","file":"input.rs"}` (the `file` field is optional) and returns
+the standard CLI JSON report. Source/file inputs and HTTP headers are bounded;
+requests are processed one at a time. The endpoint only scans submitted source
+text and does not access arbitrary filesystem paths. This local integration
+server is opt-in and is not intended to be exposed to a network.
+
+Example:
+
+```sh
+curl -H "Authorization: Bearer $SOROBAN_SCAN_API_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data '{"source":"pub fn example() {}","file":"input.rs"}' \
+  http://127.0.0.1:8080/v1/scans
+```
 
 ---
 

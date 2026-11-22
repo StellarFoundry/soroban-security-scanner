@@ -67,6 +67,8 @@ pub enum SinkKind {
     AuthSubject,
     /// The amount argument of `transfer` / `transfer_from`.
     TransferAmount,
+    /// An address argument of a documented privileged token call.
+    PrivilegedAddress,
 }
 
 impl SinkKind {
@@ -75,6 +77,7 @@ impl SinkKind {
         match self {
             SinkKind::AuthSubject => "auth_subject",
             SinkKind::TransferAmount => "transfer_amount",
+            SinkKind::PrivilegedAddress => "privileged_address",
         }
     }
 }
@@ -384,6 +387,16 @@ impl AmountFlow {
     }
 }
 
+/// An address argument of a privileged token call with caller-controlled
+/// provenance.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct AddressFlow {
+    /// The privileged call sink.
+    pub sink: SinkDescriptor,
+    /// How user-controlled data reached the address argument.
+    pub path: TaintPath,
+}
+
 /// Method/function names treated as documented sanitizers for authorization
 /// subjects.
 pub const AUTH_SANITIZERS: &[&str] = &[
@@ -393,6 +406,33 @@ pub const AUTH_SANITIZERS: &[&str] = &[
     "verified_address",
     "sanitize_address",
 ];
+
+/// Address validation helpers are the same documented names as authorization
+/// sanitizers: both reason about address provenance, not a Rust type.
+pub const ADDRESS_SANITIZERS: &[&str] = AUTH_SANITIZERS;
+
+/// Privileged token calls and the zero-based positions of their address
+/// arguments.
+///
+/// Names come from the documented Stellar token interface. The analysis has no
+/// type information, so an unrelated method with the same name can produce a
+/// flow; the sink descriptor records the span so a consumer can decide.
+const PRIVILEGED_ADDRESS_CALLS: &[(&str, &[usize])] = &[
+    ("transfer", &[1]),
+    ("transfer_from", &[1, 2]),
+    ("approve", &[1]),
+    ("mint", &[0]),
+    ("burn", &[0]),
+    ("burn_from", &[1]),
+    ("clawback", &[0]),
+];
+
+fn address_argument_indices(name: &str) -> Option<&'static [usize]> {
+    PRIVILEGED_ADDRESS_CALLS
+        .iter()
+        .find(|(method, _)| *method == name)
+        .map(|(_, indices)| *indices)
+}
 
 /// Method/function names treated as documented validation or clamping helpers
 /// for token amounts.
@@ -829,6 +869,19 @@ impl<'ast> Visit<'ast> for SinkVisitor<'_> {
                     }
                 }
             }
+            SinkKind::PrivilegedAddress => {
+                if let Some(indices) = address_argument_indices(&name) {
+                    for &index in indices {
+                        if let Some(argument) = node.args.get(index) {
+                            if let Some(path) =
+                                taint_of_expr(argument, self.tainted, self.sanitizers)
+                            {
+                                self.push(&name, Some(index), argument, path);
+                            }
+                        }
+                    }
+                }
+            }
             _ => {}
         }
         visit::visit_expr_method_call(self, node);
@@ -851,6 +904,19 @@ impl<'ast> Visit<'ast> for SinkVisitor<'_> {
                         if let Some(path) = taint_of_expr(amount, self.tainted, self.sanitizers) {
                             let index = node.args.len().saturating_sub(1);
                             self.push(&name, Some(index), amount, path);
+                        }
+                    }
+                }
+                SinkKind::PrivilegedAddress => {
+                    if let Some(indices) = address_argument_indices(&name) {
+                        for &index in indices {
+                            if let Some(argument) = node.args.get(index) {
+                                if let Some(path) =
+                                    taint_of_expr(argument, self.tainted, self.sanitizers)
+                                {
+                                    self.push(&name, Some(index), argument, path);
+                                }
+                            }
                         }
                     }
                 }
@@ -1045,6 +1111,19 @@ pub fn transfer_amount_flows(file: &syn::File, entry: &ContractFn<'_>) -> Vec<Am
     analyze(file, entry, SinkKind::TransferAmount, AMOUNT_SANITIZERS)
         .into_iter()
         .map(|(sink, path)| AmountFlow { sink, path })
+        .collect()
+}
+
+/// Address arguments of documented privileged token calls derived from
+/// caller-controlled data in `entry`.
+///
+/// Values passed through a documented [`ADDRESS_SANITIZERS`] helper are omitted.
+/// The analysis never treats an `Address` type annotation as validation; only a
+/// documented helper name clears the flow.
+pub fn address_argument_flows(file: &syn::File, entry: &ContractFn<'_>) -> Vec<AddressFlow> {
+    analyze(file, entry, SinkKind::PrivilegedAddress, ADDRESS_SANITIZERS)
+        .into_iter()
+        .map(|(sink, path)| AddressFlow { sink, path })
         .collect()
 }
 
@@ -1328,6 +1407,113 @@ mod tests {
             "#,
         );
         assert!(validated.is_empty());
+    }
+
+    #[test]
+    fn tracks_direct_decoded_and_validated_addresses() {
+        let (file, index) = entry_of(
+            r#"
+            use soroban_sdk::{contractimpl, token, Address, Env, String};
+
+            #[contractimpl]
+            impl C {
+                pub fn payout(env: Env, token_id: Address, to: Address, raw: String, amount: i128) {
+                    let client = token::Client::new(&env, &token_id);
+                    client.transfer(&env.current_contract_address(), &to, &amount);
+                    let decoded = Address::from_string(&raw);
+                    client.transfer(&env.current_contract_address(), &decoded, &amount);
+                    let checked = validate_address(&env, to);
+                    client.transfer(&env.current_contract_address(), &checked, &amount);
+                }
+            }
+            "#,
+        );
+        let entries = contract_entry_functions(&file);
+        let flows = address_argument_flows(&file, &entries[index]);
+        let sources: Vec<_> = flows
+            .iter()
+            .filter_map(|flow| flow.path.source_name())
+            .collect();
+        assert!(flows
+            .iter()
+            .all(|flow| flow.sink.kind == SinkKind::PrivilegedAddress));
+        assert!(flows
+            .iter()
+            .all(|flow| flow.sink.name == "transfer" && flow.sink.argument == Some(1)));
+        assert!(sources.contains(&"to"));
+        assert!(sources.contains(&"raw"));
+        assert!(
+            !sources.contains(&"checked"),
+            "documented address validation must clear the flow"
+        );
+    }
+
+    #[test]
+    fn address_type_annotation_is_not_validation() {
+        let (file, index) = entry_of(
+            r#"
+            use soroban_sdk::{contractimpl, token, Address, Env};
+
+            #[contractimpl]
+            impl C {
+                pub fn payout(env: Env, token_id: Address, to: Address, amount: i128) {
+                    let _typed: Address = to;
+                    let client = token::Client::new(&env, &token_id);
+                    client.transfer(&env.current_contract_address(), &to, &amount);
+                }
+            }
+            "#,
+        );
+        let entries = contract_entry_functions(&file);
+        let flows = address_argument_flows(&file, &entries[index]);
+        assert_eq!(
+            flows.len(),
+            1,
+            "an `Address` type is not validation: {flows:#?}"
+        );
+        assert_eq!(flows[0].path.source_name(), Some("to"));
+    }
+
+    #[test]
+    fn every_privileged_call_reports_its_address_arguments() {
+        let (file, index) = entry_of(
+            r#"
+            use soroban_sdk::{contractimpl, token, Address, Env};
+
+            #[contractimpl]
+            impl C {
+                pub fn payout(env: Env, token_id: Address, from: Address, to: Address, spender: Address, amount: i128) {
+                    let client = token::Client::new(&env, &token_id);
+                    client.transfer_from(&spender, &from, &to, &amount);
+                    client.approve(&from, &spender, &amount, &1);
+                    client.mint(&to, &amount);
+                    client.burn(&from, &amount);
+                    client.burn_from(&spender, &from, &amount);
+                    client.clawback(&from, &amount);
+                }
+            }
+            "#,
+        );
+        let entries = contract_entry_functions(&file);
+        let flows = address_argument_flows(&file, &entries[index]);
+        let mut sinks: Vec<_> = flows
+            .iter()
+            .map(|flow| (flow.sink.name.as_str(), flow.sink.argument))
+            .collect();
+        sinks.sort_unstable();
+        sinks.dedup();
+        assert_eq!(
+            sinks,
+            vec![
+                ("approve", Some(1)),
+                ("burn", Some(0)),
+                ("burn_from", Some(1)),
+                ("clawback", Some(0)),
+                ("mint", Some(0)),
+                ("transfer_from", Some(1)),
+                ("transfer_from", Some(2)),
+            ]
+        );
     }
 
     #[test]

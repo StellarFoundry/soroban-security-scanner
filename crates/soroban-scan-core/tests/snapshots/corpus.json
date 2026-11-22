@@ -8,7 +8,7 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 142,
+    "source_files": 148,
     "soroban_sdk_versions": []
   },
   "stats": {
@@ -179,13 +179,13 @@
         }
       ]
     },
-    "files_analyzed": 142,
-    "files_parsed": 142,
+    "files_analyzed": 148,
+    "files_parsed": 148,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 36,
+    "rules_run": 37,
     "rules_skipped": 0,
-    "findings_raw": 250,
+    "findings_raw": 263,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -198,14 +198,14 @@
     "findings_by_category": {
       "access-control": 11,
       "arithmetic": 8,
-      "authorization": 54,
+      "authorization": 57,
       "configuration": 2,
       "cross-contract": 38,
       "dependencies": 2,
       "error-handling": 19,
-      "events": 18,
+      "events": 23,
       "resource-usage": 3,
-      "storage": 59,
+      "storage": 64,
       "token": 35,
       "unsafe": 1
     }
@@ -4389,6 +4389,69 @@
       "correlation_ambiguous": true
     },
     {
+      "rule_id": "SS-042",
+      "title": "Security check unreachable on every path",
+      "description": "A caller-authorization or validation check appears after a statement that always leaves the function, such as an unconditional `return`. No execution path reaches the check, so it provides a false sense of protection while the actual behaviour is unguarded. The detector reports only when the function's control-flow graph is complete: a truncated graph or one containing constructs the builder does not model suppresses the finding.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-042/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "`require_auth` check at line 13 in `set` is unreachable: every path leaves the function first (nearest `return` at line 12); CFG is complete (6 nodes, 5 edges, no unknown nodes)",
+      "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://doc.rust-lang.org/reference/statements.html#unreachable-code"
+      ],
+      "fingerprint": "15fd86a67b22f51108f81ae155a41eaa",
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-042",
+      "title": "Security check unreachable on every path",
+      "description": "A caller-authorization or validation check appears after a statement that always leaves the function, such as an unconditional `return`. No execution path reaches the check, so it provides a false sense of protection while the actual behaviour is unguarded. The detector reports only when the function's control-flow graph is complete: a truncated graph or one containing constructs the builder does not model suppresses the finding.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-042/positive.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "`validate_amount` check at line 14 in `set` is unreachable: every path leaves the function first (nearest `return` at line 12); CFG is complete (6 nodes, 5 edges, no unknown nodes)",
+      "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://doc.rust-lang.org/reference/statements.html#unreachable-code"
+      ],
+      "fingerprint": "1c9f49f645679624ee11eeb95576bbff",
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-042",
+      "title": "Security check unreachable on every path",
+      "description": "A caller-authorization or validation check appears after a statement that always leaves the function, such as an unconditional `return`. No execution path reaches the check, so it provides a false sense of protection while the actual behaviour is unguarded. The detector reports only when the function's control-flow graph is complete: a truncated graph or one containing constructs the builder does not model suppresses the finding.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-042/positive_conditional.rs",
+        "line": 14,
+        "column": 13
+      },
+      "evidence": "`require_auth` check at line 14 in `set` is unreachable: every path leaves the function first (nearest `return` at line 13); CFG is complete (7 nodes, 7 edges, no unknown nodes)",
+      "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://doc.rust-lang.org/reference/statements.html#unreachable-code"
+      ],
+      "fingerprint": "12b5cbda33d1d0fab6e851b7b8db5f70",
+      "correlation_ambiguous": true
+    },
+    {
       "rule_id": "SS-006",
       "title": "Persistent storage write without TTL management",
       "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
@@ -5852,6 +5915,230 @@
         "9f2c4935ab37dd019c335356cd993ec4"
       ],
       "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-042/negative.rs",
+        "line": 16,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set`: env . storage () . persistent () . set (& admin , & 1)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "ac26d900020ae4fa9c31cdf498c59e16",
+      "related": [
+        "06f3cfcbbbe36ef777b9db70a4f6eaf3"
+      ]
+    },
+    {
+      "rule_id": "SS-010",
+      "title": "Privileged state change without an event",
+      "description": "A contract entry point mutates a storage key that looks like privileged configuration (for example admin, owner, pause, params, fees, or oracle) without publishing an event. Off-chain indexers and users rely on events to observe critical changes; without one, the change is invisible to monitoring and incident response.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "events",
+      "location": {
+        "file": "SS-042/negative.rs",
+        "line": 16,
+        "column": 9
+      },
+      "evidence": "privileged storage change without an event in `set`: env . storage () . persistent () . set (& admin , & 1)",
+      "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events"
+      ],
+      "fingerprint": "06f3cfcbbbe36ef777b9db70a4f6eaf3",
+      "related": [
+        "ac26d900020ae4fa9c31cdf498c59e16"
+      ]
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-042/negative2.rs",
+        "line": 16,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set`: env . storage () . persistent () . set (& admin , & 1)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "904cf8b5be71a9484fd6e82bd40192c4",
+      "related": [
+        "238fd6bb22dfb45282da13e034fb94b5"
+      ]
+    },
+    {
+      "rule_id": "SS-010",
+      "title": "Privileged state change without an event",
+      "description": "A contract entry point mutates a storage key that looks like privileged configuration (for example admin, owner, pause, params, fees, or oracle) without publishing an event. Off-chain indexers and users rely on events to observe critical changes; without one, the change is invisible to monitoring and incident response.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "events",
+      "location": {
+        "file": "SS-042/negative2.rs",
+        "line": 16,
+        "column": 9
+      },
+      "evidence": "privileged storage change without an event in `set`: env . storage () . persistent () . set (& admin , & 1)",
+      "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events"
+      ],
+      "fingerprint": "238fd6bb22dfb45282da13e034fb94b5",
+      "related": [
+        "904cf8b5be71a9484fd6e82bd40192c4"
+      ]
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-042/negative4.rs",
+        "line": 17,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set`: env . storage () . persistent () . set (& admin , & 1)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "de3d4a612257c047ceb526aaa83d3d44",
+      "related": [
+        "dff5c5fcf4f211dae939515a0a1f0e37"
+      ]
+    },
+    {
+      "rule_id": "SS-010",
+      "title": "Privileged state change without an event",
+      "description": "A contract entry point mutates a storage key that looks like privileged configuration (for example admin, owner, pause, params, fees, or oracle) without publishing an event. Off-chain indexers and users rely on events to observe critical changes; without one, the change is invisible to monitoring and incident response.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "events",
+      "location": {
+        "file": "SS-042/negative4.rs",
+        "line": 17,
+        "column": 9
+      },
+      "evidence": "privileged storage change without an event in `set`: env . storage () . persistent () . set (& admin , & 1)",
+      "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events"
+      ],
+      "fingerprint": "dff5c5fcf4f211dae939515a0a1f0e37",
+      "related": [
+        "de3d4a612257c047ceb526aaa83d3d44"
+      ]
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-042/positive_conditional.rs",
+        "line": 17,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set`: env . storage () . persistent () . set (& admin , & 1)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "609fa930812061c84a9387e8e72f861e",
+      "related": [
+        "d54bae544db9a5f54f2f14127e3c7e22"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-010",
+      "title": "Privileged state change without an event",
+      "description": "A contract entry point mutates a storage key that looks like privileged configuration (for example admin, owner, pause, params, fees, or oracle) without publishing an event. Off-chain indexers and users rely on events to observe critical changes; without one, the change is invisible to monitoring and incident response.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "events",
+      "location": {
+        "file": "SS-042/positive_conditional.rs",
+        "line": 17,
+        "column": 9
+      },
+      "evidence": "privileged storage change without an event in `set`: env . storage () . persistent () . set (& admin , & 1)",
+      "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events"
+      ],
+      "fingerprint": "d54bae544db9a5f54f2f14127e3c7e22",
+      "related": [
+        "609fa930812061c84a9387e8e72f861e"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-042/positive.rs",
+        "line": 15,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set`: env . storage () . persistent () . set (& admin , & 1)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "0e30207a5d2e79a79968079556b556e7",
+      "related": [
+        "a90bb695fbab024bd583ead7034a0990"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-010",
+      "title": "Privileged state change without an event",
+      "description": "A contract entry point mutates a storage key that looks like privileged configuration (for example admin, owner, pause, params, fees, or oracle) without publishing an event. Off-chain indexers and users rely on events to observe critical changes; without one, the change is invisible to monitoring and incident response.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "events",
+      "location": {
+        "file": "SS-042/positive.rs",
+        "line": 15,
+        "column": 9
+      },
+      "evidence": "privileged storage change without an event in `set`: env . storage () . persistent () . set (& admin , & 1)",
+      "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events"
+      ],
+      "fingerprint": "a90bb695fbab024bd583ead7034a0990",
+      "related": [
+        "0e30207a5d2e79a79968079556b556e7"
+      ],
+      "correlation_ambiguous": true
     }
   ],
   "suppressed": [],
@@ -6103,6 +6390,13 @@
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: symbol_short",
       "path": "SS-033/positive.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: unknown_macro",
+      "path": "SS-042/negative3.rs",
       "line": null
     }
   ]

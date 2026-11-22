@@ -30,6 +30,20 @@ where
         .collect()
 }
 
+/// A named set of per-rule severity and confidence overrides.
+///
+/// Profiles exist so a project can switch policies without forking rules.
+/// Structural validation happens when the configuration loads; a profile that
+/// references an unknown rule id is ignored with a `CONFIG-005` diagnostic.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct RuleProfile {
+    /// Per-rule severity overrides in this profile.
+    pub severity_overrides: BTreeMap<String, Severity>,
+    /// Per-rule confidence overrides in this profile.
+    pub confidence_overrides: BTreeMap<String, Confidence>,
+}
+
 /// Rule selection and overrides.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
@@ -48,6 +62,12 @@ pub struct RulesConfig {
     pub severity_overrides: BTreeMap<String, Severity>,
     /// Per-rule confidence overrides.
     pub confidence_overrides: BTreeMap<String, Confidence>,
+    /// Named profiles with per-rule overrides, keyed by profile name.
+    #[serde(skip_serializing_if = "BTreeMap::is_empty")]
+    pub profiles: BTreeMap<String, RuleProfile>,
+    /// Active profile name. Unset means only the `rules` overrides apply.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub profile: Option<String>,
     /// Optional per-rule wall-clock budget in milliseconds.
     ///
     /// Disabled by default. When set, each rule runs on a worker thread and is
@@ -88,6 +108,58 @@ impl RulesConfig {
     /// Returns true if a rule is enabled by id and category.
     pub fn is_rule_enabled(&self, id: &str, category: Category) -> bool {
         self.is_enabled(id) && self.is_category_enabled(category)
+    }
+
+    /// The selected profile, when one is configured and defined.
+    pub fn active_profile(&self) -> Option<&RuleProfile> {
+        self.profile
+            .as_deref()
+            .and_then(|name| self.profiles.get(name))
+    }
+
+    /// Validates profile names and the selected profile.
+    pub fn validate_profiles(&self) -> Result<(), String> {
+        for name in self.profiles.keys() {
+            let trimmed = name.trim();
+            if trimmed.is_empty() {
+                return Err("rules.profiles contains an empty profile name".to_string());
+            }
+            if trimmed.len() > 64
+                || !trimmed.chars().all(|character| {
+                    character.is_ascii_alphanumeric() || matches!(character, '-' | '_')
+                })
+            {
+                return Err(format!(
+                    "rules.profiles name '{name}' must use only letters, digits, '-' or '_'"
+                ));
+            }
+            if trimmed != name {
+                return Err(format!(
+                    "rules.profiles name '{name}' must not have surrounding whitespace"
+                ));
+            }
+        }
+        if let Some(selected) = &self.profile {
+            if !self.profiles.contains_key(selected) {
+                return Err(format!(
+                    "rules.profile '{selected}' is not defined under rules.profiles"
+                ));
+            }
+        }
+        for (name, profile) in &self.profiles {
+            for id in profile
+                .severity_overrides
+                .keys()
+                .chain(profile.confidence_overrides.keys())
+            {
+                if !is_valid_rule_id(id) {
+                    return Err(format!(
+                        "rules.profiles.{name} has an invalid rule id '{id}' (expected SS-###)"
+                    ));
+                }
+            }
+        }
+        Ok(())
     }
 }
 
@@ -462,6 +534,9 @@ impl ScanConfig {
 
     /// Validates configured suppressions and assistance parameters.
     pub fn validate(&self) -> Result<(), crate::error::ScanError> {
+        self.rules
+            .validate_profiles()
+            .map_err(crate::error::ScanError::Config)?;
         for (index, suppression) in self.suppressions.iter().enumerate() {
             suppression.validate().map_err(|error| {
                 crate::error::ScanError::Config(format!("invalid suppressions[{index}]: {error}"))
@@ -478,6 +553,33 @@ impl ScanConfig {
             .validate()
             .map_err(|error| crate::error::ScanError::Config(format!("invalid config: {error}")))?;
         Ok(())
+    }
+
+    /// Effective severity override for a rule.
+    ///
+    /// Precedence is `rules.severity_overrides`, then the active profile, then
+    /// the rule's built-in default (handled by the caller).
+    pub fn severity_override_for(&self, id: &str) -> Option<Severity> {
+        self.rules.severity_overrides.get(id).copied().or_else(|| {
+            self.rules
+                .active_profile()
+                .and_then(|profile| profile.severity_overrides.get(id).copied())
+        })
+    }
+
+    /// Effective confidence override for a rule.
+    ///
+    /// Precedence is `rules.confidence_overrides`, then the active profile.
+    pub fn confidence_override_for(&self, id: &str) -> Option<Confidence> {
+        self.rules
+            .confidence_overrides
+            .get(id)
+            .copied()
+            .or_else(|| {
+                self.rules
+                    .active_profile()
+                    .and_then(|profile| profile.confidence_overrides.get(id).copied())
+            })
     }
 
     /// Parses and validates a configuration from TOML text.
@@ -536,6 +638,97 @@ mod tests {
         };
         assert!(only.is_enabled("SS-002"));
         assert!(!only.is_enabled("SS-001"));
+    }
+
+    #[test]
+    fn parses_profiles_and_applies_them_with_explicit_precedence() {
+        let config = ScanConfig::from_toml(
+            r#"
+[rules]
+profile = "strict"
+severity_overrides = { "SS-001" = "critical" }
+confidence_overrides = { "SS-007" = "medium" }
+
+[rules.profiles.strict]
+severity_overrides = { "SS-001" = "high", "SS-007" = "low" }
+confidence_overrides = { "SS-007" = "high", "SS-014" = "low" }
+"#,
+        )
+        .unwrap();
+
+        // Top-level overrides win over the active profile.
+        assert_eq!(
+            config.severity_override_for("SS-001"),
+            Some(Severity::Critical)
+        );
+        assert_eq!(
+            config.confidence_override_for("SS-007"),
+            Some(Confidence::Medium)
+        );
+        // Profile-only entries still apply.
+        assert_eq!(config.severity_override_for("SS-007"), Some(Severity::Low));
+        assert_eq!(
+            config.confidence_override_for("SS-014"),
+            Some(Confidence::Low)
+        );
+        assert_eq!(config.severity_override_for("SS-002"), None);
+    }
+
+    #[test]
+    fn default_profile_is_unchanged() {
+        let config = ScanConfig::default();
+        assert!(config.rules.profiles.is_empty());
+        assert!(config.rules.profile.is_none());
+        assert!(config.rules.active_profile().is_none());
+        assert!(config.severity_override_for("SS-001").is_none());
+        assert!(config.confidence_override_for("SS-001").is_none());
+    }
+
+    #[test]
+    fn rejects_invalid_profiles() {
+        let cases = [
+            ("[rules]\nprofile = \"missing\"\n", "is not defined"),
+            (
+                r#"
+[rules]
+[rules.profiles.strict]
+severity_overrides = { "SS-1" = "high" }
+"#,
+                "invalid rule id",
+            ),
+            (
+                r#"
+[rules]
+[rules.profiles."bad name"]
+severity_overrides = { "SS-001" = "high" }
+"#,
+                "must use only letters",
+            ),
+        ];
+        for (text, expected) in cases {
+            let err = ScanConfig::from_toml(text).unwrap_err();
+            assert!(matches!(err, crate::error::ScanError::Config(_)));
+            assert!(
+                err.to_string().contains(expected),
+                "expected {expected:?} in {err}"
+            );
+        }
+    }
+
+    #[test]
+    fn accepts_unknown_but_well_formed_rule_ids_for_diagnostic_reporting() {
+        // The config layer cannot see the registry, so a well-formed unknown id
+        // loads; the engine emits CONFIG-005 when the profile is active.
+        let config = ScanConfig::from_toml(
+            r#"
+[rules]
+profile = "strict"
+[rules.profiles.strict]
+severity_overrides = { "SS-999" = "high" }
+"#,
+        )
+        .unwrap();
+        assert_eq!(config.severity_override_for("SS-999"), Some(Severity::High));
     }
 
     #[test]

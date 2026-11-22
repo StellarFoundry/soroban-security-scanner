@@ -157,8 +157,7 @@ mod tests {
 
     #[test]
     fn panics_become_diagnostics() {
-        let error = run_bounded(PackLimits::default(), 0, || panic!("pack blew up"))
-            .unwrap_err();
+        let error = run_bounded(PackLimits::default(), 0, || panic!("pack blew up")).unwrap_err();
         assert_eq!(error, PackLimitError::PackFailed);
     }
 

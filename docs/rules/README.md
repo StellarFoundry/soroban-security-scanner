@@ -87,6 +87,7 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-035](detectors/SS-035.md) | Ignored checked-arithmetic result | high | medium | arithmetic |
 | [SS-037](detectors/SS-037.md) | Competing authorization calls | medium | low | authorization |
 | [SS-041](detectors/SS-041.md) | Authorization check inside a loop | medium | low | authorization |
+| [SS-042](detectors/SS-042.md) | Security check unreachable on every path | low | medium | authorization |
 
 Each detector has a positive and negative fixture under
 `fixtures/corpus/<RULE-ID>/`, plus an adversarial sample and recorded expected

@@ -15,6 +15,7 @@ use std::time::Instant;
 use clap::{Args, Parser, Subcommand, ValueEnum};
 
 mod lsp;
+mod server;
 
 use soroban_scan_core::ai::{self, Assistant};
 use soroban_scan_core::baseline::{self, Baseline, BaselineReport};
@@ -345,6 +346,8 @@ enum Command {
     Version,
     /// Start the editor language server on stdio.
     Lsp,
+    /// Start the opt-in loopback HTTP scan API.
+    Serve(ServeArgs),
     /// Write a starter configuration file.
     Init(InitArgs),
     /// Inspect the scanner configuration.
@@ -367,6 +370,21 @@ struct CompletionsArgs {
     /// Target shell.
     #[arg(value_enum)]
     shell: clap_complete::Shell,
+}
+
+#[derive(Debug, Args)]
+struct ServeArgs {
+    /// Address to bind (must be loopback).
+    #[arg(long, default_value = "127.0.0.1:8080")]
+    bind: std::net::SocketAddr,
+
+    /// Configuration file to use.
+    #[arg(long, value_name = "FILE")]
+    config: Option<PathBuf>,
+
+    /// Ignore discovered configuration and use built-in defaults.
+    #[arg(long, conflicts_with = "config")]
+    no_config: bool,
 }
 
 #[derive(Debug, Args)]
@@ -765,6 +783,10 @@ fn run(cli: Cli) -> CliResult<u8> {
             Ok(EXIT_SUCCESS)
         }
         Command::Lsp => lsp::run(&registry).map_err(CliError::Runtime),
+        Command::Serve(args) => {
+            let config = load_config(args.config.as_deref(), Path::new("."), !args.no_config)?;
+            server::run(args.bind, config, registry).map_err(CliError::Runtime)
+        }
         Command::Scan(args) => run_scan(args, &registry),
         Command::Rules(args) => run_rules(args, &registry),
         Command::Explain(args) => run_explain(args, &registry),
