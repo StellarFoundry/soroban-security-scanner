@@ -91,6 +91,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `suppression` | Inline `ignore` directives and source ranges. | `finding`-adjacent data only. |
 | `baseline` | Fingerprint baselines, JSON/TOML parsing, merge/prune, unknown-rule diagnostics. | `error`, `finding`, `model`, `registry`, `severity`. |
 | `report` | Terminal, JSON, SARIF, Markdown, HTML, and GitHub renderers. | `config`, `engine`, `finding`, `model`, `registry`, `rule`, `severity`. |
+| `correlation` | Deterministic, bounded related-finding links shared between JSON and SARIF; ambiguity is recorded, never guessed. | `finding`. |
 | `redaction` | Opt-in hashing of selected report fields at render time; fingerprints stay intact. | `baseline`, `engine`, `finding`. |
 | `pack` | Rule pack manifest parsing, detached signature verification, keyrings, and rotation/revocation. | `config`, `error`. |
 | `policy` | Policy document parsing, validation, and deterministic evaluation. | `config`, `error`, `model`. |

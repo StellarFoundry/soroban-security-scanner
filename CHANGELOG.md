@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Related-findings correlation links findings that share a source span or a
+  concrete symbol, with sorted, bounded `related` fingerprints in JSON and
+  `properties.relatedIds` in SARIF. Ambiguous relations are recorded instead of
+  guessed, and no finding is added or removed (`#300`).
 - A bounded local rule-pack registry validates names, versions, manifest checksums,
   and safe relative paths before exposing discoverable entries (#361).
 - Framework-independent bearer auth for the scan API, with fail-closed configuration,

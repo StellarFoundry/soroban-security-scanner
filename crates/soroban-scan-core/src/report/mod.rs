@@ -9,6 +9,7 @@ use serde::Serialize;
 
 use crate::baseline::{BaselineReport, BaselineStatus};
 use crate::config::ScanConfig;
+use crate::correlation;
 use crate::engine::{
     ConfigSuppressionReport, FindingTruncation, ScanOutcome, SuppressedFinding, SuppressionInfo,
     SuppressionSource, WaiverReport,
@@ -504,6 +505,16 @@ struct FindingJson<'a> {
     /// Present only when the scan was compared against a baseline.
     #[serde(skip_serializing_if = "Option::is_none")]
     baseline_status: Option<BaselineStatus>,
+    /// Fingerprints of findings backed by the same concrete evidence.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    related: Vec<String>,
+    /// True when a relation was deliberately not chosen for this finding.
+    #[serde(skip_serializing_if = "is_false")]
+    correlation_ambiguous: bool,
+}
+
+fn is_false(value: &bool) -> bool {
+    !*value
 }
 
 /// Tool identity in JSON reports.
@@ -602,12 +613,15 @@ pub fn render_json_with_baseline(
     outcome: &ScanOutcome,
     baseline: Option<&BaselineReport>,
 ) -> Result<String, serde_json::Error> {
+    let correlation = correlation::correlate(&outcome.findings);
     let findings = outcome
         .findings
         .iter()
         .map(|finding| FindingJson {
             finding,
             baseline_status: baseline.and_then(|report| report.status(&finding.fingerprint)),
+            related: correlation.related_ids(&finding.fingerprint).to_vec(),
+            correlation_ambiguous: correlation.is_ambiguous(&finding.fingerprint),
         })
         .collect();
     let report = JsonReport {
@@ -959,16 +973,25 @@ pub fn render_sarif_with_policy(
         })
         .collect();
 
+    let correlation = correlation::correlate(&outcome.findings);
     let mut results: Vec<Value> = outcome
         .findings
         .iter()
         .map(|finding| {
-            sarif_result(
+            let mut result = sarif_result(
                 finding,
                 None,
                 baseline.and_then(|report| report.status(&finding.fingerprint)),
                 policy,
-            )
+            );
+            let related = correlation.related_ids(&finding.fingerprint);
+            if !related.is_empty() {
+                result["properties"]["relatedIds"] = json!(related);
+            }
+            if correlation.is_ambiguous(&finding.fingerprint) {
+                result["properties"]["correlationAmbiguous"] = json!(true);
+            }
+            result
         })
         .collect();
 
