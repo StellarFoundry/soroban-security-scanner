@@ -67,6 +67,13 @@ reachable node is considered reachable.
 The CFG is used only to rank findings; it never adds, removes, or changes a
 finding. See [Finding ranking](finding-ranking.md).
 
+The same pass also derives optional exploitability context. When the graph
+covers a finding line, the finding records the reachability label and, if the
+line is inside a Soroban contract entry point, the qualified entry-point name.
+Incomplete evidence leaves the whole object absent. This context is additive
+report metadata; it does not alter the graph, detection, severity, or
+confidence.
+
 ## Limitations
 
 - The graph is per function and per file; there is no interprocedural CFG.

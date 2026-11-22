@@ -34,6 +34,21 @@ from the in-process rule registry: no network request, file read, or external
 documentation lookup is performed. An unregistered id shows a short fallback
 instead of an error.
 
+## Workspace configuration
+
+The server reads `soroban-scan.toml` from the workspace root reported by the
+LSP `initialize` request (`workspaceFolders` or `rootUri`). It uses the same
+parser and validation as the CLI, so thresholds, rule toggles, overrides,
+suppressions, and other scan settings apply to editor diagnostics. If no file
+exists, the default configuration is used.
+
+Configuration is reloaded when the client sends
+`workspace/didChangeConfiguration` or `workspace/didChangeWatchedFiles`, and
+open documents are re-diagnosed without restarting the server. An invalid file
+keeps the last valid configuration (or the defaults) and publishes an error
+diagnostic (`LSP-CONFIG-001`) with source `soroban-scan` on the configuration
+file.
+
 ## VS Code
 
 1. Install the **Generic LSP Client** extension (`llllvvuu.glspc`).
@@ -88,8 +103,8 @@ Verify with `:checkhealth vim.lsp`. The client should be attached to the buffer.
   message body returns nothing.
 - The server uses full-document sync. Diagnostics refresh on open, change, and
   save; a change replaces the whole document buffer.
-- The language server uses no network access and reads no configuration; it
-  runs the default rule set in Soroban mode.
+- The language server uses no network access. It reads only the workspace
+  `soroban-scan.toml` and runs the default rule set when none is configured.
 - Function and event symbol ranges use the parser's signature span, so the end
   line may be the declaration line rather than the closing brace.
 

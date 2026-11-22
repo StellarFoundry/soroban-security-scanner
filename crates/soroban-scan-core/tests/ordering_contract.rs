@@ -47,6 +47,7 @@ fn finding(
         references: vec![],
         fingerprint: fingerprint.to_string(),
         reachability: Reachability::Unknown,
+        exploitability: None,
     }
 }
 

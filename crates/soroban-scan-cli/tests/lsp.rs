@@ -4,8 +4,9 @@
 //! initialize, open, change, hover, document symbols, shutdown, and exit. Every
 //! wait is bounded so a hung server fails the test instead of blocking CI.
 
+use std::fs;
 use std::io::{BufRead, BufReader, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdin, Command, ExitStatus, Stdio};
 use std::sync::mpsc::{self, Receiver};
 use std::thread;
@@ -255,6 +256,87 @@ fn language_server_handles_open_change_hover_symbols_and_shutdown() {
     client.send(&notification("exit", Value::Null));
     let status = client.wait_for_exit(Duration::from_secs(10));
     assert!(status.success(), "language server exited with {status:?}");
+}
+
+fn temp_workspace(label: &str) -> PathBuf {
+    let root = std::env::temp_dir().join(format!(
+        "soroban-scan-lsp-{}-{label}",
+        std::process::id()
+    ));
+    let _ = fs::remove_dir_all(&root);
+    fs::create_dir_all(&root).expect("create temporary workspace");
+    root
+}
+
+fn file_uri(path: &Path) -> String {
+    let mut text = path.to_string_lossy().replace('\\', "/");
+    if !text.starts_with('/') {
+        text.insert(0, '/');
+    }
+    format!("file://{text}")
+}
+
+#[test]
+fn language_server_loads_and_reloads_workspace_configuration() {
+    let root = temp_workspace("config");
+    let config_path = root.join("soroban-scan.toml");
+    let config_uri = file_uri(&config_path);
+    fs::write(&config_path, "min_severity = \"critical\"\n").expect("write config");
+
+    let uri = "file:///tmp/soroban-scan-lsp-config.rs";
+    let mut client = Client::spawn();
+
+    client.send(&request(
+        1,
+        "initialize",
+        json!({ "processId": null, "rootUri": file_uri(&root), "capabilities": {} }),
+    ));
+    client.recv_until(|message| message["id"] == json!(1));
+    client.send(&notification("initialized", json!({})));
+    client.send(&did_open(uri, violation_source()));
+
+    let opened = client.recv_until(diagnostics_for(uri));
+    assert!(
+        !rule_codes(&opened).contains(&"SS-001"),
+        "workspace min_severity must filter SS-001: {opened}"
+    );
+
+    fs::write(&config_path, "min_severity = \"info\"\n").expect("update config");
+    client.send(&notification(
+        "workspace/didChangeWatchedFiles",
+        json!({ "changes": [{ "uri": config_uri.clone(), "type": 2 }] }),
+    ));
+    let reloaded = client.recv_until(diagnostics_for(uri));
+    assert!(
+        rule_codes(&reloaded).contains(&"SS-001"),
+        "reloaded config must report SS-001: {reloaded}"
+    );
+
+    fs::write(&config_path, "min_severity = \"nope\"\n").expect("write invalid config");
+    client.send(&notification(
+        "workspace/didChangeConfiguration",
+        json!({ "settings": {} }),
+    ));
+    let error = client.recv_until(|message| {
+        message["method"] == "textDocument/publishDiagnostics"
+            && message["params"]["uri"] == config_uri
+            && message["params"]["diagnostics"]
+                .as_array()
+                .is_some_and(|diagnostics| !diagnostics.is_empty())
+    });
+    let diagnostics = error["params"]["diagnostics"].as_array().unwrap();
+    assert!(diagnostics.iter().any(|diagnostic| {
+        diagnostic["source"] == "soroban-scan"
+            && diagnostic["severity"] == json!(1)
+            && diagnostic["code"] == "LSP-CONFIG-001"
+    }));
+
+    client.send(&request(2, "shutdown", Value::Null));
+    client.recv_until(|message| message["id"] == json!(2));
+    client.send(&notification("exit", Value::Null));
+    let status = client.wait_for_exit(Duration::from_secs(10));
+    assert!(status.success(), "language server exited with {status:?}");
+    let _ = fs::remove_dir_all(root);
 }
 
 fn rule_id_position(text: &str, rule: &str) -> (usize, usize) {

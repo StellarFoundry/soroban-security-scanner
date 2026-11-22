@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Findings carry an optional, additive `exploitability` context (`reachability`,
+  `entry_point`, and reserved `taint`) when the control-flow graph covers the
+  finding line. It is omitted when evidence is incomplete and never changes
+  severity or confidence; report schemas remain backward compatible (`#294`).
+- The language server loads `soroban-scan.toml` from the workspace root,
+  applies it to diagnostics, reloads on configuration/watched-file changes, and
+  publishes a `LSP-CONFIG-001` error on invalid configuration (`#333`).
+- `docs/api-deployment.md` documents API adapter configuration, reverse-proxy
+  TLS termination, in-memory durability, transport-supplied health checks, a
+  minimal local example, and an explicit public-edge warning (`#358`).
+- `examples/external-rule-pack` provides a two-rule data-only pack with
+  per-rule fixtures, a checksum validation script, signing/verification
+  instructions, and Rust and Python tests (`#369`).
 - Opt-in `soroban-scan serve` HTTP API for submitting source scans and receiving
   the standard CLI JSON report. The bounded server requires a bearer token and
   enforces loopback-only binding (`#350`).

@@ -72,6 +72,24 @@ impl SourceLocation {
     }
 }
 
+/// Best-effort exploitability context for a finding.
+///
+/// This is additive report metadata. It is populated from static analysis only
+/// when the control-flow graph covers the finding's line; incomplete evidence
+/// leaves the whole context (or an individual field) absent. It never changes
+/// the finding's severity or confidence.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ExploitabilityContext {
+    /// Reachability of the finding line: `reachable` or `unreachable`.
+    pub reachability: String,
+    /// Qualified name of the enclosing contract entry point, when known.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub entry_point: Option<String>,
+    /// Reserved taint description; `None` until taint context is available.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub taint: Option<String>,
+}
+
 /// A single security finding.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Finding {
@@ -103,6 +121,12 @@ pub struct Finding {
     /// not change detection. Reports loaded from JSON keep `Unknown`.
     #[serde(skip)]
     pub reachability: Reachability,
+    /// Optional static exploitability context.
+    ///
+    /// Additive and backward compatible: absent on reports loaded from an
+    /// older schema, and omitted from output when evidence is incomplete.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub exploitability: Option<ExploitabilityContext>,
 }
 
 impl Finding {
@@ -123,6 +147,7 @@ impl Finding {
             references: meta.references.iter().map(|r| (*r).to_string()).collect(),
             fingerprint,
             reachability: Reachability::Unknown,
+            exploitability: None,
         }
     }
 

@@ -32,6 +32,7 @@ fn finding(rule_id: &str, file: &str, line: usize, evidence: &str) -> Finding {
         references: Vec::new(),
         fingerprint: fingerprint_of(rule_id, Path::new(file), evidence),
         reachability: Reachability::Unknown,
+        exploitability: None,
     }
 }
 

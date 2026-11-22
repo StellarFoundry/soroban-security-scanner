@@ -14,6 +14,10 @@ workspace) and is built in CI.
 | [`stellar-classic`](stellar-classic/) | Classic Stellar address tooling | none (not a Soroban project) |
 | [`contracts`](contracts/) | 50 documented, source-only contract examples | not scanned automatically |
 
+[`external-rule-pack`](external-rule-pack/) is a data-only external rule pack,
+not a compilable crate. It demonstrates the manifest schema, per-rule fixtures,
+checksum validation, and signing instructions.
+
 ## Build an example
 
 Examples target `soroban-sdk` 28 and are excluded from the main workspace. Build
