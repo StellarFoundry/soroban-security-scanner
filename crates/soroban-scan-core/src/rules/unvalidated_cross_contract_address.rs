@@ -1,6 +1,6 @@
 //! SS-044: cross-contract address argument without validation.
 
-use crate::analysis::taint::{address_argument_flows, TaintPath};
+use crate::analysis::taint::{address_argument_flows, is_privileged_address_call, TaintPath};
 use crate::category::Category;
 use crate::confidence::Confidence;
 use crate::context::AnalysisContext;
@@ -52,6 +52,15 @@ impl Rule for UnvalidatedCrossContractAddress {
             };
             for func in contract_entry_functions(file) {
                 if !func.is_public {
+                    continue;
+                }
+                let facts = ctx.helper_facts_for_function(source, &func);
+                if !facts
+                    .method_calls
+                    .iter()
+                    .chain(facts.function_calls.iter())
+                    .any(|call| is_privileged_address_call(&call.name))
+                {
                     continue;
                 }
                 for flow in address_argument_flows(file, &func) {

@@ -26,6 +26,7 @@ mod missing_authorization;
 mod missing_events;
 mod missing_reentrancy_guard;
 mod panic_prone;
+mod persistent_read_without_ttl;
 mod public_test_hooks;
 mod redundant_require_auth_in_loop;
 mod sensitive_data_in_events;
@@ -59,6 +60,9 @@ pub fn register_all(registry: &mut RuleRegistry) -> Result<(), RegistryError> {
     registry.register(Box::new(cross_contract_auth::CrossContractAuth))?;
     registry.register(Box::new(unbounded_iteration::UnboundedIteration))?;
     registry.register(Box::new(panic_prone::PanicProne))?;
+    registry.register(Box::new(
+        persistent_read_without_ttl::PersistentReadWithoutTtl,
+    ))?;
     registry.register(Box::new(unsafe_code::UnsafeCode))?;
     registry.register(Box::new(ttl_management::TtlManagement))?;
     registry.register(Box::new(hardcoded_address::HardcodedAddress))?;
@@ -141,7 +145,7 @@ mod tests {
                 "SS-009", "SS-010", "SS-011", "SS-012", "SS-013", "SS-014", "SS-015", "SS-016",
                 "SS-017", "SS-018", "SS-019", "SS-020", "SS-021", "SS-022", "SS-023", "SS-025",
                 "SS-026", "SS-027", "SS-028", "SS-029", "SS-030", "SS-031", "SS-032", "SS-033",
-                "SS-034", "SS-035", "SS-037", "SS-041", "SS-042", "SS-044"
+                "SS-034", "SS-035", "SS-037", "SS-039", "SS-041", "SS-042", "SS-044"
             ]
         );
     }

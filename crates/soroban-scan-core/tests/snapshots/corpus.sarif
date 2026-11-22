@@ -1446,6 +1446,70 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-039/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `extend_ttl` storage mutation with no authorization in `load`: env . storage () . persistent () . extend_ttl (& 0 , 100 , 1_000)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "26f40bd11c8b96b541374822f06fa692"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "relatedIds": [
+              "5324ac98037688f608f5ccdcf92f3929"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-039/negative4.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `extend_ttl` storage mutation with no authorization in `load`: env . storage () . persistent () . extend_ttl (& 0 , 100 , 1_000)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "cce83633f0bb46623afc178954a61223"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "relatedIds": [
+              "4c1b130b1c40c0851bcc360e2ee36abe"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-002/negative.rs"
                 },
                 "region": {
@@ -1950,6 +2014,7 @@
             "correlationAmbiguous": true,
             "relatedIds": [
               "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+              "788438c0f7a3313ffbd14856426b11ed",
               "a540d0552854c83a2e514ebe3addb904",
               "d53729124e927bdf3c7454cc7eb67305"
             ],
@@ -1984,6 +2049,7 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "788438c0f7a3313ffbd14856426b11ed",
               "96471f7dd91c176605db04047f9b0508",
               "a540d0552854c83a2e514ebe3addb904",
               "d53729124e927bdf3c7454cc7eb67305"
@@ -2606,6 +2672,7 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "38596df81ee5f515b07be4226e5f9724",
               "abf517d48bfba243b2c0554830570edf",
               "dabd871e475d6d115bb8025943652d89",
               "ee16d4000bb6d884c3d94aa068300561"
@@ -2641,6 +2708,7 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "38596df81ee5f515b07be4226e5f9724",
               "91372358a70638073c121aa93fb854ad",
               "abf517d48bfba243b2c0554830570edf",
               "ee16d4000bb6d884c3d94aa068300561"
@@ -2835,6 +2903,334 @@
           "ruleId": "SS-034"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/negative.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call without caller authorization — cross-contract client constructed with no authorization in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2e99ae2564152f54c6c0fb3db933002f"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "cd14e6d032c2b9149a1616ac374a4148"
+            ],
+            "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+            "severity": "high"
+          },
+          "ruleId": "SS-002"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/negative.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "cd14e6d032c2b9149a1616ac374a4148"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "2e99ae2564152f54c6c0fb3db933002f"
+            ],
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call without caller authorization — cross-contract client constructed with no authorization in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "7f12d0173ea697e9a985a03d3aef0497"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "fd3cf84445f4f4050a2de83a28f896d4"
+            ],
+            "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+            "severity": "high"
+          },
+          "ruleId": "SS-002"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "fd3cf84445f4f4050a2de83a28f896d4"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "7f12d0173ea697e9a985a03d3aef0497"
+            ],
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call without caller authorization — cross-contract client constructed with no authorization in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ae5cada40640045fc5e6d4bc771de9c3"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "f026ae544ab95fd865ea98b161a9c77e"
+            ],
+            "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+            "severity": "high"
+          },
+          "ruleId": "SS-002"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "f026ae544ab95fd865ea98b161a9c77e"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "ae5cada40640045fc5e6d4bc771de9c3"
+            ],
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/negative4.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call without caller authorization — cross-contract client constructed with no authorization in `balance`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "5337a1e054dca861298f2ab74368a3e7"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "relatedIds": [
+              "ac4a8287883c3f86ea90e00079c47064"
+            ],
+            "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+            "severity": "high"
+          },
+          "ruleId": "SS-002"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/negative4.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token_id` without a stored-configuration check in `balance`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ac4a8287883c3f86ea90e00079c47064"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "relatedIds": [
+              "5337a1e054dca861298f2ab74368a3e7"
+            ],
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/positive.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call without caller authorization — cross-contract client constructed with no authorization in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "cb9154a32d7840fdc8322b83051c9757"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "5a1d0f25a4704d97bd42371d0570ef80"
+            ],
+            "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+            "severity": "high"
+          },
+          "ruleId": "SS-002"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/positive.rs"
+                },
+                "region": {
+                  "startColumn": 22,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token client built from an unvalidated caller address — token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "5a1d0f25a4704d97bd42371d0570ef80"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "cb9154a32d7840fdc8322b83051c9757"
+            ],
+            "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+            "severity": "high"
+          },
+          "ruleId": "SS-030"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -2889,6 +3285,7 @@
             "confidence": "medium",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "0be9f5344f226568677ab5e99abfc6f4",
               "d5475c0cbf4d93267f0783dbf8255c86"
             ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
@@ -2922,6 +3319,7 @@
             "confidence": "medium",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "8adc97c9ebea073ca91b1be726aadb3c",
               "a362fd34490f0f54cfdbbb67ce42d6ee"
             ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
@@ -2953,8 +3351,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "relatedIds": [
-              "7d4a08e424b4e0ffc20ef938ea5e2000"
+              "7d4a08e424b4e0ffc20ef938ea5e2000",
+              "eef1aae7728ff3da31ba5b3bb1fc3ca2"
             ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
@@ -2987,6 +3387,7 @@
             "confidence": "medium",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "328b650bdb827caae9d740968006f0dc",
               "547dea37a4cd38f87a0e74848ce1949d"
             ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
@@ -3020,6 +3421,7 @@
             "confidence": "medium",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "2c0ad5f35847c792f4f0c2601a5310f3",
               "e8bbd271b173fc302e7875bd7557d93b"
             ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
@@ -3053,7 +3455,8 @@
             "confidence": "medium",
             "correlationAmbiguous": true,
             "relatedIds": [
-              "16ae2ff5dac988b965881be178ce6079"
+              "16ae2ff5dac988b965881be178ce6079",
+              "bb133c7cb974e38979862568c7ae8504"
             ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
@@ -3086,7 +3489,8 @@
             "confidence": "medium",
             "correlationAmbiguous": true,
             "relatedIds": [
-              "3dfc41148c088ed584c759e633059253"
+              "3dfc41148c088ed584c759e633059253",
+              "85a2b2f1a89e41ebe961cf8e0ddc7d59"
             ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
@@ -3119,6 +3523,7 @@
             "confidence": "medium",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "60dcd6e6d8870acb998437dcc30148bb",
               "7868cde3c25c6fe4ad03ed928848d963"
             ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
@@ -3152,6 +3557,7 @@
             "confidence": "medium",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "81e7b60122b5fd2c76f651276d06768a",
               "cf8a4241f25d646a75abbf4a8ebb523e"
             ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
@@ -3186,6 +3592,7 @@
             "correlationAmbiguous": true,
             "relatedIds": [
               "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+              "788438c0f7a3313ffbd14856426b11ed",
               "96471f7dd91c176605db04047f9b0508",
               "a540d0552854c83a2e514ebe3addb904"
             ],
@@ -3219,6 +3626,9 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "eaf81a87f58710688ca1496570ccedee"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -3249,6 +3659,9 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "ab3aa1676a7dc29ade3bb462a73fe0b8"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -3279,6 +3692,9 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "8ac6744f5fb6451bd7069bc548dbed20"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -3310,7 +3726,8 @@
             "confidence": "medium",
             "correlationAmbiguous": true,
             "relatedIds": [
-              "1a0210bc82d9870ef2668c400ed7b078"
+              "1a0210bc82d9870ef2668c400ed7b078",
+              "2b5bf3f8376bf0f80ab8ac9f00da94dc"
             ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
@@ -3373,6 +3790,9 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "relatedIds": [
+              "59dfee0175a75e4aef1c46583640189e"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -3502,7 +3922,8 @@
             "confidence": "medium",
             "correlationAmbiguous": true,
             "relatedIds": [
-              "b246a6af181e82c822350ad4e63a1c99"
+              "b246a6af181e82c822350ad4e63a1c99",
+              "c1094608dc3ee75c4c8599a06d25a9b8"
             ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
@@ -3535,7 +3956,8 @@
             "confidence": "medium",
             "correlationAmbiguous": true,
             "relatedIds": [
-              "3b059e2094045bb07bd10904f219b6cb"
+              "3b059e2094045bb07bd10904f219b6cb",
+              "f37d556c2d707f25f61c7b3db5cc3413"
             ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
@@ -3597,6 +4019,7 @@
             "confidence": "medium",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "38596df81ee5f515b07be4226e5f9724",
               "91372358a70638073c121aa93fb854ad",
               "dabd871e475d6d115bb8025943652d89",
               "ee16d4000bb6d884c3d94aa068300561"
@@ -3661,6 +4084,7 @@
             "confidence": "medium",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "830264a95828084109f5e7b0edffe357",
               "c24246d25d23e1c883acfad3de5e9585"
             ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
@@ -3694,6 +4118,7 @@
             "confidence": "medium",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "100da6fb77795c318413a10871dc8322",
               "e935aa3e1867c9fce22f03b037bf4e26"
             ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
@@ -3756,6 +4181,7 @@
             "confidence": "medium",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "280073fd0c392575b928a4eec05ee5d9",
               "e4d1d7c7329ff42ad1330aa88e145a75"
             ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
@@ -3868,6 +4294,256 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-044/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & recipient , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6b812ca2363af13c411c3fc45863afde"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "b688629950a0d3b3e7227182ada171f8"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & treasury , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "421f9eade5a4334f041cbba2bea4137c"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "b3333a41a4e39a39c7286d55ee8c13bd"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & recipient , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "f6ff0e4aa9c36db5393825361baf5717"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "41801c7c97f3cf0aeed49a383e167725"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "a8f84b11be78a859620a1e96419831d2"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "af85bf440d0340bcb30935ebaf8504cc",
+              "bdf3b0c31758e632a82f8f89d0082eb8"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-001/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `balance`: env . storage () . persistent () . get (& symbol_short ! (\"BAL\"))"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "670a68ea36edab8df3de7d46aefbc8c4"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-001/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `balance`: env . storage () . persistent () . get (& symbol_short ! (\"BAL\"))"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "4782bce491c0a957f1dfbc5b385332db"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-001/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `balance`: env . storage () . persistent () . get (& symbol_short ! (\"BAL\"))"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "790820fa17ecf451f9dde3aacc0f6a4c"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-001/positive.rs"
+                },
+                "region": {
+                  "startColumn": 29,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `withdraw`: env . storage () . persistent () . get (& symbol_short ! (\"BAL\"))"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b755d23f1efc334fa720727b4ee153b7"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-001/positive.rs"
                 },
                 "region": {
@@ -3918,12 +4594,47 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "0be9f5344f226568677ab5e99abfc6f4",
               "7b9c2285cafe0c7695c46f22694bbda5"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative.rs"
+                },
+                "region": {
+                  "startColumn": 32,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "0be9f5344f226568677ab5e99abfc6f4"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "7b9c2285cafe0c7695c46f22694bbda5",
+              "d5475c0cbf4d93267f0783dbf8255c86"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
         },
         {
           "level": "warning",
@@ -3951,12 +4662,47 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "8adc97c9ebea073ca91b1be726aadb3c",
               "acede228d48f4693b023d19b85fdff01"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative.rs"
+                },
+                "region": {
+                  "startColumn": 32,
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `route`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "8adc97c9ebea073ca91b1be726aadb3c"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "a362fd34490f0f54cfdbbb67ce42d6ee",
+              "acede228d48f4693b023d19b85fdff01"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
         },
         {
           "level": "warning",
@@ -4011,13 +4757,82 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "relatedIds": [
-              "e5053eb8c254a77c84f95f7ecbd5026c"
+              "e5053eb8c254a77c84f95f7ecbd5026c",
+              "eef1aae7728ff3da31ba5b3bb1fc3ca2"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 58,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `amount` without documented validation in `pay`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "eef1aae7728ff3da31ba5b3bb1fc3ca2"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "7d4a08e424b4e0ffc20ef938ea5e2000",
+              "e5053eb8c254a77c84f95f7ecbd5026c"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 21,
+                  "startLine": 20
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `pay_configured`: env . storage () . persistent () . get (& DataKey :: Token)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "d36faccdef13745686d3373736ded237"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "38e4d47246474277fb41cce1a73725a7"
+            ],
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
         },
         {
           "level": "warning",
@@ -4045,12 +4860,47 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "328b650bdb827caae9d740968006f0dc",
               "40814c10be9dce76435571e9ad3c9eab"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 58,
+                  "startLine": 22
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `amount` without documented validation in `pay_configured`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "328b650bdb827caae9d740968006f0dc"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "40814c10be9dce76435571e9ad3c9eab",
+              "547dea37a4cd38f87a0e74848ce1949d"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
         },
         {
           "level": "warning",
@@ -4078,12 +4928,47 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "2c0ad5f35847c792f4f0c2601a5310f3",
               "51b60ca5ffa9f7c9d2b54307b1954fc8"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 32,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2c0ad5f35847c792f4f0c2601a5310f3"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "51b60ca5ffa9f7c9d2b54307b1954fc8",
+              "e8bbd271b173fc302e7875bd7557d93b"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
         },
         {
           "level": "warning",
@@ -4111,12 +4996,47 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "bb133c7cb974e38979862568c7ae8504",
               "d29c8d617e14f3f024df7360ed7b8c87"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 32,
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `route`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "bb133c7cb974e38979862568c7ae8504"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "16ae2ff5dac988b965881be178ce6079",
+              "d29c8d617e14f3f024df7360ed7b8c87"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
         },
         {
           "level": "warning",
@@ -4144,12 +5064,47 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
-              "2af3668a68b8b8fff15113220e75af66"
+              "2af3668a68b8b8fff15113220e75af66",
+              "85a2b2f1a89e41ebe961cf8e0ddc7d59"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/positive.rs"
+                },
+                "region": {
+                  "startColumn": 58,
+                  "startLine": 10
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "85a2b2f1a89e41ebe961cf8e0ddc7d59"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "2af3668a68b8b8fff15113220e75af66",
+              "3dfc41148c088ed584c759e633059253"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
         },
         {
           "level": "warning",
@@ -4179,6 +5134,126 @@
             "severity": "medium"
           },
           "ruleId": "SS-003"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-004/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 9
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `read`: env . storage () . persistent () . get (& K)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "32814d025150e0c61c0530e7e7130475"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-004/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 9
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `read`: env . storage () . persistent () . get (& K)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "afc33046af052bc1ed9219a7cc299d9f"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-004/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 9
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `read`: env . storage () . persistent () . get (& K)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b07dfa342ea6037abad1115fbf423791"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-004/positive.rs"
+                },
+                "region": {
+                  "startColumn": 21,
+                  "startLine": 9
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `read_or_die`: env . storage () . persistent () . get (& K)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "7c0a072ae229f1da9b8a06b467ba7b47"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "dff5e13c70dad06c64575ed63be1a882"
+            ],
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
         },
         {
           "level": "warning",
@@ -4305,6 +5380,38 @@
                   "uri": "SS-008/positive.rs"
                 },
                 "region": {
+                  "startColumn": 29,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `withdraw`: env . storage () . persistent () . get (& DataKey :: Balance)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6acf5039c42a288a1498a4df9486d09a"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "48607b3e663c4369781f250384a35ee8"
+            ],
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-008/positive.rs"
+                },
+                "region": {
                   "startColumn": 9,
                   "startLine": 21
                 }
@@ -4320,10 +5427,79 @@
           "properties": {
             "category": "arithmetic",
             "confidence": "low",
+            "relatedIds": [
+              "6acf5039c42a288a1498a4df9486d09a"
+            ],
             "remediation": "Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.",
             "severity": "medium"
           },
           "ruleId": "SS-008"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-009/negative.rs"
+                },
+                "region": {
+                  "startColumn": 29,
+                  "startLine": 6
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `close`: env . storage () . persistent () . get (& DataKey :: Deadline)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "41ed9d12c0503c96aef8d8dd7752f0f9"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "7e9a6ccdbf1e26365ef4b3c29b17b212"
+            ],
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-009/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 29,
+                  "startLine": 6
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `close`: env . storage () . persistent () . get (& DataKey :: Deadline)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "31a63e495cc4a167de984fc61b412787"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "9d121bdfd459606ded2db6ea4db1ec51"
+            ],
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
         },
         {
           "level": "warning",
@@ -4353,6 +5529,126 @@
             "severity": "medium"
           },
           "ruleId": "SS-009"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-012/negative.rs"
+                },
+                "region": {
+                  "startColumn": 35,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `add`: env . storage () . persistent () . get (& DataKey :: Items)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c8c2032d81b909709a865f267adda41d"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-012/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 35,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `add`: env . storage () . persistent () . get (& DataKey :: Items)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "7c37e5bd592c57f6cbfe4776ab6fcc08"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-012/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 35,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `add`: env . storage () . persistent () . get (& DataKey :: Items)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "7ab06f6021e41f1e73e6bfe9913f5970"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-012/positive.rs"
+                },
+                "region": {
+                  "startColumn": 35,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `add`: env . storage () . persistent () . get (& DataKey :: Items)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ea8c47662fe68db69a53f5ba29cd6b81"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
         },
         {
           "level": "warning",
@@ -4410,12 +5706,47 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "60dcd6e6d8870acb998437dcc30148bb",
               "8b86f2b60e6a444b286971c481179811"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/negative.rs"
+                },
+                "region": {
+                  "startColumn": 58,
+                  "startLine": 7
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `withdraw`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "60dcd6e6d8870acb998437dcc30148bb"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "7868cde3c25c6fe4ad03ed928848d963",
+              "8b86f2b60e6a444b286971c481179811"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
         },
         {
           "level": "warning",
@@ -4443,12 +5774,47 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "81e7b60122b5fd2c76f651276d06768a",
               "fd7ae9e1a00f6c952bc4f11d3045a6ca"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 58,
+                  "startLine": 7
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `withdraw`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "81e7b60122b5fd2c76f651276d06768a"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "cf8a4241f25d646a75abbf4a8ebb523e",
+              "fd7ae9e1a00f6c952bc4f11d3045a6ca"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
         },
         {
           "level": "warning",
@@ -4477,6 +5843,7 @@
             "correlationAmbiguous": true,
             "relatedIds": [
               "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+              "788438c0f7a3313ffbd14856426b11ed",
               "96471f7dd91c176605db04047f9b0508",
               "d53729124e927bdf3c7454cc7eb67305"
             ],
@@ -4484,6 +5851,141 @@
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/positive.rs"
+                },
+                "region": {
+                  "startColumn": 58,
+                  "startLine": 6
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `withdraw`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "788438c0f7a3313ffbd14856426b11ed"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+              "96471f7dd91c176605db04047f9b0508",
+              "a540d0552854c83a2e514ebe3addb904",
+              "d53729124e927bdf3c7454cc7eb67305"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-014/negative.rs"
+                },
+                "region": {
+                  "startColumn": 32,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "eaf81a87f58710688ca1496570ccedee"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "5cdc6740236002705c69fda6050c99dc"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-014/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 32,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ab3aa1676a7dc29ade3bb462a73fe0b8"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "d830436e31c7dae6ebcb77b6726f0a02"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-014/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 32,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "8ac6744f5fb6451bd7069bc548dbed20"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "f768e05ab79654785b73117762ee1540"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
         },
         {
           "level": "warning",
@@ -4511,12 +6013,47 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "2b5bf3f8376bf0f80ab8ac9f00da94dc",
               "34ec8ca36a47b0434c16fa976a058c3b"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-014/positive.rs"
+                },
+                "region": {
+                  "startColumn": 32,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2b5bf3f8376bf0f80ab8ac9f00da94dc"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "1a0210bc82d9870ef2668c400ed7b078",
+              "34ec8ca36a47b0434c16fa976a058c3b"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
         },
         {
           "level": "warning",
@@ -4737,6 +6274,125 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-019/negative.rs"
+                },
+                "region": {
+                  "startColumn": 30,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `probe`: env . storage () . persistent () . get (& Key :: Token)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "603efe83ac024074c057c96238589203"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-019/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 30,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `probe`: env . storage () . persistent () . get (& Key :: Token)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "54b66257f5c999c91300eb131b36845c"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-019/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 30,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `probe`: env . storage () . persistent () . get (& Key :: Token)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "bad60839d97b64d353689b93cf9c8fff"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-019/positive.rs"
+                },
+                "region": {
+                  "startColumn": 30,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `probe`: env . storage () . persistent () . get (& Key :: Token)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "59dfee0175a75e4aef1c46583640189e"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "d3c34df38b542b7b7ba0b07015bd9c56"
+            ],
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-020/positive.rs"
                 },
                 "region": {
@@ -4832,6 +6488,36 @@
                   "uri": "SS-028/negative.rs"
                 },
                 "region": {
+                  "startColumn": 28,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `withdraw`: env . storage () . persistent () . get (& Key :: Locked)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b7b996ab834b2353296a0a987f8fbc2e"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative.rs"
+                },
+                "region": {
                   "startColumn": 9,
                   "startLine": 18
                 }
@@ -4849,12 +6535,47 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "c1094608dc3ee75c4c8599a06d25a9b8",
               "de6b286d5c77a9568c549f49d54db1b7"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative.rs"
+                },
+                "region": {
+                  "startColumn": 58,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `token` without documented validation in `withdraw`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c1094608dc3ee75c4c8599a06d25a9b8"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "b246a6af181e82c822350ad4e63a1c99",
+              "de6b286d5c77a9568c549f49d54db1b7"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
         },
         {
           "level": "warning",
@@ -4882,12 +6603,47 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
-              "1b98a6a5f598c533eb1b25bd5b8fe250"
+              "1b98a6a5f598c533eb1b25bd5b8fe250",
+              "f37d556c2d707f25f61c7b3db5cc3413"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 58,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `token` without documented validation in `withdraw`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "f37d556c2d707f25f61c7b3db5cc3413"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "1b98a6a5f598c533eb1b25bd5b8fe250",
+              "3b059e2094045bb07bd10904f219b6cb"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
         },
         {
           "level": "warning",
@@ -4915,6 +6671,7 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "38596df81ee5f515b07be4226e5f9724",
               "91372358a70638073c121aa93fb854ad",
               "abf517d48bfba243b2c0554830570edf",
               "dabd871e475d6d115bb8025943652d89"
@@ -4923,6 +6680,75 @@
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/positive.rs"
+                },
+                "region": {
+                  "startColumn": 58,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `token` without documented validation in `withdraw`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "38596df81ee5f515b07be4226e5f9724"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "91372358a70638073c121aa93fb854ad",
+              "abf517d48bfba243b2c0554830570edf",
+              "dabd871e475d6d115bb8025943652d89",
+              "ee16d4000bb6d884c3d94aa068300561"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/negative.rs"
+                },
+                "region": {
+                  "startColumn": 35,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `payout`: env . storage () . persistent () . get (& Key :: Token)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "d63f03e317b755dbdf91ec0e375c7d4d"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "e71091ffde52f91a460ccdedbbbfd0bd"
+            ],
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
         },
         {
           "level": "warning",
@@ -4950,12 +6776,80 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "830264a95828084109f5e7b0edffe357",
               "dd7d962c7fe2636603c07cea1b7d90b6"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/negative.rs"
+                },
+                "region": {
+                  "startColumn": 58,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "830264a95828084109f5e7b0edffe357"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "c24246d25d23e1c883acfad3de5e9585",
+              "dd7d962c7fe2636603c07cea1b7d90b6"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 33,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `payout`: env . storage () . persistent () . get (& Key :: Token)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "39cc74f8ad0f12d0bfff6607024b9726"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "a7f66e471208cdd28bbd07198e4ceb34"
+            ],
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
         },
         {
           "level": "warning",
@@ -4983,12 +6877,47 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "100da6fb77795c318413a10871dc8322",
               "763b03471d0c48d8cff72c2ca1a66ec8"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 58,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "100da6fb77795c318413a10871dc8322"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "763b03471d0c48d8cff72c2ca1a66ec8",
+              "e935aa3e1867c9fce22f03b037bf4e26"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
         },
         {
           "level": "warning",
@@ -5016,12 +6945,47 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "280073fd0c392575b928a4eec05ee5d9",
               "e1f40c9883b82b58e7e8c067bc28c021"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/positive.rs"
+                },
+                "region": {
+                  "startColumn": 58,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "280073fd0c392575b928a4eec05ee5d9"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "e1f40c9883b82b58e7e8c067bc28c021",
+              "e4d1d7c7329ff42ad1330aa88e145a75"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
         },
         {
           "level": "warning",
@@ -5115,6 +7079,205 @@
           "ruleId": "SS-037"
         },
         {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-039/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `load`: env . storage () . persistent () . get (& 0)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ffa781c50c7f543dc5a5935acb3fdaa8"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "e70fefead6d303fbacbadf442907a99a"
+            ],
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token transfer amount without validation — `transfer` transfers unchecked amount `amount` in entry point `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b688629950a0d3b3e7227182ada171f8"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "6b812ca2363af13c411c3fc45863afde"
+            ],
+            "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token transfer amount without validation — `transfer` transfers unchecked amount `amount` in entry point `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b3333a41a4e39a39c7286d55ee8c13bd"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "421f9eade5a4334f041cbba2bea4137c"
+            ],
+            "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token transfer amount without validation — `transfer` transfers unchecked amount `amount` in entry point `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "41801c7c97f3cf0aeed49a383e167725"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "f6ff0e4aa9c36db5393825361baf5717"
+            ],
+            "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Token transfer amount without validation — `transfer` transfers unchecked amount `amount` in entry point `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "bdf3b0c31758e632a82f8f89d0082eb8"
+          },
+          "properties": {
+            "category": "token",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "a8f84b11be78a859620a1e96419831d2",
+              "af85bf440d0340bcb30935ebaf8504cc"
+            ],
+            "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/positive.rs"
+                },
+                "region": {
+                  "startColumn": 58,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Cross-contract call with an unvalidated address argument — cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "af85bf440d0340bcb30935ebaf8504cc"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "a8f84b11be78a859620a1e96419831d2",
+              "bdf3b0c31758e632a82f8f89d0082eb8"
+            ],
+            "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-044"
+        },
+        {
           "level": "note",
           "locations": [
             {
@@ -5197,6 +7360,9 @@
             "category": "error-handling",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "d36faccdef13745686d3373736ded237"
+            ],
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -5226,6 +7392,10 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "7c0a072ae229f1da9b8a06b467ba7b47"
+            ],
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -5255,6 +7425,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -5285,6 +7456,9 @@
             "category": "error-handling",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "41ed9d12c0503c96aef8d8dd7752f0f9"
+            ],
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -5315,6 +7489,9 @@
             "category": "error-handling",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "31a63e495cc4a167de984fc61b412787"
+            ],
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -5643,6 +7820,9 @@
             "category": "error-handling",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "d63f03e317b755dbdf91ec0e375c7d4d"
+            ],
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -5703,6 +7883,9 @@
             "category": "error-handling",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "39cc74f8ad0f12d0bfff6607024b9726"
+            ],
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -5770,6 +7953,160 @@
             "severity": "low"
           },
           "ruleId": "SS-032"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-039/negative.rs"
+                },
+                "region": {
+                  "startColumn": 21,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `load` can panic: env . storage () . persistent () . get (& 0) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "5324ac98037688f608f5ccdcf92f3929"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "relatedIds": [
+              "26f40bd11c8b96b541374822f06fa692"
+            ],
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-039/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `load` can panic: env . storage () . instance () . get (& 0) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e2c3b00dd3bea456ab4744c76c77b7f3"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-039/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `load` can panic: env . storage () . temporary () . get (& 0) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "cf9cdd15161eacd5958df37111e01f56"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-039/negative4.rs"
+                },
+                "region": {
+                  "startColumn": 21,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `load` can panic: env . storage () . persistent () . get (& 0) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "4c1b130b1c40c0851bcc360e2ee36abe"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "relatedIds": [
+              "cce83633f0bb46623afc178954a61223"
+            ],
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-039/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `load` can panic: env . storage () . persistent () . get (& 0) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e70fefead6d303fbacbadf442907a99a"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "relatedIds": [
+              "ffa781c50c7f543dc5a5935acb3fdaa8"
+            ],
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
         },
         {
           "level": "note",
@@ -5868,6 +8205,36 @@
             "severity": "low"
           },
           "ruleId": "SS-032"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-044/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 33,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `payout` can panic: env . storage () . instance () . get (& 0) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "37e7ade0dbd83e54aa07d3abdd30f8d3"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
         },
         {
           "level": "note",
@@ -9387,6 +11754,33 @@
                 "level": "warning"
               },
               "fullDescription": {
+                "text": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding."
+              },
+              "help": {
+                "markdown": "## Persistent storage read without TTL management\n\nA contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.\n\n### Remediation\n\nRefresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                "text": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.\n\nRemediation: Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-039",
+              "name": "Persistent storage read without TTL management",
+              "properties": {
+                "category": "storage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+                ],
+                "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Persistent storage read without TTL management"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
                 "text": "A contract entry point performs `require_auth` (or `require_auth_for_args`) inside a loop body in a position that does not clearly cover every iteration: the check is conditional, or it runs only after a state-changing operation. A single check in that position can leave later iterations or earlier side effects unauthorized. Unconditional checks at the top of a loop are ambiguous and are deliberately not reported by this rule."
               },
               "help": {
@@ -9436,6 +11830,34 @@
               },
               "shortDescription": {
                 "text": "Security check unreachable on every path"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported."
+              },
+              "help": {
+                "markdown": "## Cross-contract call with an unvalidated address argument\n\nA cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.\n\n### Remediation\n\nValidate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security\n- https://developers.stellar.org/docs/tokens/token-interface",
+                "text": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.\n\nRemediation: Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-044",
+              "name": "Cross-contract call with an unvalidated address argument",
+              "properties": {
+                "category": "cross-contract",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security",
+                  "https://developers.stellar.org/docs/tokens/token-interface"
+                ],
+                "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Cross-contract call with an unvalidated address argument"
               }
             }
           ],

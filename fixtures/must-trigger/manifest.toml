@@ -157,3 +157,8 @@ why = "The only authorization check follows an unconditional return, so the secu
 file = "SS-044.rs"
 why = "A caller-supplied recipient reaches a token transfer without validation, so SS-044 must always trigger."
 
+
+[SS-039]
+file = "SS-039.rs"
+why = "A persistent read has no TTL management, so SS-039 must always trigger."
+

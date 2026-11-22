@@ -83,6 +83,38 @@
                   "uri": "positive.rs"
                 },
                 "region": {
+                  "startColumn": 29,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage read without TTL management — persistent storage read without TTL extension in `withdraw`: env . storage () . persistent () . get (& symbol_short ! (\"BAL\"))"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "65db1dbcafd18d0725b87b3c789f1163"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "policyReason": "severity medium is below the policy threshold high",
+            "policyStatus": "pass",
+            "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "positive.rs"
+                },
+                "region": {
                   "startColumn": 27,
                   "startLine": 20
                 }
@@ -1193,6 +1225,33 @@
                 "level": "warning"
               },
               "fullDescription": {
+                "text": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding."
+              },
+              "help": {
+                "markdown": "## Persistent storage read without TTL management\n\nA contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.\n\n### Remediation\n\nRefresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                "text": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.\n\nRemediation: Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-039",
+              "name": "Persistent storage read without TTL management",
+              "properties": {
+                "category": "storage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+                ],
+                "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Persistent storage read without TTL management"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
                 "text": "A contract entry point performs `require_auth` (or `require_auth_for_args`) inside a loop body in a position that does not clearly cover every iteration: the check is conditional, or it runs only after a state-changing operation. A single check in that position can leave later iterations or earlier side effects unauthorized. Unconditional checks at the top of a loop are ambiguous and are deliberately not reported by this rule."
               },
               "help": {
@@ -1242,6 +1301,34 @@
               },
               "shortDescription": {
                 "text": "Security check unreachable on every path"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported."
+              },
+              "help": {
+                "markdown": "## Cross-contract call with an unvalidated address argument\n\nA cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.\n\n### Remediation\n\nValidate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security\n- https://developers.stellar.org/docs/tokens/token-interface",
+                "text": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.\n\nRemediation: Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-044",
+              "name": "Cross-contract call with an unvalidated address argument",
+              "properties": {
+                "category": "cross-contract",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security",
+                  "https://developers.stellar.org/docs/tokens/token-interface"
+                ],
+                "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Cross-contract call with an unvalidated address argument"
               }
             }
           ],

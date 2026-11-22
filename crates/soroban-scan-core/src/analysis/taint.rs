@@ -434,6 +434,14 @@ fn address_argument_indices(name: &str) -> Option<&'static [usize]> {
         .map(|(_, indices)| *indices)
 }
 
+/// Whether `name` is a documented privileged address call sink.
+///
+/// Rule authors can use this to skip expensive flow analysis for entry points
+/// that contain no such call.
+pub fn is_privileged_address_call(name: &str) -> bool {
+    address_argument_indices(name).is_some()
+}
+
 /// Method/function names treated as documented validation or clamping helpers
 /// for token amounts.
 pub const AMOUNT_SANITIZERS: &[&str] = &[
