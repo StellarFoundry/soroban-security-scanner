@@ -5875,6 +5875,96 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-042/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Security check unreachable on every path — `require_auth` check at line 13 in `set` is unreachable: every path leaves the function first (nearest `return` at line 12); CFG is complete (6 nodes, 5 edges, no unknown nodes)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "15fd86a67b22f51108f81ae155a41eaa"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
+            "severity": "low"
+          },
+          "ruleId": "SS-042"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-042/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Security check unreachable on every path — `validate_amount` check at line 14 in `set` is unreachable: every path leaves the function first (nearest `return` at line 12); CFG is complete (6 nodes, 5 edges, no unknown nodes)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "1c9f49f645679624ee11eeb95576bbff"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
+            "severity": "low"
+          },
+          "ruleId": "SS-042"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-042/positive_conditional.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Security check unreachable on every path — `require_auth` check at line 14 in `set` is unreachable: every path leaves the function first (nearest `return` at line 13); CFG is complete (7 nodes, 7 edges, no unknown nodes)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "12b5cbda33d1d0fab6e851b7b8db5f70"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
+            "severity": "low"
+          },
+          "ruleId": "SS-042"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-001/negative.rs"
                 },
                 "region": {
@@ -7992,6 +8082,330 @@
             "severity": "low"
           },
           "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-042/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set`: env . storage () . persistent () . set (& admin , & 1)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ac26d900020ae4fa9c31cdf498c59e16"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "06f3cfcbbbe36ef777b9db70a4f6eaf3"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-042/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `set`: env . storage () . persistent () . set (& admin , & 1)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "06f3cfcbbbe36ef777b9db70a4f6eaf3"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "relatedIds": [
+              "ac26d900020ae4fa9c31cdf498c59e16"
+            ],
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-042/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set`: env . storage () . persistent () . set (& admin , & 1)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "904cf8b5be71a9484fd6e82bd40192c4"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "238fd6bb22dfb45282da13e034fb94b5"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-042/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `set`: env . storage () . persistent () . set (& admin , & 1)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "238fd6bb22dfb45282da13e034fb94b5"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "relatedIds": [
+              "904cf8b5be71a9484fd6e82bd40192c4"
+            ],
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-042/negative4.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set`: env . storage () . persistent () . set (& admin , & 1)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "de3d4a612257c047ceb526aaa83d3d44"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "dff5c5fcf4f211dae939515a0a1f0e37"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-042/negative4.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `set`: env . storage () . persistent () . set (& admin , & 1)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "dff5c5fcf4f211dae939515a0a1f0e37"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "relatedIds": [
+              "de3d4a612257c047ceb526aaa83d3d44"
+            ],
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-042/positive_conditional.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set`: env . storage () . persistent () . set (& admin , & 1)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "609fa930812061c84a9387e8e72f861e"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "d54bae544db9a5f54f2f14127e3c7e22"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-042/positive_conditional.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `set`: env . storage () . persistent () . set (& admin , & 1)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "d54bae544db9a5f54f2f14127e3c7e22"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "609fa930812061c84a9387e8e72f861e"
+            ],
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-042/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set`: env . storage () . persistent () . set (& admin , & 1)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "0e30207a5d2e79a79968079556b556e7"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "a90bb695fbab024bd583ead7034a0990"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-042/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `set`: env . storage () . persistent () . set (& admin , & 1)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "a90bb695fbab024bd583ead7034a0990"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "0e30207a5d2e79a79968079556b556e7"
+            ],
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
         }
       ],
       "tool": {
@@ -8994,6 +9408,34 @@
               },
               "shortDescription": {
                 "text": "Authorization check inside a loop"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "fullDescription": {
+                "text": "A caller-authorization or validation check appears after a statement that always leaves the function, such as an unconditional `return`. No execution path reaches the check, so it provides a false sense of protection while the actual behaviour is unguarded. The detector reports only when the function's control-flow graph is complete: a truncated graph or one containing constructs the builder does not model suppresses the finding."
+              },
+              "help": {
+                "markdown": "## Security check unreachable on every path\n\nA caller-authorization or validation check appears after a statement that always leaves the function, such as an unconditional `return`. No execution path reaches the check, so it provides a false sense of protection while the actual behaviour is unguarded. The detector reports only when the function's control-flow graph is complete: a truncated graph or one containing constructs the builder does not model suppresses the finding.\n\n### Remediation\n\nRemove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization\n- https://doc.rust-lang.org/reference/statements.html#unreachable-code",
+                "text": "A caller-authorization or validation check appears after a statement that always leaves the function, such as an unconditional `return`. No execution path reaches the check, so it provides a false sense of protection while the actual behaviour is unguarded. The detector reports only when the function's control-flow graph is complete: a truncated graph or one containing constructs the builder does not model suppresses the finding.\n\nRemediation: Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-042",
+              "name": "Security check unreachable on every path",
+              "properties": {
+                "category": "authorization",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                  "https://doc.rust-lang.org/reference/statements.html#unreachable-code"
+                ],
+                "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
+                "severity": "low"
+              },
+              "shortDescription": {
+                "text": "Security check unreachable on every path"
               }
             }
           ],

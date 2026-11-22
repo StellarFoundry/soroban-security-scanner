@@ -186,3 +186,9 @@ why = "Underscored and typed integer literals are normalized before the range ch
 file = "SS-034/spaced_deploy_chain.rs"
 expect = "trigger"
 why = "Whitespace inside the deployer chain does not hide an unauthenticated deployment."
+
+[SS-042]
+file = "SS-042/sample.rs"
+expect = "trigger"
+why = "A method call split across lines after an unconditional return is still an unreachable security check when the CFG is complete."
+

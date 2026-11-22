@@ -39,6 +39,7 @@ mod unbounded_vec_growth;
 mod unchecked_arithmetic;
 mod unchecked_integer_cast;
 mod unprotected_initializer;
+mod unreachable_security_check;
 mod unsafe_code;
 mod unvalidated_deployer;
 mod unvalidated_deserialization;
@@ -115,6 +116,9 @@ pub fn register_all(registry: &mut RuleRegistry) -> Result<(), RegistryError> {
         symbol_short_key_collision::SymbolShortKeyCollision,
     ))?;
     registry.register(Box::new(authorization_in_loop::AuthorizationInLoop))?;
+    registry.register(Box::new(
+        unreachable_security_check::UnreachableSecurityCheck,
+    ))?;
     Ok(())
 }
 
@@ -133,7 +137,7 @@ mod tests {
                 "SS-009", "SS-010", "SS-011", "SS-012", "SS-013", "SS-014", "SS-015", "SS-016",
                 "SS-017", "SS-018", "SS-019", "SS-020", "SS-021", "SS-022", "SS-023", "SS-025",
                 "SS-026", "SS-027", "SS-028", "SS-029", "SS-030", "SS-031", "SS-032", "SS-033",
-                "SS-034", "SS-035", "SS-037", "SS-041"
+                "SS-034", "SS-035", "SS-037", "SS-041", "SS-042"
             ]
         );
     }
