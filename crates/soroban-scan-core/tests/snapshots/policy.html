@@ -54,6 +54,29 @@
 <li><code>https://developers.stellar.org/docs/learn/encyclopedia/security/authorization</code></li>
 </ul>
 </article>
+<article class="finding high">
+<h3><span class="rule">SS-001 &middot;</span> State-changing entry point without caller authorization</h3>
+<p><span class="badge">high</span> <span class="badge">medium</span> <span class="badge">authorization</span> <span class="badge">above gate</span> </p>
+<dl><dt>Location</dt><dd><code>positive.rs:21:9</code></dd>
+<dt>Description</dt><dd>A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.</dd></dl>
+<p><strong>Evidence</strong></p><pre><code>`set` storage mutation with no authorization in `withdraw`: env . storage () . persistent () . set (&amp; symbol_short ! (&quot;BAL&quot;) , &amp; new_balance)</code></pre>
+<p><strong>Remediation</strong></p><p>Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.</p>
+<p><strong>References</strong></p><ul class="references">
+<li><code>https://developers.stellar.org/docs/learn/encyclopedia/security/authorization</code></li>
+</ul>
+</article>
+<article class="finding medium">
+<h3><span class="rule">SS-008 &middot;</span> Unchecked arithmetic in a contract entry point</h3>
+<p><span class="badge">medium</span> <span class="badge">low</span> <span class="badge">arithmetic</span> <span class="badge">below gate</span> </p>
+<dl><dt>Location</dt><dd><code>positive.rs:20:27</code></dd>
+<dt>Description</dt><dd>A public contract entry point performs binary arithmetic (`+`, `-`, or `*`) on values without a checked, saturating, overflowing, or wrapping operation. In release builds Rust arithmetic wraps on overflow and underflow instead of panicking, so a decrement below zero (or an overflow) can silently produce an incorrect result — a common cause of balance and accounting bugs in token, escrow and vault contracts. This is a heuristic: it cannot prove that the operands are attacker-influenced or that their range is constrained, so it reports low confidence and should be reviewed in context.</dd></dl>
+<p><strong>Evidence</strong></p><pre><code>unchecked `-` arithmetic in entry point `withdraw`: balance - amount (use `checked_sub` and handle `None`)</code></pre>
+<p><strong>Remediation</strong></p><p>Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.</p>
+<p><strong>References</strong></p><ul class="references">
+<li><code>https://doc.rust-lang.org/reference/expressions/operator-expr.html#overflow</code></li>
+<li><code>https://developers.stellar.org/docs</code></li>
+</ul>
+</article>
 <article class="finding low">
 <h3><span class="rule">SS-006 &middot;</span> Persistent storage write without TTL management</h3>
 <p><span class="badge">low</span> <span class="badge">low</span> <span class="badge">storage</span> <span class="badge">below gate</span> </p>
@@ -74,29 +97,6 @@
 <p><strong>Remediation</strong></p><p>Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.</p>
 <p><strong>References</strong></p><ul class="references">
 <li><code>https://developers.stellar.org/docs/learn/encyclopedia/events</code></li>
-</ul>
-</article>
-<article class="finding medium">
-<h3><span class="rule">SS-008 &middot;</span> Unchecked arithmetic in a contract entry point</h3>
-<p><span class="badge">medium</span> <span class="badge">low</span> <span class="badge">arithmetic</span> <span class="badge">below gate</span> </p>
-<dl><dt>Location</dt><dd><code>positive.rs:20:27</code></dd>
-<dt>Description</dt><dd>A public contract entry point performs binary arithmetic (`+`, `-`, or `*`) on values without a checked, saturating, overflowing, or wrapping operation. In release builds Rust arithmetic wraps on overflow and underflow instead of panicking, so a decrement below zero (or an overflow) can silently produce an incorrect result — a common cause of balance and accounting bugs in token, escrow and vault contracts. This is a heuristic: it cannot prove that the operands are attacker-influenced or that their range is constrained, so it reports low confidence and should be reviewed in context.</dd></dl>
-<p><strong>Evidence</strong></p><pre><code>unchecked `-` arithmetic in entry point `withdraw`: balance - amount (use `checked_sub` and handle `None`)</code></pre>
-<p><strong>Remediation</strong></p><p>Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.</p>
-<p><strong>References</strong></p><ul class="references">
-<li><code>https://doc.rust-lang.org/reference/expressions/operator-expr.html#overflow</code></li>
-<li><code>https://developers.stellar.org/docs</code></li>
-</ul>
-</article>
-<article class="finding high">
-<h3><span class="rule">SS-001 &middot;</span> State-changing entry point without caller authorization</h3>
-<p><span class="badge">high</span> <span class="badge">medium</span> <span class="badge">authorization</span> <span class="badge">above gate</span> </p>
-<dl><dt>Location</dt><dd><code>positive.rs:21:9</code></dd>
-<dt>Description</dt><dd>A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.</dd></dl>
-<p><strong>Evidence</strong></p><pre><code>`set` storage mutation with no authorization in `withdraw`: env . storage () . persistent () . set (&amp; symbol_short ! (&quot;BAL&quot;) , &amp; new_balance)</code></pre>
-<p><strong>Remediation</strong></p><p>Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.</p>
-<p><strong>References</strong></p><ul class="references">
-<li><code>https://developers.stellar.org/docs/learn/encyclopedia/security/authorization</code></li>
 </ul>
 </article>
 <article class="finding low">

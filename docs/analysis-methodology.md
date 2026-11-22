@@ -171,8 +171,8 @@ failure rather than a scanner crash (`#103`).
 
 ## Finding de-duplication
 
-After rules run, findings are sorted deterministically and then collapsed with
-an overlap rule:
+After rules run, findings are ranked deterministically (see
+[Finding ranking](finding-ranking.md)) and then collapsed with an overlap rule:
 
 - Two findings are duplicates when they share the **same rule id and normalized
   file** and their inclusive line ranges overlap (for example `5..=9` and

@@ -27,6 +27,15 @@ impl Confidence {
             Confidence::High => "high",
         }
     }
+
+    /// Numeric rank (higher is more certain).
+    pub fn rank(self) -> u8 {
+        match self {
+            Confidence::Low => 0,
+            Confidence::Medium => 1,
+            Confidence::High => 2,
+        }
+    }
 }
 
 impl fmt::Display for Confidence {
