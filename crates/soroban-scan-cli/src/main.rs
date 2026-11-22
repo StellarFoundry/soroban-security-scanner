@@ -33,6 +33,7 @@ use soroban_scan_core::redaction;
 use soroban_scan_core::registry::RuleRegistry;
 use soroban_scan_core::report::{self, OutputFormat};
 use soroban_scan_core::severity::Severity;
+use soroban_scan_core::status_gate::{self, GateInput};
 
 const EXIT_SUCCESS: u8 = 0;
 const EXIT_FINDINGS: u8 = 1;
@@ -519,6 +520,18 @@ struct ScanArgs {
     #[arg(long, value_enum, value_name = "LEVEL")]
     sarif_policy: Option<FailOnArg>,
 
+    /// Write a policy status-gate record (JSON) for publishing as a pull
+    /// request check: a `success`, `failure` or `neutral` conclusion, a title,
+    /// and a concise summary. Suppressed and baseline findings never fail it.
+    /// Opt-in; never changes the exit code.
+    #[arg(long, value_name = "FILE")]
+    status_gate: Option<PathBuf>,
+
+    /// Link the status-gate summary to the full report artifact. Must be an
+    /// http(s) URL without credentials. Requires --status-gate.
+    #[arg(long, value_name = "URL", requires = "status_gate")]
+    report_url: Option<String>,
+
     /// Compare against one or more baseline files, marking findings as new or existing.
     #[arg(long, value_name = "FILE", action = clap::ArgAction::Append)]
     baseline: Vec<PathBuf>,
@@ -855,6 +868,10 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
             "--sarif-policy requires --format sarif".to_string(),
         ));
     }
+    if let Some(url) = &args.report_url {
+        status_gate::validate_report_url(url)
+            .map_err(|error| CliError::Usage(format!("--report-url: {error}")))?;
+    }
 
     if !stdin_mode {
         for path in &args.paths {
@@ -1070,6 +1087,47 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
     let failed = failed
         || (effective_fail_on != FailOnArg::None
             && outcome.waivers.iter().any(|waiver| waiver.expired));
+
+    // The status gate sees exactly what the exit gate saw above: unsuppressed
+    // findings, or only the new ones when a baseline is supplied. It is
+    // computed before `--new-only` and truncation change the report rows.
+    if let Some(path) = &args.status_gate {
+        let gated: Vec<Severity> = match &new_indices {
+            Some(indices) => indices
+                .iter()
+                .map(|&index| outcome.findings[index].severity)
+                .collect(),
+            None => outcome
+                .findings
+                .iter()
+                .map(|finding| finding.severity)
+                .collect(),
+        };
+        let baseline_accepted = new_indices
+            .as_ref()
+            .map_or(0, |indices| outcome.findings.len() - indices.len());
+        let gate = status_gate::evaluate(&GateInput {
+            threshold,
+            gated,
+            baseline_accepted,
+            suppressed: outcome.suppressed.len(),
+            expired_waivers: outcome
+                .waivers
+                .iter()
+                .filter(|waiver| waiver.expired)
+                .count(),
+            files_analyzed: outcome.stats.files_analyzed,
+            report_url: args.report_url.clone(),
+        });
+        let mut text = serde_json::to_string_pretty(&gate)
+            .map_err(|e| CliError::Runtime(format!("cannot serialize status gate: {e}")))?;
+        text.push('\n');
+        std::fs::write(path, text)
+            .map_err(|e| CliError::Runtime(format!("cannot write {}: {e}", path.display())))?;
+        if !args.quiet {
+            eprintln!("status gate: {} ({})", gate.conclusion.as_str(), gate.title);
+        }
+    }
 
     if args.new_only {
         if let Some(indices) = &new_indices {

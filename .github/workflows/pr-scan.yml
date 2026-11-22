@@ -148,3 +148,78 @@ jobs:
             --report results.json \
             --head-sha "${{ github.event.pull_request.head.sha }}" \
             --fail-on "${{ vars.SOROBAN_SCAN_CHECK_RUN_FAIL_ON || 'high' }}"
+
+      # Opt-in policy status gate (#341). Enable by setting the repository
+      # variable SOROBAN_SCAN_STATUS_GATE to "true"; point
+      # SOROBAN_SCAN_POLICY_FILE at a policy document to gate on it (the
+      # default threshold is `high`). The scanner decides the conclusion, so
+      # suppressed, waived, and baseline findings never fail the check, and a
+      # disabled policy is reported as `neutral`. Fork PRs cannot create checks.
+      - name: Scan for the policy status gate
+        id: gate-scan
+        if: steps.changed.outputs.count != '0' && vars.SOROBAN_SCAN_STATUS_GATE == 'true' && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          POLICY_FILE: ${{ vars.SOROBAN_SCAN_POLICY_FILE }}
+        run: |
+          set -euo pipefail
+          policy=()
+          if [ -n "${POLICY_FILE}" ]; then
+            policy=(--policy-file "${POLICY_FILE}")
+          fi
+          status=0
+          ./target/release/soroban-scan scan . \
+            --files-from changed.txt \
+            --exclude 'fixtures/**' \
+            --exclude 'examples/**' \
+            --format json \
+            --output gate-report.json \
+            "${policy[@]}" || status=$?
+          # 0 and 1 are both valid scan results; the check carries the verdict.
+          if [ "${status}" -gt 1 ]; then
+            exit "${status}"
+          fi
+
+      - name: Upload the status gate report
+        id: gate-artifact
+        if: steps.gate-scan.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: soroban-scan-gate-report
+          path: gate-report.json
+          retention-days: 30
+
+      - name: Publish the policy status gate
+        if: steps.gate-scan.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          POLICY_FILE: ${{ vars.SOROBAN_SCAN_POLICY_FILE }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPORT_URL: ${{ steps.gate-artifact.outputs.artifact-url }}
+        run: |
+          set -euo pipefail
+          policy=()
+          if [ -n "${POLICY_FILE}" ]; then
+            policy=(--policy-file "${POLICY_FILE}")
+          fi
+          link=()
+          if [ -n "${REPORT_URL}" ]; then
+            link=(--report-url "${REPORT_URL}")
+          fi
+          # Re-evaluating is deterministic and cheap for the changed files, and
+          # lets the summary link to the artifact uploaded above.
+          ./target/release/soroban-scan scan . \
+            --files-from changed.txt \
+            --exclude 'fixtures/**' \
+            --exclude 'examples/**' \
+            --format json \
+            --output gate-report.json \
+            --status-gate gate.json \
+            "${link[@]}" \
+            "${policy[@]}" || [ $? -le 1 ]
+          python3 .github/scripts/check_run.py \
+            --repo "${GITHUB_REPOSITORY}" \
+            --report gate-report.json \
+            --gate gate.json \
+            --head-sha "${HEAD_SHA}" \
+            --name "Soroban Security Gate"

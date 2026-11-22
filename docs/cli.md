@@ -97,6 +97,8 @@ roots in one run.
 | `--rule <RULE>` | Run only the given rule(s) (repeatable). |
 | `--fail-on <none\|info\|low\|medium\|high\|critical>` | Failure threshold (default `high`). |
 | `--sarif-policy <none\|info\|low\|medium\|high\|critical>` | Opt-in SARIF policy annotations on each result; requires `--format sarif`. |
+| `--status-gate <FILE>` | Write a policy status-gate record (`success`, `failure`, or `neutral`) for a pull request check. Never changes the exit code. See [Policy status gate](#policy-status-gate). |
+| `--report-url <URL>` | Link the status-gate summary to the full report artifact; `http(s)` only, no credentials. Requires `--status-gate`. |
 | `--baseline <FILE>` | Compare against a baseline (repeatable; files are merged). Gate applies to new findings only. |
 | `--write-baseline <FILE>` | Write current findings as a baseline and exit. |
 | `--prune-baseline <FILE>` | Rewrite the baseline with only findings present in this scan and print a removal summary. |
@@ -314,6 +316,58 @@ The annotations are opt-in: without the flag the SARIF output is unchanged.
 They describe existing report state only (severity, baseline status, and
 suppression) and add no source text, environment data, or secrets. Policy
 annotations are bounded to the results already present in the report.
+
+### Policy status gate
+
+`--status-gate <FILE>` writes one JSON record that states whether the scan
+passes the effective fail policy, so CI can publish a single, named check on a
+pull request:
+
+```bash
+soroban-scan scan ./contracts --policy-file policy.toml \
+  --format json --output report.json \
+  --status-gate gate.json \
+  --report-url "https://github.com/OWNER/REPO/actions/runs/RUN_ID"
+```
+
+```json
+{
+  "schema_version": 1,
+  "conclusion": "failure",
+  "title": "Policy gate failed: 2 finding(s) at or above `high`",
+  "summary": "**Policy gate failed: ...**\n\n| Policy input | Value |\n...",
+  "threshold": "high",
+  "gated": 9,
+  "blocking": 2,
+  "suppressed": 1,
+  "baseline_accepted": 0,
+  "expired_waivers": 0,
+  "report_url": "https://github.com/OWNER/REPO/actions/runs/RUN_ID"
+}
+```
+
+The conclusion follows the exit gate exactly:
+
+| Conclusion | When |
+| ---------- | ---- |
+| `failure` | A gated finding meets the threshold, or a waiver has expired. |
+| `success` | The policy is enforced and nothing meets the threshold. |
+| `neutral` | The policy disables the gate (`fail_on = "none"` / `--fail-on none`), or no files were analyzed. |
+
+The threshold comes from the same precedence as `--fail-on`: an explicit flag
+wins over `fail_on` in `--policy-file`, which wins over the default `high`.
+Only findings the gate sees are counted: inline and configured suppressions and
+unexpired waivers remove findings from it, and with `--baseline` only new
+findings are gated, so suppressed and baseline findings never fail the status.
+The record is computed before `--new-only` and `--max-findings` change the
+report rows.
+
+The flag is opt-in and never changes the exit code. `--report-url` must be an
+`http://` or `https://` URL of at most 2048 characters with no credentials,
+whitespace, or Markdown delimiters; anything else is a usage error (exit code
+`2`). The record contains counts, the threshold, and that URL only: no source
+text, paths, or environment data. Publish it with
+[`check_run.py --gate`](github-integration.md#policy-status-gate-check).
 
 ### GitHub workflow annotations
 

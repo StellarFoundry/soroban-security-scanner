@@ -50,6 +50,7 @@ pub mod service;
 pub mod severity;
 pub mod soroban;
 pub mod source;
+pub mod status_gate;
 pub mod suppression;
 pub mod target;
 pub mod telemetry;

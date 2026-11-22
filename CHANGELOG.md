@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Opt-in policy status gate: `scan --status-gate FILE` records the effective
+  fail policy's decision as a `success`, `failure`, or `neutral` conclusion
+  with a concise summary, and `--report-url` links it to the report artifact.
+  Suppressed, waived, and baseline findings never fail it. `check_run.py
+  --gate` publishes it as the **Soroban Security Gate** check, enabled in the
+  PR workflow with `SOROBAN_SCAN_STATUS_GATE` (`#341`).
 - Findings carry an optional, additive `exploitability` context (`reachability`,
   `entry_point`, and reserved `taint`) when the control-flow graph covers the
   finding line. It is omitted when evidence is incomplete and never changes
