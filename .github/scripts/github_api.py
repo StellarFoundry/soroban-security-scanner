@@ -8,13 +8,29 @@ entirely by the ``gh`` CLI.
 
 from __future__ import annotations
 
+import ipaddress
 import json
+import os
+import re
 import subprocess
-from typing import Any, Callable, Sequence
+import time
+from typing import Any, Callable, Mapping, Sequence
+from urllib.parse import urlsplit
+
+# Bounded retries for read-only requests. Mutating requests are never retried:
+# GitHub does not deduplicate comment or check-run creation, so a retry could
+# post twice.
+MAX_READ_ATTEMPTS = 3
+RETRY_DELAY_SECONDS = 0.2
+_TRANSIENT = re.compile(
+    r"\bHTTP (?:429|5\d\d)\b|timed out|connection reset|temporary failure",
+    re.IGNORECASE,
+)
 
 
 class GitHubApiError(RuntimeError):
     """Raised when ``gh api`` exits unsuccessfully."""
+
 
 # Opt-in override for GitHub Enterprise Server / GHE.com. When unset, ``gh``
 # talks to github.com exactly as before.
@@ -112,33 +128,54 @@ def gh_host_arguments(environ: Mapping[str, str] | None = None) -> list[str]:
         return []
     return ["--hostname", api_hostname(raw)]
 
+def _is_read_only(arguments: Sequence[str]) -> bool:
+    """True when ``gh api`` will not change server state."""
+
+    if "--method" not in arguments:
+        return True
+    method = arguments[arguments.index("--method") + 1].upper()
+    return method in {"GET", "HEAD"}
+
 
 def run_gh(
     arguments: Sequence[str],
     payload: dict[str, Any] | None = None,
     *,
     timeout: int = 60,
+    attempts: int = MAX_READ_ATTEMPTS,
+    retry_delay: float = RETRY_DELAY_SECONDS,
 ) -> str:
     """Runs ``gh api`` with ``arguments`` and returns stdout.
 
     ``payload`` is sent as a JSON request body through stdin so comment bodies
     and annotation summaries never have to be escaped into command-line
     arguments.
+
+    Read-only requests retry transient failures (HTTP 429, HTTP 5xx, timeouts,
+    and connection resets) up to ``attempts`` times. Mutating requests run
+    exactly once because GitHub does not deduplicate their effects.
     """
 
     command = ["gh", "api", *gh_host_arguments(), *arguments]
-    result = subprocess.run(
-        command,
-        input=json.dumps(payload) if payload is not None else None,
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        timeout=timeout,
-    )
-    if result.returncode != 0:
+    attempts = max(1, attempts) if _is_read_only(arguments) else 1
+    for attempt in range(1, attempts + 1):
+        result = subprocess.run(
+            command,
+            input=json.dumps(payload) if payload is not None else None,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=timeout,
+        )
+        if result.returncode == 0:
+            return result.stdout
         message = result.stderr.strip() or result.stdout.strip()
-        raise GitHubApiError(f"gh api failed with exit code {result.returncode}: {message}")
-    return result.stdout
+        if attempt == attempts or not _TRANSIENT.search(message):
+            raise GitHubApiError(
+                f"gh api failed with exit code {result.returncode}: {message}"
+            )
+        time.sleep(retry_delay)
+    raise AssertionError("unreachable")
 
 
 def parse_json(text: str) -> Any:
@@ -165,6 +202,24 @@ def list_comments(repo: str, number: int, *, runner: Callable[..., str] = run_gh
     for page in pages:
         comments.extend(page)
     return comments
+
+
+def get_installation(
+    repo: str,
+    *,
+    runner: Callable[..., str] = run_gh,
+) -> dict[str, Any]:
+    """Returns the GitHub App installation that covers ``repo``.
+
+    Workflows that use ``GITHUB_TOKEN`` do not need this lookup; it exists for
+    callers that install a GitHub App and need the installation id.
+    """
+
+    endpoint = f"repos/{repo}/installation"
+    response = parse_json(runner([endpoint]))
+    if not isinstance(response, dict):
+        raise GitHubApiError("unexpected response when reading an installation")
+    return response
 
 
 def create_comment(

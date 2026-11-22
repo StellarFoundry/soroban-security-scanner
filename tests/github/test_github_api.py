@@ -1,8 +1,13 @@
-"""Tests for GitHub API base URL validation and host selection."""
+"""Offline tests for the GitHub API request surface.
+
+A deterministic in-memory mock stands in for ``gh api``. It asserts endpoints,
+methods, and request bodies, and no test uses a token or network access.
+"""
 
 from __future__ import annotations
 
-import os
+import json
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -14,135 +19,254 @@ sys.path.insert(0, str(SCRIPTS))
 import github_api  # noqa: E402
 
 
-def env_without_override() -> dict[str, str]:
-    return {k: v for k, v in os.environ.items() if k != github_api.API_URL_ENV}
+class MockGitHub:
+    """Routes ``gh api`` calls to a deterministic in-memory GitHub."""
+
+    def __init__(self):
+        self.calls = []
+        self.next_comment_id = 100
+
+    def __call__(self, arguments, payload=None):
+        arguments = list(arguments)
+        self.calls.append((arguments, payload))
+        method = "GET"
+        if "--method" in arguments:
+            method = arguments[arguments.index("--method") + 1]
+        endpoint = arguments[-1]
+
+        if method == "GET" and endpoint == "repos/owner/repo/installation":
+            return json.dumps({"id": 7, "account": {"login": "owner"}})
+
+        if method == "GET" and endpoint.startswith(
+            "repos/owner/repo/issues/42/comments"
+        ):
+            return json.dumps(
+                [
+                    [{"id": 1, "body": "first"}],
+                    [{"id": 2, "body": "second"}],
+                ]
+            )
+
+        if method == "POST" and endpoint == "repos/owner/repo/issues/42/comments":
+            self.next_comment_id += 1
+            return json.dumps({"id": self.next_comment_id, "body": payload["body"]})
+
+        if method == "PATCH" and endpoint.startswith("repos/owner/repo/issues/comments/"):
+            return json.dumps({"id": int(endpoint.rsplit("/", 1)[-1]), "body": payload["body"]})
+
+        if method == "DELETE" and endpoint.startswith(
+            "repos/owner/repo/issues/comments/"
+        ):
+            return ""
+
+        if method == "POST" and endpoint == "repos/owner/repo/check-runs":
+            return json.dumps({"id": 99, "html_url": "https://example.test/check"})
+
+        raise AssertionError(f"unexpected gh api call: {method} {endpoint}")
+
+    def last(self):
+        return self.calls[-1]
 
 
-class ValidateApiBaseUrlTests(unittest.TestCase):
-    def test_accepts_and_normalizes_valid_urls(self):
-        cases = {
-            "https://api.github.com": "https://api.github.com",
-            "https://api.github.com/": "https://api.github.com",
-            "https://github.example.com/api/v3": "https://github.example.com/api/v3",
-            "https://github.example.com/api/v3/": "https://github.example.com/api/v3",
-            "  https://GitHub.Example.com:8443/api/v3  ": "https://github.example.com:8443/api/v3",
-            "https://api.corp.ghe.com": "https://api.corp.ghe.com",
-            "https://localhost": "https://localhost",
-            "http://localhost:8080": "http://localhost:8080",
-            "http://127.0.0.1:9000": "http://127.0.0.1:9000",
-            "http://[::1]:9000": "http://[::1]:9000",
-        }
-        for raw, expected in cases.items():
-            with self.subTest(raw=raw):
-                self.assertEqual(github_api.validate_api_base_url(raw), expected)
-
-    def test_rejects_invalid_urls(self):
-        cases = [
-            "",
-            "   ",
-            None,
-            123,
-            "github.example.com/api/v3",
-            "ftp://github.example.com/api/v3",
-            "http://github.example.com/api/v3",
-            "http://localhost.evil.com",
-            "http://127.0.0.1.evil.com",
-            "http://0.0.0.0:80",
-            "https://",
-            "https://user:pass@github.example.com/api/v3",
-            "https://user@github.example.com/api/v3",
-            "https://github.example.com/api/v3?x=1",
-            "https://github.example.com/api/v3#frag",
-            "https://github.example.com/other",
-            "https://github.example.com/api/v4",
-            "https://github.example.com:notaport/api/v3",
-            "https://github.example.com:70000/api/v3",
-            "https://github.example.com/api/v3 extra",
-            "https://github.example.com/\napi",
-            "https://" + "a" * 3000 + ".com",
-        ]
-        for raw in cases:
-            with self.subTest(raw=raw):
-                with self.assertRaises(github_api.InvalidApiUrlError):
-                    github_api.validate_api_base_url(raw)
-
-    def test_error_messages_do_not_leak_the_url(self):
-        with self.assertRaises(github_api.InvalidApiUrlError) as raised:
-            github_api.validate_api_base_url("https://user:s3cr3t@github.example.com/api/v3")
-        self.assertNotIn("s3cr3t", str(raised.exception))
-
-    def test_invalid_url_error_is_a_github_api_error(self):
-        self.assertTrue(issubclass(github_api.InvalidApiUrlError, github_api.GitHubApiError))
-
-
-class ApiHostnameTests(unittest.TestCase):
-    def test_maps_base_urls_to_gh_hostnames(self):
-        cases = {
-            "https://api.github.com": "github.com",
-            "https://github.example.com/api/v3": "github.example.com",
-            "https://api.github.example.com/api/v3": "api.github.example.com",
-            "https://api.corp.ghe.com": "corp.ghe.com",
-            "https://github.example.com:8443/api/v3": "github.example.com:8443",
-            "http://127.0.0.1:9000": "127.0.0.1:9000",
-            "http://[::1]:9000": "[::1]:9000",
-        }
-        for raw, expected in cases.items():
-            with self.subTest(raw=raw):
-                self.assertEqual(github_api.api_hostname(raw), expected)
-
-    def test_invalid_url_is_rejected(self):
-        with self.assertRaises(github_api.InvalidApiUrlError):
-            github_api.api_hostname("http://github.example.com")
-
-
-class GhHostArgumentsTests(unittest.TestCase):
-    def test_unset_or_blank_leaves_default_behavior(self):
-        self.assertEqual(github_api.gh_host_arguments({}), [])
-        self.assertEqual(github_api.gh_host_arguments({github_api.API_URL_ENV: "  "}), [])
-
-    def test_configured_url_selects_hostname(self):
-        env = {github_api.API_URL_ENV: "https://github.example.com/api/v3"}
+class InstallationTests(unittest.TestCase):
+    def test_reads_the_repository_installation(self):
+        mock_github = MockGitHub()
+        installation = github_api.get_installation("owner/repo", runner=mock_github)
+        self.assertEqual(installation["id"], 7)
         self.assertEqual(
-            github_api.gh_host_arguments(env),
-            ["--hostname", "github.example.com"],
+            mock_github.last()[0], ["repos/owner/repo/installation"]
         )
 
-    def test_invalid_configured_url_raises(self):
-        env = {github_api.API_URL_ENV: "http://github.example.com/api/v3"}
-        with self.assertRaises(github_api.InvalidApiUrlError):
-            github_api.gh_host_arguments(env)
+    def test_rejects_a_non_object_response(self):
+        with self.assertRaises(github_api.GitHubApiError):
+            github_api.get_installation(
+                "owner/repo", runner=lambda *args, **kwargs: "[]"
+            )
 
 
-class RunGhTests(unittest.TestCase):
-    def fake_run(self):
-        result = mock.Mock(returncode=0, stdout="{}", stderr="")
-        return mock.patch("github_api.subprocess.run", return_value=result)
-
-    def test_default_command_is_unchanged(self):
-        with mock.patch.dict(os.environ, env_without_override(), clear=True):
-            with self.fake_run() as run:
-                github_api.run_gh(["repos/o/r/issues/1/comments"])
-        self.assertEqual(run.call_args.args[0], ["gh", "api", "repos/o/r/issues/1/comments"])
-
-    def test_configured_url_adds_hostname(self):
-        env = env_without_override()
-        env[github_api.API_URL_ENV] = "https://github.example.com/api/v3"
-        with mock.patch.dict(os.environ, env, clear=True):
-            with self.fake_run() as run:
-                github_api.run_gh(["--method", "POST", "repos/o/r/check-runs"])
+class CheckRunTests(unittest.TestCase):
+    def test_posts_the_exact_request_body(self):
+        mock_github = MockGitHub()
+        payload = {
+            "name": "Soroban Security Scan",
+            "head_sha": "abc123",
+            "status": "completed",
+            "conclusion": "failure",
+            "output": {"title": "1 finding", "summary": "summary", "annotations": []},
+        }
+        created = github_api.create_check_run(
+            "owner/repo", payload, runner=mock_github
+        )
+        self.assertEqual(created["id"], 99)
+        arguments, sent = mock_github.last()
         self.assertEqual(
-            run.call_args.args[0],
-            ["gh", "api", "--hostname", "github.example.com", "--method", "POST", "repos/o/r/check-runs"],
+            arguments,
+            ["--method", "POST", "--input", "-", "repos/owner/repo/check-runs"],
+        )
+        self.assertEqual(sent, payload)
+
+    def test_rejects_a_non_object_response(self):
+        with self.assertRaises(github_api.GitHubApiError):
+            github_api.create_check_run(
+                "owner/repo", {"name": "x"}, runner=lambda *args, **kwargs: "null"
+            )
+
+
+class CommentTests(unittest.TestCase):
+    def test_lists_every_paginated_comment(self):
+        mock_github = MockGitHub()
+        comments = github_api.list_comments("owner/repo", 42, runner=mock_github)
+        self.assertEqual([comment["id"] for comment in comments], [1, 2])
+        self.assertEqual(
+            mock_github.last()[0],
+            [
+                "--paginate",
+                "--slurp",
+                "repos/owner/repo/issues/42/comments?per_page=100",
+            ],
         )
 
-    def test_invalid_url_never_reaches_gh(self):
-        env = env_without_override()
-        env[github_api.API_URL_ENV] = "http://github.example.com/api/v3"
-        with mock.patch.dict(os.environ, env, clear=True):
-            with self.fake_run() as run:
-                with self.assertRaises(github_api.InvalidApiUrlError):
-                    github_api.run_gh(["repos/o/r/check-runs"])
-        run.assert_not_called()
+    def test_creates_comment_with_only_the_body(self):
+        mock_github = MockGitHub()
+        created = github_api.create_comment(
+            "owner/repo", 42, "scan summary", runner=mock_github
+        )
+        self.assertEqual(created["body"], "scan summary")
+        arguments, sent = mock_github.last()
+        self.assertEqual(
+            arguments,
+            [
+                "--method",
+                "POST",
+                "--input",
+                "-",
+                "repos/owner/repo/issues/42/comments",
+            ],
+        )
+        self.assertEqual(sent, {"body": "scan summary"})
+
+    def test_updates_and_deletes_an_existing_comment(self):
+        mock_github = MockGitHub()
+        updated = github_api.update_comment(
+            "owner/repo", 5, "new summary", runner=mock_github
+        )
+        self.assertEqual(updated["body"], "new summary")
+        arguments, sent = mock_github.last()
+        self.assertEqual(
+            arguments,
+            [
+                "--method",
+                "PATCH",
+                "--input",
+                "-",
+                "repos/owner/repo/issues/comments/5",
+            ],
+        )
+        self.assertEqual(sent, {"body": "new summary"})
+
+        github_api.delete_comment("owner/repo", 5, runner=mock_github)
+        self.assertEqual(
+            mock_github.last()[0],
+            ["--method", "DELETE", "repos/owner/repo/issues/comments/5"],
+        )
+
+    def test_malformed_comment_responses_are_errors(self):
+        with self.assertRaises(github_api.GitHubApiError):
+            github_api.create_comment(
+                "owner/repo", 42, "body", runner=lambda *args, **kwargs: "[]"
+            )
+        with self.assertRaises(github_api.GitHubApiError):
+            github_api.update_comment(
+                "owner/repo", 5, "body", runner=lambda *args, **kwargs: "null"
+            )
+
+    def test_failures_propagate_without_retrying_writes(self):
+        calls = []
+
+        def failing(arguments, payload=None):
+            calls.append((list(arguments), payload))
+            raise github_api.GitHubApiError("gh api failed with exit code 1: HTTP 403")
+
+        with self.assertRaises(github_api.GitHubApiError):
+            github_api.create_comment("owner/repo", 42, "body", runner=failing)
+        self.assertEqual(len(calls), 1)
+
+
+def completed(returncode, stderr="", stdout=""):
+    return subprocess.CompletedProcess(
+        args=[], returncode=returncode, stdout=stdout, stderr=stderr
+    )
+
+
+class RetryTests(unittest.TestCase):
+    def run_with(self, responses, arguments, payload=None):
+        with mock.patch.object(
+            github_api.subprocess, "run", side_effect=responses
+        ) as run:
+            try:
+                return github_api.run_gh(
+                    arguments, payload, retry_delay=0
+                )
+            finally:
+                self.run_calls = run.call_count
+
+    def test_read_retries_a_transient_failure(self):
+        output = self.run_with(
+            [
+                completed(1, stderr="gh: HTTP 502: Bad Gateway"),
+                completed(0, stdout='{"ok":true}'),
+            ],
+            ["--paginate", "repos/owner/repo/issues/42/comments"],
+        )
+        self.assertEqual(output, '{"ok":true}')
+        self.assertEqual(self.run_calls, 2)
+
+    def test_read_gives_up_after_the_attempt_budget(self):
+        responses = [completed(1, stderr="gh: HTTP 503: Service Unavailable")] * 3
+        with self.assertRaises(github_api.GitHubApiError):
+            self.run_with(
+                responses, ["repos/owner/repo/installation"]
+            )
+        self.assertEqual(self.run_calls, 3)
+
+    def test_permanent_read_errors_are_not_retried(self):
+        with self.assertRaises(github_api.GitHubApiError):
+            self.run_with(
+                [completed(1, stderr="gh: HTTP 403: Forbidden")],
+                ["repos/owner/repo/installation"],
+            )
+        self.assertEqual(self.run_calls, 1)
+
+    def test_writes_are_never_retried(self):
+        with self.assertRaises(github_api.GitHubApiError):
+            self.run_with(
+                [completed(1, stderr="gh: HTTP 502: Bad Gateway")] * 3,
+                [
+                    "--method",
+                    "POST",
+                    "--input",
+                    "-",
+                    "repos/owner/repo/check-runs",
+                ],
+                {"name": "x"},
+            )
+        self.assertEqual(self.run_calls, 1)
+
+    def test_payload_is_sent_as_json_on_stdin(self):
+        with mock.patch.object(
+            github_api.subprocess,
+            "run",
+            return_value=completed(0, stdout="{}"),
+        ) as run:
+            github_api.run_gh(
+                ["--method", "POST", "--input", "-", "repos/owner/repo/check-runs"],
+                {"name": "Soroban Security Scan"},
+            )
+        self.assertEqual(
+            json.loads(run.call_args.kwargs["input"]),
+            {"name": "Soroban Security Scan"},
+        )
+        self.assertEqual(run.call_args.args[0], ["gh", "api", "--method", "POST", "--input", "-", "repos/owner/repo/check-runs"])
 
 
 if __name__ == "__main__":

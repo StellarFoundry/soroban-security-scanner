@@ -1,0 +1,137 @@
+﻿# Must-trigger samples (#138).
+#
+# Each shipped detector has one known-vulnerable sample that must never be missed.
+# The corpus test scans each file and requires the named rule to trigger.
+
+[SS-001]
+file = "SS-001.rs"
+why = "Reproduces the documented 'State-changing entry point without caller authorization' pattern; this sample must always trigger SS-001."
+
+[SS-002]
+file = "SS-002.rs"
+why = "Reproduces the documented 'Cross-contract call without caller authorization' pattern; this sample must always trigger SS-002."
+
+[SS-003]
+file = "SS-003.rs"
+why = "Reproduces the documented 'Unbounded storage iteration in an entry point' pattern; this sample must always trigger SS-003."
+
+[SS-004]
+file = "SS-004.rs"
+why = "Reproduces the documented 'Panic-prone construct in a contract entry point' pattern; this sample must always trigger SS-004."
+
+[SS-005]
+file = "SS-005.rs"
+why = "Reproduces the documented 'Unsafe code in a Soroban contract' pattern; this sample must always trigger SS-005."
+
+[SS-006]
+file = "SS-006.rs"
+why = "Reproduces the documented 'Persistent storage write without TTL management' pattern; this sample must always trigger SS-006."
+
+[SS-007]
+file = "SS-007.rs"
+why = "Reproduces the documented 'Hardcoded Stellar account or contract address' pattern; this sample must always trigger SS-007."
+
+[SS-008]
+file = "SS-008.rs"
+why = "Reproduces the documented 'Unchecked arithmetic in a contract entry point' pattern; this sample must always trigger SS-008."
+
+[SS-009]
+file = "SS-009.rs"
+why = "Reproduces the documented 'Insecure randomness derived from ledger state' pattern; this sample must always trigger SS-009."
+
+[SS-010]
+file = "SS-010.rs"
+why = "Reproduces the documented 'Privileged state change without an event' pattern; this sample must always trigger SS-010."
+
+[SS-011]
+file = "SS-011.rs"
+why = "Reproduces the documented 'Initialization entry point without a re-initialization guard' pattern; this sample must always trigger SS-011."
+
+[SS-012]
+file = "SS-012.rs"
+why = "Reproduces the documented 'Unbounded collection growth in an entry point' pattern; this sample must always trigger SS-012."
+
+[SS-013]
+file = "SS-013.rs"
+why = "Reproduces the documented 'Cross-contract call before state update' pattern; this sample must always trigger SS-013."
+
+[SS-014]
+file = "SS-014.rs"
+why = "Reproduces the documented 'Token transfer amount without validation' pattern; this sample must always trigger SS-014."
+
+[SS-015]
+file = "SS-015.toml"
+why = "Reproduces the documented 'Deprecated Soroban SDK version' pattern; this sample must always trigger SS-015."
+
+[SS-016]
+file = "SS-016.rs"
+why = "Reproduces the documented 'Unbounded data stored in instance storage' pattern; this sample must always trigger SS-016."
+
+[SS-017]
+file = "SS-017.rs"
+why = "Reproduces the documented 'Authorization after state mutation' pattern; this sample must always trigger SS-017."
+
+[SS-018]
+file = "SS-018.rs"
+why = "Reproduces the documented 'Unchecked integer cast' pattern; this sample must always trigger SS-018."
+
+[SS-021]
+file = "SS-021.rs"
+why = "Reproduces the documented durable-owner key written to expiring temporary storage; this sample must always trigger SS-021."
+
+[SS-035]
+file = "SS-035.rs"
+why = "Reproduces the documented vulnerable pattern; this sample must always trigger SS-035."
+
+[SS-030]
+file = "SS-030.rs"
+why = "Reproduces the documented vulnerable pattern; this sample must always trigger SS-030."
+
+[SS-028]
+file = "SS-028.rs"
+why = "Reproduces the documented vulnerable pattern; this sample must always trigger SS-028."
+
+[SS-027]
+file = "SS-027.rs"
+why = "Reproduces the documented vulnerable pattern; this sample must always trigger SS-027."
+
+[SS-025]
+file = "SS-025.rs"
+why = "Reproduces the documented vulnerable pattern; this sample must always trigger SS-025."
+
+[SS-023]
+file = "SS-023.rs"
+why = "Reproduces the documented vulnerable pattern; this sample must always trigger SS-023."
+
+[SS-029]
+file = "SS-029.rs"
+why = "Reproduces the documented 'Public test or debug hook in a contract entry point' pattern; this sample must always trigger SS-029."
+
+[SS-031]
+file = "SS-031.rs"
+why = "Reproduces the documented 'Event topic derived from a caller-controlled parameter' pattern; this sample must always trigger SS-031."
+
+[SS-032]
+file = "SS-032.rs"
+why = "Reproduces the documented 'Redundant require_auth in loop' pattern; this sample must always trigger SS-032."
+
+[SS-033]
+file = "SS-033.rs"
+why = "Reproduces the documented 'Wildcard import from the Soroban SDK' pattern; this sample must always trigger SS-033."
+
+[SS-037]
+file = "SS-037.rs"
+why = "Reproduces the documented 'Competing authorization calls' pattern; this sample must always trigger SS-037."
+
+[SS-020]
+file = "SS-020.rs"
+why = "Reproduces the documented 'Unvalidated XDR or bytes deserialization' pattern; this sample must always trigger SS-020."
+
+[SS-022]
+file = "SS-022.rs"
+why = "Reproduces the documented 'Unsafe symbol_short key' pattern; this sample must always trigger SS-022."
+
+[SS-041]
+file = "SS-041.rs"
+why = "Reproduces the documented 'Authorization check inside a loop' pattern; this sample must always trigger SS-041."
+

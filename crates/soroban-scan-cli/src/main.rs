@@ -21,8 +21,10 @@ use soroban_scan_core::compare;
 use soroban_scan_core::confidence::Confidence;
 use soroban_scan_core::config::{AnalysisMode, ScanConfig};
 use soroban_scan_core::engine;
+use soroban_scan_core::fingerprint::FingerprintStrategy;
 use soroban_scan_core::frontend::{self, Frontend};
 use soroban_scan_core::model::DiagnosticCode;
+use soroban_scan_core::policy::PolicyDocument;
 use soroban_scan_core::redaction;
 use soroban_scan_core::registry::RuleRegistry;
 use soroban_scan_core::report::{self, OutputFormat};
@@ -231,6 +233,27 @@ impl FailOnArg {
             FailOnArg::Critical => Some(Severity::Critical),
         }
     }
+
+    fn from_severity(severity: Severity) -> Self {
+        match severity {
+            Severity::Info => FailOnArg::Info,
+            Severity::Low => FailOnArg::Low,
+            Severity::Medium => FailOnArg::Medium,
+            Severity::High => FailOnArg::High,
+            Severity::Critical => FailOnArg::Critical,
+        }
+    }
+
+    fn label(self) -> &'static str {
+        match self {
+            FailOnArg::None => "none",
+            FailOnArg::Info => "info",
+            FailOnArg::Low => "low",
+            FailOnArg::Medium => "medium",
+            FailOnArg::High => "high",
+            FailOnArg::Critical => "critical",
+        }
+    }
 }
 
 /// Argument value for `--mode`.
@@ -412,6 +435,14 @@ struct ScanArgs {
     #[arg(long, value_name = "FIELD")]
     redact: Vec<String>,
 
+    /// Fingerprint strategy for baselines. `rule-file-evidence` is the default
+    /// and keeps existing baselines valid. `rule-file-line-evidence` and
+    /// `rule-file-line-column-evidence` add position sensitivity.
+    /// `path-independent` omits the file path so renamed files keep matching,
+    /// at a higher collision risk.
+    #[arg(long, value_name = "STRATEGY")]
+    fingerprint_strategy: Option<String>,
+
     /// Exclude a glob (relative to the scan root). Repeatable.
     #[arg(long = "exclude", value_name = "GLOB")]
     exclude: Vec<String>,
@@ -450,8 +481,12 @@ struct ScanArgs {
     rule: Vec<String>,
 
     /// Exit with code 1 if a finding at or above this severity is present.
-    #[arg(long, value_enum, default_value_t = FailOnArg::High)]
-    fail_on: FailOnArg,
+    #[arg(long, value_enum, value_name = "LEVEL")]
+    fail_on: Option<FailOnArg>,
+
+    /// Versioned policy document (TOML or JSON). Explicit flags override it.
+    #[arg(long, value_name = "FILE")]
+    policy_file: Option<PathBuf>,
 
     /// Opt-in SARIF policy annotations: add `properties.policyStatus` and
     /// `policyReason` to each result for this threshold. Requires
@@ -774,11 +809,37 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
 
     let mut config = load_config(args.config.as_deref(), &scan_root, !args.no_config)?;
 
+    // Precedence: defaults < configuration file < policy file < explicit flags.
+    let policy = if let Some(path) = &args.policy_file {
+        Some(PolicyDocument::load(path).map_err(|error| CliError::Usage(error.to_string()))?)
+    } else {
+        None
+    };
+    if let Some(policy) = &policy {
+        policy.apply(&mut config);
+    }
+    let policy_fail_on = policy
+        .as_ref()
+        .map(PolicyDocument::fail_threshold)
+        .transpose()
+        .map_err(|error| CliError::Usage(error.to_string()))?
+        .flatten()
+        .map(FailOnArg::from_severity);
+    let effective_fail_on = args.fail_on.or(policy_fail_on).unwrap_or(FailOnArg::High);
+
     if let Some(severity) = args.min_severity {
         config.min_severity = severity;
     }
     if let Some(confidence) = args.min_confidence {
         config.min_confidence = confidence;
+    }
+    if policy.is_some() {
+        eprintln!(
+            "effective policy: fail_on={} min_severity={} min_confidence={}",
+            effective_fail_on.label(),
+            config.min_severity,
+            config.min_confidence
+        );
     }
     config.mode = args.mode.into();
     config.target_analysis |= args.target_analysis;
@@ -793,6 +854,9 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
         config.rules.rule_time_budget_ms = Some(budget);
     }
     config.redact.extend(args.redact.iter().cloned());
+    if let Some(strategy) = &args.fingerprint_strategy {
+        config.fingerprint = FingerprintStrategy::parse(strategy).map_err(CliError::Usage)?;
+    }
     let redaction = redaction::validate_fields(&config.redact).map_err(CliError::Usage)?;
 
     validate_rule_ids(&config, registry)?;
@@ -918,7 +982,7 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
     }
 
     // The failure gate only considers new findings when a baseline is supplied.
-    let threshold = args.fail_on.threshold();
+    let threshold = effective_fail_on.threshold();
     let failed = match threshold {
         None => false,
         Some(threshold) => match &new_indices {
@@ -936,7 +1000,8 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
     // already fail here, and the expiry itself fails the run unless the caller
     // explicitly disabled the gate with `--fail-on none`.
     let failed = failed
-        || (args.fail_on != FailOnArg::None && outcome.waivers.iter().any(|waiver| waiver.expired));
+        || (effective_fail_on != FailOnArg::None
+            && outcome.waivers.iter().any(|waiver| waiver.expired));
 
     if args.new_only {
         if let Some(indices) = &new_indices {
@@ -985,7 +1050,7 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
     } else if matches!(args.format, FormatArg::Terminal) {
         report::render_terminal_with_color(outcome_view, color)
     } else if matches!(args.format, FormatArg::Html) {
-        report::render_html_with_policy(outcome_view, args.fail_on.threshold())
+        report::render_html_with_policy(outcome_view, effective_fail_on.threshold())
     } else if matches!(args.format, FormatArg::Sarif) && args.sarif_policy.is_some() {
         report::render_sarif_with_policy(
             outcome_view,

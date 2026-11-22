@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/StellarFoundry/soroban-security-scanner/blob/main/fixtures/corpus/expected.schema.json",
+  "title": "Corpus expected-findings manifest",
+  "type": "object",
+  "required": ["schema_version", "rule_id", "fixtures"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "rule_id": { "type": "string", "pattern": "^SS-[0-9]{3}$" },
+    "fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["file", "findings"],
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Fixture file name, relative to the rule directory."
+          },
+          "findings": {
+            "type": "array",
+            "description": "Exact findings this fixture must produce, across all rules.",
+            "items": {
+              "type": "object",
+              "required": ["rule_id", "count", "severity"],
+              "properties": {
+                "rule_id": { "type": "string", "pattern": "^SS-[0-9]{3}$" },
+                "count": { "type": "integer", "minimum": 1 },
+                "severity": {
+                  "enum": ["info", "low", "medium", "high", "critical"]
+                },
+                "confidence": {
+                  "enum": ["low", "medium", "high"]
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

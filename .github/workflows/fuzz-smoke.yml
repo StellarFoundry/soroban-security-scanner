@@ -1,0 +1,23 @@
+name: Fuzz smoke
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  fuzz-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: fuzz
+      - name: Install cargo-fuzz
+        run: cargo install cargo-fuzz --locked
+      - name: Build fuzz target
+        run: cargo fuzz build rule_engine
+      - name: Run bounded smoke test
+        run: cargo fuzz run rule_engine -- -max_total_time=60 -timeout=5 -rss_limit_mb=2048 -seed=1

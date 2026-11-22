@@ -118,16 +118,16 @@ impl Vault {
         if amount < 0 {
             return Err(VaultError::InsufficientBalance);
         }
-        let token_id = Self::token(&env)?;
-        let client = token::Client::new(&env, &token_id);
-        client.transfer(&from, &env.current_contract_address(), &amount);
-
         let key = DataKey::Balance(from.clone());
         let balance: i128 = env.storage().persistent().get(&key).unwrap_or(0);
         env.storage().persistent().set(&key, &(balance + amount));
         env.storage()
             .persistent()
             .extend_ttl(&key, BALANCE_LIFETIME_THRESHOLD, BALANCE_BUMP_AMOUNT);
+
+        let token_id = Self::token(&env)?;
+        let client = token::Client::new(&env, &token_id);
+        client.transfer(&from, &env.current_contract_address(), &amount);
 
         Deposit { from, amount }.publish(&env);
         Ok(())
@@ -151,14 +151,14 @@ impl Vault {
             return Err(VaultError::InsufficientBalance);
         }
 
-        let token_id = Self::token(&env)?;
-        let client = token::Client::new(&env, &token_id);
-        client.transfer(&env.current_contract_address(), &to, &amount);
-
         env.storage().persistent().set(&key, &(balance - amount));
         env.storage()
             .persistent()
             .extend_ttl(&key, BALANCE_LIFETIME_THRESHOLD, BALANCE_BUMP_AMOUNT);
+
+        let token_id = Self::token(&env)?;
+        let client = token::Client::new(&env, &token_id);
+        client.transfer(&env.current_contract_address(), &to, &amount);
 
         Withdraw { to, amount }.publish(&env);
         Ok(())

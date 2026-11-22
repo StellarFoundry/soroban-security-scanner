@@ -325,6 +325,24 @@ The workflow then runs
 Override the threshold with the `SOROBAN_SCAN_CHECK_RUN_FAIL_ON` repository
 variable (`none`, `info`, `low`, `medium`, `high`, or `critical`).
 
+## API retries and offline tests
+
+The shared `gh api` wrapper retries **read-only** requests up to three times on
+HTTP 429, HTTP 5xx, timeouts, and connection resets. It never retries comment
+creation, comment updates, deletes, or check-run creation: GitHub does not
+deduplicate those requests, so a retry could post twice. A permanent failure is
+returned on the first attempt. No delay or retry policy is configurable, which
+keeps workflow behaviour predictable.
+
+The scripts are tested against a deterministic in-memory mock of `gh api`. The
+suite asserts installation lookup, check-run and comment request paths and
+bodies, pagination, malformed responses, and retry versus no-retry behaviour.
+It uses no credentials and performs no network access:
+
+```bash
+python -m unittest discover -s tests/github -v
+```
+
 Required permissions:
 
 ```yaml
