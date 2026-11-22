@@ -545,9 +545,7 @@ fn annotate_reachability(sources: &[ParsedSource], findings: &mut [Finding]) {
             source
                 .functions
                 .iter()
-                .filter(|function| {
-                    function.is_contract_entry_point && function.line == range.0
-                })
+                .filter(|function| function.is_contract_entry_point && function.line == range.0)
                 .map(|function| function.qualified_name.clone())
                 .next()
         });

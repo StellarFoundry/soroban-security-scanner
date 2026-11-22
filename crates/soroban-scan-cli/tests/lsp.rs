@@ -259,10 +259,8 @@ fn language_server_handles_open_change_hover_symbols_and_shutdown() {
 }
 
 fn temp_workspace(label: &str) -> PathBuf {
-    let root = std::env::temp_dir().join(format!(
-        "soroban-scan-lsp-{}-{label}",
-        std::process::id()
-    ));
+    let root =
+        std::env::temp_dir().join(format!("soroban-scan-lsp-{}-{label}", std::process::id()));
     let _ = fs::remove_dir_all(&root);
     fs::create_dir_all(&root).expect("create temporary workspace");
     root
