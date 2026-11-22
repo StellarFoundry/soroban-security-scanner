@@ -28,6 +28,7 @@ is enforced by the `api_stability` integration test.
 - `imports` (best-effort, per-file `use` resolution), `ai`, `baseline`,
   `compare`, `correlation`, `context`, `error`, `fingerprint`, `pack`, `policy`,
   `corpus`, `redaction`, `service`, and `telemetry` support modules.
+- `monorepo` (project discovery and path filtering for monorepo scans).
 - The `analysis`/pipeline implementation details and any `pub(crate)` item.
 - Internal utility modules (`rules::util`, `test_support`).
 
