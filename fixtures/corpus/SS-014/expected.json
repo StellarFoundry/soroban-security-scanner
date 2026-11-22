@@ -12,6 +12,12 @@
           "confidence": null
         },
         {
+          "rule_id": "SS-019",
+          "count": 1,
+          "severity": "medium",
+          "confidence": null
+        },
+        {
           "rule_id": "SS-030",
           "count": 1,
           "severity": "high",
@@ -26,6 +32,12 @@
           "rule_id": "SS-004",
           "count": 1,
           "severity": "low",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-019",
+          "count": 1,
+          "severity": "medium",
           "confidence": null
         },
         {
@@ -46,6 +58,12 @@
           "confidence": null
         },
         {
+          "rule_id": "SS-019",
+          "count": 1,
+          "severity": "medium",
+          "confidence": null
+        },
+        {
           "rule_id": "SS-030",
           "count": 1,
           "severity": "high",
@@ -58,6 +76,12 @@
       "findings": [
         {
           "rule_id": "SS-014",
+          "count": 1,
+          "severity": "medium",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-019",
           "count": 1,
           "severity": "medium",
           "confidence": null

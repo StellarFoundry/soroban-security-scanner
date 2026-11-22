@@ -26,6 +26,102 @@ use crate::model::{
 use crate::registry::RuleRegistry;
 use crate::suppression::Suppression;
 
+/// A logical stage of the scan pipeline.
+///
+/// Stages run in declaration order. The default pipeline always runs every
+/// stage; hooks only observe the transitions and never change what happens.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PipelineStage {
+    /// Files and manifests were discovered.
+    Discovery,
+    /// Discovered sources were parsed.
+    Parsing,
+    /// Enabled rules ran over the parsed sources.
+    Analysis,
+    /// Findings were validated, filtered, suppressed, and sorted.
+    PostProcessing,
+}
+
+impl PipelineStage {
+    /// Stable lowercase label used in diagnostics and documentation.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            PipelineStage::Discovery => "discovery",
+            PipelineStage::Parsing => "parsing",
+            PipelineStage::Analysis => "analysis",
+            PipelineStage::PostProcessing => "post_processing",
+        }
+    }
+}
+
+/// Read-only summary of a completed pipeline stage.
+///
+/// The summary is intentionally small: it carries counts, never source text,
+/// paths, findings, or configuration, so a hook cannot use it to execute or
+/// transmit scanned code.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct StageSummary {
+    /// Stage that completed.
+    pub stage: PipelineStage,
+    /// Number of files visible at this stage (discovered, parsed, or analyzed).
+    pub files: usize,
+    /// Number of findings at this stage (`0` for discovery and parsing).
+    pub findings: usize,
+}
+
+/// Observer called when a pipeline stage completes.
+///
+/// Hooks are synchronous and observation-only. The engine passes a borrowed
+/// [`StageSummary`] and provides no network, process, or code-execution
+/// capability. Implementations must be deterministic and must not perform I/O;
+/// behavior and findings are identical with or without hooks.
+pub trait PipelineHook {
+    /// Called once per completed stage, in pipeline order.
+    fn on_stage(&self, summary: &StageSummary);
+}
+
+/// Optional pipeline observer hooks.
+///
+/// The default is empty, so [`scan`] and [`run_scan`] behave exactly as before.
+/// Add hooks only through [`PipelineHooks::add`]; the engine never mutates the
+/// set during a scan.
+#[derive(Default)]
+pub struct PipelineHooks<'a> {
+    hooks: Vec<&'a dyn PipelineHook>,
+}
+
+impl<'a> PipelineHooks<'a> {
+    /// Creates an empty hook set.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Adds an observer. Hooks are invoked in insertion order for each stage.
+    pub fn add(&mut self, hook: &'a dyn PipelineHook) -> &mut Self {
+        self.hooks.push(hook);
+        self
+    }
+
+    /// Returns true when no hook is registered.
+    pub fn is_empty(&self) -> bool {
+        self.hooks.is_empty()
+    }
+
+    fn notify(&self, stage: PipelineStage, files: usize, findings: usize) {
+        if self.hooks.is_empty() {
+            return;
+        }
+        let summary = StageSummary {
+            stage,
+            files,
+            findings,
+        };
+        for hook in &self.hooks {
+            hook.on_stage(&summary);
+        }
+    }
+}
+
 /// Statistics about a scan.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct ScanStats {
@@ -640,6 +736,21 @@ fn compile_waivers(
 
 /// Runs the scanner over a loaded project.
 pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig) -> ScanOutcome {
+    scan_with_hooks(loaded, registry, config, &PipelineHooks::default())
+}
+
+/// Runs the scanner over a loaded project with optional pipeline hooks.
+///
+/// This is an additive variant of [`scan`]. Discovery and parsing already
+/// happened before a [`LoadedProject`] exists, so only the analysis and
+/// post-processing stages are reported here. Use
+/// [`run_scan_with_frontend_and_hooks`] to observe all four stages.
+pub fn scan_with_hooks(
+    loaded: &LoadedProject,
+    registry: &RuleRegistry,
+    config: &ScanConfig,
+    hooks: &PipelineHooks<'_>,
+) -> ScanOutcome {
     let ctx = AnalysisContext::new(
         &loaded.project,
         &loaded.sources,
@@ -784,6 +895,11 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
     }
 
     stats.findings_raw = findings.len();
+    hooks.notify(
+        PipelineStage::Analysis,
+        stats.files_analyzed,
+        stats.findings_raw,
+    );
     let mut rejected = 0usize;
 
     findings.retain_mut(|finding| {
@@ -1007,6 +1123,12 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
             counts
         });
 
+    hooks.notify(
+        PipelineStage::PostProcessing,
+        stats.files_analyzed,
+        findings.len(),
+    );
+
     ScanOutcome {
         project: loaded.project.clone(),
         findings,
@@ -1038,8 +1160,25 @@ pub fn run_scan_with_frontend(
     registry: &RuleRegistry,
     frontend: &dyn Frontend,
 ) -> Result<ScanOutcome, ScanError> {
+    run_scan_with_frontend_and_hooks(root, config, registry, frontend, &PipelineHooks::default())
+}
+
+/// Loads and scans a directory through an explicit frontend with pipeline hooks.
+///
+/// Observes all four stages: discovery and parsing after the frontend loads the
+/// project, then analysis and post-processing inside the rule pipeline. Hooks
+/// cannot alter the loaded project, the rules, or the findings.
+pub fn run_scan_with_frontend_and_hooks(
+    root: &Path,
+    config: &ScanConfig,
+    registry: &RuleRegistry,
+    frontend: &dyn Frontend,
+    hooks: &PipelineHooks<'_>,
+) -> Result<ScanOutcome, ScanError> {
     let loaded = frontend.load(root, &config.discovery_options())?;
-    Ok(scan(&loaded, registry, config))
+    hooks.notify(PipelineStage::Discovery, loaded.project.source_files, 0);
+    hooks.notify(PipelineStage::Parsing, loaded.sources.len(), 0);
+    Ok(scan_with_hooks(&loaded, registry, config, hooks))
 }
 
 /// Merges the outcomes of scanning several roots into one deterministic report.

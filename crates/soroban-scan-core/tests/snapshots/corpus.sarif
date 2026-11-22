@@ -591,9 +591,7 @@
           "properties": {
             "category": "token",
             "confidence": "low",
-            "relatedIds": [
-              "d5475c0cbf4d93267f0783dbf8255c86"
-            ],
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -623,13 +621,47 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "relatedIds": [
-              "8ca3cdfa6ccf47df8093428159bf690e"
+              "7b9c2285cafe0c7695c46f22694bbda5"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `payout`: client . transfer (& from , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "7b9c2285cafe0c7695c46f22694bbda5"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "d5475c0cbf4d93267f0783dbf8255c86"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "error",
@@ -655,9 +687,7 @@
           "properties": {
             "category": "token",
             "confidence": "low",
-            "relatedIds": [
-              "a362fd34490f0f54cfdbbb67ce42d6ee"
-            ],
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -687,13 +717,47 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "relatedIds": [
-              "82b039fcd6e1f58153ce79b2709a6ae9"
+              "acede228d48f4693b023d19b85fdff01"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `route`: client . transfer (& from , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "acede228d48f4693b023d19b85fdff01"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "a362fd34490f0f54cfdbbb67ce42d6ee"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "warning",
@@ -748,10 +812,45 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "relatedIds": [
+              "e5053eb8c254a77c84f95f7ecbd5026c"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `pay`: client . transfer (& env . current_contract_address () , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e5053eb8c254a77c84f95f7ecbd5026c"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "relatedIds": [
+              "7d4a08e424b4e0ffc20ef938ea5e2000"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "note",
@@ -777,9 +876,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
-            "relatedIds": [
-              "547dea37a4cd38f87a0e74848ce1949d"
-            ],
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -809,13 +906,47 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "relatedIds": [
-              "38e4d47246474277fb41cce1a73725a7"
+              "40814c10be9dce76435571e9ad3c9eab"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 22
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `pay_configured`: client . transfer (& env . current_contract_address () , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "40814c10be9dce76435571e9ad3c9eab"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "547dea37a4cd38f87a0e74848ce1949d"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "error",
@@ -841,9 +972,7 @@
           "properties": {
             "category": "token",
             "confidence": "low",
-            "relatedIds": [
-              "e8bbd271b173fc302e7875bd7557d93b"
-            ],
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -873,13 +1002,47 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "relatedIds": [
-              "2b43a42c040d6d8663860fc22cf6b36d"
+              "51b60ca5ffa9f7c9d2b54307b1954fc8"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `payout`: client . transfer (& from , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "51b60ca5ffa9f7c9d2b54307b1954fc8"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "e8bbd271b173fc302e7875bd7557d93b"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "error",
@@ -905,9 +1068,7 @@
           "properties": {
             "category": "token",
             "confidence": "low",
-            "relatedIds": [
-              "16ae2ff5dac988b965881be178ce6079"
-            ],
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -937,13 +1098,47 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "relatedIds": [
-              "df61f85c0bd0d4eceab2246c0913dd0b"
+              "d29c8d617e14f3f024df7360ed7b8c87"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `route`: client . transfer (& from , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "d29c8d617e14f3f024df7360ed7b8c87"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "16ae2ff5dac988b965881be178ce6079"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "error",
@@ -1036,10 +1231,46 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "2af3668a68b8b8fff15113220e75af66"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-002/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 10
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2af3668a68b8b8fff15113220e75af66"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "3dfc41148c088ed584c759e633059253"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "warning",
@@ -2955,10 +3186,46 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "8b86f2b60e6a444b286971c481179811"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 7
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "8b86f2b60e6a444b286971c481179811"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "7868cde3c25c6fe4ad03ed928848d963"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "error",
@@ -3181,10 +3448,46 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "fd7ae9e1a00f6c952bc4f11d3045a6ca"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 7
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "fd7ae9e1a00f6c952bc4f11d3045a6ca"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "cf8a4241f25d646a75abbf4a8ebb523e"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "error",
@@ -3279,7 +3582,8 @@
             "correlationAmbiguous": true,
             "relatedIds": [
               "2a86e785ad5ffa58b7b6fe74a5c7ee64",
-              "a540d0552854c83a2e514ebe3addb904"
+              "a540d0552854c83a2e514ebe3addb904",
+              "d53729124e927bdf3c7454cc7eb67305"
             ],
             "remediation": "Follow checks-effects-interactions: validate inputs, update all relevant contract state, and only then invoke another contract. If an external call must happen first, add an explicit reentrancy guard and document why the intermediate state is safe to observe.",
             "severity": "high"
@@ -3313,12 +3617,48 @@
             "correlationAmbiguous": true,
             "relatedIds": [
               "2a86e785ad5ffa58b7b6fe74a5c7ee64",
-              "96471f7dd91c176605db04047f9b0508"
+              "96471f7dd91c176605db04047f9b0508",
+              "d53729124e927bdf3c7454cc7eb67305"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-013/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 6
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "d53729124e927bdf3c7454cc7eb67305"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+              "96471f7dd91c176605db04047f9b0508",
+              "a540d0552854c83a2e514ebe3addb904"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "error",
@@ -3347,7 +3687,8 @@
             "correlationAmbiguous": true,
             "relatedIds": [
               "96471f7dd91c176605db04047f9b0508",
-              "a540d0552854c83a2e514ebe3addb904"
+              "a540d0552854c83a2e514ebe3addb904",
+              "d53729124e927bdf3c7454cc7eb67305"
             ],
             "remediation": "Before the external call, read a lock flag from storage, reject when it is already set, and set it; clear it after the state update. Or follow checks-effects-interactions and update all state before calling out.",
             "severity": "high"
@@ -3444,9 +3785,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
-            "relatedIds": [
-              "e558aa7e6ec4363b688b5a374ebb8149"
-            ],
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -3476,13 +3815,41 @@
           "properties": {
             "category": "token",
             "confidence": "low",
-            "relatedIds": [
-              "c816c3f652afe99b5c5cc1c345f26b95"
-            ],
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
           "ruleId": "SS-030"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-014/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `payout`: client . transfer (& from , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "5cdc6740236002705c69fda6050c99dc"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "note",
@@ -3508,9 +3875,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
-            "relatedIds": [
-              "239f51d2ae09b388a7c43287b36fb964"
-            ],
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -3540,13 +3905,41 @@
           "properties": {
             "category": "token",
             "confidence": "low",
-            "relatedIds": [
-              "fa2381818fcd85efdde26e59e8f2c653"
-            ],
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
           "ruleId": "SS-030"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-014/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `payout`: client . transfer (& from , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "d830436e31c7dae6ebcb77b6726f0a02"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "note",
@@ -3572,9 +3965,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
-            "relatedIds": [
-              "0844da756fa17bf3abe018e1be8ae34f"
-            ],
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -3604,13 +3995,41 @@
           "properties": {
             "category": "token",
             "confidence": "low",
-            "relatedIds": [
-              "efe35dd5c831d97cf66e1ef6cb49173d"
-            ],
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
           "ruleId": "SS-030"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-014/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `payout`: client . transfer (& from , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "f768e05ab79654785b73117762ee1540"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "error",
@@ -3636,9 +4055,7 @@
           "properties": {
             "category": "token",
             "confidence": "low",
-            "relatedIds": [
-              "1a0210bc82d9870ef2668c400ed7b078"
-            ],
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -3668,13 +4085,47 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "relatedIds": [
-              "3c9595e61965acac8e1016affd7b6490"
+              "34ec8ca36a47b0434c16fa976a058c3b"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-014/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `payout`: client . transfer (& from , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "34ec8ca36a47b0434c16fa976a058c3b"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "1a0210bc82d9870ef2668c400ed7b078"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "error",
@@ -4739,6 +5190,35 @@
           "ruleId": "SS-018"
         },
         {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-019/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `probe`: client . balance (& who)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "d3c34df38b542b7b7ba0b07015bd9c56"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
+        },
+        {
           "level": "note",
           "locations": [
             {
@@ -5536,6 +6016,35 @@
           "ruleId": "SS-025"
         },
         {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-026/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "TTL constant outside the expected range — TTL constant(s) outside the expected range 1..=3110400 ledgers in `extend_ttl`: threshold=0"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "cf06ea9bb9b16d6361863efa9c9b1817"
+          },
+          "properties": {
+            "category": "resource-usage",
+            "confidence": "low",
+            "remediation": "Define named TTL constants based on the contract's retention policy and the Soroban network maximum (about six months of ledgers), then pass those constants to `extend_ttl`/`set_ttl`. Use the same policy for every key so entries expire predictably instead of using ad-hoc literals.",
+            "severity": "low"
+          },
+          "ruleId": "SS-026"
+        },
+        {
           "level": "error",
           "locations": [
             {
@@ -5751,10 +6260,46 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "de6b286d5c77a9568c549f49d54db1b7"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & token , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "de6b286d5c77a9568c549f49d54db1b7"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "b246a6af181e82c822350ad4e63a1c99"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "error",
@@ -5979,10 +6524,75 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "1b98a6a5f598c533eb1b25bd5b8fe250"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & token , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "1b98a6a5f598c533eb1b25bd5b8fe250"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "3b059e2094045bb07bd10904f219b6cb"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & token , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "79deb3d028c4dc2c77b2e95c76e01dd0"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "error",
@@ -6076,6 +6686,7 @@
             "confidence": "low",
             "correlationAmbiguous": true,
             "relatedIds": [
+              "abf517d48bfba243b2c0554830570edf",
               "dabd871e475d6d115bb8025943652d89",
               "ee16d4000bb6d884c3d94aa068300561"
             ],
@@ -6111,12 +6722,48 @@
             "correlationAmbiguous": true,
             "relatedIds": [
               "91372358a70638073c121aa93fb854ad",
+              "abf517d48bfba243b2c0554830570edf",
               "dabd871e475d6d115bb8025943652d89"
             ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-028/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & token , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "abf517d48bfba243b2c0554830570edf"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "91372358a70638073c121aa93fb854ad",
+              "dabd871e475d6d115bb8025943652d89",
+              "ee16d4000bb6d884c3d94aa068300561"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "error",
@@ -6145,6 +6792,7 @@
             "correlationAmbiguous": true,
             "relatedIds": [
               "91372358a70638073c121aa93fb854ad",
+              "abf517d48bfba243b2c0554830570edf",
               "ee16d4000bb6d884c3d94aa068300561"
             ],
             "remediation": "Before the external call, read a lock flag from storage, reject when it is already set, and set it; clear it after the state update. Or follow checks-effects-interactions and update all state before calling out.",
@@ -6362,10 +7010,46 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "dd7d962c7fe2636603c07cea1b7d90b6"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "dd7d962c7fe2636603c07cea1b7d90b6"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "c24246d25d23e1c883acfad3de5e9585"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "note",
@@ -6452,10 +7136,75 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "763b03471d0c48d8cff72c2ca1a66ec8"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "763b03471d0c48d8cff72c2ca1a66ec8"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "e935aa3e1867c9fce22f03b037bf4e26"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `payout`: client . balance (& token_id)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e804edea07888480529f81d8d02f2bda"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "error",
@@ -6548,10 +7297,46 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "relatedIds": [
+              "e1f40c9883b82b58e7e8c067bc28c021"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
           "ruleId": "SS-014"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-030/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Ignored cross-contract call result — cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & to , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e1f40c9883b82b58e7e8c067bc28c021"
+          },
+          "properties": {
+            "category": "cross-contract",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "e4d1d7c7329ff42ad1330aa88e145a75"
+            ],
+            "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-019"
         },
         {
           "level": "warning",
@@ -6735,6 +7520,35 @@
             "severity": "low"
           },
           "ruleId": "SS-033"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-034/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unvalidated deployer usage — `env.deployer()` deployment without authorization in `create`: env . deployer ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c8ed3d30736f6b19925170ef1a389b28"
+          },
+          "properties": {
+            "category": "access-control",
+            "confidence": "low",
+            "remediation": "Require authorization from the administrator or the address that owns the deployment before calling `env.deployer()`, for example `admin.require_auth()` after loading a trusted admin address from storage. Bind the authorization to the deployed address or salt where possible, and reject callers that are not allowed to deploy.",
+            "severity": "high"
+          },
+          "ruleId": "SS-034"
         },
         {
           "level": "error",
@@ -7684,6 +8498,34 @@
                 "level": "warning"
               },
               "fullDescription": {
+                "text": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored."
+              },
+              "help": {
+                "markdown": "## Ignored cross-contract call result\n\nA cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.\n\n### Remediation\n\nHandle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security\n- https://developers.stellar.org/docs/build/guides/contract-interactions",
+                "text": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.\n\nRemediation: Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-019",
+              "name": "Ignored cross-contract call result",
+              "properties": {
+                "category": "cross-contract",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security",
+                  "https://developers.stellar.org/docs/build/guides/contract-interactions"
+                ],
+                "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Ignored cross-contract call result"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
                 "text": "A contract entry point decodes caller-supplied bytes or XDR (`from_xdr`, `from_bytes`, or `try_from`) without checking the input length or handling a fallible decode result. Malformed or attacker-chosen payloads can yield unexpected values, panic the contract, or bypass validation that was assumed to happen during decoding. This is a syntactic heuristic and reports low confidence."
               },
               "help": {
@@ -7817,6 +8659,34 @@
               },
               "shortDescription": {
                 "text": "Unbounded string/bytes persisted from caller input"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "fullDescription": {
+                "text": "A storage `extend_ttl` or `set_ttl` call uses an integer literal outside the documented expected range of TTL ledgers. A zero or very small TTL expires entries almost immediately, while a value above the network maximum is rejected or signals a unit mistake (for example seconds instead of ledgers). Either case can cause lost data or unexpected transaction failures. The detector only inspects literal constants, not computed expressions."
+              },
+              "help": {
+                "markdown": "## TTL constant outside the expected range\n\nA storage `extend_ttl` or `set_ttl` call uses an integer literal outside the documented expected range of TTL ledgers. A zero or very small TTL expires entries almost immediately, while a value above the network maximum is rejected or signals a unit mistake (for example seconds instead of ledgers). Either case can cause lost data or unexpected transaction failures. The detector only inspects literal constants, not computed expressions.\n\n### Remediation\n\nDefine named TTL constants based on the contract's retention policy and the Soroban network maximum (about six months of ledgers), then pass those constants to `extend_ttl`/`set_ttl`. Use the same policy for every key so entries expire predictably instead of using ad-hoc literals.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival",
+                "text": "A storage `extend_ttl` or `set_ttl` call uses an integer literal outside the documented expected range of TTL ledgers. A zero or very small TTL expires entries almost immediately, while a value above the network maximum is rejected or signals a unit mistake (for example seconds instead of ledgers). Either case can cause lost data or unexpected transaction failures. The detector only inspects literal constants, not computed expressions.\n\nRemediation: Define named TTL constants based on the contract's retention policy and the Soroban network maximum (about six months of ledgers), then pass those constants to `extend_ttl`/`set_ttl`. Use the same policy for every key so entries expire predictably instead of using ad-hoc literals."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-026",
+              "name": "TTL constant outside the expected range",
+              "properties": {
+                "category": "resource-usage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+                ],
+                "remediation": "Define named TTL constants based on the contract's retention policy and the Soroban network maximum (about six months of ledgers), then pass those constants to `extend_ttl`/`set_ttl`. Use the same policy for every key so entries expire predictably instead of using ad-hoc literals.",
+                "severity": "low"
+              },
+              "shortDescription": {
+                "text": "TTL constant outside the expected range"
               }
             },
             {
@@ -8012,6 +8882,34 @@
               },
               "shortDescription": {
                 "text": "Wildcard import from the Soroban SDK"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A contract entry point uses `env.deployer()` to deploy or register a contract without any `require_auth` authorization fact in the function or its intra-file helpers. Deploying contracts is a privileged action; if it is open to any caller, an attacker can install attacker-controlled code, replace a contract, or consume the contract's deployment quota. The detector is syntactic and reports low confidence because authorization may be enforced elsewhere."
+              },
+              "help": {
+                "markdown": "## Unvalidated deployer usage\n\nA contract entry point uses `env.deployer()` to deploy or register a contract without any `require_auth` authorization fact in the function or its intra-file helpers. Deploying contracts is a privileged action; if it is open to any caller, an attacker can install attacker-controlled code, replace a contract, or consume the contract's deployment quota. The detector is syntactic and reports low confidence because authorization may be enforced elsewhere.\n\n### Remediation\n\nRequire authorization from the administrator or the address that owns the deployment before calling `env.deployer()`, for example `admin.require_auth()` after loading a trusted admin address from storage. Bind the authorization to the deployed address or salt where possible, and reject callers that are not allowed to deploy.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization\n- https://developers.stellar.org/docs/build/guides/deploying-contracts",
+                "text": "A contract entry point uses `env.deployer()` to deploy or register a contract without any `require_auth` authorization fact in the function or its intra-file helpers. Deploying contracts is a privileged action; if it is open to any caller, an attacker can install attacker-controlled code, replace a contract, or consume the contract's deployment quota. The detector is syntactic and reports low confidence because authorization may be enforced elsewhere.\n\nRemediation: Require authorization from the administrator or the address that owns the deployment before calling `env.deployer()`, for example `admin.require_auth()` after loading a trusted admin address from storage. Bind the authorization to the deployed address or salt where possible, and reject callers that are not allowed to deploy."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-034",
+              "name": "Unvalidated deployer usage",
+              "properties": {
+                "category": "access-control",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                  "https://developers.stellar.org/docs/build/guides/deploying-contracts"
+                ],
+                "remediation": "Require authorization from the administrator or the address that owns the deployment before calling `env.deployer()`, for example `admin.require_auth()` after loading a trusted admin address from storage. Bind the authorization to the deployed address or salt where possible, and reject callers that are not allowed to deploy.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Unvalidated deployer usage"
               }
             },
             {

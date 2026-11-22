@@ -8,7 +8,7 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 130,
+    "source_files": 142,
     "soroban_sdk_versions": []
   },
   "stats": {
@@ -179,13 +179,13 @@
         }
       ]
     },
-    "files_analyzed": 130,
-    "files_parsed": 130,
+    "files_analyzed": 142,
+    "files_parsed": 142,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 33,
+    "rules_run": 36,
     "rules_skipped": 0,
-    "findings_raw": 225,
+    "findings_raw": 250,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -196,15 +196,15 @@
     "generated_files_marked": 0,
     "generated_files_excluded": 0,
     "findings_by_category": {
-      "access-control": 10,
+      "access-control": 11,
       "arithmetic": 8,
       "authorization": 54,
       "configuration": 2,
-      "cross-contract": 15,
+      "cross-contract": 38,
       "dependencies": 2,
       "error-handling": 19,
       "events": 18,
-      "resource-usage": 2,
+      "resource-usage": 3,
       "storage": 59,
       "token": 35,
       "unsafe": 1
@@ -657,9 +657,7 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "8ca3cdfa6ccf47df8093428159bf690e",
-      "related": [
-        "d5475c0cbf4d93267f0783dbf8255c86"
-      ]
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -681,8 +679,33 @@
       ],
       "fingerprint": "d5475c0cbf4d93267f0783dbf8255c86",
       "related": [
-        "8ca3cdfa6ccf47df8093428159bf690e"
-      ]
+        "7b9c2285cafe0c7695c46f22694bbda5"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative.rs",
+        "line": 11,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `payout`: client . transfer (& from , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "7b9c2285cafe0c7695c46f22694bbda5",
+      "related": [
+        "d5475c0cbf4d93267f0783dbf8255c86"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -703,9 +726,7 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "82b039fcd6e1f58153ce79b2709a6ae9",
-      "related": [
-        "a362fd34490f0f54cfdbbb67ce42d6ee"
-      ]
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -727,8 +748,33 @@
       ],
       "fingerprint": "a362fd34490f0f54cfdbbb67ce42d6ee",
       "related": [
-        "82b039fcd6e1f58153ce79b2709a6ae9"
-      ]
+        "acede228d48f4693b023d19b85fdff01"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative.rs",
+        "line": 21,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `route`: client . transfer (& from , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "acede228d48f4693b023d19b85fdff01",
+      "related": [
+        "a362fd34490f0f54cfdbbb67ce42d6ee"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-007",
@@ -767,7 +813,33 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "7d4a08e424b4e0ffc20ef938ea5e2000"
+      "fingerprint": "7d4a08e424b4e0ffc20ef938ea5e2000",
+      "related": [
+        "e5053eb8c254a77c84f95f7ecbd5026c"
+      ]
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative2.rs",
+        "line": 16,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `pay`: client . transfer (& env . current_contract_address () , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "e5053eb8c254a77c84f95f7ecbd5026c",
+      "related": [
+        "7d4a08e424b4e0ffc20ef938ea5e2000"
+      ]
     },
     {
       "rule_id": "SS-004",
@@ -788,9 +860,7 @@
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
       "fingerprint": "38e4d47246474277fb41cce1a73725a7",
-      "related": [
-        "547dea37a4cd38f87a0e74848ce1949d"
-      ]
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -812,8 +882,33 @@
       ],
       "fingerprint": "547dea37a4cd38f87a0e74848ce1949d",
       "related": [
-        "38e4d47246474277fb41cce1a73725a7"
-      ]
+        "40814c10be9dce76435571e9ad3c9eab"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative2.rs",
+        "line": 22,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `pay_configured`: client . transfer (& env . current_contract_address () , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "40814c10be9dce76435571e9ad3c9eab",
+      "related": [
+        "547dea37a4cd38f87a0e74848ce1949d"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -834,9 +929,7 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "2b43a42c040d6d8663860fc22cf6b36d",
-      "related": [
-        "e8bbd271b173fc302e7875bd7557d93b"
-      ]
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -858,8 +951,33 @@
       ],
       "fingerprint": "e8bbd271b173fc302e7875bd7557d93b",
       "related": [
-        "2b43a42c040d6d8663860fc22cf6b36d"
-      ]
+        "51b60ca5ffa9f7c9d2b54307b1954fc8"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative3.rs",
+        "line": 11,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `payout`: client . transfer (& from , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "51b60ca5ffa9f7c9d2b54307b1954fc8",
+      "related": [
+        "e8bbd271b173fc302e7875bd7557d93b"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -880,9 +998,7 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "df61f85c0bd0d4eceab2246c0913dd0b",
-      "related": [
-        "16ae2ff5dac988b965881be178ce6079"
-      ]
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -904,8 +1020,33 @@
       ],
       "fingerprint": "16ae2ff5dac988b965881be178ce6079",
       "related": [
-        "df61f85c0bd0d4eceab2246c0913dd0b"
-      ]
+        "d29c8d617e14f3f024df7360ed7b8c87"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative3.rs",
+        "line": 21,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `route`: client . transfer (& from , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "d29c8d617e14f3f024df7360ed7b8c87",
+      "related": [
+        "16ae2ff5dac988b965881be178ce6079"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-002",
@@ -973,6 +1114,33 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "3dfc41148c088ed584c759e633059253",
+      "related": [
+        "2af3668a68b8b8fff15113220e75af66"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/positive.rs",
+        "line": 10,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "2af3668a68b8b8fff15113220e75af66",
+      "related": [
+        "3dfc41148c088ed584c759e633059253"
+      ],
       "correlation_ambiguous": true
     },
     {
@@ -2307,6 +2475,33 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "7868cde3c25c6fe4ad03ed928848d963",
+      "related": [
+        "8b86f2b60e6a444b286971c481179811"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-013/negative.rs",
+        "line": 7,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "8b86f2b60e6a444b286971c481179811",
+      "related": [
+        "7868cde3c25c6fe4ad03ed928848d963"
+      ],
       "correlation_ambiguous": true
     },
     {
@@ -2466,6 +2661,33 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "cf8a4241f25d646a75abbf4a8ebb523e",
+      "related": [
+        "fd7ae9e1a00f6c952bc4f11d3045a6ca"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-013/negative3.rs",
+        "line": 7,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "fd7ae9e1a00f6c952bc4f11d3045a6ca",
+      "related": [
+        "cf8a4241f25d646a75abbf4a8ebb523e"
+      ],
       "correlation_ambiguous": true
     },
     {
@@ -2536,7 +2758,8 @@
       "fingerprint": "96471f7dd91c176605db04047f9b0508",
       "related": [
         "2a86e785ad5ffa58b7b6fe74a5c7ee64",
-        "a540d0552854c83a2e514ebe3addb904"
+        "a540d0552854c83a2e514ebe3addb904",
+        "d53729124e927bdf3c7454cc7eb67305"
       ],
       "correlation_ambiguous": true
     },
@@ -2561,7 +2784,34 @@
       "fingerprint": "a540d0552854c83a2e514ebe3addb904",
       "related": [
         "2a86e785ad5ffa58b7b6fe74a5c7ee64",
-        "96471f7dd91c176605db04047f9b0508"
+        "96471f7dd91c176605db04047f9b0508",
+        "d53729124e927bdf3c7454cc7eb67305"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-013/positive.rs",
+        "line": 6,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "d53729124e927bdf3c7454cc7eb67305",
+      "related": [
+        "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+        "96471f7dd91c176605db04047f9b0508",
+        "a540d0552854c83a2e514ebe3addb904"
       ],
       "correlation_ambiguous": true
     },
@@ -2586,7 +2836,8 @@
       "fingerprint": "2a86e785ad5ffa58b7b6fe74a5c7ee64",
       "related": [
         "96471f7dd91c176605db04047f9b0508",
-        "a540d0552854c83a2e514ebe3addb904"
+        "a540d0552854c83a2e514ebe3addb904",
+        "d53729124e927bdf3c7454cc7eb67305"
       ],
       "correlation_ambiguous": true
     },
@@ -2655,9 +2906,7 @@
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
       "fingerprint": "c816c3f652afe99b5c5cc1c345f26b95",
-      "related": [
-        "e558aa7e6ec4363b688b5a374ebb8149"
-      ]
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -2678,9 +2927,28 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "e558aa7e6ec4363b688b5a374ebb8149",
-      "related": [
-        "c816c3f652afe99b5c5cc1c345f26b95"
-      ]
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-014/negative.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `payout`: client . transfer (& from , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "5cdc6740236002705c69fda6050c99dc",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-004",
@@ -2701,9 +2969,7 @@
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
       "fingerprint": "fa2381818fcd85efdde26e59e8f2c653",
-      "related": [
-        "239f51d2ae09b388a7c43287b36fb964"
-      ]
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -2724,9 +2990,28 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "239f51d2ae09b388a7c43287b36fb964",
-      "related": [
-        "fa2381818fcd85efdde26e59e8f2c653"
-      ]
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-014/negative2.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `payout`: client . transfer (& from , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "d830436e31c7dae6ebcb77b6726f0a02",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-004",
@@ -2747,9 +3032,7 @@
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
       "fingerprint": "efe35dd5c831d97cf66e1ef6cb49173d",
-      "related": [
-        "0844da756fa17bf3abe018e1be8ae34f"
-      ]
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -2770,9 +3053,28 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "0844da756fa17bf3abe018e1be8ae34f",
-      "related": [
-        "efe35dd5c831d97cf66e1ef6cb49173d"
-      ]
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-014/negative3.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `payout`: client . transfer (& from , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "f768e05ab79654785b73117762ee1540",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -2793,9 +3095,7 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "3c9595e61965acac8e1016affd7b6490",
-      "related": [
-        "1a0210bc82d9870ef2668c400ed7b078"
-      ]
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -2817,8 +3117,33 @@
       ],
       "fingerprint": "1a0210bc82d9870ef2668c400ed7b078",
       "related": [
-        "3c9595e61965acac8e1016affd7b6490"
-      ]
+        "34ec8ca36a47b0434c16fa976a058c3b"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-014/positive.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `payout`: client . transfer (& from , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "34ec8ca36a47b0434c16fa976a058c3b",
+      "related": [
+        "1a0210bc82d9870ef2668c400ed7b078"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -3556,6 +3881,26 @@
       "fingerprint": "d3e81400b6b03ecab8bdc2b9535f6669"
     },
     {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-019/positive.rs",
+        "line": 19,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `probe`: client . balance (& who)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "d3c34df38b542b7b7ba0b07015bd9c56"
+    },
+    {
       "rule_id": "SS-004",
       "title": "Panic-prone construct in a contract entry point",
       "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
@@ -4111,6 +4456,26 @@
       "correlation_ambiguous": true
     },
     {
+      "rule_id": "SS-026",
+      "title": "TTL constant outside the expected range",
+      "description": "A storage `extend_ttl` or `set_ttl` call uses an integer literal outside the documented expected range of TTL ledgers. A zero or very small TTL expires entries almost immediately, while a value above the network maximum is rejected or signals a unit mistake (for example seconds instead of ledgers). Either case can cause lost data or unexpected transaction failures. The detector only inspects literal constants, not computed expressions.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "resource-usage",
+      "location": {
+        "file": "SS-026/positive.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "TTL constant(s) outside the expected range 1..=3110400 ledgers in `extend_ttl`: threshold=0",
+      "remediation": "Define named TTL constants based on the contract's retention policy and the Soroban network maximum (about six months of ledgers), then pass those constants to `extend_ttl`/`set_ttl`. Use the same policy for every key so entries expire predictably instead of using ad-hoc literals.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+      ],
+      "fingerprint": "cf06ea9bb9b16d6361863efa9c9b1817"
+    },
+    {
       "rule_id": "SS-027",
       "title": "Contract's own address used as an authorization subject",
       "description": "Passing `env.current_contract_address()` to `require_auth` authorizes the contract itself instead of the caller. This is almost always a logic error: the check succeeds for anyone who can invoke the contract, so it does not provide the intended access control.",
@@ -4263,6 +4628,33 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "b246a6af181e82c822350ad4e63a1c99",
+      "related": [
+        "de6b286d5c77a9568c549f49d54db1b7"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/negative.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & token , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "de6b286d5c77a9568c549f49d54db1b7",
+      "related": [
+        "b246a6af181e82c822350ad4e63a1c99"
+      ],
       "correlation_ambiguous": true
     },
     {
@@ -4423,7 +4815,54 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "3b059e2094045bb07bd10904f219b6cb",
+      "related": [
+        "1b98a6a5f598c533eb1b25bd5b8fe250"
+      ],
       "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/negative2.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & token , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "1b98a6a5f598c533eb1b25bd5b8fe250",
+      "related": [
+        "3b059e2094045bb07bd10904f219b6cb"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/negative3.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & token , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "79deb3d028c4dc2c77b2e95c76e01dd0"
     },
     {
       "rule_id": "SS-002",
@@ -4492,6 +4931,7 @@
       ],
       "fingerprint": "91372358a70638073c121aa93fb854ad",
       "related": [
+        "abf517d48bfba243b2c0554830570edf",
         "dabd871e475d6d115bb8025943652d89",
         "ee16d4000bb6d884c3d94aa068300561"
       ],
@@ -4518,7 +4958,34 @@
       "fingerprint": "ee16d4000bb6d884c3d94aa068300561",
       "related": [
         "91372358a70638073c121aa93fb854ad",
+        "abf517d48bfba243b2c0554830570edf",
         "dabd871e475d6d115bb8025943652d89"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & token , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "abf517d48bfba243b2c0554830570edf",
+      "related": [
+        "91372358a70638073c121aa93fb854ad",
+        "dabd871e475d6d115bb8025943652d89",
+        "ee16d4000bb6d884c3d94aa068300561"
       ],
       "correlation_ambiguous": true
     },
@@ -4543,6 +5010,7 @@
       "fingerprint": "dabd871e475d6d115bb8025943652d89",
       "related": [
         "91372358a70638073c121aa93fb854ad",
+        "abf517d48bfba243b2c0554830570edf",
         "ee16d4000bb6d884c3d94aa068300561"
       ],
       "correlation_ambiguous": true
@@ -4693,6 +5161,33 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "c24246d25d23e1c883acfad3de5e9585",
+      "related": [
+        "dd7d962c7fe2636603c07cea1b7d90b6"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-030/negative.rs",
+        "line": 17,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "dd7d962c7fe2636603c07cea1b7d90b6",
+      "related": [
+        "c24246d25d23e1c883acfad3de5e9585"
+      ],
       "correlation_ambiguous": true
     },
     {
@@ -4755,7 +5250,54 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "e935aa3e1867c9fce22f03b037bf4e26",
+      "related": [
+        "763b03471d0c48d8cff72c2ca1a66ec8"
+      ],
       "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-030/negative2.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "763b03471d0c48d8cff72c2ca1a66ec8",
+      "related": [
+        "e935aa3e1867c9fce22f03b037bf4e26"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-030/negative3.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `payout`: client . balance (& token_id)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "e804edea07888480529f81d8d02f2bda"
     },
     {
       "rule_id": "SS-002",
@@ -4823,6 +5365,33 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
       "fingerprint": "e4d1d7c7329ff42ad1330aa88e145a75",
+      "related": [
+        "e1f40c9883b82b58e7e8c067bc28c021"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-030/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "e1f40c9883b82b58e7e8c067bc28c021",
+      "related": [
+        "e4d1d7c7329ff42ad1330aa88e145a75"
+      ],
       "correlation_ambiguous": true
     },
     {
@@ -4953,6 +5522,26 @@
         "https://developers.stellar.org/docs"
       ],
       "fingerprint": "f3f0a4aadf0de5b0abe020564befef9a"
+    },
+    {
+      "rule_id": "SS-034",
+      "title": "Unvalidated deployer usage",
+      "description": "A contract entry point uses `env.deployer()` to deploy or register a contract without any `require_auth` authorization fact in the function or its intra-file helpers. Deploying contracts is a privileged action; if it is open to any caller, an attacker can install attacker-controlled code, replace a contract, or consume the contract's deployment quota. The detector is syntactic and reports low confidence because authorization may be enforced elsewhere.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "access-control",
+      "location": {
+        "file": "SS-034/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "`env.deployer()` deployment without authorization in `create`: env . deployer ()",
+      "remediation": "Require authorization from the administrator or the address that owns the deployment before calling `env.deployer()`, for example `admin.require_auth()` after loading a trusted admin address from storage. Bind the authorization to the deployed address or salt where possible, and reject callers that are not allowed to deploy.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://developers.stellar.org/docs/build/guides/deploying-contracts"
+      ],
+      "fingerprint": "c8ed3d30736f6b19925170ef1a389b28"
     },
     {
       "rule_id": "SS-035",

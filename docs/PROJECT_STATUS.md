@@ -107,11 +107,13 @@ tests, and documentation under `docs/rules/detectors/`:
 - [x] SS-016 Unbounded data stored in instance storage (medium/low).
 - [x] SS-017 Authorization after state mutation (medium/medium).
 - [x] SS-018 Unchecked integer cast (medium/low).
+- [x] SS-019 Ignored cross-contract call result (medium/medium).
 - [x] SS-020 Unvalidated XDR or bytes deserialization (medium/low).
 - [x] SS-021 Durable data written to temporary storage (medium/low).
 - [x] SS-022 Unsafe symbol_short key (medium/medium).
 - [x] SS-023 Sensitive-looking data published in events (medium/low).
 - [x] SS-025 Unbounded string/bytes persisted from caller input (medium/medium).
+- [x] SS-026 TTL constant outside the expected range (low/low).
 - [x] SS-027 Contract's own address used as an authorization subject (high/medium).
 - [x] SS-028 Cross-contract call without a reentrancy guard (high/low).
 - [x] SS-029 Public test or debug hook in a contract entry point (medium/medium).
@@ -119,6 +121,7 @@ tests, and documentation under `docs/rules/detectors/`:
 - [x] SS-031 Event topic derived from a caller-controlled parameter (medium/low).
 - [x] SS-032 Redundant require_auth in loop (low/medium).
 - [x] SS-033 Wildcard import from the Soroban SDK (low/high).
+- [x] SS-034 Unvalidated deployer usage (high/low).
 - [x] SS-035 Ignored checked-arithmetic result (high/medium).
 - [x] SS-037 Competing authorization calls (medium/low).
 - [x] SS-041 Authorization check inside a loop (medium/low).
@@ -129,6 +132,8 @@ Supporting work:
       `unsafe` facts; contract entry-point discovery.
 - [x] Public in-memory scanning API (`engine::scan_source_str`,
       `engine::synthetic_loaded`).
+- [x] Additive pipeline stages with optional observation-only hooks
+      (`engine::PipelineStage`, `engine::PipelineHooks`).
 - [x] Security regression corpus under `fixtures/corpus/` with a data-driven
       integration test over all rule ids.
 - [x] Adversarial test: malformed source produces diagnostics, not panics.

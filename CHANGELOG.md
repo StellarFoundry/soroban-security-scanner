@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Additive engine pipeline stages (`discovery`, `parsing`, `analysis`,
+  `post_processing`) with optional observation-only `PipelineHooks`. The default
+  pipeline is unchanged, and hooks receive only a read-only `StageSummary` with
+  no source text or execution capability (`#113`).
+- SS-019 "Ignored cross-contract call result" (medium/medium): flags client calls
+  used as bare statements or discarded into `_`, so failed calls cannot look
+  successful (`#118`).
+- SS-026 "TTL constant outside the expected range" (low/low): collects literal
+  `extend_ttl`/`set_ttl` constants across the project and reports values outside
+  the documented `1..=3,110,400` ledger range, including the offending values
+  (`#125`).
+- SS-034 "Unvalidated deployer usage" (high/low): flags `env.deployer()` chains
+  that deploy, upload, or update code without an authorization fact in the
+  function or its intra-file helpers (`#133`).
 - A minimal stdio language server (`soroban-scan lsp`) publishes diagnostics,
   document symbols for contracts, functions, structs, and events, and offline
   hover text for every registered `SS-###` rule id. It uses full-document sync
