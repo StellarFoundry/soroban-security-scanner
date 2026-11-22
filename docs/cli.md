@@ -20,6 +20,7 @@ soroban-scan <COMMAND>
 | `compare` | Compare two JSON scan reports by finding fingerprint. |
 | `dashboard` | Render a static trend dashboard from several JSON scan reports. |
 | `artifact-name` | Print the canonical, deterministic report artifact name. |
+| `pack` | Install, list, update, or remove local community rule packs. |
 | `config show` / `config validate` | Inspect or validate configuration. |
 
 ---
@@ -629,6 +630,21 @@ soroban-scan artifact-name --project "Vault Contract" \
 The name is deterministic for the same inputs and contains no secrets. See
 [Report retention and artifact naming](retention.md) for the scheme and the
 recommended retention policy.
+
+## `pack`
+
+```text
+soroban-scan pack [--dir DIR] install SOURCE
+soroban-scan pack [--dir DIR] list
+soroban-scan pack [--dir DIR] update SOURCE
+soroban-scan pack [--dir DIR] uninstall NAME [--yes]
+```
+
+Manages locally installed community rule packs and records them in a
+deterministic `registry.toml` lockfile (default `DIR`: `.soroban-scan/packs`).
+Installs are offline, bounded, and never execute pack code. `uninstall` requires
+interactive confirmation unless `--yes` is passed. See
+[Rule pack CLI](rule-pack-cli.md).
 
 ## `completions`
 

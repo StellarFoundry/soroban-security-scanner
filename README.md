@@ -46,7 +46,7 @@ for installation, machine-readable output, and CI usage.
 
 ## What it detects
 
-Thirty-six Soroban-aware detectors ship today (from `SS-001` to `SS-041`).
+Thirty-nine Soroban-aware detectors ship today (from `SS-001` through `SS-044`).
 Severity and confidence are independent and always reported honestly.
 
 | Rule | Title | Severity | Confidence | Category |
@@ -86,7 +86,10 @@ Severity and confidence are independent and always reported honestly.
 | [SS-034](docs/rules/detectors/SS-034.md) | Unvalidated deployer usage | high | low | access-control |
 | [SS-035](docs/rules/detectors/SS-035.md) | Ignored checked-arithmetic result | high | medium | arithmetic |
 | [SS-037](docs/rules/detectors/SS-037.md) | Competing authorization calls | medium | low | authorization |
+| [SS-039](docs/rules/detectors/SS-039.md) | Persistent storage read without TTL management | medium | low | storage |
 | [SS-041](docs/rules/detectors/SS-041.md) | Authorization check inside a loop | medium | low | authorization |
+| [SS-042](docs/rules/detectors/SS-042.md) | Security check unreachable on every path | low | medium | authorization |
+| [SS-044](docs/rules/detectors/SS-044.md) | Cross-contract call with an unvalidated address argument | medium | low | cross-contract |
 
 Rule identifiers are stable (never reused or renumbered). See
 [`docs/rules/README.md`](docs/rules/README.md) for the full rule system.
@@ -111,7 +114,7 @@ Rule identifiers are stable (never reused or renumbered). See
 
 - Deterministic project discovery and Soroban classification.
 - `syn`-based Rust parsing with source locations.
-- Thirty-six security detectors (from `SS-001` to `SS-041`) with fixtures and documentation.
+- Thirty-nine security detectors (from `SS-001` through `SS-044`) with fixtures and documentation.
 - CLI: `scan`, `rules`, `explain`, `version`, `init`, `config`.
 - Output formats: terminal, JSON, SARIF 2.1.0, Markdown, and GitHub workflow annotations.
 - Configurable rule selection, thresholds, and excludes.

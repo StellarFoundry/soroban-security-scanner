@@ -4,15 +4,36 @@
   "fixtures": [
     {
       "file": "negative.rs",
-      "findings": []
+      "findings": [
+        {
+          "rule_id": "SS-039",
+          "count": 1,
+          "severity": "medium",
+          "confidence": null
+        }
+      ]
     },
     {
       "file": "negative2.rs",
-      "findings": []
+      "findings": [
+        {
+          "rule_id": "SS-039",
+          "count": 1,
+          "severity": "medium",
+          "confidence": null
+        }
+      ]
     },
     {
       "file": "negative3.rs",
-      "findings": []
+      "findings": [
+        {
+          "rule_id": "SS-039",
+          "count": 1,
+          "severity": "medium",
+          "confidence": null
+        }
+      ]
     },
     {
       "file": "positive.rs",
@@ -21,6 +42,12 @@
           "rule_id": "SS-004",
           "count": 2,
           "severity": "low",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-039",
+          "count": 1,
+          "severity": "medium",
           "confidence": null
         }
       ]

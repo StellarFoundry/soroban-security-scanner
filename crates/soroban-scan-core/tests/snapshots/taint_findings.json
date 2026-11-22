@@ -23,6 +23,12 @@
       "severity": "high",
       "confidence": "low",
       "count": 1
+    },
+    {
+      "rule_id": "SS-044",
+      "severity": "medium",
+      "confidence": "low",
+      "count": 1
     }
   ],
   "address_direct.rs": [
@@ -47,6 +53,12 @@
     {
       "rule_id": "SS-030",
       "severity": "high",
+      "confidence": "low",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-044",
+      "severity": "medium",
       "confidence": "low",
       "count": 1
     }
@@ -101,6 +113,12 @@
       "severity": "high",
       "confidence": "low",
       "count": 1
+    },
+    {
+      "rule_id": "SS-044",
+      "severity": "medium",
+      "confidence": "low",
+      "count": 1
     }
   ],
   "amount_direct.rs": [
@@ -127,6 +145,12 @@
       "severity": "high",
       "confidence": "low",
       "count": 1
+    },
+    {
+      "rule_id": "SS-044",
+      "severity": "medium",
+      "confidence": "low",
+      "count": 1
     }
   ],
   "amount_validated.rs": [
@@ -145,6 +169,12 @@
     {
       "rule_id": "SS-030",
       "severity": "high",
+      "confidence": "low",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-044",
+      "severity": "medium",
       "confidence": "low",
       "count": 1
     }

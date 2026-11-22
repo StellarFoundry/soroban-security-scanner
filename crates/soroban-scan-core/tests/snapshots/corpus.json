@@ -8,7 +8,7 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 148,
+    "source_files": 158,
     "soroban_sdk_versions": []
   },
   "stats": {
@@ -179,13 +179,13 @@
         }
       ]
     },
-    "files_analyzed": 148,
-    "files_parsed": 148,
+    "files_analyzed": 158,
+    "files_parsed": 158,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 37,
+    "rules_run": 39,
     "rules_skipped": 0,
-    "findings_raw": 263,
+    "findings_raw": 334,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -198,15 +198,15 @@
     "findings_by_category": {
       "access-control": 11,
       "arithmetic": 8,
-      "authorization": 57,
+      "authorization": 59,
       "configuration": 2,
-      "cross-contract": 38,
+      "cross-contract": 68,
       "dependencies": 2,
-      "error-handling": 19,
+      "error-handling": 25,
       "events": 23,
       "resource-usage": 3,
-      "storage": 64,
-      "token": 35,
+      "storage": 88,
+      "token": 44,
       "unsafe": 1
     }
   },
@@ -1253,6 +1253,50 @@
       "fingerprint": "c0a7f9835ef546f2d4e5470d088a672c"
     },
     {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-039/negative.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "`extend_ttl` storage mutation with no authorization in `load`: env . storage () . persistent () . extend_ttl (& 0 , 100 , 1_000)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "26f40bd11c8b96b541374822f06fa692",
+      "related": [
+        "5324ac98037688f608f5ccdcf92f3929"
+      ]
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-039/negative4.rs",
+        "line": 19,
+        "column": 9
+      },
+      "evidence": "`extend_ttl` storage mutation with no authorization in `load`: env . storage () . persistent () . extend_ttl (& 0 , 100 , 1_000)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "cce83633f0bb46623afc178954a61223",
+      "related": [
+        "4c1b130b1c40c0851bcc360e2ee36abe"
+      ]
+    },
+    {
       "rule_id": "SS-030",
       "title": "Token client built from an unvalidated caller address",
       "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
@@ -1615,6 +1659,7 @@
       "fingerprint": "96471f7dd91c176605db04047f9b0508",
       "related": [
         "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+        "788438c0f7a3313ffbd14856426b11ed",
         "a540d0552854c83a2e514ebe3addb904",
         "d53729124e927bdf3c7454cc7eb67305"
       ],
@@ -1640,6 +1685,7 @@
       ],
       "fingerprint": "2a86e785ad5ffa58b7b6fe74a5c7ee64",
       "related": [
+        "788438c0f7a3313ffbd14856426b11ed",
         "96471f7dd91c176605db04047f9b0508",
         "a540d0552854c83a2e514ebe3addb904",
         "d53729124e927bdf3c7454cc7eb67305"
@@ -2080,6 +2126,7 @@
       ],
       "fingerprint": "91372358a70638073c121aa93fb854ad",
       "related": [
+        "38596df81ee5f515b07be4226e5f9724",
         "abf517d48bfba243b2c0554830570edf",
         "dabd871e475d6d115bb8025943652d89",
         "ee16d4000bb6d884c3d94aa068300561"
@@ -2106,6 +2153,7 @@
       ],
       "fingerprint": "dabd871e475d6d115bb8025943652d89",
       "related": [
+        "38596df81ee5f515b07be4226e5f9724",
         "91372358a70638073c121aa93fb854ad",
         "abf517d48bfba243b2c0554830570edf",
         "ee16d4000bb6d884c3d94aa068300561"
@@ -2240,6 +2288,239 @@
       "fingerprint": "c8ed3d30736f6b19925170ef1a389b28"
     },
     {
+      "rule_id": "SS-002",
+      "title": "Cross-contract call without caller authorization",
+      "description": "A public contract function constructs and calls another contract client but does not call require_auth in its body or in the intra-file helper functions it calls. If the contract acts on funds or privileges it controls, an attacker may be able to trigger cross-contract effects without the caller's approval. This is a heuristic: the called contract may itself enforce authorization, or the invocation may be intentionally permissionless.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-044/negative.rs",
+        "line": 14,
+        "column": 22
+      },
+      "evidence": "cross-contract client constructed with no authorization in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "2e99ae2564152f54c6c0fb3db933002f",
+      "related": [
+        "cd14e6d032c2b9149a1616ac374a4148"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-044/negative.rs",
+        "line": 14,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "cd14e6d032c2b9149a1616ac374a4148",
+      "related": [
+        "2e99ae2564152f54c6c0fb3db933002f"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-002",
+      "title": "Cross-contract call without caller authorization",
+      "description": "A public contract function constructs and calls another contract client but does not call require_auth in its body or in the intra-file helper functions it calls. If the contract acts on funds or privileges it controls, an attacker may be able to trigger cross-contract effects without the caller's approval. This is a heuristic: the called contract may itself enforce authorization, or the invocation may be intentionally permissionless.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-044/negative2.rs",
+        "line": 14,
+        "column": 22
+      },
+      "evidence": "cross-contract client constructed with no authorization in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "7f12d0173ea697e9a985a03d3aef0497",
+      "related": [
+        "fd3cf84445f4f4050a2de83a28f896d4"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-044/negative2.rs",
+        "line": 14,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "fd3cf84445f4f4050a2de83a28f896d4",
+      "related": [
+        "7f12d0173ea697e9a985a03d3aef0497"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-002",
+      "title": "Cross-contract call without caller authorization",
+      "description": "A public contract function constructs and calls another contract client but does not call require_auth in its body or in the intra-file helper functions it calls. If the contract acts on funds or privileges it controls, an attacker may be able to trigger cross-contract effects without the caller's approval. This is a heuristic: the called contract may itself enforce authorization, or the invocation may be intentionally permissionless.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-044/negative3.rs",
+        "line": 17,
+        "column": 22
+      },
+      "evidence": "cross-contract client constructed with no authorization in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "ae5cada40640045fc5e6d4bc771de9c3",
+      "related": [
+        "f026ae544ab95fd865ea98b161a9c77e"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-044/negative3.rs",
+        "line": 17,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "f026ae544ab95fd865ea98b161a9c77e",
+      "related": [
+        "ae5cada40640045fc5e6d4bc771de9c3"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-002",
+      "title": "Cross-contract call without caller authorization",
+      "description": "A public contract function constructs and calls another contract client but does not call require_auth in its body or in the intra-file helper functions it calls. If the contract acts on funds or privileges it controls, an attacker may be able to trigger cross-contract effects without the caller's approval. This is a heuristic: the called contract may itself enforce authorization, or the invocation may be intentionally permissionless.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-044/negative4.rs",
+        "line": 13,
+        "column": 22
+      },
+      "evidence": "cross-contract client constructed with no authorization in `balance`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "5337a1e054dca861298f2ab74368a3e7",
+      "related": [
+        "ac4a8287883c3f86ea90e00079c47064"
+      ]
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-044/negative4.rs",
+        "line": 13,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token_id` without a stored-configuration check in `balance`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "ac4a8287883c3f86ea90e00079c47064",
+      "related": [
+        "5337a1e054dca861298f2ab74368a3e7"
+      ]
+    },
+    {
+      "rule_id": "SS-002",
+      "title": "Cross-contract call without caller authorization",
+      "description": "A public contract function constructs and calls another contract client but does not call require_auth in its body or in the intra-file helper functions it calls. If the contract acts on funds or privileges it controls, an attacker may be able to trigger cross-contract effects without the caller's approval. This is a heuristic: the called contract may itself enforce authorization, or the invocation may be intentionally permissionless.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-044/positive.rs",
+        "line": 13,
+        "column": 22
+      },
+      "evidence": "cross-contract client constructed with no authorization in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "cb9154a32d7840fdc8322b83051c9757",
+      "related": [
+        "5a1d0f25a4704d97bd42371d0570ef80"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "description": "A `token::Client` is constructed from a caller-supplied address without comparing it to configuration stored by the contract. An attacker can substitute a malicious token contract and change balances or transfer semantics. The detector looks for a storage read and comparison that guards the construction.",
+      "severity": "high",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-044/positive.rs",
+        "line": 13,
+        "column": 22
+      },
+      "evidence": "token client constructed from caller-supplied address `token_id` without a stored-configuration check in `payout`: token :: Client :: new (& env , & token_id)",
+      "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "5a1d0f25a4704d97bd42371d0570ef80",
+      "related": [
+        "cb9154a32d7840fdc8322b83051c9757"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
       "rule_id": "SS-005",
       "title": "Unsafe code in a Soroban contract",
       "description": "The contract source contains an `unsafe` block or expression. Soroban contracts execute in a sandbox and rarely require `unsafe`; when it is present it bypasses the guarantees Rust normally provides and can undermine memory safety assumptions or introduce undefined behavior. This finding is evidence of `unsafe` usage, not proof of a bug.",
@@ -2279,6 +2560,7 @@
       ],
       "fingerprint": "7b9c2285cafe0c7695c46f22694bbda5",
       "related": [
+        "0be9f5344f226568677ab5e99abfc6f4",
         "d5475c0cbf4d93267f0783dbf8255c86"
       ],
       "correlation_ambiguous": true
@@ -2303,6 +2585,7 @@
       ],
       "fingerprint": "acede228d48f4693b023d19b85fdff01",
       "related": [
+        "8adc97c9ebea073ca91b1be726aadb3c",
         "a362fd34490f0f54cfdbbb67ce42d6ee"
       ],
       "correlation_ambiguous": true
@@ -2327,8 +2610,10 @@
       ],
       "fingerprint": "e5053eb8c254a77c84f95f7ecbd5026c",
       "related": [
-        "7d4a08e424b4e0ffc20ef938ea5e2000"
-      ]
+        "7d4a08e424b4e0ffc20ef938ea5e2000",
+        "eef1aae7728ff3da31ba5b3bb1fc3ca2"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -2350,6 +2635,7 @@
       ],
       "fingerprint": "40814c10be9dce76435571e9ad3c9eab",
       "related": [
+        "328b650bdb827caae9d740968006f0dc",
         "547dea37a4cd38f87a0e74848ce1949d"
       ],
       "correlation_ambiguous": true
@@ -2374,6 +2660,7 @@
       ],
       "fingerprint": "51b60ca5ffa9f7c9d2b54307b1954fc8",
       "related": [
+        "2c0ad5f35847c792f4f0c2601a5310f3",
         "e8bbd271b173fc302e7875bd7557d93b"
       ],
       "correlation_ambiguous": true
@@ -2398,7 +2685,8 @@
       ],
       "fingerprint": "d29c8d617e14f3f024df7360ed7b8c87",
       "related": [
-        "16ae2ff5dac988b965881be178ce6079"
+        "16ae2ff5dac988b965881be178ce6079",
+        "bb133c7cb974e38979862568c7ae8504"
       ],
       "correlation_ambiguous": true
     },
@@ -2422,7 +2710,8 @@
       ],
       "fingerprint": "2af3668a68b8b8fff15113220e75af66",
       "related": [
-        "3dfc41148c088ed584c759e633059253"
+        "3dfc41148c088ed584c759e633059253",
+        "85a2b2f1a89e41ebe961cf8e0ddc7d59"
       ],
       "correlation_ambiguous": true
     },
@@ -2446,6 +2735,7 @@
       ],
       "fingerprint": "8b86f2b60e6a444b286971c481179811",
       "related": [
+        "60dcd6e6d8870acb998437dcc30148bb",
         "7868cde3c25c6fe4ad03ed928848d963"
       ],
       "correlation_ambiguous": true
@@ -2470,6 +2760,7 @@
       ],
       "fingerprint": "fd7ae9e1a00f6c952bc4f11d3045a6ca",
       "related": [
+        "81e7b60122b5fd2c76f651276d06768a",
         "cf8a4241f25d646a75abbf4a8ebb523e"
       ],
       "correlation_ambiguous": true
@@ -2495,6 +2786,7 @@
       "fingerprint": "d53729124e927bdf3c7454cc7eb67305",
       "related": [
         "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+        "788438c0f7a3313ffbd14856426b11ed",
         "96471f7dd91c176605db04047f9b0508",
         "a540d0552854c83a2e514ebe3addb904"
       ],
@@ -2519,6 +2811,9 @@
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
       "fingerprint": "5cdc6740236002705c69fda6050c99dc",
+      "related": [
+        "eaf81a87f58710688ca1496570ccedee"
+      ],
       "correlation_ambiguous": true
     },
     {
@@ -2540,6 +2835,9 @@
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
       "fingerprint": "d830436e31c7dae6ebcb77b6726f0a02",
+      "related": [
+        "ab3aa1676a7dc29ade3bb462a73fe0b8"
+      ],
       "correlation_ambiguous": true
     },
     {
@@ -2561,6 +2859,9 @@
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
       "fingerprint": "f768e05ab79654785b73117762ee1540",
+      "related": [
+        "8ac6744f5fb6451bd7069bc548dbed20"
+      ],
       "correlation_ambiguous": true
     },
     {
@@ -2583,7 +2884,8 @@
       ],
       "fingerprint": "34ec8ca36a47b0434c16fa976a058c3b",
       "related": [
-        "1a0210bc82d9870ef2668c400ed7b078"
+        "1a0210bc82d9870ef2668c400ed7b078",
+        "2b5bf3f8376bf0f80ab8ac9f00da94dc"
       ],
       "correlation_ambiguous": true
     },
@@ -2627,7 +2929,10 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "d3c34df38b542b7b7ba0b07015bd9c56"
+      "fingerprint": "d3c34df38b542b7b7ba0b07015bd9c56",
+      "related": [
+        "59dfee0175a75e4aef1c46583640189e"
+      ]
     },
     {
       "rule_id": "SS-022",
@@ -2720,7 +3025,8 @@
       ],
       "fingerprint": "de6b286d5c77a9568c549f49d54db1b7",
       "related": [
-        "b246a6af181e82c822350ad4e63a1c99"
+        "b246a6af181e82c822350ad4e63a1c99",
+        "c1094608dc3ee75c4c8599a06d25a9b8"
       ],
       "correlation_ambiguous": true
     },
@@ -2744,7 +3050,8 @@
       ],
       "fingerprint": "1b98a6a5f598c533eb1b25bd5b8fe250",
       "related": [
-        "3b059e2094045bb07bd10904f219b6cb"
+        "3b059e2094045bb07bd10904f219b6cb",
+        "f37d556c2d707f25f61c7b3db5cc3413"
       ],
       "correlation_ambiguous": true
     },
@@ -2788,6 +3095,7 @@
       ],
       "fingerprint": "abf517d48bfba243b2c0554830570edf",
       "related": [
+        "38596df81ee5f515b07be4226e5f9724",
         "91372358a70638073c121aa93fb854ad",
         "dabd871e475d6d115bb8025943652d89",
         "ee16d4000bb6d884c3d94aa068300561"
@@ -2833,6 +3141,7 @@
       ],
       "fingerprint": "dd7d962c7fe2636603c07cea1b7d90b6",
       "related": [
+        "830264a95828084109f5e7b0edffe357",
         "c24246d25d23e1c883acfad3de5e9585"
       ],
       "correlation_ambiguous": true
@@ -2857,6 +3166,7 @@
       ],
       "fingerprint": "763b03471d0c48d8cff72c2ca1a66ec8",
       "related": [
+        "100da6fb77795c318413a10871dc8322",
         "e935aa3e1867c9fce22f03b037bf4e26"
       ],
       "correlation_ambiguous": true
@@ -2901,6 +3211,7 @@
       ],
       "fingerprint": "e1f40c9883b82b58e7e8c067bc28c021",
       "related": [
+        "280073fd0c392575b928a4eec05ee5d9",
         "e4d1d7c7329ff42ad1330aa88e145a75"
       ],
       "correlation_ambiguous": true
@@ -2977,6 +3288,180 @@
       "correlation_ambiguous": true
     },
     {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-044/negative.rs",
+        "line": 15,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & recipient , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "6b812ca2363af13c411c3fc45863afde",
+      "related": [
+        "b688629950a0d3b3e7227182ada171f8"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-044/negative2.rs",
+        "line": 15,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & treasury , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "421f9eade5a4334f041cbba2bea4137c",
+      "related": [
+        "b3333a41a4e39a39c7286d55ee8c13bd"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-044/negative3.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & recipient , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "f6ff0e4aa9c36db5393825361baf5717",
+      "related": [
+        "41801c7c97f3cf0aeed49a383e167725"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-044/positive.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "cross-contract client call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "a8f84b11be78a859620a1e96419831d2",
+      "related": [
+        "af85bf440d0340bcb30935ebaf8504cc",
+        "bdf3b0c31758e632a82f8f89d0082eb8"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-001/negative.rs",
+        "line": 16,
+        "column": 9
+      },
+      "evidence": "persistent storage read without TTL extension in `balance`: env . storage () . persistent () . get (& symbol_short ! (\"BAL\"))",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "670a68ea36edab8df3de7d46aefbc8c4"
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-001/negative2.rs",
+        "line": 16,
+        "column": 9
+      },
+      "evidence": "persistent storage read without TTL extension in `balance`: env . storage () . persistent () . get (& symbol_short ! (\"BAL\"))",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "4782bce491c0a957f1dfbc5b385332db"
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-001/negative3.rs",
+        "line": 16,
+        "column": 9
+      },
+      "evidence": "persistent storage read without TTL extension in `balance`: env . storage () . persistent () . get (& symbol_short ! (\"BAL\"))",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "790820fa17ecf451f9dde3aacc0f6a4c"
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-001/positive.rs",
+        "line": 15,
+        "column": 29
+      },
+      "evidence": "persistent storage read without TTL extension in `withdraw`: env . storage () . persistent () . get (& symbol_short ! (\"BAL\"))",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "b755d23f1efc334fa720727b4ee153b7",
+      "correlation_ambiguous": true
+    },
+    {
       "rule_id": "SS-008",
       "title": "Unchecked arithmetic in a contract entry point",
       "description": "A public contract entry point performs binary arithmetic (`+`, `-`, or `*`) on values without a checked, saturating, overflowing, or wrapping operation. In release builds Rust arithmetic wraps on overflow and underflow instead of panicking, so a decrement below zero (or an overflow) can silently produce an incorrect result — a common cause of balance and accounting bugs in token, escrow and vault contracts. This is a heuristic: it cannot prove that the operands are attacker-influenced or that their range is constrained, so it reports low confidence and should be reviewed in context.",
@@ -3017,7 +3502,33 @@
       ],
       "fingerprint": "d5475c0cbf4d93267f0783dbf8255c86",
       "related": [
+        "0be9f5344f226568677ab5e99abfc6f4",
         "7b9c2285cafe0c7695c46f22694bbda5"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative.rs",
+        "line": 11,
+        "column": 32
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "0be9f5344f226568677ab5e99abfc6f4",
+      "related": [
+        "7b9c2285cafe0c7695c46f22694bbda5",
+        "d5475c0cbf4d93267f0783dbf8255c86"
       ],
       "correlation_ambiguous": true
     },
@@ -3041,6 +3552,32 @@
       ],
       "fingerprint": "a362fd34490f0f54cfdbbb67ce42d6ee",
       "related": [
+        "8adc97c9ebea073ca91b1be726aadb3c",
+        "acede228d48f4693b023d19b85fdff01"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative.rs",
+        "line": 21,
+        "column": 32
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `route`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "8adc97c9ebea073ca91b1be726aadb3c",
+      "related": [
+        "a362fd34490f0f54cfdbbb67ce42d6ee",
         "acede228d48f4693b023d19b85fdff01"
       ],
       "correlation_ambiguous": true
@@ -3084,8 +3621,58 @@
       ],
       "fingerprint": "7d4a08e424b4e0ffc20ef938ea5e2000",
       "related": [
+        "e5053eb8c254a77c84f95f7ecbd5026c",
+        "eef1aae7728ff3da31ba5b3bb1fc3ca2"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative2.rs",
+        "line": 16,
+        "column": 58
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `amount` without documented validation in `pay`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "eef1aae7728ff3da31ba5b3bb1fc3ca2",
+      "related": [
+        "7d4a08e424b4e0ffc20ef938ea5e2000",
         "e5053eb8c254a77c84f95f7ecbd5026c"
-      ]
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-002/negative2.rs",
+        "line": 20,
+        "column": 21
+      },
+      "evidence": "persistent storage read without TTL extension in `pay_configured`: env . storage () . persistent () . get (& DataKey :: Token)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "d36faccdef13745686d3373736ded237",
+      "related": [
+        "38e4d47246474277fb41cce1a73725a7"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -3107,7 +3694,33 @@
       ],
       "fingerprint": "547dea37a4cd38f87a0e74848ce1949d",
       "related": [
+        "328b650bdb827caae9d740968006f0dc",
         "40814c10be9dce76435571e9ad3c9eab"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative2.rs",
+        "line": 22,
+        "column": 58
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `amount` without documented validation in `pay_configured`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "328b650bdb827caae9d740968006f0dc",
+      "related": [
+        "40814c10be9dce76435571e9ad3c9eab",
+        "547dea37a4cd38f87a0e74848ce1949d"
       ],
       "correlation_ambiguous": true
     },
@@ -3131,7 +3744,33 @@
       ],
       "fingerprint": "e8bbd271b173fc302e7875bd7557d93b",
       "related": [
+        "2c0ad5f35847c792f4f0c2601a5310f3",
         "51b60ca5ffa9f7c9d2b54307b1954fc8"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative3.rs",
+        "line": 11,
+        "column": 32
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "2c0ad5f35847c792f4f0c2601a5310f3",
+      "related": [
+        "51b60ca5ffa9f7c9d2b54307b1954fc8",
+        "e8bbd271b173fc302e7875bd7557d93b"
       ],
       "correlation_ambiguous": true
     },
@@ -3155,6 +3794,32 @@
       ],
       "fingerprint": "16ae2ff5dac988b965881be178ce6079",
       "related": [
+        "bb133c7cb974e38979862568c7ae8504",
+        "d29c8d617e14f3f024df7360ed7b8c87"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative3.rs",
+        "line": 21,
+        "column": 32
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `route`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "bb133c7cb974e38979862568c7ae8504",
+      "related": [
+        "16ae2ff5dac988b965881be178ce6079",
         "d29c8d617e14f3f024df7360ed7b8c87"
       ],
       "correlation_ambiguous": true
@@ -3179,7 +3844,33 @@
       ],
       "fingerprint": "3dfc41148c088ed584c759e633059253",
       "related": [
-        "2af3668a68b8b8fff15113220e75af66"
+        "2af3668a68b8b8fff15113220e75af66",
+        "85a2b2f1a89e41ebe961cf8e0ddc7d59"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/positive.rs",
+        "line": 10,
+        "column": 58
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "85a2b2f1a89e41ebe961cf8e0ddc7d59",
+      "related": [
+        "2af3668a68b8b8fff15113220e75af66",
+        "3dfc41148c088ed584c759e633059253"
       ],
       "correlation_ambiguous": true
     },
@@ -3201,6 +3892,86 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/resource-limits"
       ],
       "fingerprint": "5e9cc67f552405f3b43ab581c05a9949"
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-004/negative.rs",
+        "line": 9,
+        "column": 9
+      },
+      "evidence": "persistent storage read without TTL extension in `read`: env . storage () . persistent () . get (& K)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "32814d025150e0c61c0530e7e7130475"
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-004/negative2.rs",
+        "line": 9,
+        "column": 9
+      },
+      "evidence": "persistent storage read without TTL extension in `read`: env . storage () . persistent () . get (& K)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "afc33046af052bc1ed9219a7cc299d9f"
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-004/negative3.rs",
+        "line": 9,
+        "column": 9
+      },
+      "evidence": "persistent storage read without TTL extension in `read`: env . storage () . persistent () . get (& K)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "b07dfa342ea6037abad1115fbf423791"
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-004/positive.rs",
+        "line": 9,
+        "column": 21
+      },
+      "evidence": "persistent storage read without TTL extension in `read_or_die`: env . storage () . persistent () . get (& K)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "7c0a072ae229f1da9b8a06b467ba7b47",
+      "related": [
+        "dff5e13c70dad06c64575ed63be1a882"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-008",
@@ -3282,6 +4053,28 @@
       "fingerprint": "3f95fad2274ba2c1dce73ddad99699b8"
     },
     {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-008/positive.rs",
+        "line": 16,
+        "column": 29
+      },
+      "evidence": "persistent storage read without TTL extension in `withdraw`: env . storage () . persistent () . get (& DataKey :: Balance)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "6acf5039c42a288a1498a4df9486d09a",
+      "related": [
+        "48607b3e663c4369781f250384a35ee8"
+      ]
+    },
+    {
       "rule_id": "SS-008",
       "title": "Unchecked arithmetic in a contract entry point",
       "description": "A public contract entry point performs binary arithmetic (`+`, `-`, or `*`) on values without a checked, saturating, overflowing, or wrapping operation. In release builds Rust arithmetic wraps on overflow and underflow instead of panicking, so a decrement below zero (or an overflow) can silently produce an incorrect result — a common cause of balance and accounting bugs in token, escrow and vault contracts. This is a heuristic: it cannot prove that the operands are attacker-influenced or that their range is constrained, so it reports low confidence and should be reviewed in context.",
@@ -3299,7 +4092,56 @@
         "https://doc.rust-lang.org/reference/expressions/operator-expr.html#overflow",
         "https://developers.stellar.org/docs"
       ],
-      "fingerprint": "48607b3e663c4369781f250384a35ee8"
+      "fingerprint": "48607b3e663c4369781f250384a35ee8",
+      "related": [
+        "6acf5039c42a288a1498a4df9486d09a"
+      ]
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-009/negative.rs",
+        "line": 6,
+        "column": 29
+      },
+      "evidence": "persistent storage read without TTL extension in `close`: env . storage () . persistent () . get (& DataKey :: Deadline)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "41ed9d12c0503c96aef8d8dd7752f0f9",
+      "related": [
+        "7e9a6ccdbf1e26365ef4b3c29b17b212"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-009/negative3.rs",
+        "line": 6,
+        "column": 29
+      },
+      "evidence": "persistent storage read without TTL extension in `close`: env . storage () . persistent () . get (& DataKey :: Deadline)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "31a63e495cc4a167de984fc61b412787",
+      "related": [
+        "9d121bdfd459606ded2db6ea4db1ec51"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-009",
@@ -3320,6 +4162,86 @@
         "https://developers.stellar.org/docs"
       ],
       "fingerprint": "d3dfa215853ee83b3d288774a980392e"
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-012/negative.rs",
+        "line": 12,
+        "column": 35
+      },
+      "evidence": "persistent storage read without TTL extension in `add`: env . storage () . persistent () . get (& DataKey :: Items)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "c8c2032d81b909709a865f267adda41d",
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-012/negative2.rs",
+        "line": 12,
+        "column": 35
+      },
+      "evidence": "persistent storage read without TTL extension in `add`: env . storage () . persistent () . get (& DataKey :: Items)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "7c37e5bd592c57f6cbfe4776ab6fcc08",
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-012/negative3.rs",
+        "line": 12,
+        "column": 35
+      },
+      "evidence": "persistent storage read without TTL extension in `add`: env . storage () . persistent () . get (& DataKey :: Items)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "7ab06f6021e41f1e73e6bfe9913f5970",
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-012/positive.rs",
+        "line": 12,
+        "column": 35
+      },
+      "evidence": "persistent storage read without TTL extension in `add`: env . storage () . persistent () . get (& DataKey :: Items)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "ea8c47662fe68db69a53f5ba29cd6b81",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-012",
@@ -3361,6 +4283,32 @@
       ],
       "fingerprint": "7868cde3c25c6fe4ad03ed928848d963",
       "related": [
+        "60dcd6e6d8870acb998437dcc30148bb",
+        "8b86f2b60e6a444b286971c481179811"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-013/negative.rs",
+        "line": 7,
+        "column": 58
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `withdraw`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "60dcd6e6d8870acb998437dcc30148bb",
+      "related": [
+        "7868cde3c25c6fe4ad03ed928848d963",
         "8b86f2b60e6a444b286971c481179811"
       ],
       "correlation_ambiguous": true
@@ -3385,6 +4333,32 @@
       ],
       "fingerprint": "cf8a4241f25d646a75abbf4a8ebb523e",
       "related": [
+        "81e7b60122b5fd2c76f651276d06768a",
+        "fd7ae9e1a00f6c952bc4f11d3045a6ca"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-013/negative3.rs",
+        "line": 7,
+        "column": 58
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `withdraw`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "81e7b60122b5fd2c76f651276d06768a",
+      "related": [
+        "cf8a4241f25d646a75abbf4a8ebb523e",
         "fd7ae9e1a00f6c952bc4f11d3045a6ca"
       ],
       "correlation_ambiguous": true
@@ -3410,8 +4384,108 @@
       "fingerprint": "a540d0552854c83a2e514ebe3addb904",
       "related": [
         "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+        "788438c0f7a3313ffbd14856426b11ed",
         "96471f7dd91c176605db04047f9b0508",
         "d53729124e927bdf3c7454cc7eb67305"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-013/positive.rs",
+        "line": 6,
+        "column": 58
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `withdraw`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "788438c0f7a3313ffbd14856426b11ed",
+      "related": [
+        "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+        "96471f7dd91c176605db04047f9b0508",
+        "a540d0552854c83a2e514ebe3addb904",
+        "d53729124e927bdf3c7454cc7eb67305"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-014/negative.rs",
+        "line": 18,
+        "column": 32
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "eaf81a87f58710688ca1496570ccedee",
+      "related": [
+        "5cdc6740236002705c69fda6050c99dc"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-014/negative2.rs",
+        "line": 18,
+        "column": 32
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "ab3aa1676a7dc29ade3bb462a73fe0b8",
+      "related": [
+        "d830436e31c7dae6ebcb77b6726f0a02"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-014/negative3.rs",
+        "line": 18,
+        "column": 32
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "8ac6744f5fb6451bd7069bc548dbed20",
+      "related": [
+        "f768e05ab79654785b73117762ee1540"
       ],
       "correlation_ambiguous": true
     },
@@ -3435,6 +4509,32 @@
       ],
       "fingerprint": "1a0210bc82d9870ef2668c400ed7b078",
       "related": [
+        "2b5bf3f8376bf0f80ab8ac9f00da94dc",
+        "34ec8ca36a47b0434c16fa976a058c3b"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-014/positive.rs",
+        "line": 18,
+        "column": 32
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "2b5bf3f8376bf0f80ab8ac9f00da94dc",
+      "related": [
+        "1a0210bc82d9870ef2668c400ed7b078",
         "34ec8ca36a47b0434c16fa976a058c3b"
       ],
       "correlation_ambiguous": true
@@ -3584,6 +4684,85 @@
       "fingerprint": "d3e81400b6b03ecab8bdc2b9535f6669"
     },
     {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-019/negative.rs",
+        "line": 13,
+        "column": 30
+      },
+      "evidence": "persistent storage read without TTL extension in `probe`: env . storage () . persistent () . get (& Key :: Token)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "603efe83ac024074c057c96238589203"
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-019/negative2.rs",
+        "line": 13,
+        "column": 30
+      },
+      "evidence": "persistent storage read without TTL extension in `probe`: env . storage () . persistent () . get (& Key :: Token)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "54b66257f5c999c91300eb131b36845c"
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-019/negative3.rs",
+        "line": 13,
+        "column": 30
+      },
+      "evidence": "persistent storage read without TTL extension in `probe`: env . storage () . persistent () . get (& Key :: Token)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "bad60839d97b64d353689b93cf9c8fff"
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-019/positive.rs",
+        "line": 13,
+        "column": 30
+      },
+      "evidence": "persistent storage read without TTL extension in `probe`: env . storage () . persistent () . get (& Key :: Token)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "59dfee0175a75e4aef1c46583640189e",
+      "related": [
+        "d3c34df38b542b7b7ba0b07015bd9c56"
+      ]
+    },
+    {
       "rule_id": "SS-020",
       "title": "Unvalidated XDR or bytes deserialization",
       "description": "A contract entry point decodes caller-supplied bytes or XDR (`from_xdr`, `from_bytes`, or `try_from`) without checking the input length or handling a fallible decode result. Malformed or attacker-chosen payloads can yield unexpected values, panic the contract, or bypass validation that was assumed to happen during decoding. This is a syntactic heuristic and reports low confidence.",
@@ -3649,6 +4828,26 @@
       "fingerprint": "4c7bb8c7dcd42d55faab7be992707e40"
     },
     {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-028/negative.rs",
+        "line": 12,
+        "column": 28
+      },
+      "evidence": "persistent storage read without TTL extension in `withdraw`: env . storage () . persistent () . get (& Key :: Locked)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "b7b996ab834b2353296a0a987f8fbc2e",
+      "correlation_ambiguous": true
+    },
+    {
       "rule_id": "SS-014",
       "title": "Token transfer amount without validation",
       "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
@@ -3668,6 +4867,32 @@
       ],
       "fingerprint": "b246a6af181e82c822350ad4e63a1c99",
       "related": [
+        "c1094608dc3ee75c4c8599a06d25a9b8",
+        "de6b286d5c77a9568c549f49d54db1b7"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/negative.rs",
+        "line": 18,
+        "column": 58
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `token` without documented validation in `withdraw`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "c1094608dc3ee75c4c8599a06d25a9b8",
+      "related": [
+        "b246a6af181e82c822350ad4e63a1c99",
         "de6b286d5c77a9568c549f49d54db1b7"
       ],
       "correlation_ambiguous": true
@@ -3692,7 +4917,33 @@
       ],
       "fingerprint": "3b059e2094045bb07bd10904f219b6cb",
       "related": [
-        "1b98a6a5f598c533eb1b25bd5b8fe250"
+        "1b98a6a5f598c533eb1b25bd5b8fe250",
+        "f37d556c2d707f25f61c7b3db5cc3413"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/negative2.rs",
+        "line": 14,
+        "column": 58
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `token` without documented validation in `withdraw`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "f37d556c2d707f25f61c7b3db5cc3413",
+      "related": [
+        "1b98a6a5f598c533eb1b25bd5b8fe250",
+        "3b059e2094045bb07bd10904f219b6cb"
       ],
       "correlation_ambiguous": true
     },
@@ -3716,9 +4967,60 @@
       ],
       "fingerprint": "ee16d4000bb6d884c3d94aa068300561",
       "related": [
+        "38596df81ee5f515b07be4226e5f9724",
         "91372358a70638073c121aa93fb854ad",
         "abf517d48bfba243b2c0554830570edf",
         "dabd871e475d6d115bb8025943652d89"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/positive.rs",
+        "line": 13,
+        "column": 58
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `token` without documented validation in `withdraw`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "38596df81ee5f515b07be4226e5f9724",
+      "related": [
+        "91372358a70638073c121aa93fb854ad",
+        "abf517d48bfba243b2c0554830570edf",
+        "dabd871e475d6d115bb8025943652d89",
+        "ee16d4000bb6d884c3d94aa068300561"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-030/negative.rs",
+        "line": 12,
+        "column": 35
+      },
+      "evidence": "persistent storage read without TTL extension in `payout`: env . storage () . persistent () . get (& Key :: Token)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "d63f03e317b755dbdf91ec0e375c7d4d",
+      "related": [
+        "e71091ffde52f91a460ccdedbbbfd0bd"
       ],
       "correlation_ambiguous": true
     },
@@ -3742,7 +5044,56 @@
       ],
       "fingerprint": "c24246d25d23e1c883acfad3de5e9585",
       "related": [
+        "830264a95828084109f5e7b0edffe357",
         "dd7d962c7fe2636603c07cea1b7d90b6"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-030/negative.rs",
+        "line": 17,
+        "column": 58
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "830264a95828084109f5e7b0edffe357",
+      "related": [
+        "c24246d25d23e1c883acfad3de5e9585",
+        "dd7d962c7fe2636603c07cea1b7d90b6"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-030/negative2.rs",
+        "line": 12,
+        "column": 33
+      },
+      "evidence": "persistent storage read without TTL extension in `payout`: env . storage () . persistent () . get (& Key :: Token)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "39cc74f8ad0f12d0bfff6607024b9726",
+      "related": [
+        "a7f66e471208cdd28bbd07198e4ceb34"
       ],
       "correlation_ambiguous": true
     },
@@ -3766,7 +5117,33 @@
       ],
       "fingerprint": "e935aa3e1867c9fce22f03b037bf4e26",
       "related": [
+        "100da6fb77795c318413a10871dc8322",
         "763b03471d0c48d8cff72c2ca1a66ec8"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-030/negative2.rs",
+        "line": 14,
+        "column": 58
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "100da6fb77795c318413a10871dc8322",
+      "related": [
+        "763b03471d0c48d8cff72c2ca1a66ec8",
+        "e935aa3e1867c9fce22f03b037bf4e26"
       ],
       "correlation_ambiguous": true
     },
@@ -3790,7 +5167,33 @@
       ],
       "fingerprint": "e4d1d7c7329ff42ad1330aa88e145a75",
       "related": [
+        "280073fd0c392575b928a4eec05ee5d9",
         "e1f40c9883b82b58e7e8c067bc28c021"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-030/positive.rs",
+        "line": 13,
+        "column": 58
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "280073fd0c392575b928a4eec05ee5d9",
+      "related": [
+        "e1f40c9883b82b58e7e8c067bc28c021",
+        "e4d1d7c7329ff42ad1330aa88e145a75"
       ],
       "correlation_ambiguous": true
     },
@@ -3859,6 +5262,150 @@
       "fingerprint": "9a2bf4fc43569320ef2a8fb8f1d691a2"
     },
     {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "description": "A contract entry point reads persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries expire; if the read assumes the value is still present, an expired entry can change the contract's behaviour or block an operation that depends on it. The detector reports only when no TTL management is visible at all: a TTL call for an unrelated key is treated as ambiguous and suppresses the finding.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-039/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "persistent storage read without TTL extension in `load`: env . storage () . persistent () . get (& 0)",
+      "remediation": "Refresh the entry's time-to-live when reading persistent data that must remain available, for example `env.storage().persistent().extend_ttl(&key, threshold, extend_to)` after the read. Prefer one documented TTL policy per contract. If TTL is managed by a separate maintenance entry point, suppress this rule for the reader with a justification.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "ffa781c50c7f543dc5a5935acb3fdaa8",
+      "related": [
+        "e70fefead6d303fbacbadf442907a99a"
+      ]
+    },
+    {
+      "rule_id": "SS-014",
+      "title": "Token transfer amount without validation",
+      "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-044/negative.rs",
+        "line": 15,
+        "column": 9
+      },
+      "evidence": "`transfer` transfers unchecked amount `amount` in entry point `payout`",
+      "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "b688629950a0d3b3e7227182ada171f8",
+      "related": [
+        "6b812ca2363af13c411c3fc45863afde"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-014",
+      "title": "Token transfer amount without validation",
+      "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-044/negative2.rs",
+        "line": 15,
+        "column": 9
+      },
+      "evidence": "`transfer` transfers unchecked amount `amount` in entry point `payout`",
+      "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "b3333a41a4e39a39c7286d55ee8c13bd",
+      "related": [
+        "421f9eade5a4334f041cbba2bea4137c"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-014",
+      "title": "Token transfer amount without validation",
+      "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-044/negative3.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "`transfer` transfers unchecked amount `amount` in entry point `payout`",
+      "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "41801c7c97f3cf0aeed49a383e167725",
+      "related": [
+        "f6ff0e4aa9c36db5393825361baf5717"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-014",
+      "title": "Token transfer amount without validation",
+      "description": "A public contract entry point passes a caller-supplied amount to `transfer` or `transfer_from` without comparing it against zero. Token implementations differ in how they treat negative or out-of-range amounts; a missing guard can therefore move an unintended value, corrupt accounting, or revert in surprising ways. This is a heuristic: it cannot prove that the token rejects the value or that another layer validates it, so it reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "token",
+      "location": {
+        "file": "SS-044/positive.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "`transfer` transfers unchecked amount `amount` in entry point `payout`",
+      "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
+      "references": [
+        "https://developers.stellar.org/docs/tokens/token-interface",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "bdf3b0c31758e632a82f8f89d0082eb8",
+      "related": [
+        "a8f84b11be78a859620a1e96419831d2",
+        "af85bf440d0340bcb30935ebaf8504cc"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "description": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-044/positive.rs",
+        "line": 14,
+        "column": 58
+      },
+      "evidence": "cross-contract `transfer` passes caller-controlled address argument 2 from `to` without documented validation in `payout`",
+      "remediation": "Validate the address before the cross-contract call. Use a documented helper such as `validate_address`, compare against an address stored at configuration time, or reject addresses that are not on an explicit allowlist. Validate on every path, before the call.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/tokens/token-interface"
+      ],
+      "fingerprint": "af85bf440d0340bcb30935ebaf8504cc",
+      "related": [
+        "a8f84b11be78a859620a1e96419831d2",
+        "bdf3b0c31758e632a82f8f89d0082eb8"
+      ],
+      "correlation_ambiguous": true
+    },
+    {
       "rule_id": "SS-033",
       "title": "Wildcard import from the Soroban SDK",
       "description": "A source file imports everything from `soroban_sdk` with a glob (`use soroban_sdk::*;` or a nested glob). Wildcard imports obscure which SDK items are used and can silently include deprecated or unsafe APIs when the SDK changes. This is a readability and reviewability signal, not proof of a security defect.",
@@ -3917,6 +5464,9 @@
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
       "fingerprint": "38e4d47246474277fb41cce1a73725a7",
+      "related": [
+        "d36faccdef13745686d3373736ded237"
+      ],
       "correlation_ambiguous": true
     },
     {
@@ -3937,7 +5487,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "dff5e13c70dad06c64575ed63be1a882"
+      "fingerprint": "dff5e13c70dad06c64575ed63be1a882",
+      "related": [
+        "7c0a072ae229f1da9b8a06b467ba7b47"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-004",
@@ -3957,7 +5511,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "98b0d8ef6974a1302fce916aee91dbf7"
+      "fingerprint": "98b0d8ef6974a1302fce916aee91dbf7",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-004",
@@ -3978,6 +5533,9 @@
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
       "fingerprint": "7e9a6ccdbf1e26365ef4b3c29b17b212",
+      "related": [
+        "41ed9d12c0503c96aef8d8dd7752f0f9"
+      ],
       "correlation_ambiguous": true
     },
     {
@@ -3999,6 +5557,9 @@
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
       "fingerprint": "9d121bdfd459606ded2db6ea4db1ec51",
+      "related": [
+        "31a63e495cc4a167de984fc61b412787"
+      ],
       "correlation_ambiguous": true
     },
     {
@@ -4228,6 +5789,9 @@
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
       "fingerprint": "e71091ffde52f91a460ccdedbbbfd0bd",
+      "related": [
+        "d63f03e317b755dbdf91ec0e375c7d4d"
+      ],
       "correlation_ambiguous": true
     },
     {
@@ -4270,6 +5834,9 @@
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
       "fingerprint": "a7f66e471208cdd28bbd07198e4ceb34",
+      "related": [
+        "39cc74f8ad0f12d0bfff6607024b9726"
+      ],
       "correlation_ambiguous": true
     },
     {
@@ -4316,6 +5883,115 @@
       ],
       "fingerprint": "72fafc452ff283431d58ebd4c8423a82",
       "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-039/negative.rs",
+        "line": 13,
+        "column": 21
+      },
+      "evidence": "`unwrap` in `load` can panic: env . storage () . persistent () . get (& 0) . unwrap ()",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "5324ac98037688f608f5ccdcf92f3929",
+      "related": [
+        "26f40bd11c8b96b541374822f06fa692"
+      ]
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-039/negative2.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "`unwrap` in `load` can panic: env . storage () . instance () . get (& 0) . unwrap ()",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "e2c3b00dd3bea456ab4744c76c77b7f3"
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-039/negative3.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "`unwrap` in `load` can panic: env . storage () . temporary () . get (& 0) . unwrap ()",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "cf9cdd15161eacd5958df37111e01f56"
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-039/negative4.rs",
+        "line": 13,
+        "column": 21
+      },
+      "evidence": "`unwrap` in `load` can panic: env . storage () . persistent () . get (& 0) . unwrap ()",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "4c1b130b1c40c0851bcc360e2ee36abe",
+      "related": [
+        "cce83633f0bb46623afc178954a61223"
+      ]
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-039/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "`unwrap` in `load` can panic: env . storage () . persistent () . get (& 0) . unwrap ()",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "e70fefead6d303fbacbadf442907a99a",
+      "related": [
+        "ffa781c50c7f543dc5a5935acb3fdaa8"
+      ]
     },
     {
       "rule_id": "SS-032",
@@ -4386,6 +6062,27 @@
       "related": [
         "97095df6a92c90808cb51a3985f5c3dc"
       ],
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-044/negative2.rs",
+        "line": 13,
+        "column": 33
+      },
+      "evidence": "`unwrap` in `payout` can panic: env . storage () . instance () . get (& 0) . unwrap ()",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "37e7ade0dbd83e54aa07d3abdd30f8d3",
       "correlation_ambiguous": true
     },
     {
