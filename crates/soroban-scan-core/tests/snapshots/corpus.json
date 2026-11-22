@@ -272,7 +272,8 @@
       ],
       "fingerprint": "c3e233e2b9601a95c29d47ed756e21b9",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_admin"
       },
       "related": [
         "661329002094a11864b18361688ec9d6",
@@ -299,7 +300,8 @@
       ],
       "fingerprint": "34c6e80ed102dd08157ec8d820e5cd01",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "081e0141f5201a517f311d3ea111a6c4"
@@ -325,7 +327,8 @@
       ],
       "fingerprint": "dfee15a21d1e3f058f92ca19828df74f",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Auction::close"
       },
       "related": [
         "95cd5eeb72a9efc15496a8c1d7916d67"
@@ -351,7 +354,8 @@
       ],
       "fingerprint": "a6da6843f263dcad78406e521ecdebf8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Auction::close"
       },
       "related": [
         "8e915611cfb7d11a563968c7b7bd2af4"
@@ -377,7 +381,8 @@
       ],
       "fingerprint": "2693cc4c84faf22776dd204da8c1f8c4",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Config::set_admin"
       },
       "related": [
         "95b2ae1df09dff1b1d86d07c95b964b5"
@@ -402,7 +407,8 @@
       ],
       "fingerprint": "193e358f4a82348ecf21de0a35ec158d",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Config::set_admin"
       },
       "related": [
         "bb1abfaecd4b8442a9ea052e06cf9ccb"
@@ -427,7 +433,8 @@
       ],
       "fingerprint": "90b372bac3f6a7d01fb6adddd5822924",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Config::set_admin"
       },
       "related": [
         "56712e7374e1b71b081e1b2acd1a0708"
@@ -452,7 +459,8 @@
       ],
       "fingerprint": "bd762510cb052a4b83765d5ac6db8744",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Config::set_admin"
       },
       "related": [
         "b1e4cf218a5ed9689787bebd39412d3e",
@@ -479,7 +487,8 @@
       ],
       "fingerprint": "df2367f567c56c4a988a964302f179ca",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "C::initialize"
       },
       "related": [
         "2ac2897090d1ecd72453fd5af19f6387",
@@ -506,7 +515,8 @@
       ],
       "fingerprint": "0297bd333ae8bd85e622642073e257d8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "C::initialize"
       },
       "related": [
         "0d11170fbdae7d05de08d58d3faad85e",
@@ -533,7 +543,8 @@
       ],
       "fingerprint": "e56bd39024ffdeab4625b1e981795ef2",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "C::initialize"
       },
       "related": [
         "46ff535f980da7e6d80328e1a2a641d8",
@@ -560,7 +571,8 @@
       ],
       "fingerprint": "6e620bd49a33ed5dd9e693eb21d2ee7b",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "C::initialize"
       },
       "related": [
         "039db96b21a90887b7223acbae663ab9",
@@ -588,7 +600,8 @@
       ],
       "fingerprint": "4266573d71d97557c0a370ba11282c46",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "related": [
         "4c717380a94b9599f33894136ee7573e"
@@ -614,7 +627,8 @@
       ],
       "fingerprint": "13479d49c4d00c19c7009826a649b57c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "related": [
         "9e6235e6af26cd33cd3d0c4df78cb9ff"
@@ -640,7 +654,8 @@
       ],
       "fingerprint": "c20aea01156b4621ff5ee989e0afc91d",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "related": [
         "7c0187710f5a7946468cee8f6eed300a"
@@ -666,7 +681,8 @@
       ],
       "fingerprint": "a39c12d558fc7b44310207ba8108ecab",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "related": [
         "1b817a9cf8e8c6fcce93cb968585a84d"
@@ -692,7 +708,8 @@
       ],
       "fingerprint": "5c3fa64e6e570324688bed66d18ca426",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "87a76d3c698134ccf4a8389e7718285d"
@@ -718,7 +735,8 @@
       ],
       "fingerprint": "31d2414fbf129f918912feebd87917fb",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "2528c0d9d700e7d35b6af55e5c455d0d"
@@ -744,7 +762,8 @@
       ],
       "fingerprint": "e5a0a9fb95f553d4c1abcff9bb163fcd",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "6a579809f30b4ea6f2b470881ba456be"
@@ -770,7 +789,8 @@
       ],
       "fingerprint": "4818ed69d217652b629399ebefc4899f",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "16ecc88fdd2bf218c7db9e6a3fd04f37"
@@ -796,7 +816,8 @@
       ],
       "fingerprint": "bd967ce4f944e1ce41143b19ccf48d7e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "0e31c94f8f3fbfef435c4005f47e71d4",
@@ -823,7 +844,8 @@
       ],
       "fingerprint": "1670ea29badda93d45f1893af80f9d1f",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "8cbf9c0252485933744e05bd6bafcf1c"
@@ -849,7 +871,8 @@
       ],
       "fingerprint": "70433fc9d2d6b994e3b89ef11b97f9d2",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "3dfb5aae09dd9b505a0996b41cfc753c",
@@ -876,7 +899,8 @@
       ],
       "fingerprint": "fbeae4f63d1aeb884688ea3281d84736",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "25d152fd88ac81caa0bd0275b2ab4fba"
@@ -902,7 +926,8 @@
       ],
       "fingerprint": "f2be6e36496eb1c0e4effc18e7da8838",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "17e1f27c6f5cc90d25493e1875811b98",
@@ -929,7 +954,8 @@
       ],
       "fingerprint": "64511a6c4862f557012e7a274614dbdf",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "0cb1efb1a006f0e476a1be0487adfab4",
@@ -956,7 +982,8 @@
       ],
       "fingerprint": "40b18bea271c88c2b221edb11b7ea58b",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "04637f34a8290f5734c2f0436359c2bc",
@@ -983,7 +1010,8 @@
       ],
       "fingerprint": "d30a4b1e82ff740a5dc33d6af6a6fc3c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::set_owner"
       },
       "related": [
         "7322879d377122e5338cb715ae0c4186",
@@ -1010,7 +1038,8 @@
       ],
       "fingerprint": "16f816f3b5c8684cac499e395b0c9770",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::cache"
       }
     },
     {
@@ -1032,7 +1061,8 @@
       ],
       "fingerprint": "e0649fc59d351d8af0c99fbb38dc4663",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::set_owner"
       },
       "related": [
         "852b64bc1ec2a632158cd1bb5757b199",
@@ -1059,7 +1089,8 @@
       ],
       "fingerprint": "3d9f051e57b36ef3d7b75cba1f8157d8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::store"
       }
     },
     {
@@ -1081,7 +1112,8 @@
       ],
       "fingerprint": "b49b79b343b59900a4c81cb42c6b3a5c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::store"
       }
     },
     {
@@ -1103,7 +1135,8 @@
       ],
       "fingerprint": "932370e9634c4eaa3c514c22b02adc24",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::store"
       }
     },
     {
@@ -1125,7 +1158,8 @@
       ],
       "fingerprint": "1c44dedf7609d76135e1e2acc13067ac",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::store"
       },
       "related": [
         "0f62769aa68303799bfc41e2a79f8861"
@@ -1150,7 +1184,8 @@
       ],
       "fingerprint": "d678ee90fd3bd753a68752cfbca298f7",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::store_dynamic"
       },
       "related": [
         "73041493412dc2e5c7f7f7bfe515c335"
@@ -1175,7 +1210,8 @@
       ],
       "fingerprint": "ea12d748478dea8b32f212d3b2255611",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Profiles::set_name"
       },
       "related": [
         "896f4cd2636fb46c5dc433890edbed13"
@@ -1201,7 +1237,8 @@
       ],
       "fingerprint": "de237e99f4ef0c7e6a885edc04d2e57b",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Profiles::set_amount"
       },
       "related": [
         "6fc60f6ec5780151995fae2f56cdc771"
@@ -1226,7 +1263,8 @@
       ],
       "fingerprint": "11d86bada61e82188159d467e30aab12",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Profiles::set_name"
       },
       "related": [
         "431c0acb156f003e5e1979a7221ee718",
@@ -1254,7 +1292,8 @@
       ],
       "fingerprint": "1f7f3e243f93db8fd61fce39df4b1842",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::guarded"
       }
     },
     {
@@ -1276,7 +1315,8 @@
       ],
       "fingerprint": "cfe0afbc3ca2c5f32e7bd65fae6e9294",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "1d1db31d573676e9ed1bf9f0b4df12da"
@@ -1302,7 +1342,8 @@
       ],
       "fingerprint": "0a689d578d918651ed75f62df2df4563",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "b83c4a6cd821a6c273aef3c46054e728"
@@ -1328,7 +1369,8 @@
       ],
       "fingerprint": "196cae8847f246987eea0907886b2346",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "d2cc256db0361c3c0abd6cc3133ceca3"
@@ -1354,7 +1396,8 @@
       ],
       "fingerprint": "757ee1e079580fab11d10dcb83ded1a8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "3860def458a71ab0ee0e2e0899610264"
@@ -1381,7 +1424,8 @@
       ],
       "fingerprint": "c0a7f9835ef546f2d4e5470d088a672c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::deposit"
       }
     },
     {
@@ -1403,7 +1447,8 @@
       ],
       "fingerprint": "26f40bd11c8b96b541374822f06fa692",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::load"
       },
       "related": [
         "5324ac98037688f608f5ccdcf92f3929"
@@ -1454,7 +1499,8 @@
       ],
       "fingerprint": "8ca3cdfa6ccf47df8093428159bf690e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
       },
       "correlation_ambiguous": true
     },
@@ -1478,7 +1524,8 @@
       ],
       "fingerprint": "82b039fcd6e1f58153ce79b2709a6ae9",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Router::route"
       },
       "correlation_ambiguous": true
     },
@@ -1502,7 +1549,8 @@
       ],
       "fingerprint": "2b43a42c040d6d8663860fc22cf6b36d",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
       },
       "correlation_ambiguous": true
     },
@@ -1526,7 +1574,8 @@
       ],
       "fingerprint": "df61f85c0bd0d4eceab2246c0913dd0b",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Router::route"
       },
       "correlation_ambiguous": true
     },
@@ -1549,7 +1598,8 @@
       ],
       "fingerprint": "c399badb33485c8496d429125c15e476",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
       },
       "related": [
         "74cf86ad21eed79956679865289208da"
@@ -1576,7 +1626,8 @@
       ],
       "fingerprint": "74cf86ad21eed79956679865289208da",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
       },
       "related": [
         "c399badb33485c8496d429125c15e476"
@@ -1602,7 +1653,8 @@
       ],
       "fingerprint": "53b3aca264cd5312ab7cb35db92a0f26",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "C::initialize"
       },
       "related": [
         "039db96b21a90887b7223acbae663ab9",
@@ -1630,7 +1682,8 @@
       ],
       "fingerprint": "28fd1b7c89283ed13d151e50de739072",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "3ad6e609e43b4242f70de844c8b072fa"
@@ -1657,7 +1710,8 @@
       ],
       "fingerprint": "3ad6e609e43b4242f70de844c8b072fa",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "28fd1b7c89283ed13d151e50de739072"
@@ -1683,7 +1737,8 @@
       ],
       "fingerprint": "5fdcc5ba111ac7bed47f4d170941ec83",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::balance"
       },
       "related": [
         "898dec5e2d22a423180cfe2bdb77234d"
@@ -1709,7 +1764,8 @@
       ],
       "fingerprint": "898dec5e2d22a423180cfe2bdb77234d",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::balance"
       },
       "related": [
         "5fdcc5ba111ac7bed47f4d170941ec83"
@@ -1734,7 +1790,8 @@
       ],
       "fingerprint": "627c340067eaeb267b1fd346c78dda42",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "c3a8b4bbe274a02826b05c8a7eb26bdc"
@@ -1761,7 +1818,8 @@
       ],
       "fingerprint": "c3a8b4bbe274a02826b05c8a7eb26bdc",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "627c340067eaeb267b1fd346c78dda42"
@@ -1787,7 +1845,8 @@
       ],
       "fingerprint": "f76644376aad7f3084b884153534e79e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "ba27766e93f440e49c92c70b74da3f6c"
@@ -1814,7 +1873,8 @@
       ],
       "fingerprint": "ba27766e93f440e49c92c70b74da3f6c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "f76644376aad7f3084b884153534e79e"
@@ -1841,7 +1901,8 @@
       ],
       "fingerprint": "96471f7dd91c176605db04047f9b0508",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "2a86e785ad5ffa58b7b6fe74a5c7ee64",
@@ -1871,7 +1932,8 @@
       ],
       "fingerprint": "2a86e785ad5ffa58b7b6fe74a5c7ee64",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "788438c0f7a3313ffbd14856426b11ed",
@@ -1901,7 +1963,8 @@
       ],
       "fingerprint": "e558aa7e6ec4363b688b5a374ebb8149",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "correlation_ambiguous": true
     },
@@ -1925,7 +1988,8 @@
       ],
       "fingerprint": "239f51d2ae09b388a7c43287b36fb964",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "correlation_ambiguous": true
     },
@@ -1949,7 +2013,8 @@
       ],
       "fingerprint": "0844da756fa17bf3abe018e1be8ae34f",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "correlation_ambiguous": true
     },
@@ -1973,7 +2038,8 @@
       ],
       "fingerprint": "3c9595e61965acac8e1016affd7b6490",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "correlation_ambiguous": true
     },
@@ -1996,7 +2062,8 @@
       ],
       "fingerprint": "16ecc88fdd2bf218c7db9e6a3fd04f37",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "4818ed69d217652b629399ebefc4899f"
@@ -2022,7 +2089,8 @@
       ],
       "fingerprint": "f2d02bc6d17e9f687515f2857255cb8e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "0e31c94f8f3fbfef435c4005f47e71d4",
@@ -2049,7 +2117,8 @@
       ],
       "fingerprint": "8cbf9c0252485933744e05bd6bafcf1c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "1670ea29badda93d45f1893af80f9d1f"
@@ -2075,7 +2144,8 @@
       ],
       "fingerprint": "3dfb5aae09dd9b505a0996b41cfc753c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "70433fc9d2d6b994e3b89ef11b97f9d2",
@@ -2102,7 +2172,8 @@
       ],
       "fingerprint": "25d152fd88ac81caa0bd0275b2ab4fba",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "fbeae4f63d1aeb884688ea3281d84736"
@@ -2128,7 +2199,8 @@
       ],
       "fingerprint": "17e1f27c6f5cc90d25493e1875811b98",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "977717cb945ed2b2f37d818963cceba3",
@@ -2155,7 +2227,8 @@
       ],
       "fingerprint": "5555426d372f99e3d602cf38d65acf4c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "0cb1efb1a006f0e476a1be0487adfab4",
@@ -2182,7 +2255,8 @@
       ],
       "fingerprint": "04637f34a8290f5734c2f0436359c2bc",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "28e8764093d6d631285f4c302b420684",
@@ -2209,7 +2283,8 @@
       ],
       "fingerprint": "8a5f043f6501f9d291b36d7d1b4565e1",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "a6833cca85cdefc6c3c3d976037c98b2"
@@ -2236,7 +2311,8 @@
       ],
       "fingerprint": "a6833cca85cdefc6c3c3d976037c98b2",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "8a5f043f6501f9d291b36d7d1b4565e1"
@@ -2262,7 +2338,8 @@
       ],
       "fingerprint": "256239d6165e9a6f5b11ea7beca1009e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "bc7f8d6006ab176203f70ac24ed3c3c8"
@@ -2289,7 +2366,8 @@
       ],
       "fingerprint": "bc7f8d6006ab176203f70ac24ed3c3c8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "256239d6165e9a6f5b11ea7beca1009e"
@@ -2315,7 +2393,8 @@
       ],
       "fingerprint": "c87f9f55c61c007cfebbe82a8ef54571",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "469ced2b262aa986c5c7ad98822b5dd8"
@@ -2342,7 +2421,8 @@
       ],
       "fingerprint": "469ced2b262aa986c5c7ad98822b5dd8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "c87f9f55c61c007cfebbe82a8ef54571"
@@ -2369,7 +2449,8 @@
       ],
       "fingerprint": "91372358a70638073c121aa93fb854ad",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "38596df81ee5f515b07be4226e5f9724",
@@ -2399,7 +2480,8 @@
       ],
       "fingerprint": "dabd871e475d6d115bb8025943652d89",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "38596df81ee5f515b07be4226e5f9724",
@@ -2428,7 +2510,8 @@
       ],
       "fingerprint": "5d31bf4207eb98132b763ac25bc52f4c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "correlation_ambiguous": true
     },
@@ -2451,7 +2534,8 @@
       ],
       "fingerprint": "cc83f628eb1bb4540aa8bf4a49ea5bbe",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "correlation_ambiguous": true
     },
@@ -2474,7 +2558,8 @@
       ],
       "fingerprint": "2020f41b706098cbe1d7748dadd463cc",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "b343b1171b31c9a5b9a58a8a01dd08ac"
@@ -2501,7 +2586,8 @@
       ],
       "fingerprint": "b343b1171b31c9a5b9a58a8a01dd08ac",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "2020f41b706098cbe1d7748dadd463cc"
@@ -2528,7 +2614,8 @@
       ],
       "fingerprint": "d25a27333d6e76194fc2a91554474e76",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::client"
       }
     },
     {
@@ -2551,7 +2638,8 @@
       ],
       "fingerprint": "c8ed3d30736f6b19925170ef1a389b28",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Factory::create"
       }
     },
     {
@@ -2573,7 +2661,8 @@
       ],
       "fingerprint": "2e99ae2564152f54c6c0fb3db933002f",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "cd14e6d032c2b9149a1616ac374a4148"
@@ -2600,7 +2689,8 @@
       ],
       "fingerprint": "cd14e6d032c2b9149a1616ac374a4148",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "2e99ae2564152f54c6c0fb3db933002f"
@@ -2626,7 +2716,8 @@
       ],
       "fingerprint": "7f12d0173ea697e9a985a03d3aef0497",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "fd3cf84445f4f4050a2de83a28f896d4"
@@ -2653,7 +2744,8 @@
       ],
       "fingerprint": "fd3cf84445f4f4050a2de83a28f896d4",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "7f12d0173ea697e9a985a03d3aef0497"
@@ -2679,7 +2771,8 @@
       ],
       "fingerprint": "ae5cada40640045fc5e6d4bc771de9c3",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "f026ae544ab95fd865ea98b161a9c77e"
@@ -2706,7 +2799,8 @@
       ],
       "fingerprint": "f026ae544ab95fd865ea98b161a9c77e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "ae5cada40640045fc5e6d4bc771de9c3"
@@ -2732,7 +2826,8 @@
       ],
       "fingerprint": "5337a1e054dca861298f2ab74368a3e7",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::balance"
       },
       "related": [
         "ac4a8287883c3f86ea90e00079c47064"
@@ -2758,7 +2853,8 @@
       ],
       "fingerprint": "ac4a8287883c3f86ea90e00079c47064",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::balance"
       },
       "related": [
         "5337a1e054dca861298f2ab74368a3e7"
@@ -2783,7 +2879,8 @@
       ],
       "fingerprint": "cb9154a32d7840fdc8322b83051c9757",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "5a1d0f25a4704d97bd42371d0570ef80"
@@ -2810,7 +2907,8 @@
       ],
       "fingerprint": "5a1d0f25a4704d97bd42371d0570ef80",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "cb9154a32d7840fdc8322b83051c9757"
@@ -2837,7 +2935,8 @@
       ],
       "fingerprint": "f5ef1aef9d2a4cd6d224d0e6e9ecc665",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Raw::load"
       }
     },
     {
@@ -2860,7 +2959,8 @@
       ],
       "fingerprint": "7b9c2285cafe0c7695c46f22694bbda5",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
       },
       "related": [
         "0be9f5344f226568677ab5e99abfc6f4",
@@ -2888,7 +2988,8 @@
       ],
       "fingerprint": "acede228d48f4693b023d19b85fdff01",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Router::route"
       },
       "related": [
         "8adc97c9ebea073ca91b1be726aadb3c",
@@ -2916,7 +3017,8 @@
       ],
       "fingerprint": "e5053eb8c254a77c84f95f7ecbd5026c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Payments::pay"
       },
       "related": [
         "7d4a08e424b4e0ffc20ef938ea5e2000",
@@ -2944,7 +3046,8 @@
       ],
       "fingerprint": "40814c10be9dce76435571e9ad3c9eab",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Payments::pay_configured"
       },
       "related": [
         "328b650bdb827caae9d740968006f0dc",
@@ -2972,7 +3075,8 @@
       ],
       "fingerprint": "51b60ca5ffa9f7c9d2b54307b1954fc8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
       },
       "related": [
         "2c0ad5f35847c792f4f0c2601a5310f3",
@@ -3000,7 +3104,8 @@
       ],
       "fingerprint": "d29c8d617e14f3f024df7360ed7b8c87",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Router::route"
       },
       "related": [
         "16ae2ff5dac988b965881be178ce6079",
@@ -3028,7 +3133,8 @@
       ],
       "fingerprint": "2af3668a68b8b8fff15113220e75af66",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
       },
       "related": [
         "3dfc41148c088ed584c759e633059253",
@@ -3056,7 +3162,8 @@
       ],
       "fingerprint": "8b86f2b60e6a444b286971c481179811",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "60dcd6e6d8870acb998437dcc30148bb",
@@ -3084,7 +3191,8 @@
       ],
       "fingerprint": "fd7ae9e1a00f6c952bc4f11d3045a6ca",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "81e7b60122b5fd2c76f651276d06768a",
@@ -3112,7 +3220,8 @@
       ],
       "fingerprint": "d53729124e927bdf3c7454cc7eb67305",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "2a86e785ad5ffa58b7b6fe74a5c7ee64",
@@ -3142,7 +3251,8 @@
       ],
       "fingerprint": "5cdc6740236002705c69fda6050c99dc",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "eaf81a87f58710688ca1496570ccedee"
@@ -3169,7 +3279,8 @@
       ],
       "fingerprint": "d830436e31c7dae6ebcb77b6726f0a02",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "ab3aa1676a7dc29ade3bb462a73fe0b8"
@@ -3196,7 +3307,8 @@
       ],
       "fingerprint": "f768e05ab79654785b73117762ee1540",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "8ac6744f5fb6451bd7069bc548dbed20"
@@ -3223,7 +3335,8 @@
       ],
       "fingerprint": "34ec8ca36a47b0434c16fa976a058c3b",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "1a0210bc82d9870ef2668c400ed7b078",
@@ -3250,7 +3363,8 @@
       ],
       "fingerprint": "fbf6d16b047d6733f4408c670b9ca2ee",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set"
       },
       "related": [
         "509268ab4a288383acf40b26c7d4f0cb"
@@ -3276,7 +3390,8 @@
       ],
       "fingerprint": "d3c34df38b542b7b7ba0b07015bd9c56",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::probe"
       },
       "related": [
         "59dfee0175a75e4aef1c46583640189e"
@@ -3302,7 +3417,8 @@
       ],
       "fingerprint": "0f62769aa68303799bfc41e2a79f8861",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::store"
       },
       "related": [
         "1c44dedf7609d76135e1e2acc13067ac"
@@ -3328,7 +3444,8 @@
       ],
       "fingerprint": "73041493412dc2e5c7f7f7bfe515c335",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::store_dynamic"
       },
       "related": [
         "d678ee90fd3bd753a68752cfbca298f7"
@@ -3354,7 +3471,8 @@
       ],
       "fingerprint": "431c0acb156f003e5e1979a7221ee718",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Profiles::set_name"
       },
       "related": [
         "11d86bada61e82188159d467e30aab12",
@@ -3382,7 +3500,8 @@
       ],
       "fingerprint": "de6b286d5c77a9568c549f49d54db1b7",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "b246a6af181e82c822350ad4e63a1c99",
@@ -3410,7 +3529,8 @@
       ],
       "fingerprint": "1b98a6a5f598c533eb1b25bd5b8fe250",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "3b059e2094045bb07bd10904f219b6cb",
@@ -3461,7 +3581,8 @@
       ],
       "fingerprint": "abf517d48bfba243b2c0554830570edf",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "38596df81ee5f515b07be4226e5f9724",
@@ -3514,7 +3635,8 @@
       ],
       "fingerprint": "dd7d962c7fe2636603c07cea1b7d90b6",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "830264a95828084109f5e7b0edffe357",
@@ -3542,7 +3664,8 @@
       ],
       "fingerprint": "763b03471d0c48d8cff72c2ca1a66ec8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "100da6fb77795c318413a10871dc8322",
@@ -3593,7 +3716,8 @@
       ],
       "fingerprint": "e1f40c9883b82b58e7e8c067bc28c021",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "280073fd0c392575b928a4eec05ee5d9",
@@ -3621,7 +3745,8 @@
       ],
       "fingerprint": "08233f12c8d4d043bb78f7fc8f06cbaa",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::batch_conditional"
       },
       "related": [
         "c91230c765f00d51d0a61cafccfb855e"
@@ -3647,7 +3772,8 @@
       ],
       "fingerprint": "9f2c4935ab37dd019c335356cd993ec4",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::batch_after_write"
       },
       "related": [
         "5e9e1aa866e0cc01c89f8120bf293ab7"
@@ -3674,7 +3800,8 @@
       ],
       "fingerprint": "97095df6a92c90808cb51a3985f5c3dc",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::batch_after_write"
       },
       "related": [
         "f4561253eafb06f8a5fbde545cad9bd8"
@@ -3701,7 +3828,8 @@
       ],
       "fingerprint": "6b812ca2363af13c411c3fc45863afde",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "b688629950a0d3b3e7227182ada171f8"
@@ -3728,7 +3856,8 @@
       ],
       "fingerprint": "421f9eade5a4334f041cbba2bea4137c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "b3333a41a4e39a39c7286d55ee8c13bd"
@@ -3755,7 +3884,8 @@
       ],
       "fingerprint": "f6ff0e4aa9c36db5393825361baf5717",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "41801c7c97f3cf0aeed49a383e167725"
@@ -3782,7 +3912,8 @@
       ],
       "fingerprint": "a8f84b11be78a859620a1e96419831d2",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "af85bf440d0340bcb30935ebaf8504cc",
@@ -3809,7 +3940,8 @@
       ],
       "fingerprint": "670a68ea36edab8df3de7d46aefbc8c4",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::balance"
       }
     },
     {
@@ -3831,7 +3963,8 @@
       ],
       "fingerprint": "4782bce491c0a957f1dfbc5b385332db",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::balance"
       }
     },
     {
@@ -3853,7 +3986,8 @@
       ],
       "fingerprint": "790820fa17ecf451f9dde3aacc0f6a4c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::balance"
       }
     },
     {
@@ -3875,7 +4009,8 @@
       ],
       "fingerprint": "b755d23f1efc334fa720727b4ee153b7",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "correlation_ambiguous": true
     },
@@ -3899,7 +4034,8 @@
       ],
       "fingerprint": "62719aa444f19e75991d50ad53b0abaa",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "correlation_ambiguous": true
     },
@@ -3923,7 +4059,8 @@
       ],
       "fingerprint": "d5475c0cbf4d93267f0783dbf8255c86",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
       },
       "related": [
         "0be9f5344f226568677ab5e99abfc6f4",
@@ -3951,7 +4088,8 @@
       ],
       "fingerprint": "0be9f5344f226568677ab5e99abfc6f4",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
       },
       "related": [
         "7b9c2285cafe0c7695c46f22694bbda5",
@@ -3979,7 +4117,8 @@
       ],
       "fingerprint": "a362fd34490f0f54cfdbbb67ce42d6ee",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Router::route"
       },
       "related": [
         "8adc97c9ebea073ca91b1be726aadb3c",
@@ -4007,7 +4146,8 @@
       ],
       "fingerprint": "8adc97c9ebea073ca91b1be726aadb3c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Router::route"
       },
       "related": [
         "a362fd34490f0f54cfdbbb67ce42d6ee",
@@ -4034,7 +4174,8 @@
       ],
       "fingerprint": "b4486f7cb2da74a35d057beb6c3b9aad",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Payments::pay"
       }
     },
     {
@@ -4057,7 +4198,8 @@
       ],
       "fingerprint": "7d4a08e424b4e0ffc20ef938ea5e2000",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Payments::pay"
       },
       "related": [
         "e5053eb8c254a77c84f95f7ecbd5026c",
@@ -4085,7 +4227,8 @@
       ],
       "fingerprint": "eef1aae7728ff3da31ba5b3bb1fc3ca2",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Payments::pay"
       },
       "related": [
         "7d4a08e424b4e0ffc20ef938ea5e2000",
@@ -4112,7 +4255,8 @@
       ],
       "fingerprint": "d36faccdef13745686d3373736ded237",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Payments::pay_configured"
       },
       "related": [
         "38e4d47246474277fb41cce1a73725a7"
@@ -4139,7 +4283,8 @@
       ],
       "fingerprint": "547dea37a4cd38f87a0e74848ce1949d",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Payments::pay_configured"
       },
       "related": [
         "328b650bdb827caae9d740968006f0dc",
@@ -4167,7 +4312,8 @@
       ],
       "fingerprint": "328b650bdb827caae9d740968006f0dc",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Payments::pay_configured"
       },
       "related": [
         "40814c10be9dce76435571e9ad3c9eab",
@@ -4195,7 +4341,8 @@
       ],
       "fingerprint": "e8bbd271b173fc302e7875bd7557d93b",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
       },
       "related": [
         "2c0ad5f35847c792f4f0c2601a5310f3",
@@ -4223,7 +4370,8 @@
       ],
       "fingerprint": "2c0ad5f35847c792f4f0c2601a5310f3",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
       },
       "related": [
         "51b60ca5ffa9f7c9d2b54307b1954fc8",
@@ -4251,7 +4399,8 @@
       ],
       "fingerprint": "16ae2ff5dac988b965881be178ce6079",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Router::route"
       },
       "related": [
         "bb133c7cb974e38979862568c7ae8504",
@@ -4279,7 +4428,8 @@
       ],
       "fingerprint": "bb133c7cb974e38979862568c7ae8504",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Router::route"
       },
       "related": [
         "16ae2ff5dac988b965881be178ce6079",
@@ -4307,7 +4457,8 @@
       ],
       "fingerprint": "3dfc41148c088ed584c759e633059253",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
       },
       "related": [
         "2af3668a68b8b8fff15113220e75af66",
@@ -4335,7 +4486,8 @@
       ],
       "fingerprint": "85a2b2f1a89e41ebe961cf8e0ddc7d59",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
       },
       "related": [
         "2af3668a68b8b8fff15113220e75af66",
@@ -4362,7 +4514,8 @@
       ],
       "fingerprint": "5e9cc67f552405f3b43ab581c05a9949",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::count_all"
       }
     },
     {
@@ -4384,7 +4537,8 @@
       ],
       "fingerprint": "32814d025150e0c61c0530e7e7130475",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Store::read"
       }
     },
     {
@@ -4406,7 +4560,8 @@
       ],
       "fingerprint": "afc33046af052bc1ed9219a7cc299d9f",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Store::read"
       }
     },
     {
@@ -4428,7 +4583,8 @@
       ],
       "fingerprint": "b07dfa342ea6037abad1115fbf423791",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Store::read"
       }
     },
     {
@@ -4450,7 +4606,8 @@
       ],
       "fingerprint": "7c0a072ae229f1da9b8a06b467ba7b47",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Store::read_or_die"
       },
       "related": [
         "dff5e13c70dad06c64575ed63be1a882"
@@ -4477,7 +4634,8 @@
       ],
       "fingerprint": "ee49eac4e872de7f0cd0743819838770",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Safe::add"
       }
     },
     {
@@ -4500,7 +4658,8 @@
       ],
       "fingerprint": "180e1f7389f5fd0037d3c5c0174a8171",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Safe::add"
       }
     },
     {
@@ -4523,7 +4682,8 @@
       ],
       "fingerprint": "499d021431ae350993ad25ffb2d25970",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Safe::add"
       }
     },
     {
@@ -4545,7 +4705,8 @@
       ],
       "fingerprint": "3f95fad2274ba2c1dce73ddad99699b8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Config::admin_address"
       }
     },
     {
@@ -4567,7 +4728,8 @@
       ],
       "fingerprint": "6acf5039c42a288a1498a4df9486d09a",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "48607b3e663c4369781f250384a35ee8"
@@ -4593,7 +4755,8 @@
       ],
       "fingerprint": "48607b3e663c4369781f250384a35ee8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "6acf5039c42a288a1498a4df9486d09a"
@@ -4618,7 +4781,8 @@
       ],
       "fingerprint": "41ed9d12c0503c96aef8d8dd7752f0f9",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Auction::close"
       },
       "related": [
         "7e9a6ccdbf1e26365ef4b3c29b17b212"
@@ -4645,7 +4809,8 @@
       ],
       "fingerprint": "f836784e475f206d8721e5d970b3c2ea",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Auction::close"
       },
       "correlation_ambiguous": true
     },
@@ -4668,7 +4833,8 @@
       ],
       "fingerprint": "31a63e495cc4a167de984fc61b412787",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Auction::close"
       },
       "related": [
         "9d121bdfd459606ded2db6ea4db1ec51"
@@ -4695,7 +4861,8 @@
       ],
       "fingerprint": "093328f2c0a6e32d6125f55265971cce",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Auction::close"
       },
       "correlation_ambiguous": true
     },
@@ -4719,7 +4886,8 @@
       ],
       "fingerprint": "d3dfa215853ee83b3d288774a980392e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Lottery::draw"
       }
     },
     {
@@ -4741,7 +4909,8 @@
       ],
       "fingerprint": "c8c2032d81b909709a865f267adda41d",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "correlation_ambiguous": true
     },
@@ -4764,7 +4933,8 @@
       ],
       "fingerprint": "7c37e5bd592c57f6cbfe4776ab6fcc08",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "correlation_ambiguous": true
     },
@@ -4787,7 +4957,8 @@
       ],
       "fingerprint": "7ab06f6021e41f1e73e6bfe9913f5970",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "correlation_ambiguous": true
     },
@@ -4810,7 +4981,8 @@
       ],
       "fingerprint": "ea8c47662fe68db69a53f5ba29cd6b81",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "correlation_ambiguous": true
     },
@@ -4833,7 +5005,8 @@
       ],
       "fingerprint": "36f7919f3413aa60d79ff229e8b33961",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "correlation_ambiguous": true
     },
@@ -4857,7 +5030,8 @@
       ],
       "fingerprint": "7868cde3c25c6fe4ad03ed928848d963",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "60dcd6e6d8870acb998437dcc30148bb",
@@ -4885,7 +5059,8 @@
       ],
       "fingerprint": "60dcd6e6d8870acb998437dcc30148bb",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "7868cde3c25c6fe4ad03ed928848d963",
@@ -4913,7 +5088,8 @@
       ],
       "fingerprint": "cf8a4241f25d646a75abbf4a8ebb523e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "81e7b60122b5fd2c76f651276d06768a",
@@ -4941,7 +5117,8 @@
       ],
       "fingerprint": "81e7b60122b5fd2c76f651276d06768a",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "cf8a4241f25d646a75abbf4a8ebb523e",
@@ -4969,7 +5146,8 @@
       ],
       "fingerprint": "a540d0552854c83a2e514ebe3addb904",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "2a86e785ad5ffa58b7b6fe74a5c7ee64",
@@ -4999,7 +5177,8 @@
       ],
       "fingerprint": "788438c0f7a3313ffbd14856426b11ed",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "2a86e785ad5ffa58b7b6fe74a5c7ee64",
@@ -5029,7 +5208,8 @@
       ],
       "fingerprint": "eaf81a87f58710688ca1496570ccedee",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "5cdc6740236002705c69fda6050c99dc"
@@ -5056,7 +5236,8 @@
       ],
       "fingerprint": "ab3aa1676a7dc29ade3bb462a73fe0b8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "d830436e31c7dae6ebcb77b6726f0a02"
@@ -5083,7 +5264,8 @@
       ],
       "fingerprint": "8ac6744f5fb6451bd7069bc548dbed20",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "f768e05ab79654785b73117762ee1540"
@@ -5110,7 +5292,8 @@
       ],
       "fingerprint": "1a0210bc82d9870ef2668c400ed7b078",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "2b5bf3f8376bf0f80ab8ac9f00da94dc",
@@ -5138,7 +5321,8 @@
       ],
       "fingerprint": "2b5bf3f8376bf0f80ab8ac9f00da94dc",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "1a0210bc82d9870ef2668c400ed7b078",
@@ -5165,7 +5349,8 @@
       ],
       "fingerprint": "0cb1efb1a006f0e476a1be0487adfab4",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "5555426d372f99e3d602cf38d65acf4c",
@@ -5192,7 +5377,8 @@
       ],
       "fingerprint": "28e8764093d6d631285f4c302b420684",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "04637f34a8290f5734c2f0436359c2bc",
@@ -5219,7 +5405,8 @@
       ],
       "fingerprint": "c1573001211f3f31be54d9a213076072",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       }
     },
     {
@@ -5241,7 +5428,8 @@
       ],
       "fingerprint": "6210cd5ef760da258b50ec6a1c4575fc",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       }
     },
     {
@@ -5263,7 +5451,8 @@
       ],
       "fingerprint": "878a1181fd5de08fedc6865d935505a3",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       }
     },
     {
@@ -5285,7 +5474,8 @@
       ],
       "fingerprint": "ea636b251be8712c2c15f747eb5151ee",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       }
     },
     {
@@ -5308,7 +5498,8 @@
       ],
       "fingerprint": "d3e81400b6b03ecab8bdc2b9535f6669",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_amount"
       }
     },
     {
@@ -5330,7 +5521,8 @@
       ],
       "fingerprint": "603efe83ac024074c057c96238589203",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::probe"
       }
     },
     {
@@ -5352,7 +5544,8 @@
       ],
       "fingerprint": "54b66257f5c999c91300eb131b36845c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::probe"
       }
     },
     {
@@ -5374,7 +5567,8 @@
       ],
       "fingerprint": "bad60839d97b64d353689b93cf9c8fff",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::probe"
       }
     },
     {
@@ -5396,7 +5590,8 @@
       ],
       "fingerprint": "59dfee0175a75e4aef1c46583640189e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::probe"
       },
       "related": [
         "d3c34df38b542b7b7ba0b07015bd9c56"
@@ -5422,7 +5617,8 @@
       ],
       "fingerprint": "04bf4e0c28ba3f559c5889f304225bfe",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::decode"
       }
     },
     {
@@ -5445,7 +5641,8 @@
       ],
       "fingerprint": "852b64bc1ec2a632158cd1bb5757b199",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::set_owner"
       },
       "related": [
         "aa9c9ef26230bfef934d82ca38df7b15",
@@ -5473,7 +5670,8 @@
       ],
       "fingerprint": "4c7bb8c7dcd42d55faab7be992707e40",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Commitments::commit"
       }
     },
     {
@@ -5495,7 +5693,8 @@
       ],
       "fingerprint": "b7b996ab834b2353296a0a987f8fbc2e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "correlation_ambiguous": true
     },
@@ -5519,7 +5718,8 @@
       ],
       "fingerprint": "b246a6af181e82c822350ad4e63a1c99",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "c1094608dc3ee75c4c8599a06d25a9b8",
@@ -5547,7 +5747,8 @@
       ],
       "fingerprint": "c1094608dc3ee75c4c8599a06d25a9b8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "b246a6af181e82c822350ad4e63a1c99",
@@ -5575,7 +5776,8 @@
       ],
       "fingerprint": "3b059e2094045bb07bd10904f219b6cb",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "1b98a6a5f598c533eb1b25bd5b8fe250",
@@ -5603,7 +5805,8 @@
       ],
       "fingerprint": "f37d556c2d707f25f61c7b3db5cc3413",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "1b98a6a5f598c533eb1b25bd5b8fe250",
@@ -5631,7 +5834,8 @@
       ],
       "fingerprint": "ee16d4000bb6d884c3d94aa068300561",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "38596df81ee5f515b07be4226e5f9724",
@@ -5661,7 +5865,8 @@
       ],
       "fingerprint": "38596df81ee5f515b07be4226e5f9724",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "91372358a70638073c121aa93fb854ad",
@@ -5690,7 +5895,8 @@
       ],
       "fingerprint": "d63f03e317b755dbdf91ec0e375c7d4d",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "e71091ffde52f91a460ccdedbbbfd0bd"
@@ -5717,7 +5923,8 @@
       ],
       "fingerprint": "c24246d25d23e1c883acfad3de5e9585",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "830264a95828084109f5e7b0edffe357",
@@ -5745,7 +5952,8 @@
       ],
       "fingerprint": "830264a95828084109f5e7b0edffe357",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "c24246d25d23e1c883acfad3de5e9585",
@@ -5772,7 +5980,8 @@
       ],
       "fingerprint": "39cc74f8ad0f12d0bfff6607024b9726",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "a7f66e471208cdd28bbd07198e4ceb34"
@@ -5799,7 +6008,8 @@
       ],
       "fingerprint": "e935aa3e1867c9fce22f03b037bf4e26",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "100da6fb77795c318413a10871dc8322",
@@ -5827,7 +6037,8 @@
       ],
       "fingerprint": "100da6fb77795c318413a10871dc8322",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "763b03471d0c48d8cff72c2ca1a66ec8",
@@ -5855,7 +6066,8 @@
       ],
       "fingerprint": "e4d1d7c7329ff42ad1330aa88e145a75",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "280073fd0c392575b928a4eec05ee5d9",
@@ -5883,7 +6095,8 @@
       ],
       "fingerprint": "280073fd0c392575b928a4eec05ee5d9",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "e1f40c9883b82b58e7e8c067bc28c021",
@@ -5911,7 +6124,8 @@
       ],
       "fingerprint": "c2bc01d7f6cdb99f4bee7aa471df5ba5",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Events::transfer"
       }
     },
     {
@@ -5934,7 +6148,8 @@
       ],
       "fingerprint": "e346c1fe2a11ac05f6c6d4b4690d64a6",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::pay"
       },
       "related": [
         "e958de6eb749dfb68c30d9e853bf64e4"
@@ -5961,7 +6176,8 @@
       ],
       "fingerprint": "9a2bf4fc43569320ef2a8fb8f1d691a2",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::move_funds"
       }
     },
     {
@@ -5983,7 +6199,8 @@
       ],
       "fingerprint": "ffa781c50c7f543dc5a5935acb3fdaa8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::load"
       },
       "related": [
         "e70fefead6d303fbacbadf442907a99a"
@@ -6009,7 +6226,8 @@
       ],
       "fingerprint": "b688629950a0d3b3e7227182ada171f8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "6b812ca2363af13c411c3fc45863afde"
@@ -6036,7 +6254,8 @@
       ],
       "fingerprint": "b3333a41a4e39a39c7286d55ee8c13bd",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "421f9eade5a4334f041cbba2bea4137c"
@@ -6063,7 +6282,8 @@
       ],
       "fingerprint": "41801c7c97f3cf0aeed49a383e167725",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "f6ff0e4aa9c36db5393825361baf5717"
@@ -6090,7 +6310,8 @@
       ],
       "fingerprint": "bdf3b0c31758e632a82f8f89d0082eb8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "a8f84b11be78a859620a1e96419831d2",
@@ -6118,7 +6339,8 @@
       ],
       "fingerprint": "af85bf440d0340bcb30935ebaf8504cc",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "related": [
         "a8f84b11be78a859620a1e96419831d2",
@@ -6146,7 +6368,8 @@
       ],
       "fingerprint": "42992b97b49b9bb41df21b528f7ab48d",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set_a"
       }
     },
     {
@@ -6169,7 +6392,8 @@
       ],
       "fingerprint": "f5032995867ae1afa7398494bc31ed13",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set_b"
       }
     },
     {
@@ -6192,7 +6416,8 @@
       ],
       "fingerprint": "c427e6c93832e50a4660d2aa048ace61",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set_a"
       }
     },
     {
@@ -6215,7 +6440,8 @@
       ],
       "fingerprint": "a6998f61d3cceca6c564584357230a5b",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set_a"
       }
     },
     {
@@ -6238,7 +6464,8 @@
       ],
       "fingerprint": "6da0258d9c362d50c8f2e8854ce831d2",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set_b"
       }
     },
     {
@@ -6261,7 +6488,8 @@
       ],
       "fingerprint": "2e59678d5fb08d7ffba3b38015caa6c5",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set_a"
       }
     },
     {
@@ -6284,7 +6512,8 @@
       ],
       "fingerprint": "4f8f5a9124a5f5c86b871549d184868e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set_b"
       }
     },
     {
@@ -6307,7 +6536,8 @@
       ],
       "fingerprint": "abed234d09229e114b213ca4775daa50",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set_b"
       }
     },
     {
@@ -6330,7 +6560,8 @@
       ],
       "fingerprint": "80ba6a6e97133a8f5165c2a8d9f67f8c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set_balance"
       }
     },
     {
@@ -6353,7 +6584,8 @@
       ],
       "fingerprint": "e4159ac990f2928014f158df3965d45e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set_balance_locked"
       }
     },
     {
@@ -6376,7 +6608,8 @@
       ],
       "fingerprint": "6a0341a981ddf7902c6977b4671eadaf",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set_balance_locked"
       }
     },
     {
@@ -6399,7 +6632,8 @@
       ],
       "fingerprint": "3a1098e79de3ed56ae5f98123494ad45",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::close"
       }
     },
     {
@@ -6422,7 +6656,8 @@
       ],
       "fingerprint": "09a249c0d71c68fc1ad0d6af75285f74",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::close"
       }
     },
     {
@@ -6445,7 +6680,8 @@
       ],
       "fingerprint": "b37e253ca8e223d08de3523d10c29b13",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::close"
       }
     },
     {
@@ -6508,7 +6744,8 @@
       ],
       "fingerprint": "38e4d47246474277fb41cce1a73725a7",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Payments::pay_configured"
       },
       "related": [
         "d36faccdef13745686d3373736ded237"
@@ -6535,7 +6772,8 @@
       ],
       "fingerprint": "dff5e13c70dad06c64575ed63be1a882",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Store::read_or_die"
       },
       "related": [
         "7c0a072ae229f1da9b8a06b467ba7b47"
@@ -6562,7 +6800,8 @@
       ],
       "fingerprint": "98b0d8ef6974a1302fce916aee91dbf7",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Store::read_or_die"
       },
       "correlation_ambiguous": true
     },
@@ -6586,7 +6825,8 @@
       ],
       "fingerprint": "7e9a6ccdbf1e26365ef4b3c29b17b212",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Auction::close"
       },
       "related": [
         "41ed9d12c0503c96aef8d8dd7752f0f9"
@@ -6613,7 +6853,8 @@
       ],
       "fingerprint": "9d121bdfd459606ded2db6ea4db1ec51",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Auction::close"
       },
       "related": [
         "31a63e495cc4a167de984fc61b412787"
@@ -6640,7 +6881,8 @@
       ],
       "fingerprint": "a4f5fe78a74e6af5604da48afb246f62",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "correlation_ambiguous": true
     },
@@ -6664,7 +6906,8 @@
       ],
       "fingerprint": "a76f7829c6df71794f1f25f39ae21222",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "correlation_ambiguous": true
     },
@@ -6688,7 +6931,8 @@
       ],
       "fingerprint": "ec2815b80a3aa500b0efa2a39f4c3eed",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "correlation_ambiguous": true
     },
@@ -6712,7 +6956,8 @@
       ],
       "fingerprint": "c816c3f652afe99b5c5cc1c345f26b95",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "correlation_ambiguous": true
     },
@@ -6736,7 +6981,8 @@
       ],
       "fingerprint": "fa2381818fcd85efdde26e59e8f2c653",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "correlation_ambiguous": true
     },
@@ -6760,7 +7006,8 @@
       ],
       "fingerprint": "efe35dd5c831d97cf66e1ef6cb49173d",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "correlation_ambiguous": true
     },
@@ -6784,7 +7031,8 @@
       ],
       "fingerprint": "d03576c9681e54fab2518b57847ce5fc",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::read"
       }
     },
     {
@@ -6807,7 +7055,8 @@
       ],
       "fingerprint": "d878bbcfd8394161f8366b864b49ab5d",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::decode"
       }
     },
     {
@@ -6830,7 +7079,8 @@
       ],
       "fingerprint": "6c4a97ba1ecd48ac7fef516a0555513f",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Profiles::set_name"
       },
       "correlation_ambiguous": true
     },
@@ -6854,7 +7104,8 @@
       ],
       "fingerprint": "35bcca1b5c66fe21911ef802669d2a31",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "correlation_ambiguous": true
     },
@@ -6878,7 +7129,8 @@
       ],
       "fingerprint": "e71091ffde52f91a460ccdedbbbfd0bd",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "d63f03e317b755dbdf91ec0e375c7d4d"
@@ -6905,7 +7157,8 @@
       ],
       "fingerprint": "de35d5cbe0f9a44397924d1ae6437e73",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "correlation_ambiguous": true
     },
@@ -6929,7 +7182,8 @@
       ],
       "fingerprint": "a7f66e471208cdd28bbd07198e4ceb34",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
       },
       "related": [
         "39cc74f8ad0f12d0bfff6607024b9726"
@@ -6956,7 +7210,8 @@
       ],
       "fingerprint": "e958de6eb749dfb68c30d9e853bf64e4",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::pay"
       },
       "related": [
         "e346c1fe2a11ac05f6c6d4b4690d64a6"
@@ -6983,7 +7238,8 @@
       ],
       "fingerprint": "72fafc452ff283431d58ebd4c8423a82",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::pay"
       },
       "correlation_ambiguous": true
     },
@@ -7007,7 +7263,8 @@
       ],
       "fingerprint": "5324ac98037688f608f5ccdcf92f3929",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::load"
       },
       "related": [
         "26f40bd11c8b96b541374822f06fa692"
@@ -7033,7 +7290,8 @@
       ],
       "fingerprint": "e2c3b00dd3bea456ab4744c76c77b7f3",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::load"
       }
     },
     {
@@ -7056,7 +7314,8 @@
       ],
       "fingerprint": "cf9cdd15161eacd5958df37111e01f56",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::load"
       }
     },
     {
@@ -7079,7 +7338,8 @@
       ],
       "fingerprint": "4c1b130b1c40c0851bcc360e2ee36abe",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::load"
       },
       "related": [
         "cce83633f0bb46623afc178954a61223"
@@ -7105,7 +7365,8 @@
       ],
       "fingerprint": "e70fefead6d303fbacbadf442907a99a",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::load"
       },
       "related": [
         "ffa781c50c7f543dc5a5935acb3fdaa8"
@@ -7131,7 +7392,8 @@
       ],
       "fingerprint": "06399ceb1ec0000b5a42f1651c8a15d6",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::batch"
       },
       "related": [
         "2f4160b3f2cb9cfdc09e0c45ac4e36ed"
@@ -7157,7 +7419,8 @@
       ],
       "fingerprint": "c91230c765f00d51d0a61cafccfb855e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::batch_conditional"
       },
       "related": [
         "08233f12c8d4d043bb78f7fc8f06cbaa"
@@ -7184,7 +7447,8 @@
       ],
       "fingerprint": "f4561253eafb06f8a5fbde545cad9bd8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::batch_after_write"
       },
       "related": [
         "97095df6a92c90808cb51a3985f5c3dc"
@@ -7211,7 +7475,8 @@
       ],
       "fingerprint": "37e7ade0dbd83e54aa07d3abdd30f8d3",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
       },
       "correlation_ambiguous": true
     },
@@ -7235,7 +7500,8 @@
       ],
       "fingerprint": "103a86e1c79fcfe3e3b0b4f1de184318",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::close"
       }
     },
     {
@@ -7258,7 +7524,8 @@
       ],
       "fingerprint": "15fd86a67b22f51108f81ae155a41eaa",
       "exploitability": {
-        "reachability": "unreachable"
+        "reachability": "unreachable",
+        "entry_point": "Contract::set"
       },
       "correlation_ambiguous": true
     },
@@ -7282,7 +7549,8 @@
       ],
       "fingerprint": "1c9f49f645679624ee11eeb95576bbff",
       "exploitability": {
-        "reachability": "unreachable"
+        "reachability": "unreachable",
+        "entry_point": "Contract::set"
       },
       "correlation_ambiguous": true
     },
@@ -7306,7 +7574,8 @@
       ],
       "fingerprint": "12b5cbda33d1d0fab6e851b7b8db5f70",
       "exploitability": {
-        "reachability": "unreachable"
+        "reachability": "unreachable",
+        "entry_point": "Contract::set"
       },
       "correlation_ambiguous": true
     },
@@ -7329,7 +7598,8 @@
       ],
       "fingerprint": "b8dcb181ecf494d8e030e2dca900c3d2",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_admin"
       },
       "related": [
         "23f90f900c6921c553ab52a53e297168"
@@ -7354,7 +7624,8 @@
       ],
       "fingerprint": "23f90f900c6921c553ab52a53e297168",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_admin"
       },
       "related": [
         "b8dcb181ecf494d8e030e2dca900c3d2"
@@ -7379,7 +7650,8 @@
       ],
       "fingerprint": "c74d3573e12de9d9f438b82fc432ea84",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_limit"
       }
     },
     {
@@ -7401,7 +7673,8 @@
       ],
       "fingerprint": "90c4b693bc0d5ec72e61f09411ca6546",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Escrow::release"
       }
     },
     {
@@ -7423,7 +7696,8 @@
       ],
       "fingerprint": "37fe40fc78731d20edf55db9a5029ee0",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_admin"
       },
       "related": [
         "b982a2ba60e8c8f253068dba014abca0"
@@ -7448,7 +7722,8 @@
       ],
       "fingerprint": "b982a2ba60e8c8f253068dba014abca0",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_admin"
       },
       "related": [
         "37fe40fc78731d20edf55db9a5029ee0"
@@ -7473,7 +7748,8 @@
       ],
       "fingerprint": "569d92848854b0c5c96645d0d0bdb673",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_limit"
       }
     },
     {
@@ -7495,7 +7771,8 @@
       ],
       "fingerprint": "ef463bfcff4700e0f2591c0471ea482b",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Escrow::release"
       }
     },
     {
@@ -7517,7 +7794,8 @@
       ],
       "fingerprint": "9442c62d879817c31bf6857f993e5c47",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_admin"
       },
       "related": [
         "8c0e85c2b992ad8024de3fb9914a448f"
@@ -7542,7 +7820,8 @@
       ],
       "fingerprint": "8c0e85c2b992ad8024de3fb9914a448f",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_admin"
       },
       "related": [
         "9442c62d879817c31bf6857f993e5c47"
@@ -7567,7 +7846,8 @@
       ],
       "fingerprint": "6181b774b4acc905431f30829a4f3879",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_limit"
       }
     },
     {
@@ -7589,7 +7869,8 @@
       ],
       "fingerprint": "f4c784178b27f5dac0054eba9b822c48",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Escrow::release"
       }
     },
     {
@@ -7611,7 +7892,8 @@
       ],
       "fingerprint": "e110395ff3f6329d1b4e10dcc87ef51f",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_admin"
       },
       "related": [
         "661329002094a11864b18361688ec9d6",
@@ -7638,7 +7920,8 @@
       ],
       "fingerprint": "661329002094a11864b18361688ec9d6",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_admin"
       },
       "related": [
         "c3e233e2b9601a95c29d47ed756e21b9",
@@ -7665,7 +7948,8 @@
       ],
       "fingerprint": "081e0141f5201a517f311d3ea111a6c4",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "34c6e80ed102dd08157ec8d820e5cd01"
@@ -7691,7 +7975,8 @@
       ],
       "fingerprint": "db15008d98997c471df9c96c5c7b5e5d",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_admin"
       }
     },
     {
@@ -7713,7 +7998,8 @@
       ],
       "fingerprint": "1a5ca62ca1d307515ea59c92b3265db7",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_admin"
       }
     },
     {
@@ -7735,7 +8021,8 @@
       ],
       "fingerprint": "23fe17e7cf9631aa532db425dc506842",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_admin"
       }
     },
     {
@@ -7757,7 +8044,8 @@
       ],
       "fingerprint": "34bcd75b26a59f32ed27bc3d6af7ada2",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_admin"
       },
       "related": [
         "2a6346c2270dab2c59ed044705715246"
@@ -7782,7 +8070,8 @@
       ],
       "fingerprint": "2a6346c2270dab2c59ed044705715246",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set_admin"
       },
       "related": [
         "34bcd75b26a59f32ed27bc3d6af7ada2"
@@ -7807,7 +8096,8 @@
       ],
       "fingerprint": "95cd5eeb72a9efc15496a8c1d7916d67",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Auction::close"
       },
       "related": [
         "dfee15a21d1e3f058f92ca19828df74f"
@@ -7833,7 +8123,8 @@
       ],
       "fingerprint": "8e915611cfb7d11a563968c7b7bd2af4",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Auction::close"
       },
       "related": [
         "a6da6843f263dcad78406e521ecdebf8"
@@ -7859,7 +8150,8 @@
       ],
       "fingerprint": "95b2ae1df09dff1b1d86d07c95b964b5",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Config::set_admin"
       },
       "related": [
         "2693cc4c84faf22776dd204da8c1f8c4"
@@ -7884,7 +8176,8 @@
       ],
       "fingerprint": "bb1abfaecd4b8442a9ea052e06cf9ccb",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Config::set_admin"
       },
       "related": [
         "193e358f4a82348ecf21de0a35ec158d"
@@ -7909,7 +8202,8 @@
       ],
       "fingerprint": "56712e7374e1b71b081e1b2acd1a0708",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Config::set_admin"
       },
       "related": [
         "90b372bac3f6a7d01fb6adddd5822924"
@@ -7934,7 +8228,8 @@
       ],
       "fingerprint": "b1e4cf218a5ed9689787bebd39412d3e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Config::set_admin"
       },
       "related": [
         "bd762510cb052a4b83765d5ac6db8744",
@@ -7961,7 +8256,8 @@
       ],
       "fingerprint": "dc609f3069ca74e4358813dadce5d9e4",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Config::set_admin"
       },
       "related": [
         "b1e4cf218a5ed9689787bebd39412d3e",
@@ -7988,7 +8284,8 @@
       ],
       "fingerprint": "a26955621a43cd95b5ff53606111d3ec",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "C::initialize"
       },
       "related": [
         "2ac2897090d1ecd72453fd5af19f6387",
@@ -8015,7 +8312,8 @@
       ],
       "fingerprint": "2ac2897090d1ecd72453fd5af19f6387",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "C::initialize"
       },
       "related": [
         "a26955621a43cd95b5ff53606111d3ec",
@@ -8042,7 +8340,8 @@
       ],
       "fingerprint": "0d11170fbdae7d05de08d58d3faad85e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "C::initialize"
       },
       "related": [
         "0297bd333ae8bd85e622642073e257d8",
@@ -8069,7 +8368,8 @@
       ],
       "fingerprint": "ccee50206e3f5ad36dc0b82be4da9d72",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "C::initialize"
       },
       "related": [
         "0297bd333ae8bd85e622642073e257d8",
@@ -8096,7 +8396,8 @@
       ],
       "fingerprint": "a294c57f05be0627bbf48fd92932e071",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "C::initialize"
       },
       "related": [
         "46ff535f980da7e6d80328e1a2a641d8",
@@ -8123,7 +8424,8 @@
       ],
       "fingerprint": "46ff535f980da7e6d80328e1a2a641d8",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "C::initialize"
       },
       "related": [
         "a294c57f05be0627bbf48fd92932e071",
@@ -8150,7 +8452,8 @@
       ],
       "fingerprint": "039db96b21a90887b7223acbae663ab9",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "C::initialize"
       },
       "related": [
         "53b3aca264cd5312ab7cb35db92a0f26",
@@ -8178,7 +8481,8 @@
       ],
       "fingerprint": "75019a8663138f87811480b25147c5ce",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "C::initialize"
       },
       "related": [
         "039db96b21a90887b7223acbae663ab9",
@@ -8206,7 +8510,8 @@
       ],
       "fingerprint": "4c717380a94b9599f33894136ee7573e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "related": [
         "4266573d71d97557c0a370ba11282c46"
@@ -8232,7 +8537,8 @@
       ],
       "fingerprint": "9e6235e6af26cd33cd3d0c4df78cb9ff",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "related": [
         "13479d49c4d00c19c7009826a649b57c"
@@ -8258,7 +8564,8 @@
       ],
       "fingerprint": "7c0187710f5a7946468cee8f6eed300a",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "related": [
         "c20aea01156b4621ff5ee989e0afc91d"
@@ -8284,7 +8591,8 @@
       ],
       "fingerprint": "1b817a9cf8e8c6fcce93cb968585a84d",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Registry::add"
       },
       "related": [
         "a39c12d558fc7b44310207ba8108ecab"
@@ -8310,7 +8618,8 @@
       ],
       "fingerprint": "87a76d3c698134ccf4a8389e7718285d",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "5c3fa64e6e570324688bed66d18ca426"
@@ -8336,7 +8645,8 @@
       ],
       "fingerprint": "2528c0d9d700e7d35b6af55e5c455d0d",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "31d2414fbf129f918912feebd87917fb"
@@ -8362,7 +8672,8 @@
       ],
       "fingerprint": "6a579809f30b4ea6f2b470881ba456be",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "e5a0a9fb95f553d4c1abcff9bb163fcd"
@@ -8388,7 +8699,8 @@
       ],
       "fingerprint": "0e31c94f8f3fbfef435c4005f47e71d4",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "bd967ce4f944e1ce41143b19ccf48d7e",
@@ -8415,7 +8727,8 @@
       ],
       "fingerprint": "a7cc2c88fccb0642bd7037ca3f6d21f2",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "3dfb5aae09dd9b505a0996b41cfc753c",
@@ -8442,7 +8755,8 @@
       ],
       "fingerprint": "977717cb945ed2b2f37d818963cceba3",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::configure"
       },
       "related": [
         "17e1f27c6f5cc90d25493e1875811b98",
@@ -8469,7 +8783,8 @@
       ],
       "fingerprint": "9d70ee16d0c96f9823505b576d51e121",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set"
       }
     },
     {
@@ -8491,7 +8806,8 @@
       ],
       "fingerprint": "f657fe3b94453cea360ca10a040121f4",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set"
       }
     },
     {
@@ -8513,7 +8829,8 @@
       ],
       "fingerprint": "794380e73c4a6de0146ce93e4afcdd0e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set"
       }
     },
     {
@@ -8535,7 +8852,8 @@
       ],
       "fingerprint": "509268ab4a288383acf40b26c7d4f0cb",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::set"
       },
       "related": [
         "fbf6d16b047d6733f4408c670b9ca2ee"
@@ -8560,7 +8878,8 @@
       ],
       "fingerprint": "7322879d377122e5338cb715ae0c4186",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::set_owner"
       },
       "related": [
         "9f645cbf384d9657ac5bbcdadeeb9144",
@@ -8587,7 +8906,8 @@
       ],
       "fingerprint": "9f645cbf384d9657ac5bbcdadeeb9144",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::set_owner"
       },
       "related": [
         "7322879d377122e5338cb715ae0c4186",
@@ -8614,7 +8934,8 @@
       ],
       "fingerprint": "aa9c9ef26230bfef934d82ca38df7b15",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Settings::set_owner"
       },
       "related": [
         "852b64bc1ec2a632158cd1bb5757b199",
@@ -8641,7 +8962,8 @@
       ],
       "fingerprint": "896f4cd2636fb46c5dc433890edbed13",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Profiles::set_name"
       },
       "related": [
         "ea12d748478dea8b32f212d3b2255611"
@@ -8667,7 +8989,8 @@
       ],
       "fingerprint": "6fc60f6ec5780151995fae2f56cdc771",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Profiles::set_amount"
       },
       "related": [
         "de237e99f4ef0c7e6a885edc04d2e57b"
@@ -8692,7 +9015,8 @@
       ],
       "fingerprint": "ade9c6081a006f620a73a3e72655568d",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Profiles::set_name"
       },
       "related": [
         "11d86bada61e82188159d467e30aab12",
@@ -8720,7 +9044,8 @@
       ],
       "fingerprint": "cf06ea9bb9b16d6361863efa9c9b1817",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::put"
       }
     },
     {
@@ -8742,7 +9067,8 @@
       ],
       "fingerprint": "1d1db31d573676e9ed1bf9f0b4df12da",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "cfe0afbc3ca2c5f32e7bd65fae6e9294"
@@ -8768,7 +9094,8 @@
       ],
       "fingerprint": "b83c4a6cd821a6c273aef3c46054e728",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "0a689d578d918651ed75f62df2df4563"
@@ -8794,7 +9121,8 @@
       ],
       "fingerprint": "d2cc256db0361c3c0abd6cc3133ceca3",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "196cae8847f246987eea0907886b2346"
@@ -8820,7 +9148,8 @@
       ],
       "fingerprint": "3860def458a71ab0ee0e2e0899610264",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
       },
       "related": [
         "757ee1e079580fab11d10dcb83ded1a8"
@@ -8846,7 +9175,8 @@
       ],
       "fingerprint": "2f4160b3f2cb9cfdc09e0c45ac4e36ed",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::batch"
       },
       "related": [
         "06399ceb1ec0000b5a42f1651c8a15d6"
@@ -8871,7 +9201,8 @@
       ],
       "fingerprint": "036285fffae816c47a2702ecc395b56c",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::batch"
       }
     },
     {
@@ -8893,7 +9224,8 @@
       ],
       "fingerprint": "b156a84476d6d0f6988436db73bac1fd",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set"
       },
       "related": [
         "3d1713dded003cdfe150fb7b71eacfae"
@@ -8918,7 +9250,8 @@
       ],
       "fingerprint": "3d1713dded003cdfe150fb7b71eacfae",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set"
       },
       "related": [
         "b156a84476d6d0f6988436db73bac1fd"
@@ -8943,7 +9276,8 @@
       ],
       "fingerprint": "b4aaf589c86370d5661188b310cf95a1",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::batch_conditional"
       },
       "correlation_ambiguous": true
     },
@@ -8966,7 +9300,8 @@
       ],
       "fingerprint": "5e9e1aa866e0cc01c89f8120bf293ab7",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::batch_after_write"
       },
       "related": [
         "9f2c4935ab37dd019c335356cd993ec4"
@@ -8992,7 +9327,8 @@
       ],
       "fingerprint": "ac26d900020ae4fa9c31cdf498c59e16",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set"
       },
       "related": [
         "06f3cfcbbbe36ef777b9db70a4f6eaf3"
@@ -9017,7 +9353,8 @@
       ],
       "fingerprint": "06f3cfcbbbe36ef777b9db70a4f6eaf3",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set"
       },
       "related": [
         "ac26d900020ae4fa9c31cdf498c59e16"
@@ -9042,7 +9379,8 @@
       ],
       "fingerprint": "904cf8b5be71a9484fd6e82bd40192c4",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set"
       },
       "related": [
         "238fd6bb22dfb45282da13e034fb94b5"
@@ -9067,7 +9405,8 @@
       ],
       "fingerprint": "238fd6bb22dfb45282da13e034fb94b5",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set"
       },
       "related": [
         "904cf8b5be71a9484fd6e82bd40192c4"
@@ -9092,7 +9431,8 @@
       ],
       "fingerprint": "de3d4a612257c047ceb526aaa83d3d44",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set"
       },
       "related": [
         "dff5c5fcf4f211dae939515a0a1f0e37"
@@ -9117,7 +9457,8 @@
       ],
       "fingerprint": "dff5c5fcf4f211dae939515a0a1f0e37",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set"
       },
       "related": [
         "de3d4a612257c047ceb526aaa83d3d44"
@@ -9142,7 +9483,8 @@
       ],
       "fingerprint": "609fa930812061c84a9387e8e72f861e",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set"
       },
       "related": [
         "d54bae544db9a5f54f2f14127e3c7e22"
@@ -9168,7 +9510,8 @@
       ],
       "fingerprint": "d54bae544db9a5f54f2f14127e3c7e22",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set"
       },
       "related": [
         "609fa930812061c84a9387e8e72f861e"
@@ -9194,7 +9537,8 @@
       ],
       "fingerprint": "991c775750cb4b44e4e2dbe85bf76e78",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set_b"
       }
     },
     {
@@ -9216,7 +9560,8 @@
       ],
       "fingerprint": "ebaded02d25b24da6d1b46119acd0e13",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::set_a"
       }
     },
     {
@@ -9238,7 +9583,8 @@
       ],
       "fingerprint": "0e30207a5d2e79a79968079556b556e7",
       "exploitability": {
-        "reachability": "unreachable"
+        "reachability": "unreachable",
+        "entry_point": "Contract::set"
       },
       "related": [
         "a90bb695fbab024bd583ead7034a0990"
@@ -9264,7 +9610,8 @@
       ],
       "fingerprint": "a90bb695fbab024bd583ead7034a0990",
       "exploitability": {
-        "reachability": "unreachable"
+        "reachability": "unreachable",
+        "entry_point": "Contract::set"
       },
       "related": [
         "0e30207a5d2e79a79968079556b556e7"
