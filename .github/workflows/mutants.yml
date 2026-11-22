@@ -56,8 +56,16 @@ jobs:
                 echo "- ${outcome}: $(grep -c . "mutants.out/${outcome}.txt")"
               fi
             done
+            caught=$(grep -c . mutants.out/caught.txt 2>/dev/null || true)
+            missed=$(grep -c . mutants.out/missed.txt 2>/dev/null || true)
+            tested=$(( ${caught:-0} + ${missed:-0} ))
+            if [ "$tested" -gt 0 ]; then
+              score=$(awk -v caught="${caught:-0}" -v tested="$tested" \
+                'BEGIN { printf "%.1f", 100 * caught / tested }')
+              echo "- mutation score: ${caught:-0} / ${tested} = ${score}%"
+            fi
             echo
-            echo "Full results are attached as the \`mutants.out\` artifact."
+            echo "Full results are attached as the \`mutants.out\` artifact (retained 90 days)."
             echo "Baseline and scope: docs/development/mutation-testing.md"
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -67,4 +75,5 @@ jobs:
         with:
           name: mutants.out
           path: mutants.out
+          retention-days: 90
           if-no-files-found: warn

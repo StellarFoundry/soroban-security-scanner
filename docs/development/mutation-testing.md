@@ -32,8 +32,19 @@ not identity-sensitivity coverage. The scheduled job tracks the trend; it is
 informational (`continue-on-error`) until the score improves, so a red run does
 not block unrelated work.
 
-The first scheduled run also records the `engine.rs` baseline in its step
-summary and `mutants.out` artifact.
+No mutation score has been measured in CI yet. The table above is a local
+baseline only; the first scheduled run records the CI numbers for both
+`engine.rs` and `finding.rs` in its step summary and in the `mutants.out`
+artifact.
+
+## Tracking the score
+
+The job summary prints the caught, missed, timeout, and unviable counts plus
+the mutation score (`caught / (caught + missed)`) for the run. The full
+`mutants.out` directory is uploaded as an artifact with 90-day retention, so
+successive weekly runs can be compared by downloading the artifacts rather than
+relying on a committed number. A change in the score is meaningful only when the
+mutated file list is unchanged; update this page when the scope changes.
 
 ## Running locally
 
