@@ -143,11 +143,10 @@ The automated gate is `cargo-deny` in CI, configured by
   registries and git sources are denied.
 
 CI runs this check on pushes and pull requests. Dependabot opens weekly updates
-for Cargo dependencies and GitHub Actions. Many CI actions are pinned to full
-commit SHAs with a version comment; the release binary jobs still use a few
-major-version action tags (for example `actions/checkout@v5`). Treat the
-workflow file as the source of truth rather than assuming every action is
-SHA-pinned.
+for Cargo dependencies and GitHub Actions. Actions in the release workflow,
+including the SBOM and attestation steps, are pinned to full commit SHAs with a
+version comment. Treat the workflow file as the source of truth if an action is
+added later.
 
 This policy reduces supply-chain risk; it does not make the project
 reproducible-build-verified. The release binaries are built by GitHub Actions

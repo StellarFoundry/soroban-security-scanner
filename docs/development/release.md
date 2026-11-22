@@ -68,6 +68,24 @@ documented in [`docs/api-stability.md`](../api-stability.md).
    gh workflow run publish.yml --ref vX.Y.Z-rc.1 -f dry_run=true
    ```
 
+   Dry-run reasoning: `verify` always runs (tag/version check, release-notes
+   extraction, and `cargo publish --dry-run` for the core crate). The
+   `publish`, `release`, and `binaries` jobs are skipped because they are gated
+   on a tag push or on `dry_run=false`. That means a dry run does **not**
+   exercise SBOM generation or artifact attestation. Validate the SBOM locally
+   before tagging:
+
+   ```bash
+   cargo install cargo-cyclonedx --version 0.5.10 --locked
+   cargo cyclonedx --format json \
+     --manifest-path crates/soroban-scan-cli/Cargo.toml \
+     --override-filename sbom
+   jq '.bomFormat, .specVersion' crates/soroban-scan-cli/sbom.json
+   ```
+
+   Attestation creation also requires the real tag release: it needs the
+   `id-token: write` permission and runs only after the archive is built.
+
 8. Verify the release and tag on GitHub.
 
 ## Artifacts
