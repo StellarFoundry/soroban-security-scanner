@@ -54,7 +54,7 @@ impl Rule for UncheckedIntegerCast {
                     continue;
                 }
                 for cast in ctx.cast_facts_for_function(source, &func).iter() {
-                    if let Some(finding) = classify(&cast, &func.name) {
+                    if let Some(finding) = classify(cast, &func.name) {
                         let location = location_for(ctx, source, cast.line, cast.column);
                         out.push(Finding::new(&METADATA, location, finding));
                     }

@@ -18,9 +18,21 @@ cargo install --path .
 |---|---|
 | Diagnostics (publishDiagnostics) | Yes |
 | Text document sync | Yes |
-| Hover | No |
+| Document symbols (outline) | Yes |
+| Hover (rule ids) | Yes |
 | Code actions | No |
 | Completion | No |
+
+The outline lists contracts (`#[contract]` / `#[contractimpl]`), functions,
+`#[contracttype]` structs and enums, and `#[contractevent]` declarations.
+Function ranges cover the signature span exposed by the parser; the body end
+line is not tracked, so an outline entry may end on the `fn` signature line.
+
+Hover a `SS-###` rule id in a comment or source line to see its title,
+severity, confidence, category, description, and remediation. The text comes
+from the in-process rule registry: no network request, file read, or external
+documentation lookup is performed. An unregistered id shows a short fallback
+instead of an error.
 
 ## VS Code
 
@@ -71,8 +83,15 @@ Verify with `:checkhealth vim.lsp`. The client should be attached to the buffer.
 ## Known limitations
 
 - Only Rust (`.rs`) files are analyzed.
-- Hover, completion, and code actions are not implemented.
-- Diagnostics may refresh only on open or save.
+- Completion and code actions are not implemented.
+- Hover only recognizes `SS-###` tokens; hovering a symbol name or a diagnostic
+  message body returns nothing.
+- The server uses full-document sync. Diagnostics refresh on open, change, and
+  save; a change replaces the whole document buffer.
+- The language server uses no network access and reads no configuration; it
+  runs the default rule set in Soroban mode.
+- Function and event symbol ranges use the parser's signature span, so the end
+  line may be the declaration line rather than the closing brace.
 
 ## Troubleshooting
 
