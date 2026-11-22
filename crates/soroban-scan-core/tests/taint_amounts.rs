@@ -6,7 +6,9 @@
 
 use std::path::PathBuf;
 
-use soroban_scan_core::analysis::taint::{transfer_amount_flows, AmountFlow};
+use soroban_scan_core::analysis::taint::{
+    transfer_amount_flows, AmountFlow, TaintPath, AMOUNT_SANITIZERS,
+};
 use soroban_scan_core::rules::util::{contract_entry_functions, ContractFn};
 
 fn fixture(name: &str) -> syn::File {
@@ -51,4 +53,53 @@ fn arithmetic_amount_flow_keeps_the_expression_visible() {
 #[test]
 fn validated_amount_flow_is_not_reported() {
     assert!(flows("amount_validated.rs").is_empty());
+}
+
+#[test]
+fn every_documented_amount_sanitizer_clears_taint() {
+    let file = fixture("sanitizers_amount.rs");
+    let entries = contract_entry_functions(&file);
+    assert_eq!(
+        entries.len(),
+        AMOUNT_SANITIZERS.len(),
+        "one fixture entry per documented sanitizer"
+    );
+    for entry in &entries {
+        assert!(
+            transfer_amount_flows(&file, entry).is_empty(),
+            "`{}` must clear taint",
+            entry.name
+        );
+    }
+    let mut covered: Vec<&str> = entries
+        .iter()
+        .map(|entry| entry.name.trim_end_matches("_case"))
+        .collect();
+    covered.sort_unstable();
+    let mut expected = AMOUNT_SANITIZERS.to_vec();
+    expected.sort_unstable();
+    assert_eq!(covered, expected);
+}
+
+#[test]
+fn bare_comparison_is_not_a_sanitizer() {
+    let file = fixture("amount_guarded.rs");
+    let flows = transfer_amount_flows(&file, &entry(&file, "payout"));
+    assert_eq!(
+        flows.len(),
+        1,
+        "only documented sanitizer names stop amount taint"
+    );
+}
+
+#[test]
+fn conditional_amount_validation_is_not_silently_cleared() {
+    let file = fixture("amount_conditional_sanitized.rs");
+    let flows = transfer_amount_flows(&file, &entry(&file, "payout"));
+    assert_eq!(flows.len(), 1, "conditional validation must stay visible");
+    assert!(
+        matches!(flows[0].path, TaintPath::Unknown { .. }),
+        "conditional validation must be recorded as unknown, got {:?}",
+        flows[0].path
+    );
 }
