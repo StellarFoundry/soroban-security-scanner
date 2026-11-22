@@ -15,6 +15,8 @@ use std::time::Instant;
 use clap::{Args, Parser, Subcommand, ValueEnum};
 
 mod lsp;
+mod pack_cli;
+mod server;
 
 use soroban_scan_core::ai::{self, Assistant};
 use soroban_scan_core::baseline::{self, Baseline, BaselineReport};
@@ -345,6 +347,8 @@ enum Command {
     Version,
     /// Start the editor language server on stdio.
     Lsp,
+    /// Start the opt-in loopback HTTP scan API.
+    Serve(ServeArgs),
     /// Write a starter configuration file.
     Init(InitArgs),
     /// Inspect the scanner configuration.
@@ -357,6 +361,8 @@ enum Command {
     Dashboard(DashboardArgs),
     /// Print the canonical artifact name for a report.
     ArtifactName(ArtifactNameArgs),
+    /// Install, list, update, or remove community rule packs.
+    Pack(PackArgs),
     /// Generate a shell completion script (bash, zsh, fish, powershell).
     #[command(hide = true)]
     Completions(CompletionsArgs),
@@ -367,6 +373,21 @@ struct CompletionsArgs {
     /// Target shell.
     #[arg(value_enum)]
     shell: clap_complete::Shell,
+}
+
+#[derive(Debug, Args)]
+struct ServeArgs {
+    /// Address to bind (must be loopback).
+    #[arg(long, default_value = "127.0.0.1:8080")]
+    bind: std::net::SocketAddr,
+
+    /// Configuration file to use.
+    #[arg(long, value_name = "FILE")]
+    config: Option<PathBuf>,
+
+    /// Ignore discovered configuration and use built-in defaults.
+    #[arg(long, conflicts_with = "config")]
+    no_config: bool,
 }
 
 #[derive(Debug, Args)]
@@ -712,6 +733,43 @@ enum DoctorFormatArg {
 }
 
 #[derive(Debug, Args)]
+struct PackArgs {
+    /// Directory holding the install store and lockfile.
+    #[arg(long, value_name = "DIR", default_value = ".soroban-scan/packs")]
+    dir: PathBuf,
+
+    #[command(subcommand)]
+    command: PackCommand,
+}
+
+#[derive(Debug, Subcommand)]
+enum PackCommand {
+    /// Install a pack from a local directory containing `pack.toml`.
+    Install {
+        /// Pack directory or manifest file.
+        #[arg(value_name = "SOURCE")]
+        source: PathBuf,
+    },
+    /// List installed packs from the lockfile.
+    List,
+    /// Replace an installed pack from a local directory containing `pack.toml`.
+    Update {
+        /// Pack directory or manifest file.
+        #[arg(value_name = "SOURCE")]
+        source: PathBuf,
+    },
+    /// Remove an installed pack after confirmation.
+    Uninstall {
+        /// Installed pack name.
+        #[arg(value_name = "NAME")]
+        name: String,
+        /// Skip the interactive confirmation prompt.
+        #[arg(long)]
+        yes: bool,
+    },
+}
+
+#[derive(Debug, Args)]
 struct ConfigArgs {
     #[command(subcommand)]
     command: ConfigCommand,
@@ -778,6 +836,10 @@ fn run(cli: Cli) -> CliResult<u8> {
             Ok(EXIT_SUCCESS)
         }
         Command::Lsp => lsp::run(&registry).map_err(CliError::Runtime),
+        Command::Serve(args) => {
+            let config = load_config(args.config.as_deref(), Path::new("."), !args.no_config)?;
+            server::run(args.bind, config, registry).map_err(CliError::Runtime)
+        }
         Command::Scan(args) => run_scan(args, &registry),
         Command::Rules(args) => run_rules(args, &registry),
         Command::Explain(args) => run_explain(args, &registry),
@@ -787,6 +849,7 @@ fn run(cli: Cli) -> CliResult<u8> {
         Command::Compare(args) => run_compare(args),
         Command::Dashboard(args) => run_dashboard(args),
         Command::ArtifactName(args) => run_artifact_name(args),
+        Command::Pack(args) => pack_cli::run(args),
         Command::Completions(args) => {
             let mut command = <Cli as clap::CommandFactory>::command();
             let name = command.get_name().to_string();

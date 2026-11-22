@@ -1,0 +1,29 @@
+schema_version = 1
+
+[pack]
+name = "soroban-example-rules"
+version = "0.1.0"
+description = "Example external rule metadata pack with two rules"
+authors = ["Soroban Security Scanner contributors"]
+min_scanner_version = "0.2.0"
+capabilities = ["rust_source_analysis"]
+
+[[rules]]
+id = "EXPL-101"
+title = "Unbounded token approval"
+category = "defi"
+default_severity = "high"
+default_confidence = "medium"
+description = "Flags approval calls that grant an unlimited spender allowance."
+remediation = "Require an explicit, bounded allowance and clear it when no longer needed."
+checksum = "sha256:c9b2c7adc2cb9c2b84461a24942af55d2e7126e31057b7b5e9fb8778a207a1f9"
+
+[[rules]]
+id = "EXPL-102"
+title = "Oracle price used without freshness check"
+category = "oracle"
+default_severity = "medium"
+default_confidence = "low"
+description = "Flags oracle reads that do not validate the update timestamp."
+remediation = "Reject stale prices by checking the oracle timestamp against a maximum age."
+checksum = "sha256:d412fd0d7c989f132802ecb7fba8cdf8ddf146d50724797ef03217e7f7836e6b"

@@ -5,9 +5,11 @@
 
 pub mod api;
 pub mod jobs;
+pub mod rate_limit;
 
 pub use api::{ApiRequest, ApiResponse, ScanApi, MAX_FILE_NAME_BYTES};
 pub use jobs::{
     Job, JobLimits, JobStatus, JobStore, JobStoreError, DEFAULT_MAX_JOBS,
     DEFAULT_MAX_PAYLOAD_BYTES, DEFAULT_RETENTION,
 };
+pub use rate_limit::{RateLimitConfig, DEFAULT_MAX_TRACKED_TOKENS};

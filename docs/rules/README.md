@@ -69,12 +69,14 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-016](detectors/SS-016.md) | Unbounded data stored in instance storage | medium | low | storage |
 | [SS-017](detectors/SS-017.md) | Authorization after state mutation | medium | medium | authorization |
 | [SS-018](detectors/SS-018.md) | Unchecked integer cast | medium | low | arithmetic |
+| [SS-019](detectors/SS-019.md) | Ignored cross-contract call result | medium | medium | cross-contract |
 | [SS-020](detectors/SS-020.md) | Unvalidated XDR or bytes deserialization | medium | low | error-handling |
 | [SS-021](detectors/SS-021.md) | Durable data written to temporary storage | medium | low | storage |
 | [SS-022](detectors/SS-022.md) | Unsafe symbol_short key | medium | medium | storage |
 | [SS-023](detectors/SS-023.md) | Sensitive-looking data published in events | medium | low | events |
 | [SS-024](detectors/SS-024.md) | Missing contracttype on boundary types | medium | medium | configuration |
 | [SS-025](detectors/SS-025.md) | Unbounded string/bytes persisted from caller input | medium | medium | storage |
+| [SS-026](detectors/SS-026.md) | TTL constant outside the expected range | low | low | resource-usage |
 | [SS-027](detectors/SS-027.md) | Contract's own address used as an authorization subject | high | medium | authorization |
 | [SS-028](detectors/SS-028.md) | Cross-contract call without a reentrancy guard | high | low | cross-contract |
 | [SS-029](detectors/SS-029.md) | Public test or debug hook in a contract entry point | medium | medium | access-control |
@@ -82,10 +84,14 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-031](detectors/SS-031.md) | Event topic derived from a caller-controlled parameter | medium | low | events |
 | [SS-032](detectors/SS-032.md) | Redundant require_auth in loop | low | medium | authorization |
 | [SS-033](detectors/SS-033.md) | Wildcard import from the Soroban SDK | low | high | dependencies |
+| [SS-034](detectors/SS-034.md) | Unvalidated deployer usage | high | low | access-control |
 | [SS-035](detectors/SS-035.md) | Ignored checked-arithmetic result | high | medium | arithmetic |
 | [SS-036](detectors/SS-036.md) | Deprecated SDK API usage | low | medium | dependencies |
 | [SS-037](detectors/SS-037.md) | Competing authorization calls | medium | low | authorization |
+| [SS-039](detectors/SS-039.md) | Persistent storage read without TTL management | medium | low | storage |
 | [SS-041](detectors/SS-041.md) | Authorization check inside a loop | medium | low | authorization |
+| [SS-042](detectors/SS-042.md) | Security check unreachable on every path | low | medium | authorization |
+| [SS-044](detectors/SS-044.md) | Cross-contract call with an unvalidated address argument | medium | low | cross-contract |
 
 Each detector has a positive and negative fixture under
 `fixtures/corpus/<RULE-ID>/`, plus an adversarial sample and recorded expected
@@ -155,7 +161,10 @@ examples, [`TEMPLATE.md`](TEMPLATE.md) for the rule document template,
 layout, and [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md) for the definition
 of done.
 
-For the limits of the analysis and the meaning of confidence, see
+For reusable analysis primitives, see [Taint Analysis](../taint-analysis.md)
+(sources, sinks, sanitizers, and limits), [Control-flow graphs](../control-flow.md),
+and [Finding ranking](../finding-ranking.md). For the limits of the analysis
+and the meaning of confidence, see
 [Analysis Methodology](../analysis-methodology.md).
 
 ## Rule documentation template

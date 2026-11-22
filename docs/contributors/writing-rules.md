@@ -2,7 +2,10 @@
 
 This guide walks through adding a detector to the Soroban Security Scanner. Read
 [`../rules/README.md`](../rules/README.md) first for the severity and confidence
-semantics.
+semantics, then use the shared analysis primitives rather than re-deriving them:
+[taint analysis](../taint-analysis.md) for caller-controlled data and
+[control-flow graphs](../control-flow.md) for reachability. Finding order is
+defined in [finding ranking](../finding-ranking.md).
 
 ## 0. Define the problem before writing code
 

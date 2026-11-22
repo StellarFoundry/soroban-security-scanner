@@ -16,11 +16,18 @@ Start here.
 
 - [Rules](rules/README.md) — severity, confidence, and the built-in detectors.
 - [Analysis Methodology](analysis-methodology.md) — what static analysis can and cannot prove.
+- [Taint Analysis](taint-analysis.md) — source/sink descriptors, propagation, sanitizers, and limits.
+- [Control-flow graphs](control-flow.md) — per-function nodes, edges, spans, and reachability.
+- [Finding ranking](finding-ranking.md) — how severity, confidence, reachability, and span order output.
 - [Baselines](baselines.md) - track new vs. known findings.
 - [Policy and Reporting](policy.md) - policy schema, precedence, waivers, and report formats.
 - [Rule Pack Signing and Verification](rule-pack-signing.md) - detached Ed25519 signatures, keyrings, and verification.
+- [Rule Pack CLI](rule-pack-cli.md) - install, list, update, and remove local packs with a deterministic lockfile.
+- [Rule Pack Sandboxing](pack-sandboxing.md) - wall-clock, output, and rule-count limits for community packs.
+- [Rule Pack Moderation](pack-moderation.md) - review criteria, reporting, and removal policy.
 - [Report Retention](retention.md) - deterministic artifact names and retention guidance.
 - [In-process scan service](service-api.md) - bounded job storage for an embedding service.
+- [Deploying the scan API adapter](api-deployment.md) - configuration, TLS, storage, health checks, and public-exposure warnings.
 - [GitHub Integration](github-integration.md) — Action, SARIF, PR scanning.
 - [GitHub Action](github-action.md) — inputs, outputs, and usage examples.
 - [CI Recipes](ci-recipes.md) — copy-paste snippets for common CI systems and hooks.

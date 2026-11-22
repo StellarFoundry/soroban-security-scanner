@@ -46,7 +46,7 @@ for installation, machine-readable output, and CI usage.
 
 ## What it detects
 
-Thirty-three Soroban-aware detectors ship today (from `SS-001` to `SS-041`).
+Thirty-nine Soroban-aware detectors ship today (from `SS-001` through `SS-044`).
 Severity and confidence are independent and always reported honestly.
 
 | Rule | Title | Severity | Confidence | Category |
@@ -69,11 +69,13 @@ Severity and confidence are independent and always reported honestly.
 | [SS-016](docs/rules/detectors/SS-016.md) | Unbounded data stored in instance storage | medium | low | storage |
 | [SS-017](docs/rules/detectors/SS-017.md) | Authorization after state mutation | medium | medium | authorization |
 | [SS-018](docs/rules/detectors/SS-018.md) | Unchecked integer cast | medium | low | arithmetic |
+| [SS-019](docs/rules/detectors/SS-019.md) | Ignored cross-contract call result | medium | medium | cross-contract |
 | [SS-020](docs/rules/detectors/SS-020.md) | Unvalidated XDR or bytes deserialization | medium | low | error-handling |
 | [SS-021](docs/rules/detectors/SS-021.md) | Durable data written to temporary storage | medium | low | storage |
 | [SS-022](docs/rules/detectors/SS-022.md) | Unsafe symbol_short key | medium | medium | storage |
 | [SS-023](docs/rules/detectors/SS-023.md) | Sensitive-looking data published in events | medium | low | events |
 | [SS-025](docs/rules/detectors/SS-025.md) | Unbounded string/bytes persisted from caller input | medium | medium | storage |
+| [SS-026](docs/rules/detectors/SS-026.md) | TTL constant outside the expected range | low | low | resource-usage |
 | [SS-027](docs/rules/detectors/SS-027.md) | Contract's own address used as an authorization subject | high | medium | authorization |
 | [SS-028](docs/rules/detectors/SS-028.md) | Cross-contract call without a reentrancy guard | high | low | cross-contract |
 | [SS-029](docs/rules/detectors/SS-029.md) | Public test or debug hook in a contract entry point | medium | medium | access-control |
@@ -81,9 +83,13 @@ Severity and confidence are independent and always reported honestly.
 | [SS-031](docs/rules/detectors/SS-031.md) | Event topic derived from a caller-controlled parameter | medium | low | events |
 | [SS-032](docs/rules/detectors/SS-032.md) | Redundant require_auth in loop | low | medium | authorization |
 | [SS-033](docs/rules/detectors/SS-033.md) | Wildcard import from the Soroban SDK | low | high | dependencies |
+| [SS-034](docs/rules/detectors/SS-034.md) | Unvalidated deployer usage | high | low | access-control |
 | [SS-035](docs/rules/detectors/SS-035.md) | Ignored checked-arithmetic result | high | medium | arithmetic |
 | [SS-037](docs/rules/detectors/SS-037.md) | Competing authorization calls | medium | low | authorization |
+| [SS-039](docs/rules/detectors/SS-039.md) | Persistent storage read without TTL management | medium | low | storage |
 | [SS-041](docs/rules/detectors/SS-041.md) | Authorization check inside a loop | medium | low | authorization |
+| [SS-042](docs/rules/detectors/SS-042.md) | Security check unreachable on every path | low | medium | authorization |
+| [SS-044](docs/rules/detectors/SS-044.md) | Cross-contract call with an unvalidated address argument | medium | low | cross-contract |
 
 Rule identifiers are stable (never reused or renumbered). See
 [`docs/rules/README.md`](docs/rules/README.md) for the full rule system.
@@ -108,7 +114,7 @@ Rule identifiers are stable (never reused or renumbered). See
 
 - Deterministic project discovery and Soroban classification.
 - `syn`-based Rust parsing with source locations.
-- Thirty-three security detectors (from `SS-001` to `SS-041`) with fixtures and documentation.
+- Thirty-nine security detectors (from `SS-001` through `SS-044`) with fixtures and documentation.
 - CLI: `scan`, `rules`, `explain`, `version`, `init`, `config`.
 - Output formats: terminal, JSON, SARIF 2.1.0, Markdown, and GitHub workflow annotations.
 - Configurable rule selection, thresholds, and excludes.

@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
+use crate::analysis::cfg::Reachability;
 use crate::category::Category;
 use crate::confidence::Confidence;
 use crate::rule::RuleMetadata;
@@ -71,6 +72,24 @@ impl SourceLocation {
     }
 }
 
+/// Best-effort exploitability context for a finding.
+///
+/// This is additive report metadata. It is populated from static analysis only
+/// when the control-flow graph covers the finding's line; incomplete evidence
+/// leaves the whole context (or an individual field) absent. It never changes
+/// the finding's severity or confidence.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ExploitabilityContext {
+    /// Reachability of the finding line: `reachable` or `unreachable`.
+    pub reachability: String,
+    /// Qualified name of the enclosing contract entry point, when known.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub entry_point: Option<String>,
+    /// Reserved taint description; `None` until taint context is available.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub taint: Option<String>,
+}
+
 /// A single security finding.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Finding {
@@ -96,6 +115,18 @@ pub struct Finding {
     pub references: Vec<String>,
     /// Stable fingerprint used for baselines.
     pub fingerprint: String,
+    /// Reachability of the reported line, used only to rank output.
+    ///
+    /// This is a scanner-internal annotation: it is never serialized and does
+    /// not change detection. Reports loaded from JSON keep `Unknown`.
+    #[serde(skip)]
+    pub reachability: Reachability,
+    /// Optional static exploitability context.
+    ///
+    /// Additive and backward compatible: absent on reports loaded from an
+    /// older schema, and omitted from output when evidence is incomplete.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub exploitability: Option<ExploitabilityContext>,
 }
 
 impl Finding {
@@ -115,6 +146,8 @@ impl Finding {
             remediation: meta.remediation.to_string(),
             references: meta.references.iter().map(|r| (*r).to_string()).collect(),
             fingerprint,
+            reachability: Reachability::Unknown,
+            exploitability: None,
         }
     }
 
@@ -134,9 +167,18 @@ impl Finding {
         );
     }
 
-    /// Deterministic sort key: file, line, column, rule id, fingerprint.
-    pub fn sort_key(&self) -> (String, usize, usize, String, String) {
+    /// Deterministic ranking key: severity, confidence, reachability, then span.
+    ///
+    /// Severity and confidence are compared highest first, reachability puts
+    /// reachable code before unknown and unreachable code, and the remaining
+    /// components (`file, line, column, rule id, fingerprint`) keep the order
+    /// unique and stable. Ranking only changes order; it never removes a
+    /// finding.
+    pub fn sort_key(&self) -> (u8, u8, u8, String, usize, usize, String, String) {
         (
+            u8::MAX - self.severity.rank(),
+            u8::MAX - self.confidence.rank(),
+            u8::MAX - self.reachability.rank(),
             self.location.file.to_string_lossy().replace('\\', "/"),
             self.location.line,
             self.location.column.unwrap_or(0),

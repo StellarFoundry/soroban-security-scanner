@@ -5,6 +5,8 @@
 //! and writes [`ApiResponse`] back. Every request requires bearer
 //! authentication before routing or body parsing.
 
+use std::time::SystemTime;
+
 use serde::Deserialize;
 use serde_json::{json, Value};
 
@@ -15,6 +17,7 @@ use crate::registry::RuleRegistry;
 use crate::report;
 
 use super::jobs::{JobLimits, JobStatus, JobStore, JobStoreError};
+use super::rate_limit::{RateLimitConfig, RateLimitDecision, RateLimiter};
 
 /// Maximum accepted synthetic file name length.
 pub const MAX_FILE_NAME_BYTES: usize = 128;
@@ -61,6 +64,32 @@ pub struct ApiResponse {
     pub status: u16,
     /// JSON response body.
     pub body: String,
+    /// Response headers, as `(name, value)` pairs. Rate-limit fields contain
+    /// counters only; the bearer token never appears here.
+    pub headers: Vec<(String, String)>,
+}
+
+impl ApiResponse {
+    fn with_rate_limit(mut self, decision: &RateLimitDecision) -> Self {
+        self.headers = vec![
+            ("RateLimit-Limit".to_string(), decision.limit.to_string()),
+            (
+                "RateLimit-Remaining".to_string(),
+                decision.remaining.to_string(),
+            ),
+            (
+                "RateLimit-Reset".to_string(),
+                decision.reset_seconds.to_string(),
+            ),
+        ];
+        if !decision.allowed {
+            self.headers.push((
+                "Retry-After".to_string(),
+                decision.reset_seconds.to_string(),
+            ));
+        }
+        self
+    }
 }
 
 #[derive(Deserialize)]
@@ -81,6 +110,7 @@ pub struct ScanApi {
     jobs: JobStore,
     config: ScanConfig,
     registry: RuleRegistry,
+    rate_limit: Option<RateLimiter>,
 }
 
 impl ScanApi {
@@ -106,7 +136,16 @@ impl ScanApi {
             jobs: JobStore::new(limits),
             config,
             registry,
+            rate_limit: None,
         }
+    }
+
+    /// Enables a bounded per-token rate limit for this adapter.
+    ///
+    /// Rate limiting is opt-in; without this call the adapter enforces none.
+    pub fn with_rate_limit(mut self, config: RateLimitConfig) -> Self {
+        self.rate_limit = Some(RateLimiter::new(config));
+        self
     }
 
     /// The backing job store.
@@ -114,12 +153,43 @@ impl ScanApi {
         &self.jobs
     }
 
-    /// Handles one request. Authentication is checked before routing.
+    /// Handles one request. Authentication is checked before routing and
+    /// before the rate limit, so only valid credentials consume a budget.
     pub fn handle(&self, request: &ApiRequest) -> ApiResponse {
+        self.handle_at(request, SystemTime::now())
+    }
+
+    /// Handles one request at an explicit time; used by tests and schedulers
+    /// that supply their own clock.
+    pub fn handle_at(&self, request: &ApiRequest, now: SystemTime) -> ApiResponse {
         if let Err(error) = self.auth.authenticate(request.authorization.as_deref()) {
             return auth_response(error);
         }
 
+        let Some(limiter) = &self.rate_limit else {
+            return self.route(request);
+        };
+        // Authentication succeeded, so the header is a well-formed bearer value.
+        let token = request
+            .authorization
+            .as_deref()
+            .and_then(|header| header.split_once(' '))
+            .map(|(_, token)| token)
+            .unwrap_or_default();
+        let decision = limiter.check(token, now);
+        let response = if decision.allowed {
+            self.route(request)
+        } else {
+            error_response(
+                429,
+                "rate_limited",
+                "rate limit exceeded; retry after the current window resets",
+            )
+        };
+        response.with_rate_limit(&decision)
+    }
+
+    fn route(&self, request: &ApiRequest) -> ApiResponse {
         match (request.method.as_str(), request.path.as_str()) {
             (method, "/v1/scans") if method.eq_ignore_ascii_case("POST") => {
                 self.submit(&request.body)
@@ -200,13 +270,14 @@ impl ScanApi {
             Ok(id) => ApiResponse {
                 status: 202,
                 body: json!({ "job_id": id, "status": "queued" }).to_string(),
+                headers: Vec::new(),
             },
             Err(error) => job_error_response(&error),
         }
     }
 
     fn job(&self, id: &str) -> ApiResponse {
-        let job = match self.jobs.get(id) {
+        let job = match self.jobs.get_at(id, SystemTime::now()) {
             Ok(job) => job,
             Err(error) => return job_error_response(&error),
         };
@@ -225,6 +296,7 @@ impl ScanApi {
             return ApiResponse {
                 status: 200,
                 body: json!({ "job_id": job.id, "status": status, "report": report }).to_string(),
+                headers: Vec::new(),
             };
         }
         if job.status == JobStatus::Failed {
@@ -239,11 +311,13 @@ impl ScanApi {
                     }
                 })
                 .to_string(),
+                headers: Vec::new(),
             };
         }
         ApiResponse {
             status: 202,
             body: json!({ "job_id": job.id, "status": status }).to_string(),
+            headers: Vec::new(),
         }
     }
 
@@ -296,6 +370,7 @@ fn job_error_response(error: &JobStoreError) -> ApiResponse {
         }
         JobStoreError::StoreFull { .. } => error_response(503, error.code(), &error.to_string()),
         JobStoreError::NotFound => error_response(404, error.code(), "unknown job id"),
+        JobStoreError::Expired { .. } => error_response(410, error.code(), &error.to_string()),
         JobStoreError::InvalidTransition { .. } => {
             error_response(409, error.code(), "invalid job transition")
         }
@@ -310,11 +385,14 @@ fn error_response(status: u16, code: &str, message: &str) -> ApiResponse {
     ApiResponse {
         status,
         body: json!({ "error": { "code": code, "message": message } }).to_string(),
+        headers: Vec::new(),
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use std::time::Duration;
+
     use super::*;
     use crate::service::jobs::JobLimits;
 
@@ -444,6 +522,96 @@ mod tests {
         assert_eq!(response.status, 503);
         assert_eq!(body(&response)["error"]["code"], "store_full");
         assert_eq!(api.jobs().len(), 1);
+    }
+
+    fn limited(requests: u32, window_seconds: u64) -> ScanApi {
+        api().with_rate_limit(RateLimitConfig::per_window(
+            requests,
+            Duration::from_secs(window_seconds),
+        ))
+    }
+
+    fn at(seconds: u64) -> SystemTime {
+        SystemTime::UNIX_EPOCH + Duration::from_secs(seconds)
+    }
+
+    fn handle_at(api: &ScanApi, body: &str, seconds: u64) -> ApiResponse {
+        api.handle_at(
+            &ApiRequest::new("POST", "/v1/scans", body).with_authorization("Bearer test-token_123"),
+            at(seconds),
+        )
+    }
+
+    fn header<'a>(response: &'a ApiResponse, name: &str) -> Option<&'a str> {
+        response
+            .headers
+            .iter()
+            .find(|(key, _)| key == name)
+            .map(|(_, value)| value.as_str())
+    }
+
+    #[test]
+    fn rate_limit_denies_a_burst_and_returns_standard_headers() {
+        let api = limited(2, 60);
+        let submission = r#"{"source":"x","file":"lib.rs"}"#;
+        for remaining in ["1", "0"] {
+            let response = handle_at(&api, submission, 0);
+            assert_eq!(response.status, 202);
+            assert_eq!(header(&response, "RateLimit-Limit"), Some("2"));
+            assert_eq!(header(&response, "RateLimit-Remaining"), Some(remaining));
+            assert_eq!(header(&response, "RateLimit-Reset"), Some("60"));
+            assert_eq!(header(&response, "Retry-After"), None);
+        }
+
+        let denied = handle_at(&api, submission, 0);
+        assert_eq!(denied.status, 429);
+        assert_eq!(body(&denied)["error"]["code"], "rate_limited");
+        assert_eq!(header(&denied, "RateLimit-Remaining"), Some("0"));
+        assert_eq!(header(&denied, "Retry-After"), Some("60"));
+        assert_eq!(api.jobs().len(), 2);
+        for (name, value) in &denied.headers {
+            assert!(!name.contains("test-token"));
+            assert!(!value.contains("test-token"));
+        }
+    }
+
+    #[test]
+    fn rate_limit_refills_with_the_window_without_sleeping() {
+        let api = limited(1, 10);
+        let submission = r#"{"source":"x","file":"lib.rs"}"#;
+        assert_eq!(handle_at(&api, submission, 0).status, 202);
+
+        let denied = handle_at(&api, submission, 6);
+        assert_eq!(denied.status, 429);
+        assert_eq!(header(&denied, "RateLimit-Reset"), Some("4"));
+        assert_eq!(header(&denied, "Retry-After"), Some("4"));
+
+        let refilled = handle_at(&api, submission, 10);
+        assert_eq!(refilled.status, 202);
+        assert_eq!(header(&refilled, "RateLimit-Remaining"), Some("0"));
+        assert_eq!(header(&refilled, "RateLimit-Reset"), Some("10"));
+    }
+
+    #[test]
+    fn rate_limit_is_opt_in_and_authentication_does_not_consume_budget() {
+        let plain = api();
+        let response = submit(&plain, r#"{"source":"x","file":"lib.rs"}"#);
+        assert!(response.headers.is_empty());
+
+        let api = limited(1, 60);
+        for _ in 0..5 {
+            let unauthorized = api.handle(&ApiRequest::new("POST", "/v1/scans", "{}"));
+            assert_eq!(unauthorized.status, 401);
+            assert!(unauthorized.headers.is_empty());
+        }
+        assert_eq!(
+            handle_at(&api, r#"{"source":"x","file":"lib.rs"}"#, 0).status,
+            202
+        );
+        assert_eq!(
+            handle_at(&api, r#"{"source":"x","file":"lib.rs"}"#, 0).status,
+            429
+        );
     }
 
     #[test]

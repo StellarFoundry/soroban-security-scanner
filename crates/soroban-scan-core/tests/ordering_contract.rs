@@ -1,12 +1,14 @@
-//! Finding ordering contract (#146).
+//! Finding ordering contract (#146, extended by #295).
 //!
-//! Consumers and snapshot tests rely on a stable order. The scanner sorts by
-//! the tuple `(file, line, column, rule_id, fingerprint)`, and every renderer
-//! must preserve that order.
+//! Consumers and snapshot tests rely on a stable order. The scanner ranks by
+//! `(severity, confidence, reachability, file, line, column, rule_id,
+//! fingerprint)`, with the first three components compared highest-first, and
+//! every renderer must preserve that order. Ranking never drops a finding.
 
 use std::path::PathBuf;
 
 use serde_json::Value;
+use soroban_scan_core::analysis::cfg::Reachability;
 use soroban_scan_core::category::Category;
 use soroban_scan_core::confidence::Confidence;
 use soroban_scan_core::config::ScanConfig;
@@ -44,6 +46,8 @@ fn finding(
         remediation: "Apply the documented fix.".to_string(),
         references: vec![],
         fingerprint: fingerprint.to_string(),
+        reachability: Reachability::Unknown,
+        exploitability: None,
     }
 }
 
@@ -119,12 +123,49 @@ fn sort_key_pins_every_component() {
     assert_eq!(
         f.sort_key(),
         (
+            u8::MAX - Severity::Medium.rank(),
+            u8::MAX - Confidence::Medium.rank(),
+            u8::MAX - Reachability::Unknown.rank(),
             "src/lib.rs".to_string(),
             9,
             3,
             "SS-007".to_string(),
             "abc123".to_string()
         )
+    );
+}
+
+#[test]
+fn severity_confidence_and_reachability_rank_before_span() {
+    let mut critical = finding("SS-010", "src/z.rs", 50, Some(1), "zzz", "critical-late");
+    critical.severity = Severity::Critical;
+    critical.confidence = Confidence::Low;
+    let mut reachable = finding("SS-011", "src/a.rs", 1, Some(1), "aaa", "reachable-high");
+    reachable.severity = Severity::High;
+    reachable.confidence = Confidence::High;
+    reachable.reachability = Reachability::Reachable;
+    let mut unreachable = finding("SS-012", "src/a.rs", 2, Some(1), "bbb", "unreachable-high");
+    unreachable.severity = Severity::High;
+    unreachable.confidence = Confidence::High;
+    unreachable.reachability = Reachability::Unreachable;
+
+    let mut findings = vec![unreachable, reachable, critical];
+    findings.sort_by_key(Finding::sort_key);
+
+    assert_eq!(
+        evidence_order(&findings),
+        vec!["critical-late", "reachable-high", "unreachable-high"]
+    );
+}
+
+#[test]
+fn ranking_is_stable_across_runs() {
+    let first = sorted_findings();
+    let second = sorted_findings();
+    assert_eq!(
+        evidence_order(&first),
+        evidence_order(&second),
+        "ranking must not depend on input order"
     );
 }
 

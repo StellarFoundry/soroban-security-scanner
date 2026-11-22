@@ -916,6 +916,9 @@ pub struct ContractFn<'a> {
     /// written in the signature (for example `u32`, `&Env`), so rules can do
     /// conservative checks without type inference.
     pub param_types: Vec<(String, String)>,
+    /// 1-based `(line, column)` of each entry in `param_types`, in the same
+    /// order.
+    pub param_spans: Vec<(usize, usize)>,
 }
 
 /// Collects the simple identifier parameter names of a function signature.
@@ -942,6 +945,21 @@ fn parameter_types(sig: &syn::Signature) -> Vec<(String, String)> {
                     pat_ident.ident.to_string(),
                     pat_type.ty.to_token_stream().to_string(),
                 )),
+                _ => None,
+            },
+            syn::FnArg::Receiver(_) => None,
+        })
+        .collect()
+}
+
+/// Collects the 1-based `(line, column)` of each parameter recorded by
+/// [`parameter_types`].
+fn parameter_spans(sig: &syn::Signature) -> Vec<(usize, usize)> {
+    sig.inputs
+        .iter()
+        .filter_map(|arg| match arg {
+            syn::FnArg::Typed(pat_type) => match &*pat_type.pat {
+                syn::Pat::Ident(_) => Some(span_line_col(&*pat_type.pat)),
                 _ => None,
             },
             syn::FnArg::Receiver(_) => None,
@@ -983,6 +1001,7 @@ fn collect_contract_fns<'a>(items: &'a [syn::Item], out: &mut Vec<ContractFn<'a>
                             is_public: matches!(f.vis, syn::Visibility::Public(_)),
                             params: parameter_names(&f.sig),
                             param_types: parameter_types(&f.sig),
+                            param_spans: parameter_spans(&f.sig),
                         });
                     }
                 }

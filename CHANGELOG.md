@@ -9,6 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Findings carry an optional, additive `exploitability` context (`reachability`,
+  `entry_point`, and reserved `taint`) when the control-flow graph covers the
+  finding line. It is omitted when evidence is incomplete and never changes
+  severity or confidence; report schemas remain backward compatible (`#294`).
+- The language server loads `soroban-scan.toml` from the workspace root,
+  applies it to diagnostics, reloads on configuration/watched-file changes, and
+  publishes a `LSP-CONFIG-001` error on invalid configuration (`#333`).
+- `docs/api-deployment.md` documents API adapter configuration, reverse-proxy
+  TLS termination, in-memory durability, transport-supplied health checks, a
+  minimal local example, and an explicit public-edge warning (`#358`).
+- `examples/external-rule-pack` provides a two-rule data-only pack with
+  per-rule fixtures, a checksum validation script, signing/verification
+  instructions, and Rust and Python tests (`#369`).
+- Opt-in `soroban-scan serve` HTTP API for submitting source scans and receiving
+  the standard CLI JSON report. The bounded server requires a bearer token and
+  enforces loopback-only binding (`#350`).
+- Additive engine pipeline stages (`discovery`, `parsing`, `analysis`,
+  `post_processing`) with optional observation-only `PipelineHooks`. The default
+  pipeline is unchanged, and hooks receive only a read-only `StageSummary` with
+  no source text or execution capability (`#113`).
+- SS-019 "Ignored cross-contract call result" (medium/medium): flags client calls
+  used as bare statements or discarded into `_`, so failed calls cannot look
+  successful (`#118`).
+- SS-026 "TTL constant outside the expected range" (low/low): collects literal
+  `extend_ttl`/`set_ttl` constants across the project and reports values outside
+  the documented `1..=3,110,400` ledger range, including the offending values
+  (`#125`).
+- SS-034 "Unvalidated deployer usage" (high/low): flags `env.deployer()` chains
+  that deploy, upload, or update code without an authorization fact in the
+  function or its intra-file helpers (`#133`).
 - A minimal stdio language server (`soroban-scan lsp`) publishes diagnostics,
   document symbols for contracts, functions, structs, and events, and offline
   hover text for every registered `SS-###` rule id. It uses full-document sync
@@ -106,6 +136,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`ParsedSource::resolve_path`) with support for aliases, grouped imports, and
   globs. SS-016 uses it to detect aliased instance-storage calls, and the
   limitations are documented in `docs/architecture/import-resolution.md` (`#41`).
+
+- `pack::sandbox` runs community packs with bounded wall-clock time, output
+  size, and rule count. Timeouts, oversized output, and panics fail closed and
+  are reported as diagnostics (`#365`).
+- `JobStore::get_at` reports a finished job whose retention elapsed as
+  `job_expired`, and the API maps it to `410` instead of `job_not_found`
+  (`#351`).
+- The composite GitHub Action validates paths, formats, thresholds, and
+  mutually exclusive inputs before running the scanner (`#347`).
+- Documented the community pack review, reporting, and removal policy
+  (`docs/pack-moderation.md`) and pack sandboxing limits (`#366`).
 
 ### Fixed
 

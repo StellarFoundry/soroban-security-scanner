@@ -25,3 +25,8 @@ The sample local index is `fixtures/rule-packs/registry.toml`; registry behavior
 ```bash
 cargo test -p soroban-scan-core --test pack_registry
 ```
+
+## Managing installed packs
+
+`soroban-scan pack install|list|update|uninstall` writes and validates this index
+as a deterministic lockfile. See [Rule pack CLI](rule-pack-cli.md).

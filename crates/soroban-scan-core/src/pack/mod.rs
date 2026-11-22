@@ -5,14 +5,19 @@
 
 pub mod manifest;
 pub mod registry;
+pub mod sandbox;
 pub mod signing;
 
 pub use manifest::{
-    PackCapability, PackManifest, PackManifestError, PackMetadata, PackRuleMetadata,
-    MAX_PACK_MANIFEST_BYTES, PACK_MANIFEST_SCHEMA_VERSION,
+    sha256_checksum, PackCapability, PackManifest, PackManifestError, PackMetadata,
+    PackRuleMetadata, MAX_PACK_MANIFEST_BYTES, PACK_MANIFEST_SCHEMA_VERSION,
 };
 pub use registry::{
     PackRegistry, PackRegistryEntry, PackRegistryError, PACK_REGISTRY_SCHEMA_VERSION,
+};
+pub use sandbox::{
+    run_bounded, PackLimitError, PackLimits, PackOutcome, DEFAULT_MAX_DURATION,
+    DEFAULT_MAX_OUTPUT_BYTES, DEFAULT_MAX_RULES,
 };
 pub use signing::{
     DetachedSignature, KeyRing, KeyStatus, PackSigner, PackVerificationError, PackVerifier,

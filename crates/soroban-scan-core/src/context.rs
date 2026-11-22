@@ -4,6 +4,7 @@ use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, MutexGuard};
 
+use crate::analysis::cfg::{build_function_cfg, ControlFlowGraph};
 use crate::model::Project;
 use crate::rules::util::{
     cast_facts, facts_from_block_with_imports, facts_from_file_with_imports,
@@ -23,6 +24,7 @@ struct FactsCache {
     block_facts: BTreeMap<(PathBuf, usize, usize), Arc<Facts>>,
     helper_facts: BTreeMap<(PathBuf, usize, usize), Arc<Facts>>,
     cast_facts: BTreeMap<(PathBuf, usize, usize), Arc<Vec<CastFact>>>,
+    cfg_facts: BTreeMap<(PathBuf, usize, usize), Arc<ControlFlowGraph>>,
 }
 
 /// Lock a cache mutex, recovering the data if a previous holder panicked.
@@ -228,6 +230,28 @@ impl<'a> AnalysisContext<'a> {
             .insert(key, Arc::clone(&computed));
         computed
     }
+
+    /// Control-flow graph for a single function body, cached by source path and
+    /// span.
+    ///
+    /// The graph exposes deterministic nodes, edges, and spans. Unsupported
+    /// constructs are recorded as [`crate::analysis::cfg::NodeKind::Unknown`]
+    /// nodes, never as invented edges.
+    pub fn cfg_for_function(
+        &self,
+        source: &ParsedSource,
+        func: &ContractFn<'_>,
+    ) -> Arc<ControlFlowGraph> {
+        let key = (source.path.clone(), func.line, func.column);
+        if let Some(cached) = lock_cache(&self.cache).cfg_facts.get(&key).cloned() {
+            return cached;
+        }
+        let computed = Arc::new(build_function_cfg(func.block));
+        lock_cache(&self.cache)
+            .cfg_facts
+            .insert(key, Arc::clone(&computed));
+        computed
+    }
 }
 
 #[cfg(test)]
@@ -299,5 +323,29 @@ mod tests {
         let second = ctx.facts_for_function(&sources[0], &entry);
         assert!(Arc::ptr_eq(&first, &second));
         assert_eq!(*first, *second);
+    }
+
+    #[test]
+    fn cfg_for_function_is_cached_and_carries_spans() {
+        let project = project();
+        let sources = vec![parsed(
+            "src/lib.rs",
+            "#[contractimpl] impl C { pub fn f(env: Env, ready: bool) {\n\
+             if ready { env.storage().persistent().set(&K, &1); }\n} }",
+        )];
+        let ctx = AnalysisContext::new(&project, &sources, "20.0.0");
+        let file = sources[0].syntax.as_ref().expect("parsed source");
+        let entry = crate::rules::util::contract_entry_functions(file)
+            .into_iter()
+            .next()
+            .expect("entry point");
+        let first = ctx.cfg_for_function(&sources[0], &entry);
+        let second = ctx.cfg_for_function(&sources[0], &entry);
+        assert!(Arc::ptr_eq(&first, &second), "CFGs must be memoized");
+        assert!(first.nodes.iter().any(|node| node.span.line > 0));
+        assert_eq!(
+            first.reachability_at(2),
+            crate::analysis::cfg::Reachability::Reachable
+        );
     }
 }

@@ -14,12 +14,41 @@ soroban-scan <COMMAND>
 | `explain <RULE-ID>` | Explain a rule in detail. |
 | `version` | Print the scanner name and version. |
 | `lsp` | Start the editor language server on stdio (see [editors.md](editors.md)). |
+| `serve` | Start the opt-in loopback HTTP scan API. |
 | `init` | Write a starter configuration file. |
 | `doctor` | Explain project classification, excludes, and effective configuration. |
 | `compare` | Compare two JSON scan reports by finding fingerprint. |
 | `dashboard` | Render a static trend dashboard from several JSON scan reports. |
 | `artifact-name` | Print the canonical, deterministic report artifact name. |
+| `pack` | Install, list, update, or remove local community rule packs. |
 | `config show` / `config validate` | Inspect or validate configuration. |
+
+---
+
+## `serve`
+
+```text
+SOROBAN_SCAN_API_TOKEN='replace-with-a-long-random-token' \
+  soroban-scan serve [--bind 127.0.0.1:8080] [--config FILE | --no-config]
+```
+
+Starts a sequential HTTP/1.1 server bound to loopback only. The token must be
+provided through `SOROBAN_SCAN_API_TOKEN`; it is never accepted on the command
+line or included in responses. `POST /v1/scans` accepts
+`{"source":"...","file":"input.rs"}` (the `file` field is optional) and returns
+the standard CLI JSON report. Source/file inputs and HTTP headers are bounded;
+requests are processed one at a time. The endpoint only scans submitted source
+text and does not access arbitrary filesystem paths. This local integration
+server is opt-in and is not intended to be exposed to a network.
+
+Example:
+
+```sh
+curl -H "Authorization: Bearer $SOROBAN_SCAN_API_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data '{"source":"pub fn example() {}","file":"input.rs"}' \
+  http://127.0.0.1:8080/v1/scans
+```
 
 ---
 
@@ -601,6 +630,21 @@ soroban-scan artifact-name --project "Vault Contract" \
 The name is deterministic for the same inputs and contains no secrets. See
 [Report retention and artifact naming](retention.md) for the scheme and the
 recommended retention policy.
+
+## `pack`
+
+```text
+soroban-scan pack [--dir DIR] install SOURCE
+soroban-scan pack [--dir DIR] list
+soroban-scan pack [--dir DIR] update SOURCE
+soroban-scan pack [--dir DIR] uninstall NAME [--yes]
+```
+
+Manages locally installed community rule packs and records them in a
+deterministic `registry.toml` lockfile (default `DIR`: `.soroban-scan/packs`).
+Installs are offline, bounded, and never execute pack code. `uninstall` requires
+interactive confirmation unless `--yes` is passed. See
+[Rule pack CLI](rule-pack-cli.md).
 
 ## `completions`
 

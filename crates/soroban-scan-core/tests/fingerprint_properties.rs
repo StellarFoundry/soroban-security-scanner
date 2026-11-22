@@ -10,6 +10,7 @@
 use std::path::Path;
 
 use proptest::prelude::*;
+use soroban_scan_core::analysis::cfg::Reachability;
 use soroban_scan_core::category::Category;
 use soroban_scan_core::confidence::Confidence;
 use soroban_scan_core::finding::{fingerprint_of, Finding, SourceLocation};
@@ -30,6 +31,8 @@ fn finding(rule_id: &str, file: &str, line: usize, evidence: &str) -> Finding {
         remediation: String::new(),
         references: Vec::new(),
         fingerprint: fingerprint_of(rule_id, Path::new(file), evidence),
+        reachability: Reachability::Unknown,
+        exploitability: None,
     }
 }
 

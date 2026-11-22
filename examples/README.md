@@ -12,6 +12,11 @@ workspace) and is built in CI.
 | [`escrow`](escrow/) | Soroban escrow (clean) | none |
 | [`vault`](vault/) | Soroban pausable vault (clean) | none |
 | [`stellar-classic`](stellar-classic/) | Classic Stellar address tooling | none (not a Soroban project) |
+| [`contracts`](contracts/) | 50 documented, source-only contract examples | not scanned automatically |
+
+[`external-rule-pack`](external-rule-pack/) is a data-only external rule pack,
+not a compilable crate. It demonstrates the manifest schema, per-rule fixtures,
+checksum validation, and signing instructions.
 
 ## Build an example
 
@@ -39,3 +44,13 @@ contains deliberate security flaws and must not be used as a template.
 
 Examples must never require network access at runtime and must never contain
 secrets, keys, or real account credentials.
+
+## Contract corpus
+
+[`contracts/`](contracts/) holds 50 small, documented, MIT-licensed contract
+examples grouped by category. They are source-only and are not built by the
+example matrix. Validate their headers, categories, size, and README index with:
+
+```bash
+python tools/check_examples.py
+```

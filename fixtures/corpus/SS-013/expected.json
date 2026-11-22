@@ -30,9 +30,21 @@
           "confidence": null
         },
         {
+          "rule_id": "SS-019",
+          "count": 1,
+          "severity": "medium",
+          "confidence": null
+        },
+        {
           "rule_id": "SS-030",
           "count": 1,
           "severity": "high",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-044",
+          "count": 1,
+          "severity": "medium",
           "confidence": null
         }
       ]
@@ -82,9 +94,21 @@
           "confidence": null
         },
         {
+          "rule_id": "SS-019",
+          "count": 1,
+          "severity": "medium",
+          "confidence": null
+        },
+        {
           "rule_id": "SS-030",
           "count": 1,
           "severity": "high",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-044",
+          "count": 1,
+          "severity": "medium",
           "confidence": null
         }
       ]
@@ -123,6 +147,12 @@
           "confidence": null
         },
         {
+          "rule_id": "SS-019",
+          "count": 1,
+          "severity": "medium",
+          "confidence": null
+        },
+        {
           "rule_id": "SS-028",
           "count": 1,
           "severity": "high",
@@ -132,6 +162,12 @@
           "rule_id": "SS-030",
           "count": 1,
           "severity": "high",
+          "confidence": null
+        },
+        {
+          "rule_id": "SS-044",
+          "count": 1,
+          "severity": "medium",
           "confidence": null
         }
       ]

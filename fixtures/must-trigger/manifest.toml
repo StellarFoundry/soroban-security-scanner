@@ -143,3 +143,30 @@ why = "Reproduces the documented 'Unsafe symbol_short key' pattern; this sample 
 file = "SS-041.rs"
 why = "Reproduces the documented 'Authorization check inside a loop' pattern; this sample must always trigger SS-041."
 
+[SS-019]
+file = "SS-019.rs"
+why = "Reproduces the documented 'Ignored cross-contract call result' pattern; this sample must always trigger SS-019."
+
+[SS-026]
+file = "SS-026.rs"
+why = "Reproduces the documented 'TTL constant outside the expected range' pattern; this sample must always trigger SS-026."
+
+[SS-034]
+file = "SS-034.rs"
+why = "Reproduces the documented 'Unvalidated deployer usage' pattern; this sample must always trigger SS-034."
+
+
+[SS-042]
+file = "SS-042.rs"
+why = "The only authorization check follows an unconditional return, so the security check is unreachable and must always trigger SS-042."
+
+
+[SS-044]
+file = "SS-044.rs"
+why = "A caller-supplied recipient reaches a token transfer without validation, so SS-044 must always trigger."
+
+
+[SS-039]
+file = "SS-039.rs"
+why = "A persistent read has no TTL management, so SS-039 must always trigger."
+

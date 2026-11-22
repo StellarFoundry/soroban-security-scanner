@@ -14,6 +14,7 @@ and worker loop.
   size, report size, and retention.
 - Bearer authentication for API adapters (`api_auth`), independent of any web
   framework.
+- An opt-in, bounded per-token rate limiter (`service::rate_limit`).
 
 No HTTP listener, queue daemon, database, or remote worker exists in this
 repository. Passing `ApiRequest` values to `ScanApi::handle` and writing the
@@ -41,6 +42,8 @@ Submission errors:
 | Status | Code | Cause |
 | ------ | ---- | ----- |
 | `400` | `invalid_request` | Body is not UTF-8 JSON, the schema is wrong, or `file` is unsafe. |
+| `404` | `job_not_found` | No job has that id. |
+| `410` | `job_expired` | The job finished and its retention window elapsed. |
 | `413` | `payload_too_large` | Body or source exceeds the job payload cap. |
 | `503` | `store_full` | The bounded store is at `max_jobs`. |
 
@@ -60,6 +63,55 @@ of that kind; reject configuration that does not make sense for your service.
 Memory is bounded by roughly `max_jobs * max_payload_bytes` for queued and
 running jobs, and by the same maximum for finished reports. Error messages are
 truncated to `max_payload_bytes` on a UTF-8 boundary.
+
+## Rate limiting
+
+Rate limiting is disabled by default. Enable it by building the adapter with an
+explicit configuration:
+
+```rust
+use std::time::Duration;
+use soroban_scan_core::service::RateLimitConfig;
+
+let api = ScanApi::new(auth, JobLimits::default())
+    .with_rate_limit(RateLimitConfig::per_window(60, Duration::from_secs(60)));
+```
+
+`RateLimitConfig` is a fixed-window limit per bearer token:
+
+| Field | Meaning |
+| ----- | ------- |
+| `requests_per_window` | Requests allowed per window. `0` denies every request. |
+| `window` | Window length. Zero denies every request. |
+| `max_tracked_tokens` | Cap on retained token buckets (default `DEFAULT_MAX_TRACKED_TOKENS`, 1024). `0` denies every request. |
+
+Authentication runs before the limit, so missing or invalid credentials never
+consume a budget. Buckets are keyed by a non-cryptographic fingerprint; the
+token itself is not stored. When the cap is reached, the bucket whose window
+started earliest is evicted, so memory does not grow with the number of tokens
+seen. Because a deployment configures one bearer token, a collision can only
+share the same budget and cannot disclose a credential.
+
+Every authenticated response carries these headers:
+
+| Header | Value |
+| ------ | ----- |
+| `RateLimit-Limit` | Configured requests per window. |
+| `RateLimit-Remaining` | Requests left in the current window, after this one when allowed. |
+| `RateLimit-Reset` | Whole seconds until the window resets. |
+| `Retry-After` | Present only on `429`; same value as `RateLimit-Reset`. |
+
+Headers contain counters only. Neither the bearer token nor any token-derived
+identifier is emitted. A rejected request returns `429` with the stable code
+`rate_limited` and the usual structured error body:
+
+```json
+{"error":{"code":"rate_limited","message":"rate limit exceeded; retry after the current window resets"}}
+```
+
+Responses expose the headers in `ApiResponse::headers`; the embedding transport
+writes them to the wire. `ScanApi::handle_at` accepts an explicit time so tests
+and schedulers can exercise refill behavior without sleeping.
 
 ## Full-store behavior
 
@@ -83,8 +135,11 @@ expires. This prevents accepted work from disappearing without a trace.
 Retention applies only to terminal jobs (`Completed` or `Failed`). A queued or
 running job is never removed, even when it is older than the retention window.
 Pruning runs on submission and can also be requested explicitly with
-`JobStore::remove_expired`. The scanner stores jobs in memory only; a restart
-loses every job.
+`JobStore::remove_expired`. Looking up a terminal job whose retention elapsed
+with `JobStore::get_at` returns `JobStoreError::Expired`, which the adapter maps
+to `410 job_expired`, so clients get a clear terminal error instead of a generic
+`job_not_found`. The scanner stores jobs in memory only; a restart loses every
+job.
 
 ## Lifecycle
 

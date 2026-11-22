@@ -8,15 +8,18 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use globset::Glob;
 use serde::Serialize;
 
+use crate::analysis::cfg::{self, ControlFlowGraph};
+use crate::confidence::Confidence;
 use crate::config::{AnalysisMode, ScanConfig, SuppressionRule, WaiverRule};
 use crate::context::AnalysisContext;
 use crate::error::ScanError;
-use crate::finding::Finding;
+use crate::finding::{ExploitabilityContext, Finding};
 use crate::fingerprint::FingerprintStrategy;
 use crate::frontend::{self, Frontend, LoadedProject};
 use crate::model::{
@@ -24,7 +27,105 @@ use crate::model::{
     ProjectKind, SorobanInfo, TargetInfo,
 };
 use crate::registry::RuleRegistry;
+use crate::severity::Severity;
+use crate::source::ParsedSource;
 use crate::suppression::Suppression;
+
+/// A logical stage of the scan pipeline.
+///
+/// Stages run in declaration order. The default pipeline always runs every
+/// stage; hooks only observe the transitions and never change what happens.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PipelineStage {
+    /// Files and manifests were discovered.
+    Discovery,
+    /// Discovered sources were parsed.
+    Parsing,
+    /// Enabled rules ran over the parsed sources.
+    Analysis,
+    /// Findings were validated, filtered, suppressed, and sorted.
+    PostProcessing,
+}
+
+impl PipelineStage {
+    /// Stable lowercase label used in diagnostics and documentation.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            PipelineStage::Discovery => "discovery",
+            PipelineStage::Parsing => "parsing",
+            PipelineStage::Analysis => "analysis",
+            PipelineStage::PostProcessing => "post_processing",
+        }
+    }
+}
+
+/// Read-only summary of a completed pipeline stage.
+///
+/// The summary is intentionally small: it carries counts, never source text,
+/// paths, findings, or configuration, so a hook cannot use it to execute or
+/// transmit scanned code.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct StageSummary {
+    /// Stage that completed.
+    pub stage: PipelineStage,
+    /// Number of files visible at this stage (discovered, parsed, or analyzed).
+    pub files: usize,
+    /// Number of findings at this stage (`0` for discovery and parsing).
+    pub findings: usize,
+}
+
+/// Observer called when a pipeline stage completes.
+///
+/// Hooks are synchronous and observation-only. The engine passes a borrowed
+/// [`StageSummary`] and provides no network, process, or code-execution
+/// capability. Implementations must be deterministic and must not perform I/O;
+/// behavior and findings are identical with or without hooks.
+pub trait PipelineHook {
+    /// Called once per completed stage, in pipeline order.
+    fn on_stage(&self, summary: &StageSummary);
+}
+
+/// Optional pipeline observer hooks.
+///
+/// The default is empty, so [`scan`] and [`run_scan`] behave exactly as before.
+/// Add hooks only through [`PipelineHooks::add`]; the engine never mutates the
+/// set during a scan.
+#[derive(Default)]
+pub struct PipelineHooks<'a> {
+    hooks: Vec<&'a dyn PipelineHook>,
+}
+
+impl<'a> PipelineHooks<'a> {
+    /// Creates an empty hook set.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Adds an observer. Hooks are invoked in insertion order for each stage.
+    pub fn add(&mut self, hook: &'a dyn PipelineHook) -> &mut Self {
+        self.hooks.push(hook);
+        self
+    }
+
+    /// Returns true when no hook is registered.
+    pub fn is_empty(&self) -> bool {
+        self.hooks.is_empty()
+    }
+
+    fn notify(&self, stage: PipelineStage, files: usize, findings: usize) {
+        if self.hooks.is_empty() {
+            return;
+        }
+        let summary = StageSummary {
+            stage,
+            files,
+            findings,
+        };
+        for hook in &self.hooks {
+            hook.on_stage(&summary);
+        }
+    }
+}
 
 /// Statistics about a scan.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
@@ -400,6 +501,64 @@ fn deduplicate_overlapping(findings: &mut Vec<Finding>) {
     *findings = kept;
 }
 
+/// Annotates each finding with the reachability of its line and, when the CFG
+/// covers the line, optional exploitability context.
+///
+/// Findings outside a parsed function keep `Unknown` and no exploitability
+/// context. Graphs are built once per function and cached by (file, line
+/// range), so a file with many findings in the same function is not
+/// re-analysed per finding.
+fn annotate_reachability(sources: &[ParsedSource], findings: &mut [Finding]) {
+    let indexes: BTreeMap<String, cfg::FunctionIndex<'_>> = sources
+        .iter()
+        .filter_map(|source| {
+            source
+                .syntax
+                .as_ref()
+                .map(|syntax| (normalize_rel(&source.path), cfg::FunctionIndex::new(syntax)))
+        })
+        .collect();
+    let sources_by_file: BTreeMap<String, &ParsedSource> = sources
+        .iter()
+        .map(|source| (normalize_rel(&source.path), source))
+        .collect();
+    let mut graphs: BTreeMap<(String, usize, usize), Arc<ControlFlowGraph>> = BTreeMap::new();
+
+    for finding in findings {
+        let file = normalize_rel(&finding.location.file);
+        let Some(index) = indexes.get(&file) else {
+            continue;
+        };
+        let Some((block, range)) = index.find(finding.location.line) else {
+            continue;
+        };
+        let graph = graphs
+            .entry((file.clone(), range.0, range.1))
+            .or_insert_with(|| Arc::new(cfg::build_function_cfg(block)));
+        let reachability = graph.reachability_at(finding.location.line);
+        finding.reachability = reachability;
+
+        if reachability == crate::analysis::cfg::Reachability::Unknown {
+            continue;
+        }
+        let entry_point = sources_by_file.get(&file).and_then(|source| {
+            source
+                .functions
+                .iter()
+                .filter(|function| {
+                    function.is_contract_entry_point && function.line == range.0
+                })
+                .map(|function| function.qualified_name.clone())
+                .next()
+        });
+        finding.exploitability = Some(ExploitabilityContext {
+            reachability: reachability.as_str().to_string(),
+            entry_point,
+            taint: None,
+        });
+    }
+}
+
 /// Returns true if `path` is a safe, relative path with no traversal.
 fn is_safe_relative(path: &Path) -> bool {
     if path.is_absolute() {
@@ -419,40 +578,71 @@ fn is_safe_relative(path: &Path) -> bool {
 ///
 /// An override is ineffective when its rule id is unknown, the rule is disabled
 /// by default, or the rule is disabled by the effective configuration. The
-/// result is deterministic and contains one diagnostic per rule id.
+/// result is deterministic and contains one diagnostic per rule id. Active
+/// profile entries report `CONFIG-005`; top-level overrides report `CONFIG-001`.
 pub fn override_diagnostics(config: &ScanConfig, registry: &RuleRegistry) -> Vec<Diagnostic> {
-    let mut kinds: BTreeMap<&str, Vec<&str>> = BTreeMap::new();
-    for id in config.rules.severity_overrides.keys() {
-        kinds.entry(id.as_str()).or_default().push("severity");
-    }
-    for id in config.rules.confidence_overrides.keys() {
-        kinds.entry(id.as_str()).or_default().push("confidence");
+    fn kinds<'a>(
+        severity: &'a BTreeMap<String, Severity>,
+        confidence: &'a BTreeMap<String, Confidence>,
+    ) -> BTreeMap<&'a str, Vec<&'a str>> {
+        let mut kinds: BTreeMap<&str, Vec<&str>> = BTreeMap::new();
+        for id in severity.keys() {
+            kinds.entry(id.as_str()).or_default().push("severity");
+        }
+        for id in confidence.keys() {
+            kinds.entry(id.as_str()).or_default().push("confidence");
+        }
+        kinds
     }
 
-    kinds
-        .into_iter()
-        .filter_map(|(id, kinds)| {
-            let reason = match registry.by_id(id) {
-                None => "unknown rule id",
-                Some(rule) if !rule.enabled_by_default() => "rule is disabled by default",
-                Some(rule) => {
-                    let meta = rule.metadata();
-                    if config.rules.is_rule_enabled(meta.id, meta.category) {
-                        return None;
-                    }
-                    "rule is disabled by configuration"
+    fn reason(config: &ScanConfig, registry: &RuleRegistry, id: &str) -> Option<&'static str> {
+        match registry.by_id(id) {
+            None => Some("unknown rule id"),
+            Some(rule) if !rule.enabled_by_default() => Some("rule is disabled by default"),
+            Some(rule) => {
+                let meta = rule.metadata();
+                if config.rules.is_rule_enabled(meta.id, meta.category) {
+                    None
+                } else {
+                    Some("rule is disabled by configuration")
                 }
-            };
-            Some(Diagnostic::warning(
+            }
+        }
+    }
+
+    let mut diagnostics = Vec::new();
+    if let Some(profile) = config.rules.active_profile() {
+        let name = config.rules.profile.as_deref().unwrap_or("active");
+        for (id, kinds) in kinds(&profile.severity_overrides, &profile.confidence_overrides) {
+            if let Some(reason) = reason(config, registry, id) {
+                diagnostics.push(Diagnostic::warning(
+                    DiagnosticCode::InvalidProfile,
+                    format!(
+                        "profile `{name}` {} override for {id} has no effect: {reason}",
+                        kinds.join(" and ")
+                    ),
+                    None,
+                ));
+            }
+        }
+    }
+
+    for (id, kinds) in kinds(
+        &config.rules.severity_overrides,
+        &config.rules.confidence_overrides,
+    ) {
+        if let Some(reason) = reason(config, registry, id) {
+            diagnostics.push(Diagnostic::warning(
                 DiagnosticCode::IneffectiveOverride,
                 format!(
                     "{} override for {id} has no effect: {reason}",
                     kinds.join(" and ")
                 ),
                 None,
-            ))
-        })
-        .collect()
+            ));
+        }
+    }
+    diagnostics
 }
 
 struct CompiledConfigSuppression {
@@ -640,6 +830,21 @@ fn compile_waivers(
 
 /// Runs the scanner over a loaded project.
 pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig) -> ScanOutcome {
+    scan_with_hooks(loaded, registry, config, &PipelineHooks::default())
+}
+
+/// Runs the scanner over a loaded project with optional pipeline hooks.
+///
+/// This is an additive variant of [`scan`]. Discovery and parsing already
+/// happened before a [`LoadedProject`] exists, so only the analysis and
+/// post-processing stages are reported here. Use
+/// [`run_scan_with_frontend_and_hooks`] to observe all four stages.
+pub fn scan_with_hooks(
+    loaded: &LoadedProject,
+    registry: &RuleRegistry,
+    config: &ScanConfig,
+    hooks: &PipelineHooks<'_>,
+) -> ScanOutcome {
     let ctx = AnalysisContext::new(
         &loaded.project,
         &loaded.sources,
@@ -685,6 +890,46 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
         ));
     }
     let mut findings: Vec<Finding> = Vec::new();
+
+    // Type-aware rules can only reason about names that resolve. Surface the
+    // unresolved and ambiguous ones so a silent non-finding is explainable.
+    // The pass is bounded per file and globally.
+    if analysis_mode == AnalysisMode::Soroban {
+        let mut type_diagnostics = Vec::new();
+        for source in &loaded.sources {
+            let relative = ctx.relative_path(&source.path);
+            type_diagnostics.extend(crate::analysis::types::unresolved_type_diagnostics(
+                source, &relative,
+            ));
+        }
+        type_diagnostics.sort_by(|a, b| {
+            (
+                a.path
+                    .as_ref()
+                    .map(|path| path.to_string_lossy().replace('\\', "/")),
+                a.line.unwrap_or(0),
+                a.column.unwrap_or(0),
+            )
+                .cmp(&(
+                    b.path
+                        .as_ref()
+                        .map(|path| path.to_string_lossy().replace('\\', "/")),
+                    b.line.unwrap_or(0),
+                    b.column.unwrap_or(0),
+                ))
+        });
+        if type_diagnostics.len() > crate::analysis::types::MAX_TYPE_DIAGNOSTICS {
+            let omitted = type_diagnostics.len() - crate::analysis::types::MAX_TYPE_DIAGNOSTICS;
+            type_diagnostics.truncate(crate::analysis::types::MAX_TYPE_DIAGNOSTICS);
+            type_diagnostics.push(Diagnostic::info(
+                DiagnosticCode::UnresolvedType,
+                format!("{omitted} additional unresolved type diagnostic(s) omitted"),
+                None,
+            ));
+        }
+        diagnostics.extend(type_diagnostics);
+    }
+
     let mut stats = ScanStats {
         analysis_mode,
         files_analyzed: loaded.sources.len(),
@@ -799,14 +1044,19 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
     }
 
     stats.findings_raw = findings.len();
+    hooks.notify(
+        PipelineStage::Analysis,
+        stats.files_analyzed,
+        stats.findings_raw,
+    );
     let mut rejected = 0usize;
 
     findings.retain_mut(|finding| {
-        if let Some(severity) = config.rules.severity_overrides.get(&finding.rule_id) {
-            finding.severity = *severity;
+        if let Some(severity) = config.severity_override_for(&finding.rule_id) {
+            finding.severity = severity;
         }
-        if let Some(confidence) = config.rules.confidence_overrides.get(&finding.rule_id) {
-            finding.confidence = *confidence;
+        if let Some(confidence) = config.confidence_override_for(&finding.rule_id) {
+            finding.confidence = confidence;
         }
 
         // Relativize and validate the reported location.
@@ -855,6 +1105,9 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
     });
 
     stats.findings_rejected = rejected;
+
+    // Reachability only ranks findings; it never changes detection.
+    annotate_reachability(&loaded.sources, &mut findings);
 
     // Deterministic ordering, then overlap-aware de-duplication.
     findings.sort_by_key(Finding::sort_key);
@@ -1022,6 +1275,12 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
             counts
         });
 
+    hooks.notify(
+        PipelineStage::PostProcessing,
+        stats.files_analyzed,
+        findings.len(),
+    );
+
     ScanOutcome {
         project: loaded.project.clone(),
         findings,
@@ -1053,8 +1312,25 @@ pub fn run_scan_with_frontend(
     registry: &RuleRegistry,
     frontend: &dyn Frontend,
 ) -> Result<ScanOutcome, ScanError> {
+    run_scan_with_frontend_and_hooks(root, config, registry, frontend, &PipelineHooks::default())
+}
+
+/// Loads and scans a directory through an explicit frontend with pipeline hooks.
+///
+/// Observes all four stages: discovery and parsing after the frontend loads the
+/// project, then analysis and post-processing inside the rule pipeline. Hooks
+/// cannot alter the loaded project, the rules, or the findings.
+pub fn run_scan_with_frontend_and_hooks(
+    root: &Path,
+    config: &ScanConfig,
+    registry: &RuleRegistry,
+    frontend: &dyn Frontend,
+    hooks: &PipelineHooks<'_>,
+) -> Result<ScanOutcome, ScanError> {
     let loaded = frontend.load(root, &config.discovery_options())?;
-    Ok(scan(&loaded, registry, config))
+    hooks.notify(PipelineStage::Discovery, loaded.project.source_files, 0);
+    hooks.notify(PipelineStage::Parsing, loaded.sources.len(), 0);
+    Ok(scan_with_hooks(&loaded, registry, config, hooks))
 }
 
 /// Merges the outcomes of scanning several roots into one deterministic report.
@@ -2036,6 +2312,88 @@ mod tests {
                 .any(|message| message.contains("SS-999") && message.contains("unknown rule id")),
             "got: {messages:?}"
         );
+
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn active_profile_applies_overrides_and_reports_ineffective_entries() {
+        let root = project_fixture("profile-overrides");
+        let loaded = project::load(&root, &ScanConfig::default().discovery_options()).unwrap();
+        let mut registry = RuleRegistry::new();
+        registry
+            .register(Box::new(OneFindingRule::new(Severity::Low)))
+            .unwrap();
+
+        let profile = crate::config::RuleProfile {
+            severity_overrides: [
+                ("SS-001".to_string(), Severity::High),
+                ("SS-999".to_string(), Severity::High),
+            ]
+            .into_iter()
+            .collect(),
+            confidence_overrides: [("SS-001".to_string(), Confidence::High)]
+                .into_iter()
+                .collect(),
+        };
+        let rules = crate::config::RulesConfig {
+            profile: Some("strict".into()),
+            profiles: [("strict".to_string(), profile)].into_iter().collect(),
+            ..crate::config::RulesConfig::default()
+        };
+        let config = ScanConfig {
+            rules,
+            ..ScanConfig::default()
+        };
+        assert!(config.rules.validate_profiles().is_ok());
+
+        let outcome = scan(&loaded, &registry, &config);
+        assert_eq!(outcome.findings.len(), 1);
+        assert_eq!(outcome.findings[0].severity, Severity::High);
+        assert_eq!(outcome.findings[0].confidence, Confidence::High);
+
+        let messages: Vec<&str> = outcome
+            .diagnostics
+            .iter()
+            .filter(|d| d.code == crate::model::DiagnosticCode::InvalidProfile)
+            .map(|d| d.message.as_str())
+            .collect();
+        assert_eq!(messages.len(), 1, "got: {messages:?}");
+        assert!(messages[0].contains("profile `strict`"));
+        assert!(messages[0].contains("SS-999"));
+        assert!(messages[0].contains("unknown rule id"));
+
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn top_level_overrides_win_over_the_active_profile() {
+        let root = project_fixture("profile-precedence");
+        let loaded = project::load(&root, &ScanConfig::default().discovery_options()).unwrap();
+        let mut registry = RuleRegistry::new();
+        registry
+            .register(Box::new(OneFindingRule::new(Severity::Low)))
+            .unwrap();
+
+        let profile = crate::config::RuleProfile {
+            severity_overrides: [("SS-001".to_string(), Severity::High)]
+                .into_iter()
+                .collect(),
+            ..crate::config::RuleProfile::default()
+        };
+        let config = ScanConfig {
+            rules: crate::config::RulesConfig {
+                profile: Some("strict".into()),
+                profiles: [("strict".to_string(), profile)].into_iter().collect(),
+                severity_overrides: [("SS-001".to_string(), Severity::Critical)]
+                    .into_iter()
+                    .collect(),
+                ..crate::config::RulesConfig::default()
+            },
+            ..ScanConfig::default()
+        };
+        let outcome = scan(&loaded, &registry, &config);
+        assert_eq!(outcome.findings[0].severity, Severity::Critical);
 
         let _ = std::fs::remove_dir_all(&root);
     }

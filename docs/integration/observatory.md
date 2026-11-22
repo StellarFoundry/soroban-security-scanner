@@ -56,11 +56,13 @@ soroban-scan scan <path> --format sarif --output results.sarif
 ## Finding order
 
 `findings` is ordered by the stable key
-`(file, line, column, rule_id, fingerprint)`, comparing files and rule ids as
-strings and treating a missing column as `0`. This ordering is part of the
-contract: consumers and snapshot tests may rely on it, and every output format
-(terminal, JSON, SARIF, Markdown) preserves it. Ties at the file/line level are
-broken by column, then rule id, then fingerprint.
+`(severity, confidence, reachability, file, line, column, rule_id, fingerprint)`.
+Severity, confidence, and reachability are compared highest first; the remaining
+components compare files and rule ids as strings and treat a missing column as
+`0`. This ordering is part of the contract: consumers and snapshot tests may
+rely on it, and every output format (terminal, JSON, SARIF, Markdown) preserves
+it. Ranking only changes order and never removes a finding. See
+[Finding ranking](../finding-ranking.md) for the full definition.
 
 ## Effective configuration
 

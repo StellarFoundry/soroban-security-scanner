@@ -53,6 +53,24 @@ jobs:
 | `files-from` | Optional file containing a newline-separated list of files to scan. | no | `""` |
 | `args` | Additional arguments passed to `soroban-scan scan`. | no | `""` |
 
+## Input validation
+
+Before the scan starts, the Action validates its inputs and fails the step with
+a clear `::error` annotation instead of letting the scanner fail later with an
+opaque message:
+
+- `format` must be one of `terminal`, `json`, `sarif`, `markdown`, or `github`.
+- `fail-on` must be one of `none`, `info`, `low`, `medium`, `high`, or
+  `critical`.
+- `path` must exist.
+- `baseline` and `files-from`, when set, must point at readable files.
+- `path` and `files-from` are mutually exclusive: set `files-from` with the
+  default `path` (`.`) only.
+- `output` must not be an existing directory.
+
+Validation never prints secrets or environment contents. Invalid input exits
+with code `2` and does not run the scanner.
+
 ## Outputs
 
 | Output | Description |

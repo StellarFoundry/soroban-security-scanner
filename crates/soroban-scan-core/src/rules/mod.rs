@@ -19,6 +19,8 @@ mod deprecated_sdk;
 mod deprecated_sdk_api_usage;
 mod hardcoded_address;
 mod ignored_checked_result;
+mod ignored_cross_contract_result;
+mod inconsistent_ttl_constants;
 mod insecure_randomness;
 mod instance_storage_unbounded;
 mod missing_authorization;
@@ -26,6 +28,7 @@ mod missing_contracttype_on_boundary_types;
 mod missing_events;
 mod missing_reentrancy_guard;
 mod panic_prone;
+mod persistent_read_without_ttl;
 mod public_test_hooks;
 mod redundant_require_auth_in_loop;
 mod sensitive_data_in_events;
@@ -39,7 +42,10 @@ mod unbounded_vec_growth;
 mod unchecked_arithmetic;
 mod unchecked_integer_cast;
 mod unprotected_initializer;
+mod unreachable_security_check;
 mod unsafe_code;
+mod unvalidated_cross_contract_address;
+mod unvalidated_deployer;
 mod unvalidated_deserialization;
 mod unvalidated_token_address;
 mod user_controlled_event_topic;
@@ -56,6 +62,9 @@ pub fn register_all(registry: &mut RuleRegistry) -> Result<(), RegistryError> {
     registry.register(Box::new(cross_contract_auth::CrossContractAuth))?;
     registry.register(Box::new(unbounded_iteration::UnboundedIteration))?;
     registry.register(Box::new(panic_prone::PanicProne))?;
+    registry.register(Box::new(
+        persistent_read_without_ttl::PersistentReadWithoutTtl,
+    ))?;
     registry.register(Box::new(unsafe_code::UnsafeCode))?;
     registry.register(Box::new(ttl_management::TtlManagement))?;
     registry.register(Box::new(hardcoded_address::HardcodedAddress))?;
@@ -98,19 +107,32 @@ pub fn register_all(registry: &mut RuleRegistry) -> Result<(), RegistryError> {
         current_contract_address_auth::CurrentContractAddressAuth,
     ))?;
     registry.register(Box::new(ignored_checked_result::IgnoredCheckedResult))?;
+    registry.register(Box::new(
+        ignored_cross_contract_result::IgnoredCrossContractResult,
+    ))?;
+    registry.register(Box::new(
+        inconsistent_ttl_constants::InconsistentTtlConstants,
+    ))?;
     registry.register(Box::new(missing_reentrancy_guard::MissingReentrancyGuard))?;
     registry.register(Box::new(
         unvalidated_deserialization::UnvalidatedDeserialization,
     ))?;
+    registry.register(Box::new(unvalidated_deployer::UnvalidatedDeployer))?;
     registry.register(Box::new(unvalidated_token_address::UnvalidatedTokenAddress))?;
     registry.register(Box::new(
         missing_contracttype_on_boundary_types::MissingContracttypeOnBoundaryTypes,
     ))?;
     registry.register(Box::new(deprecated_sdk_api_usage::DeprecatedSdkApiUsage))?;
     registry.register(Box::new(
+        unvalidated_cross_contract_address::UnvalidatedCrossContractAddress,
+    ))?;
+    registry.register(Box::new(
         symbol_short_key_collision::SymbolShortKeyCollision,
     ))?;
     registry.register(Box::new(authorization_in_loop::AuthorizationInLoop))?;
+    registry.register(Box::new(
+        unreachable_security_check::UnreachableSecurityCheck,
+    ))?;
     Ok(())
 }
 
@@ -127,9 +149,9 @@ mod tests {
             vec![
                 "SS-001", "SS-002", "SS-003", "SS-004", "SS-005", "SS-006", "SS-007", "SS-008",
                 "SS-009", "SS-010", "SS-011", "SS-012", "SS-013", "SS-014", "SS-015", "SS-016",
-                "SS-017", "SS-018", "SS-020", "SS-021", "SS-022", "SS-023", "SS-024", "SS-025",
-                "SS-027", "SS-028", "SS-029", "SS-030", "SS-031", "SS-032", "SS-033", "SS-035",
-                "SS-036", "SS-037", "SS-041"
+                "SS-017", "SS-018", "SS-019", "SS-020", "SS-021", "SS-022", "SS-023", "SS-024", "SS-025",
+                "SS-026", "SS-027", "SS-028", "SS-029", "SS-030", "SS-031", "SS-032", "SS-033",
+                "SS-034", "SS-035", "SS-036", "SS-037", "SS-039", "SS-041", "SS-042", "SS-044"
             ]
         );
     }

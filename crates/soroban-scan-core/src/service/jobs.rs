@@ -98,6 +98,12 @@ pub enum JobStoreError {
     /// No job has the requested identifier.
     #[error("unknown job id")]
     NotFound,
+    /// The job finished and its retention window has elapsed.
+    #[error("job expired after {} seconds of retention", retention.as_secs())]
+    Expired {
+        /// Configured retention for finished jobs.
+        retention: Duration,
+    },
     /// The requested state transition is not allowed.
     #[error("job is in state {status:?}; expected {expected:?}")]
     InvalidTransition {
@@ -115,6 +121,7 @@ impl JobStoreError {
             JobStoreError::PayloadTooLarge { .. } => "payload_too_large",
             JobStoreError::StoreFull { .. } => "store_full",
             JobStoreError::NotFound => "job_not_found",
+            JobStoreError::Expired { .. } => "job_expired",
             JobStoreError::InvalidTransition { .. } => "invalid_job_transition",
         }
     }
@@ -203,6 +210,23 @@ impl JobStore {
             .get(id)
             .cloned()
             .ok_or(JobStoreError::NotFound)
+    }
+
+    /// Returns a snapshot of one job, reporting a finished job whose retention
+    /// elapsed as [`JobStoreError::Expired`] instead of a generic not-found.
+    pub fn get_at(&self, id: &str, now: SystemTime) -> Result<Job, JobStoreError> {
+        let job = self.get(id)?;
+        if job.status.is_terminal() {
+            let elapsed = job
+                .finished_at
+                .and_then(|finished| now.duration_since(finished).ok());
+            if elapsed.is_some_and(|elapsed| elapsed >= self.limits.retention) {
+                return Err(JobStoreError::Expired {
+                    retention: self.limits.retention,
+                });
+            }
+        }
+        Ok(job)
     }
 
     /// Oldest queued job id, if any.
@@ -497,5 +521,31 @@ mod tests {
         store.start(&id).unwrap();
         store.fail_at(&id, "a long failure message", at(1)).unwrap();
         assert_eq!(store.get(&id).unwrap().error.as_deref(), Some("a lo"));
+    }
+
+    #[test]
+    fn expired_jobs_return_a_clear_error() {
+        let store = JobStore::new(limits(4, 64));
+        let id = store.submit_at("done", at(0)).unwrap();
+        store.start(&id).unwrap();
+        store.complete_at(&id, "report", at(10)).unwrap();
+
+        assert_eq!(
+            store.get_at(&id, at(69)).unwrap().status,
+            JobStatus::Completed
+        );
+        assert_eq!(
+            store.get_at(&id, at(70)),
+            Err(JobStoreError::Expired {
+                retention: Duration::from_secs(60)
+            })
+        );
+
+        let queued = store.submit_at("pending", at(0)).unwrap();
+        assert_eq!(
+            store.get_at(&queued, at(10_000)).unwrap().status,
+            JobStatus::Queued,
+            "queued work is never reported as expired"
+        );
     }
 }
