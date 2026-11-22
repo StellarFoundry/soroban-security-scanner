@@ -86,6 +86,14 @@ severity_overrides = { "SS-007" = "low" }
 # Per-rule confidence overrides
 confidence_overrides = { }
 
+# Named severity/confidence profiles. Select one with `profile`; unset means
+# only the overrides above apply.
+# profile = "strict"
+#
+# [rules.profiles.strict]
+# severity_overrides = { "SS-014" = "high" }
+# confidence_overrides = { }
+
 # Best-effort per-rule execution budget in milliseconds (disabled by default).
 # A rule that overruns is reported with RULE-005 and its findings are discarded.
 # time_budget_ms = 5000
@@ -134,6 +142,8 @@ max_output_tokens = 1024
 | `rules.enabled_categories` | array of categories | `[]` | If non-empty, only rules in these categories run. |
 | `rules.severity_overrides` | map id→severity | `{}` | Replace a rule's default severity. |
 | `rules.confidence_overrides` | map id→confidence | `{}` | Replace a rule's default confidence. |
+| `rules.profile` | string | *(unset)* | Name of the active profile under `rules.profiles`. Selecting an undefined profile is a configuration error. |
+| `rules.profiles.<name>` | table | `{}` | Named `severity_overrides` / `confidence_overrides`. Profile names use letters, digits, `-`, and `_`. |
 | `rules.time_budget_ms` | integer | *(disabled)* | Best-effort per-rule wall-clock budget in milliseconds. Overrunning rules are reported with `RULE-005` and their findings are discarded. The budget cannot preempt a rule already running, so a pathological rule still consumes its own runtime; it only bounds what the rule contributes to the scan. |
 | `ai.enabled` | bool | `false` | Enable the optional assistance layer (fails closed without a provider). |
 | `ai.provider` | string | *(none)* | Provider name; none is bundled. |
@@ -159,6 +169,36 @@ its category. The valid categories are:
 `authorization`, `authentication`, `access-control`, `cross-contract`, `token`,
 `storage`, `arithmetic`, `error-handling`, `events`, `resource-usage`,
 `configuration`, `dependencies`, `unsafe`.
+
+## Profiles
+
+A profile is a named set of per-rule severity and confidence overrides:
+
+```toml
+[rules]
+profile = "strict"
+
+[rules.profiles.strict]
+severity_overrides = { "SS-014" = "high" }
+confidence_overrides = { "SS-014" = "medium" }
+```
+
+Only the selected profile applies; defining a profile without selecting it has
+no effect. Precedence for one rule is:
+
+1. Built-in rule defaults.
+2. The active profile's severity/confidence override.
+3. The top-level `rules.severity_overrides` / `rules.confidence_overrides`,
+   which win over the profile.
+4. `min_severity` / `min_confidence` filtering, applied after overrides.
+
+Loading is deterministic: profile names and rule ids are validated when the
+config file is parsed. An undefined `rules.profile`, an empty or malformed
+profile name, or a malformed rule id (not `SS-###`) is a usage error and the
+scan does not start. A well-formed rule id that is not registered, or one whose
+rule is disabled, does not abort the scan: it emits a `CONFIG-005` diagnostic so
+the ineffective profile entry is visible. The default configuration defines no
+profiles, so behaviour is unchanged unless a profile is selected.
 
 For example, this disables all resource-usage heuristics while keeping the rest
 of the default rule set:
