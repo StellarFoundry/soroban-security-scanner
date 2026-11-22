@@ -33,6 +33,12 @@ The pipeline is deliberately small and deterministic:
 The scanner never compiles, executes, deploys, signs, or mutates the code it
 analyzes. It makes no network requests.
 
+Embedders may observe the pipeline through optional `engine::PipelineHooks`.
+Hooks are called synchronously between stages with a read-only `StageSummary`
+containing only the stage name and counts. They cannot alter findings or
+configuration, receive no source text, and get no network or code-execution
+capability. With no hooks registered, behavior is identical to a plain scan.
+
 ## What static analysis can establish
 
 Static analysis can establish facts about the source text with high precision:

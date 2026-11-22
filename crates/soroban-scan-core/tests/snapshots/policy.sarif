@@ -694,6 +694,34 @@
                 "level": "warning"
               },
               "fullDescription": {
+                "text": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored."
+              },
+              "help": {
+                "markdown": "## Ignored cross-contract call result\n\nA cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.\n\n### Remediation\n\nHandle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security\n- https://developers.stellar.org/docs/build/guides/contract-interactions",
+                "text": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.\n\nRemediation: Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-019",
+              "name": "Ignored cross-contract call result",
+              "properties": {
+                "category": "cross-contract",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security",
+                  "https://developers.stellar.org/docs/build/guides/contract-interactions"
+                ],
+                "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Ignored cross-contract call result"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
                 "text": "A contract entry point decodes caller-supplied bytes or XDR (`from_xdr`, `from_bytes`, or `try_from`) without checking the input length or handling a fallible decode result. Malformed or attacker-chosen payloads can yield unexpected values, panic the contract, or bypass validation that was assumed to happen during decoding. This is a syntactic heuristic and reports low confidence."
               },
               "help": {
@@ -827,6 +855,34 @@
               },
               "shortDescription": {
                 "text": "Unbounded string/bytes persisted from caller input"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "fullDescription": {
+                "text": "A storage `extend_ttl` or `set_ttl` call uses an integer literal outside the documented expected range of TTL ledgers. A zero or very small TTL expires entries almost immediately, while a value above the network maximum is rejected or signals a unit mistake (for example seconds instead of ledgers). Either case can cause lost data or unexpected transaction failures. The detector only inspects literal constants, not computed expressions."
+              },
+              "help": {
+                "markdown": "## TTL constant outside the expected range\n\nA storage `extend_ttl` or `set_ttl` call uses an integer literal outside the documented expected range of TTL ledgers. A zero or very small TTL expires entries almost immediately, while a value above the network maximum is rejected or signals a unit mistake (for example seconds instead of ledgers). Either case can cause lost data or unexpected transaction failures. The detector only inspects literal constants, not computed expressions.\n\n### Remediation\n\nDefine named TTL constants based on the contract's retention policy and the Soroban network maximum (about six months of ledgers), then pass those constants to `extend_ttl`/`set_ttl`. Use the same policy for every key so entries expire predictably instead of using ad-hoc literals.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival",
+                "text": "A storage `extend_ttl` or `set_ttl` call uses an integer literal outside the documented expected range of TTL ledgers. A zero or very small TTL expires entries almost immediately, while a value above the network maximum is rejected or signals a unit mistake (for example seconds instead of ledgers). Either case can cause lost data or unexpected transaction failures. The detector only inspects literal constants, not computed expressions.\n\nRemediation: Define named TTL constants based on the contract's retention policy and the Soroban network maximum (about six months of ledgers), then pass those constants to `extend_ttl`/`set_ttl`. Use the same policy for every key so entries expire predictably instead of using ad-hoc literals."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-026",
+              "name": "TTL constant outside the expected range",
+              "properties": {
+                "category": "resource-usage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+                ],
+                "remediation": "Define named TTL constants based on the contract's retention policy and the Soroban network maximum (about six months of ledgers), then pass those constants to `extend_ttl`/`set_ttl`. Use the same policy for every key so entries expire predictably instead of using ad-hoc literals.",
+                "severity": "low"
+              },
+              "shortDescription": {
+                "text": "TTL constant outside the expected range"
               }
             },
             {
@@ -1022,6 +1078,34 @@
               },
               "shortDescription": {
                 "text": "Wildcard import from the Soroban SDK"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A contract entry point uses `env.deployer()` to deploy or register a contract without any `require_auth` authorization fact in the function or its intra-file helpers. Deploying contracts is a privileged action; if it is open to any caller, an attacker can install attacker-controlled code, replace a contract, or consume the contract's deployment quota. The detector is syntactic and reports low confidence because authorization may be enforced elsewhere."
+              },
+              "help": {
+                "markdown": "## Unvalidated deployer usage\n\nA contract entry point uses `env.deployer()` to deploy or register a contract without any `require_auth` authorization fact in the function or its intra-file helpers. Deploying contracts is a privileged action; if it is open to any caller, an attacker can install attacker-controlled code, replace a contract, or consume the contract's deployment quota. The detector is syntactic and reports low confidence because authorization may be enforced elsewhere.\n\n### Remediation\n\nRequire authorization from the administrator or the address that owns the deployment before calling `env.deployer()`, for example `admin.require_auth()` after loading a trusted admin address from storage. Bind the authorization to the deployed address or salt where possible, and reject callers that are not allowed to deploy.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization\n- https://developers.stellar.org/docs/build/guides/deploying-contracts",
+                "text": "A contract entry point uses `env.deployer()` to deploy or register a contract without any `require_auth` authorization fact in the function or its intra-file helpers. Deploying contracts is a privileged action; if it is open to any caller, an attacker can install attacker-controlled code, replace a contract, or consume the contract's deployment quota. The detector is syntactic and reports low confidence because authorization may be enforced elsewhere.\n\nRemediation: Require authorization from the administrator or the address that owns the deployment before calling `env.deployer()`, for example `admin.require_auth()` after loading a trusted admin address from storage. Bind the authorization to the deployed address or salt where possible, and reject callers that are not allowed to deploy."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-034",
+              "name": "Unvalidated deployer usage",
+              "properties": {
+                "category": "access-control",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                  "https://developers.stellar.org/docs/build/guides/deploying-contracts"
+                ],
+                "remediation": "Require authorization from the administrator or the address that owns the deployment before calling `env.deployer()`, for example `admin.require_auth()` after loading a trusted admin address from storage. Bind the authorization to the deployed address or salt where possible, and reject callers that are not allowed to deploy.",
+                "severity": "high"
+              },
+              "shortDescription": {
+                "text": "Unvalidated deployer usage"
               }
             },
             {

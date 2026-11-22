@@ -171,3 +171,18 @@ why = "Whitespace between the symbol_short macro name and its delimiter does not
 file = "SS-041/conditional_while.rs"
 expect = "trigger"
 why = "A spaced require_auth nested in an if branch inside a while loop is still a conditional authorization check inside a loop."
+
+[SS-019]
+file = "SS-019/spaced_client_call.rs"
+expect = "trigger"
+why = "Whitespace around the client constructor and the client method call does not hide that the cross-contract result is discarded."
+
+[SS-026]
+file = "SS-026/underscored_literal.rs"
+expect = "trigger"
+why = "Underscored and typed integer literals are normalized before the range check, so a zero threshold is still reported."
+
+[SS-034]
+file = "SS-034/spaced_deploy_chain.rs"
+expect = "trigger"
+why = "Whitespace inside the deployer chain does not hide an unauthenticated deployment."

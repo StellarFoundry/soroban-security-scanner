@@ -42,6 +42,20 @@ discovery ──▶ parsing ──▶ analysis context ──▶ rule engine ─
                  └─ syn-based AST parsing with source spans
 ```
 
+### Optional pipeline hooks
+
+The four logical stages are exposed as `engine::PipelineStage`: discovery,
+parsing, analysis, and post-processing. `engine::PipelineHooks` lets embedding
+applications register observation-only `PipelineHook` callbacks that receive a
+small `StageSummary` (stage name, file count, finding count) when each stage
+completes. The default hook set is empty, so `scan` and `run_scan` behave
+exactly as before.
+
+Hooks cannot change the loaded project, the registry, the configuration, or the
+findings. They receive no source text, file paths, or process handle, and the
+engine gives them no network or code-execution capability. They are intended for
+progress reporting, metrics, and audit logging, not for analysis.
+
 ### 1. Discovery and frontends
 
 The engine loads projects through a bounded `frontend::Frontend` trait that

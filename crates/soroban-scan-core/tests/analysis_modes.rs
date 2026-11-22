@@ -30,7 +30,7 @@ fn scan(name: &str, mode: AnalysisMode) -> engine::ScanOutcome {
 fn default_mode_runs_the_soroban_rule_set() {
     let outcome = scan("generic-rust", AnalysisMode::Soroban);
     assert_eq!(outcome.stats.analysis_mode, AnalysisMode::Soroban);
-    assert_eq!(outcome.stats.rules_run, 33);
+    assert_eq!(outcome.stats.rules_run, 36);
     assert_eq!(outcome.stats.rules_skipped, 0);
 }
 
@@ -39,7 +39,7 @@ fn generic_mode_skips_soroban_only_rules_and_says_so() {
     let outcome = scan("generic-rust", AnalysisMode::Generic);
     assert_eq!(outcome.stats.analysis_mode, AnalysisMode::Generic);
     assert_eq!(outcome.stats.rules_run, 0);
-    assert_eq!(outcome.stats.rules_skipped, 33);
+    assert_eq!(outcome.stats.rules_skipped, 36);
     assert!(outcome.findings.is_empty());
 
     let diagnostic = outcome
@@ -59,7 +59,7 @@ fn auto_mode_selects_generic_only_for_plain_rust() {
 
     let soroban = scan("soroban-confirmed", AnalysisMode::Auto);
     assert_eq!(soroban.stats.analysis_mode, AnalysisMode::Soroban);
-    assert_eq!(soroban.stats.rules_run, 33);
+    assert_eq!(soroban.stats.rules_run, 36);
 }
 
 #[test]
