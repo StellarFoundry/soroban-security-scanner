@@ -37,6 +37,7 @@ pub mod frontend;
 pub mod imports;
 pub mod manifest;
 pub mod model;
+pub mod monorepo;
 pub mod pack;
 pub mod policy;
 pub mod project;

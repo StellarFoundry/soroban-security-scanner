@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Opt-in monorepo path filtering for `scan`: `--include-project` and
+  `--exclude-project` globs and a `--changed-files` list select Cargo projects
+  (including nested workspaces) under the repository root, changed files map to
+  their deepest owning project, and the effective scope is printed to stderr.
+  Paths can never leave the scan root (`#343`).
 - Findings carry an optional, additive `exploitability` context (`reachability`,
   `entry_point`, and reserved `taint`) when the control-flow graph covers the
   finding line. It is omitted when evidence is incomplete and never changes

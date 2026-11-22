@@ -73,6 +73,26 @@ soroban-scan scan . --write-baseline .soroban-scan-baseline.json --fail-on none
     fail-on: none
 ```
 
+## GitHub Actions — changed projects in a monorepo
+
+`--changed-files` scans whole Cargo projects that a pull request touched,
+rather than individual files, so cross-file findings inside a project are kept.
+See [Monorepo path filtering](cli.md#monorepo-path-filtering).
+
+```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+- name: List changed files
+  shell: bash
+  run: git diff --name-only "origin/${GITHUB_BASE_REF}...HEAD" > changed.txt
+- uses: AyinkxLab/soroban-security-scanner@main
+  with:
+    path: .
+    fail-on: high
+    args: --changed-files changed.txt --exclude-project 'examples/**'
+```
+
 ## GitLab CI
 
 ```yaml

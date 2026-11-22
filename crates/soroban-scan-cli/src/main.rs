@@ -28,6 +28,7 @@ use soroban_scan_core::engine;
 use soroban_scan_core::fingerprint::FingerprintStrategy;
 use soroban_scan_core::frontend::{self, Frontend};
 use soroban_scan_core::model::DiagnosticCode;
+use soroban_scan_core::monorepo::{self, ScopeFilter};
 use soroban_scan_core::policy::PolicyDocument;
 use soroban_scan_core::redaction;
 use soroban_scan_core::registry::RuleRegistry;
@@ -497,6 +498,24 @@ struct ScanArgs {
     #[arg(long, value_name = "FILE")]
     files_from: Option<PathBuf>,
 
+    /// Monorepo filtering: scan only the Cargo projects under PATH whose
+    /// root-relative directory, or a parent project's, matches GLOB.
+    /// Repeatable; opt-in. The effective scope is printed to stderr.
+    #[arg(long = "include-project", value_name = "GLOB")]
+    include_project: Vec<String>,
+
+    /// Monorepo filtering: skip the Cargo projects whose root-relative
+    /// directory, or a parent project's, matches GLOB. Repeatable; wins over
+    /// --include-project.
+    #[arg(long = "exclude-project", value_name = "GLOB")]
+    exclude_project: Vec<String>,
+
+    /// Monorepo filtering: scan only the Cargo projects that own a file in
+    /// this newline-separated list of paths relative to PATH (for example
+    /// `git diff --name-only`). Paths may not leave PATH.
+    #[arg(long, value_name = "FILE", conflicts_with = "files_from")]
+    changed_files: Option<PathBuf>,
+
     /// Disable a rule by id. Repeatable.
     #[arg(long = "disable", value_name = "RULE")]
     disable: Vec<String>,
@@ -942,6 +961,16 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
         }),
     );
 
+    if stdin_mode
+        && (!args.include_project.is_empty()
+            || !args.exclude_project.is_empty()
+            || args.changed_files.is_some())
+    {
+        return Err(CliError::Usage(
+            "monorepo filtering cannot be combined with --stdin-filename".to_string(),
+        ));
+    }
+
     let mut outcome = if let Some(name) = &args.stdin_filename {
         let file_name = validate_logical_filename(name)?;
         let source = read_stdin_bounded()?;
@@ -958,6 +987,32 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
             .load_files(path, &files, &config.discovery_options())
             .map_err(runtime)?;
         engine::scan(&loaded, registry, &config)
+    } else if let Some(filter) = monorepo_filter(&args)? {
+        let root = single_path(&args.paths, "monorepo filtering")?;
+        if !root.is_dir() {
+            return Err(CliError::Usage(
+                "monorepo filtering requires PATH to be a directory".to_string(),
+            ));
+        }
+        let scope =
+            monorepo::resolve(root, &filter).map_err(|error| CliError::Usage(error.to_string()))?;
+        if !args.quiet {
+            eprintln!("{}", scope.describe());
+        }
+        let mut outcomes = Vec::with_capacity(scope.roots.len());
+        for project in &scope.roots {
+            let mut project_config = config.clone();
+            project_config
+                .exclude
+                .extend(scope.nested_excludes(project).iter().cloned());
+            let path = if project == monorepo::ROOT_PROJECT {
+                root.to_path_buf()
+            } else {
+                root.join(project)
+            };
+            outcomes.push(scan_path(&path, registry, &project_config)?);
+        }
+        engine::merge(outcomes, &scope.roots)
     } else if multiple {
         let labels = args
             .paths
@@ -1873,6 +1928,48 @@ fn read_file_list(list: &Path, root: &Path) -> CliResult<Vec<PathBuf>> {
 }
 
 /// Returns the single allowed path, or a usage error naming the offending flag.
+/// Largest changed-file list read for monorepo filtering (8 MiB).
+const MAX_CHANGED_FILES_BYTES: u64 = 8 * 1024 * 1024;
+
+/// Builds the monorepo scope filter, or `None` when no filtering flag is set.
+fn monorepo_filter(args: &ScanArgs) -> CliResult<Option<ScopeFilter>> {
+    let changed_files = match &args.changed_files {
+        Some(list) => {
+            let size = std::fs::metadata(list)
+                .map_err(|e| {
+                    CliError::Runtime(format!(
+                        "cannot read changed-file list {}: {e}",
+                        list.display()
+                    ))
+                })?
+                .len();
+            if size > MAX_CHANGED_FILES_BYTES {
+                return Err(CliError::Usage(format!(
+                    "changed-file list {} is larger than {MAX_CHANGED_FILES_BYTES} bytes",
+                    list.display()
+                )));
+            }
+            let text = std::fs::read_to_string(list).map_err(|e| {
+                CliError::Runtime(format!(
+                    "cannot read changed-file list {}: {e}",
+                    list.display()
+                ))
+            })?;
+            Some(
+                monorepo::parse_changed_files(&text)
+                    .map_err(|error| CliError::Usage(error.to_string()))?,
+            )
+        }
+        None => None,
+    };
+    let filter = ScopeFilter {
+        include: args.include_project.clone(),
+        exclude: args.exclude_project.clone(),
+        changed_files,
+    };
+    Ok(filter.is_active().then_some(filter))
+}
+
 fn single_path<'a>(paths: &'a [PathBuf], flag: &str) -> CliResult<&'a Path> {
     match paths {
         [only] => Ok(only.as_path()),

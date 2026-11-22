@@ -92,6 +92,9 @@ roots in one run.
 | `--config <FILE>` | Use a specific configuration file. |
 | `--no-config` | Ignore discovered configuration and use built-in defaults (mutually exclusive with `--config`). |
 | `--files-from <FILE>` | Read a newline-separated list of files to scan (relative to `PATH`). |
+| `--include-project <GLOB>` | Monorepo filtering: scan only Cargo projects matching `GLOB` (repeatable). See [Monorepo path filtering](#monorepo-path-filtering). |
+| `--exclude-project <GLOB>` | Monorepo filtering: skip Cargo projects matching `GLOB` (repeatable); wins over `--include-project`. |
+| `--changed-files <FILE>` | Monorepo filtering: scan only Cargo projects that own a file in this list (relative to `PATH`). |
 | `--stdin-filename <NAME>` | Scan a single source read from stdin, using `NAME` as its logical path. |
 | `--disable <RULE>` | Disable a rule by id (repeatable). |
 | `--rule <RULE>` | Run only the given rule(s) (repeatable). |
@@ -346,6 +349,67 @@ soroban-scan scan contracts/alpha contracts/beta --format json
 - Each path must live inside the current directory; a path that escapes it
   (including one containing `..`) is a usage error (exit code `2`).
 - `--files-from` accepts exactly one `PATH`.
+
+### Monorepo path filtering
+
+Scanning a whole monorepo on every pull request is slow and noisy. Three opt-in
+flags narrow a scan of one directory `PATH` (the repository root) to the Cargo
+projects that matter:
+
+```bash
+git diff --name-only "origin/main...HEAD" > changed.txt
+soroban-scan scan . --changed-files changed.txt \
+  --exclude-project 'contracts/vault'
+```
+
+A **project** is any directory under `PATH` that contains a `Cargo.toml`,
+including `PATH` itself (shown as `.`) and nested workspaces and members. The
+filters apply in this order; the first that rejects a project wins:
+
+1. `--exclude-project <GLOB>` (repeatable) skips a project whose root-relative
+   directory matches, together with every project nested inside it.
+2. `--include-project <GLOB>` (repeatable) keeps only projects that match, or
+   that are nested in a project that matches, so including a workspace includes
+   its members. Without it every project is included.
+3. `--changed-files <FILE>` keeps only projects that own at least one listed
+   file. A file belongs to the **deepest** project that contains it, so a change
+   in `contracts/vault/src/lib.rs` selects `contracts/vault`, not `contracts`.
+   A file outside every project selects nothing.
+
+Globs use the same syntax as `--exclude` and match the project directory
+relative to `PATH` (for example `contracts/token`); `*` may cross `/`. A
+selected project nested in another selected project is scanned as part of it;
+unselected projects nested in a scanned one are left out of that scan.
+Reported paths stay relative to `PATH`. `--exclude` globs apply relative to
+each scanned project.
+
+The effective scope is printed to stderr before the report (`--quiet` hides
+it). For the command above, when only `contracts/token/src/lib.rs` changed:
+
+```text
+effective scope: 1 of 6 project(s): contracts/token
+  skipped . (unchanged)
+  skipped contracts (unchanged)
+  skipped contracts/vault (excluded)
+  skipped contracts/vault/adapter (excluded)
+  skipped tools/gen (unchanged)
+```
+
+When nothing is selected the scan reports no findings and exits `0`. Without
+any of the three flags the scan is unchanged.
+
+Safety and limits:
+
+- The project walk never follows symbolic links, skips `target`, `.git`,
+  `node_modules`, `vendor`, and the other always-ignored directories, and stops
+  at depth 8 and 512 projects (with a warning).
+- Changed-file entries must be relative to `PATH`; absolute paths and `..`
+  components are usage errors (exit code `2`), so nothing outside the
+  repository root is scanned. Lists are capped at 8 MiB and 20,000 entries;
+  blank lines and `#` comments are ignored.
+- Project globs may not start with `/` or contain `..`.
+- `PATH` must be a single directory. `--changed-files` cannot be combined with
+  `--files-from`, and none of the flags work with `--stdin-filename`.
 
 ### Bounding report size
 
