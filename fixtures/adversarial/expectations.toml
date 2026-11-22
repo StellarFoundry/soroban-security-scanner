@@ -204,3 +204,8 @@ file = "SS-039/sample.rs"
 expect = "trigger"
 why = "A persistent get split across lines is still a read with no TTL extension in the entry point or its helpers."
 
+
+[SS-046]
+file = "SS-046/sample.rs"
+expect = "trigger"
+why = "A storage chain and key construction split across lines still use one key for two struct value shapes."

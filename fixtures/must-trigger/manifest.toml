@@ -162,3 +162,7 @@ why = "A caller-supplied recipient reaches a token transfer without validation, 
 file = "SS-039.rs"
 why = "A persistent read has no TTL management, so SS-039 must always trigger."
 
+[SS-046]
+file = "SS-046.rs"
+why = "One key construction stores two different record shapes, so SS-046 must always trigger."
+
