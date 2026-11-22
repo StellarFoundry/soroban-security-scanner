@@ -903,13 +903,17 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
     if let Some(policy) = &policy {
         policy.apply(&mut config);
     }
-    let policy_fail_on = policy
-        .as_ref()
-        .map(PolicyDocument::fail_threshold)
-        .transpose()
-        .map_err(|error| CliError::Usage(error.to_string()))?
-        .flatten()
-        .map(FailOnArg::from_severity);
+    // `fail_on = "none"` in the policy disables the gate; it must not fall
+    // through to the built-in `high` default like an absent `fail_on` does.
+    let policy_fail_on = match &policy {
+        Some(policy) if policy.fail_on.is_some() => Some(
+            policy
+                .fail_threshold()
+                .map_err(|error| CliError::Usage(error.to_string()))?
+                .map_or(FailOnArg::None, FailOnArg::from_severity),
+        ),
+        _ => None,
+    };
     let effective_fail_on = args.fail_on.or(policy_fail_on).unwrap_or(FailOnArg::High);
 
     if let Some(severity) = args.min_severity {

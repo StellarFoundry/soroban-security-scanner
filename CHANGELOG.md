@@ -156,6 +156,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `fail_on = "none"` in a `--policy-file` now disables the gate instead of
+  falling back to the default `high` threshold.
 - Compilation and TOML parsing were restored after the `syn` 3 and `toml` 1.x
   upgrades: `ItemImpl::trait_` is now a two-element tuple, and manifests and
   configs are parsed as TOML documents with `toml::from_str`.
