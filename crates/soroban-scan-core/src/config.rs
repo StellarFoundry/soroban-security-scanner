@@ -12,6 +12,7 @@ use serde::{Deserialize, Deserializer, Serialize};
 use crate::ai::AiConfig;
 use crate::category::Category;
 use crate::confidence::Confidence;
+use crate::fingerprint::FingerprintStrategy;
 use crate::severity::Severity;
 
 /// Deserializes category names, accepting both kebab-case and snake_case.
@@ -409,6 +410,9 @@ pub struct ScanConfig {
     pub waivers: Vec<WaiverRule>,
     /// Report fields to replace with a stable hash at render time.
     pub redact: Vec<String>,
+    /// Fingerprint strategy used for baselines. Defaults to the historical
+    /// `rule-file-evidence` hash so existing baselines remain valid.
+    pub fingerprint: FingerprintStrategy,
     /// Rule selection and overrides.
     pub rules: RulesConfig,
     /// Optional assistance layer configuration (disabled by default).
@@ -434,6 +438,7 @@ impl Default for ScanConfig {
             suppressions: Vec::new(),
             waivers: Vec::new(),
             redact: Vec::new(),
+            fingerprint: FingerprintStrategy::default(),
             rules: RulesConfig::default(),
             ai: AiConfig::default(),
             packs: PacksConfig::default(),
@@ -498,6 +503,20 @@ mod tests {
         assert_eq!(config.min_severity, Severity::Info);
         assert_eq!(config.min_confidence, Confidence::Low);
         assert!(!config.follow_symlinks);
+    }
+
+    #[test]
+    fn fingerprint_strategy_defaults_and_parses() {
+        assert_eq!(
+            ScanConfig::default().fingerprint,
+            crate::fingerprint::FingerprintStrategy::RuleFileEvidence
+        );
+        let config = ScanConfig::from_toml("fingerprint = \"path-independent\"\n").unwrap();
+        assert_eq!(
+            config.fingerprint,
+            crate::fingerprint::FingerprintStrategy::PathIndependent
+        );
+        assert!(ScanConfig::from_toml("fingerprint = \"nope\"\n").is_err());
     }
 
     #[test]

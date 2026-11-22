@@ -7,7 +7,7 @@ use crate::finding::Finding;
 use crate::rule::{Rule, RuleMetadata};
 use crate::severity::Severity;
 
-use super::util::{facts_from_file_with_imports, location_for};
+use super::util::location_for;
 
 /// Rule metadata.
 pub const METADATA: RuleMetadata = RuleMetadata {
@@ -44,10 +44,10 @@ impl Rule for UnsafeCode {
             return;
         }
         for source in ctx.sources() {
-            let Some(file) = &source.syntax else {
+            if source.syntax.is_none() {
                 continue;
-            };
-            let facts = facts_from_file_with_imports(file, &source.imports);
+            }
+            let facts = ctx.facts_for_source(source);
             for (line, column) in &facts.unsafe_locations {
                 let location = location_for(ctx, source, *line, *column);
                 let evidence = format!("unsafe block/expression in {}", source.path.display());

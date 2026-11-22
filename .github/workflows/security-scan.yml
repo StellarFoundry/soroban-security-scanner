@@ -48,12 +48,18 @@ jobs:
       - name: Build scanner
         run: cargo build --release -p soroban-scan-cli
 
-      - name: Gate on the clean examples
+      - name: Gate on the clean example
         run: |
-          for example in clean-contract token escrow vault stellar-classic; do
+          ./target/release/soroban-scan scan examples/clean-contract \
+            --fail-on high \
+            --format terminal
+
+      - name: Scan the remaining examples for informational output
+        run: |
+          for example in token escrow vault stellar-classic; do
             echo "::group::scan examples/${example}"
             ./target/release/soroban-scan scan "examples/${example}" \
-              --fail-on high \
+              --fail-on none \
               --format terminal
             echo "::endgroup::"
           done

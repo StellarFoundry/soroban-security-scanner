@@ -47,6 +47,33 @@ soroban-scan scan ./contracts \
   --format json
 ```
 
+## Fingerprint strategies
+
+A finding fingerprint determines whether a later scan considers the finding
+**new** or **existing**. The strategy is configurable with
+`--fingerprint-strategy` or the `fingerprint` configuration field.
+
+| Strategy | Hashes | Use when |
+| -------- | ------ | -------- |
+| `rule-file-evidence` (default) | rule id, file path, evidence | You want the historical behavior. Stable across unrelated line shifts. |
+| `rule-file-line-evidence` | rule id, file path, line, evidence | You need line-sensitive matching. |
+| `rule-file-line-column-evidence` | rule id, file path, line, column, evidence | You need exact position matching. |
+| `path-independent` | rule id, evidence | Refactors rename or move files and you want findings to keep matching. |
+
+The default is byte-for-byte the historical fingerprint, so **existing baselines
+remain valid** until you deliberately change the strategy.
+
+> [!WARNING]
+> Changing the fingerprint strategy invalidates existing baselines: findings that
+> match under one strategy may appear new under another. Regenerate the baseline
+> (`--write-baseline`) in the same change and review the diff before merging.
+
+`path-independent` deliberately omits the file path. That makes a renamed or
+moved file keep its baseline status, but it also increases the chance of
+collisions: two structurally identical findings in different files produce the
+same fingerprint. Review `path-independent` baselines for duplicate findings, and
+prefer the default when file paths are stable.
+
 ## Merging baselines
 
 `--baseline` is repeatable, so per-package baselines can be composed for one

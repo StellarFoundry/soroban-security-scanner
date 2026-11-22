@@ -106,8 +106,22 @@ tests, and documentation under `docs/rules/detectors/`:
 - [x] SS-015 Deprecated Soroban SDK version (low/medium).
 - [x] SS-016 Unbounded data stored in instance storage (medium/low).
 - [x] SS-017 Authorization after state mutation (medium/medium).
+- [x] SS-018 Unchecked integer cast (medium/low).
+- [x] SS-020 Unvalidated XDR or bytes deserialization (medium/low).
+- [x] SS-021 Durable data written to temporary storage (medium/low).
+- [x] SS-022 Unsafe symbol_short key (medium/medium).
+- [x] SS-023 Sensitive-looking data published in events (medium/low).
+- [x] SS-025 Unbounded string/bytes persisted from caller input (medium/medium).
+- [x] SS-027 Contract's own address used as an authorization subject (high/medium).
+- [x] SS-028 Cross-contract call without a reentrancy guard (high/low).
 - [x] SS-029 Public test or debug hook in a contract entry point (medium/medium).
+- [x] SS-030 Token client built from an unvalidated caller address (high/low).
+- [x] SS-031 Event topic derived from a caller-controlled parameter (medium/low).
+- [x] SS-032 Redundant require_auth in loop (low/medium).
 - [x] SS-033 Wildcard import from the Soroban SDK (low/high).
+- [x] SS-035 Ignored checked-arithmetic result (high/medium).
+- [x] SS-037 Competing authorization calls (medium/low).
+- [x] SS-041 Authorization check inside a loop (medium/low).
 
 Supporting work:
 

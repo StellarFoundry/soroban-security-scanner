@@ -14,6 +14,13 @@ libfuzzer-sys = "0.4"
 path = "../crates/soroban-scan-core"
 
 [[bin]]
+name = "rule_engine"
+path = "fuzz_targets/rule_engine.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
 name = "parse_source"
 path = "fuzz_targets/parse_source.rs"
 test = false

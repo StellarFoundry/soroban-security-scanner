@@ -70,6 +70,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `category` | `Category` enum and parsing. | Nothing in the crate. |
 | `model` | Serializable project/manifest/diagnostic data model. | Nothing in the crate. |
 | `finding` | `Finding`, `SourceLocation`, fingerprints, identity, and sort keys. | `category`, `confidence`, `rule`, `severity`. |
+| `fingerprint` | Configurable fingerprint strategies, including the backward-compatible default and path-independent mode. | `finding`. |
 | `rule` | `Rule` trait and `RuleMetadata`. | `category`, `confidence`, `context`, `finding`, `severity`. |
 | `registry` | Registration, lookup, and deterministic metadata ordering for rules. | `category`, `rule`. |
 | `config` | Layered `ScanConfig` and validation; repository config is untrusted input. | `ai`, `category`, `confidence`, `severity`. |
@@ -84,7 +85,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `imports` | Best-effort per-file `use` import map and path canonicalization. | Nothing in the crate. |
 | `project` | Orchestrates discovery, manifest loading, source parsing, Soroban classification, detection evidence, SDK matrix warnings, and optional target analysis. | `detection`, `discovery`, `error`, `manifest`, `model`, `sdk_matrix`, `soroban`, `source`, `target`, `unsupported`. |
 | `soroban` | Soroban evidence and project classification; never executes contracts. | `model`. |
-| `context` | Immutable `AnalysisContext` passed to rules. | `model`, `source`. |
+| `context` | Read-only `AnalysisContext` passed to rules, with a per-source/per-function memoized fact cache (interior mutability is used only for memoization; results stay deterministic and file-scoped). | `model`, `rules::util`, `source`. |
 | `rules` | Built-in detectors, rule metadata validation, and shared analysis helpers. | `category`, `confidence`, `context`, `finding`, `rule`, `severity`, `source`. |
 | `engine` | Runs enabled rules, collects/sorts/deduplicates findings, applies suppressions and baselines, and loads projects through the frontend trait. | `config`, `context`, `error`, `finding`, `frontend`, `model`, `registry`, `suppression`. |
 | `suppression` | Inline `ignore` directives and source ranges. | `finding`-adjacent data only. |
@@ -92,7 +93,12 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `report` | Terminal, JSON, SARIF, Markdown, HTML, and GitHub renderers. | `config`, `engine`, `finding`, `model`, `registry`, `rule`, `severity`. |
 | `redaction` | Opt-in hashing of selected report fields at render time; fingerprints stay intact. | `baseline`, `engine`, `finding`. |
 | `pack` | Rule pack manifest parsing, detached signature verification, keyrings, and rotation/revocation. | `config`, `error`. |
+| `policy` | Policy document parsing, validation, and deterministic evaluation. | `config`, `error`, `model`. |
 | `ai` | Optional, advisory assistance; deterministic engine remains authoritative. | `category`, `finding`, `rule`, `severity`. |
+| `api_auth` | Framework-independent bearer token parsing and verification for API integrations. | Nothing in the crate. |
+| `corpus` | Read-only detector fixture, documentation, and must-trigger coverage reporting. | `registry`. |
+| `telemetry` | Opt-in, bounded telemetry and crash-event payloads with no source text or paths. | `config`, `engine`, `error`, `model`, `severity`. |
+| `service` | Transport-agnostic scan API adapter and bounded job storage for an embedding service. No listener or network access. | `api_auth`, `config`, `engine`, `error`, `registry`, `report`. |
 
 ## Subsystem submodules
 
@@ -101,6 +107,8 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `ai::cache` | Bounded, deterministic LRU cache for advisory assistance. |
 | `ai::http` | Opt-in provider transport; compiled only with the `ai-http` feature. |
 | `ai::redaction` | Deterministic redaction of credential-like text before assistance. |
+| `service::api` | Transport-independent request/response mapping, bearer checks, and a synchronous worker hook. |
+| `service::jobs` | Thread-safe job lifecycle, count and payload caps, and terminal-job retention. |
 | `report` | Single renderer module (`report::render`, `render_*` helpers). |
 | `rules::*` | One module per detector (for example `rules::missing_authorization`), plus `rules::util` for shared syntax helpers and `rules::validation` for metadata/docs checks. |
 | `rules::test_support` | Test-only helpers for detector unit tests. |
@@ -124,7 +132,7 @@ external consumers is narrower:
 - `baseline` (`Baseline`, `compare`, `serialize`/`parse`)
 - `finding`, `model`, `severity`, `confidence`, `category`, `rule`
 
-Modules such as `discovery`, `manifest`, `source`, `soroban`, `context`,
+Modules such as `api_auth`, `corpus`, `discovery`, `policy`, `manifest`, `source`, `soroban`, `context`,
 `suppression`, `rules`, and `ai` are public for testing and contributor use.
 Changing their signatures is allowed in a `0.x` release but should be called out
 in `CHANGELOG.md`.
