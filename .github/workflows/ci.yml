@@ -213,6 +213,20 @@ jobs:
       - name: Run tests
         run: python -m unittest discover -s tests -v
 
+  typescript-client:
+    name: TypeScript client
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: clients/typescript
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci --ignore-scripts
+      - run: npm test
   deny:
     name: Dependency audit
     runs-on: ubuntu-latest

@@ -27,6 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rule pack signing and verification: verify detached Ed25519 signatures (`pack.sig`)
   against trusted keyrings, reject unsigned packs unless allowed via `--allow-unsigned-packs`,
   and support key rotation and revocation (`#362`).
+- TypeScript API client (`clients/typescript`): dependency-free, ESM and CommonJS,
+  with typed report and error models and submit, poll and fetch-report helpers for
+  the documented scan API (`POST /v1/scans`, `GET /v1/jobs/{id}`, bearer auth).
+  Requests are bounded (timeouts, size caps, no redirects) and the base URL must be
+  HTTPS (loopback excepted) (`#357`).
 - SS-018 "Unchecked integer cast" (medium/low): flags narrowing `as` casts of
   function parameters and storage reads, ignores widening and same-width casts,
   and recommends `TryFrom`/`try_into` (`#117`).
