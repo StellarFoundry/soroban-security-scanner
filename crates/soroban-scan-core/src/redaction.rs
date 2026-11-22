@@ -246,6 +246,7 @@ mod tests {
             references: vec![],
             fingerprint: "stable-fingerprint".to_string(),
             reachability: crate::analysis::cfg::Reachability::Unknown,
+            exploitability: None,
         }
     }
 

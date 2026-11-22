@@ -18,7 +18,7 @@ use crate::analysis::cfg::{self, ControlFlowGraph};
 use crate::config::{AnalysisMode, ScanConfig, SuppressionRule, WaiverRule};
 use crate::context::AnalysisContext;
 use crate::error::ScanError;
-use crate::finding::Finding;
+use crate::finding::{ExploitabilityContext, Finding};
 use crate::fingerprint::FingerprintStrategy;
 use crate::frontend::{self, Frontend, LoadedProject};
 use crate::model::{
@@ -499,11 +499,13 @@ fn deduplicate_overlapping(findings: &mut Vec<Finding>) {
     *findings = kept;
 }
 
-/// Annotates each finding with the reachability of its line.
+/// Annotates each finding with the reachability of its line and, when the CFG
+/// covers the line, optional exploitability context.
 ///
-/// Findings outside a parsed function keep `Unknown`. Graphs are built once per
-/// function and cached by (file, line range), so a file with many findings in
-/// the same function is not re-analysed per finding.
+/// Findings outside a parsed function keep `Unknown` and no exploitability
+/// context. Graphs are built once per function and cached by (file, line
+/// range), so a file with many findings in the same function is not
+/// re-analysed per finding.
 fn annotate_reachability(sources: &[ParsedSource], findings: &mut [Finding]) {
     let indexes: BTreeMap<String, cfg::FunctionIndex<'_>> = sources
         .iter()
@@ -513,6 +515,10 @@ fn annotate_reachability(sources: &[ParsedSource], findings: &mut [Finding]) {
                 .as_ref()
                 .map(|syntax| (normalize_rel(&source.path), cfg::FunctionIndex::new(syntax)))
         })
+        .collect();
+    let sources_by_file: BTreeMap<String, &ParsedSource> = sources
+        .iter()
+        .map(|source| (normalize_rel(&source.path), source))
         .collect();
     let mut graphs: BTreeMap<(String, usize, usize), Arc<ControlFlowGraph>> = BTreeMap::new();
 
@@ -525,9 +531,31 @@ fn annotate_reachability(sources: &[ParsedSource], findings: &mut [Finding]) {
             continue;
         };
         let graph = graphs
-            .entry((file, range.0, range.1))
+            .entry((file.clone(), range.0, range.1))
             .or_insert_with(|| Arc::new(cfg::build_function_cfg(block)));
-        finding.reachability = graph.reachability_at(finding.location.line);
+        let reachability = graph.reachability_at(finding.location.line);
+        finding.reachability = reachability;
+
+        if reachability == crate::analysis::cfg::Reachability::Unknown {
+            continue;
+        }
+        let entry_point = sources_by_file.get(&file).and_then(|source| {
+            source
+                .functions
+                .iter()
+                .filter(|function| {
+                    function.is_contract_entry_point
+                        && function.line <= finding.location.line
+                        && finding.location.line <= function.end_line
+                })
+                .map(|function| function.qualified_name.clone())
+                .next()
+        });
+        finding.exploitability = Some(ExploitabilityContext {
+            reachability: reachability.as_str().to_string(),
+            entry_point,
+            taint: None,
+        });
     }
 }
 

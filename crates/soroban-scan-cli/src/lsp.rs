@@ -7,7 +7,7 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::io::{BufRead, BufReader, Write};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use serde_json::{json, Value};
 
@@ -20,6 +20,29 @@ use soroban_scan_core::source::{self, ItemKind};
 
 /// Reject oversized messages so a client cannot exhaust server memory.
 const MAX_MESSAGE_BYTES: usize = 16 * 1024 * 1024;
+
+/// Configuration filename discovered at the workspace root.
+const CONFIG_FILE: &str = "soroban-scan.toml";
+
+/// Stable diagnostic source shown for both scan findings and config errors.
+const SOURCE: &str = "soroban-scan";
+
+/// Effective workspace configuration and the last reload error, if any.
+struct WorkspaceConfig {
+    config: ScanConfig,
+    config_uri: Option<String>,
+    error: Option<String>,
+}
+
+impl WorkspaceConfig {
+    fn defaults() -> Self {
+        WorkspaceConfig {
+            config: ScanConfig::default(),
+            config_uri: None,
+            error: None,
+        }
+    }
+}
 
 /// LSP `SymbolKind` values used by the outline.
 const SYMBOL_CLASS: u32 = 5;
@@ -34,6 +57,8 @@ pub fn run(registry: &RuleRegistry) -> Result<u8, String> {
     let stdout = std::io::stdout();
     let mut writer = stdout.lock();
     let mut documents: BTreeMap<String, String> = BTreeMap::new();
+    let mut workspace_root: Option<PathBuf> = None;
+    let mut workspace_config = WorkspaceConfig::defaults();
     let mut shutdown_requested = false;
 
     while let Some(message) = read_message(&mut reader)? {
@@ -42,21 +67,26 @@ pub fn run(registry: &RuleRegistry) -> Result<u8, String> {
         let params = message.get("params").cloned().unwrap_or(Value::Null);
 
         match method {
-            Some("initialize") => respond(
-                &mut writer,
-                id,
-                json!({
-                    "capabilities": {
-                        "textDocumentSync": { "openClose": true, "change": 1 },
-                        "documentSymbolProvider": true,
-                        "hoverProvider": true
-                    },
-                    "serverInfo": {
-                        "name": "soroban-scan",
-                        "version": soroban_scan_core::VERSION
-                    }
-                }),
-            )?,
+            Some("initialize") => {
+                workspace_root = workspace_root_from(&params);
+                reload_workspace_config(&mut workspace_config, workspace_root.as_deref());
+                respond(
+                    &mut writer,
+                    id,
+                    json!({
+                        "capabilities": {
+                            "textDocumentSync": { "openClose": true, "change": 1 },
+                            "documentSymbolProvider": true,
+                            "hoverProvider": true
+                        },
+                        "serverInfo": {
+                            "name": "soroban-scan",
+                            "version": soroban_scan_core::VERSION
+                        }
+                    }),
+                )?;
+                publish_config_diagnostics(&mut writer, &workspace_config)?;
+            }
             Some("initialized") => {}
             Some("shutdown") => {
                 shutdown_requested = true;
@@ -66,7 +96,13 @@ pub fn run(registry: &RuleRegistry) -> Result<u8, String> {
             Some("textDocument/didOpen") => {
                 if let Some((uri, text)) = opened_document(&params) {
                     documents.insert(uri.clone(), text.clone());
-                    publish_diagnostics(&mut writer, registry, &uri, &text)?;
+                    publish_diagnostics(
+                        &mut writer,
+                        registry,
+                        &workspace_config.config,
+                        &uri,
+                        &text,
+                    )?;
                 }
             }
             Some("textDocument/didChange") => {
@@ -77,13 +113,25 @@ pub fn run(registry: &RuleRegistry) -> Result<u8, String> {
                     .to_string();
                 if let Some(text) = changed_text(&params) {
                     documents.insert(uri.clone(), text.clone());
-                    publish_diagnostics(&mut writer, registry, &uri, &text)?;
+                    publish_diagnostics(
+                        &mut writer,
+                        registry,
+                        &workspace_config.config,
+                        &uri,
+                        &text,
+                    )?;
                 }
             }
             Some("textDocument/didSave") => {
                 if let Some(uri) = params.pointer("/textDocument/uri").and_then(Value::as_str) {
                     if let Some(text) = documents.get(uri) {
-                        publish_diagnostics(&mut writer, registry, uri, text)?;
+                        publish_diagnostics(
+                            &mut writer,
+                            registry,
+                            &workspace_config.config,
+                            uri,
+                            text,
+                        )?;
                     }
                 }
             }
@@ -97,6 +145,16 @@ pub fn run(registry: &RuleRegistry) -> Result<u8, String> {
                     });
                     send(&mut writer, &notification)?;
                 }
+            }
+            Some("workspace/didChangeConfiguration")
+            | Some("workspace/didChangeWatchedFiles") => {
+                reload_and_republish(
+                    &mut writer,
+                    registry,
+                    workspace_root.as_deref(),
+                    &mut workspace_config,
+                    &documents,
+                )?;
             }
             Some("textDocument/documentSymbol") => {
                 let result = params
@@ -132,6 +190,158 @@ pub fn run(registry: &RuleRegistry) -> Result<u8, String> {
     // client that simply closes the pipe is not reported as a crash.
     let _ = shutdown_requested;
     Ok(0)
+}
+
+/// Extracts the first workspace folder URI, falling back to `rootUri`.
+fn workspace_root_from(params: &Value) -> Option<PathBuf> {
+    let uri = params
+        .get("workspaceFolders")
+        .and_then(Value::as_array)
+        .and_then(|folders| folders.first())
+        .and_then(|folder| folder.get("uri"))
+        .and_then(Value::as_str)
+        .or_else(|| params.get("rootUri").and_then(Value::as_str))?;
+    uri_to_path(uri)
+}
+
+/// Reloads `soroban-scan.toml` from the workspace root, replacing the effective
+/// configuration only when the file parses.
+fn reload_workspace_config(state: &mut WorkspaceConfig, root: Option<&Path>) {
+    let Some(root) = root else {
+        state.config = ScanConfig::default();
+        state.config_uri = None;
+        state.error = None;
+        return;
+    };
+
+    let path = root.join(CONFIG_FILE);
+    state.config_uri = Some(path_to_uri(&path));
+    if !path.is_file() {
+        state.config = ScanConfig::default();
+        state.error = None;
+        return;
+    }
+
+    match std::fs::read_to_string(&path) {
+        Ok(text) => match ScanConfig::from_toml(&text) {
+            Ok(config) => {
+                state.config = config;
+                state.error = None;
+            }
+            Err(error) => {
+                state.error = Some(format!(
+                    "invalid configuration {}: {error}",
+                    path.display()
+                ));
+            }
+        },
+        Err(error) => {
+            state.error = Some(format!(
+                "cannot read configuration {}: {error}",
+                path.display()
+            ));
+        }
+    }
+}
+
+/// Publishes (or clears) the configuration diagnostic at the config file URI.
+fn publish_config_diagnostics<W: Write>(
+    writer: &mut W,
+    state: &WorkspaceConfig,
+) -> Result<(), String> {
+    let Some(uri) = &state.config_uri else {
+        return Ok(());
+    };
+    let diagnostics = match &state.error {
+        Some(message) => vec![json!({
+            "range": range_raw(1, 1, 1, 1),
+            "severity": 1,
+            "code": "LSP-CONFIG-001",
+            "source": SOURCE,
+            "message": message
+        })],
+        None => Vec::new(),
+    };
+    send(
+        writer,
+        &json!({
+            "jsonrpc": "2.0",
+            "method": "textDocument/publishDiagnostics",
+            "params": { "uri": uri, "diagnostics": diagnostics }
+        }),
+    )
+}
+
+/// Reloads configuration and refreshes diagnostics for every open document.
+fn reload_and_republish<W: Write>(
+    writer: &mut W,
+    registry: &RuleRegistry,
+    root: Option<&Path>,
+    state: &mut WorkspaceConfig,
+    documents: &BTreeMap<String, String>,
+) -> Result<(), String> {
+    reload_workspace_config(state, root);
+    publish_config_diagnostics(writer, state)?;
+    for (uri, text) in documents {
+        publish_diagnostics(writer, registry, &state.config, uri, text)?;
+    }
+    Ok(())
+}
+
+/// Converts a `file:` URI to a filesystem path.
+fn uri_to_path(uri: &str) -> Option<PathBuf> {
+    let rest = uri.strip_prefix("file://")?;
+    let decoded = percent_decode(rest);
+    let path = if decoded.len() >= 3
+        && decoded.starts_with('/')
+        && decoded.as_bytes()[1].is_ascii_alphabetic()
+        && decoded.as_bytes()[2] == b':'
+    {
+        &decoded[1..]
+    } else {
+        decoded.as_str()
+    };
+    (!path.is_empty()).then(|| PathBuf::from(path))
+}
+
+/// Converts a filesystem path to a `file:` URI with percent-encoded bytes.
+fn path_to_uri(path: &Path) -> String {
+    let mut text = path.to_string_lossy().replace('\\', "/");
+    if !text.starts_with('/') {
+        text.insert(0, '/');
+    }
+    let mut encoded = String::from("file://");
+    for byte in text.bytes() {
+        let keep = byte.is_ascii_alphanumeric()
+            || matches!(byte, b'-' | b'.' | b'_' | b'~' | b'/' | b':');
+        if keep {
+            encoded.push(byte as char);
+        } else {
+            encoded.push_str(&format!("%{byte:02X}"));
+        }
+    }
+    encoded
+}
+
+/// Decodes `%XX` escapes in a URI path; invalid escapes are kept literally.
+fn percent_decode(text: &str) -> String {
+    let bytes = text.as_bytes();
+    let mut decoded = Vec::with_capacity(bytes.len());
+    let mut index = 0;
+    while index < bytes.len() {
+        if bytes[index] == b'%' && index + 2 < bytes.len() {
+            let high = (bytes[index + 1] as char).to_digit(16);
+            let low = (bytes[index + 2] as char).to_digit(16);
+            if let (Some(high), Some(low)) = (high, low) {
+                decoded.push((high * 16 + low) as u8);
+                index += 3;
+                continue;
+            }
+        }
+        decoded.push(bytes[index]);
+        index += 1;
+    }
+    String::from_utf8_lossy(&decoded).into_owned()
 }
 
 fn opened_document(params: &Value) -> Option<(String, String)> {
@@ -219,10 +429,11 @@ fn respond_error<W: Write>(
 fn publish_diagnostics<W: Write>(
     writer: &mut W,
     registry: &RuleRegistry,
+    config: &ScanConfig,
     uri: &str,
     text: &str,
 ) -> Result<(), String> {
-    let diagnostics = diagnostics_for(registry, uri, text);
+    let diagnostics = diagnostics_for(registry, config, uri, text);
     send(
         writer,
         &json!({
@@ -233,9 +444,14 @@ fn publish_diagnostics<W: Write>(
     )
 }
 
-fn diagnostics_for(registry: &RuleRegistry, uri: &str, text: &str) -> Vec<Value> {
+fn diagnostics_for(
+    registry: &RuleRegistry,
+    config: &ScanConfig,
+    uri: &str,
+    text: &str,
+) -> Vec<Value> {
     let name = document_name(uri);
-    let outcome = engine::scan_source_str(text, &name, &ScanConfig::default(), registry);
+    let outcome = engine::scan_source_str(text, &name, config, registry);
     let mut diagnostics = Vec::new();
 
     for finding in &outcome.findings {
@@ -256,7 +472,7 @@ fn diagnostics_for(registry: &RuleRegistry, uri: &str, text: &str) -> Vec<Value>
                 Severity::Info => 4,
             },
             "code": finding.rule_id,
-            "source": "soroban-scan",
+            "source": SOURCE,
             "message": format!("{}: {}", finding.title, finding.evidence),
             "data": { "fingerprint": finding.fingerprint }
         }));
@@ -270,7 +486,7 @@ fn diagnostics_for(registry: &RuleRegistry, uri: &str, text: &str) -> Vec<Value>
             "range": range_raw(1, 1, 1, 1),
             "severity": 1,
             "code": diagnostic.code.as_str(),
-            "source": "soroban-scan",
+            "source": SOURCE,
             "message": diagnostic.message
         }));
     }

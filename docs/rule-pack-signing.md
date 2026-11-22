@@ -42,6 +42,10 @@ remediation = "Require an explicit nonzero slippage bound."
 checksum = "sha256:41b4971ca5a0aa656406c4e86985de006119bac6a9aa36410eb2038f016c1e61"
 ```
 
+A complete two-rule pack with per-rule fixtures, a validation script, and
+signing instructions lives in
+[`examples/external-rule-pack`](../examples/external-rule-pack/README.md).
+
 The sample manifest is `fixtures/rule-packs/sample/pack.toml` and is
 loaded and validated by:
 

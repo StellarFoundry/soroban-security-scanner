@@ -26,6 +26,7 @@ Start here.
 - [Rule Pack Moderation](pack-moderation.md) - review criteria, reporting, and removal policy.
 - [Report Retention](retention.md) - deterministic artifact names and retention guidance.
 - [In-process scan service](service-api.md) - bounded job storage for an embedding service.
+- [Deploying the scan API adapter](api-deployment.md) - configuration, TLS, storage, health checks, and public-exposure warnings.
 - [GitHub Integration](github-integration.md) — Action, SARIF, PR scanning.
 - [GitHub Action](github-action.md) — inputs, outputs, and usage examples.
 - [CI Recipes](ci-recipes.md) — copy-paste snippets for common CI systems and hooks.

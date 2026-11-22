@@ -39,9 +39,31 @@ and is recorded per finding line:
   construct is not modelled.
 
 Unknown ranks between reachable and unreachable: a finding is treated as
-actionable until the analysis can prove otherwise. The annotation is internal
-and is not serialized into JSON or SARIF; reports loaded from disk rank as
+actionable until the analysis can prove otherwise. The internal `reachability`
+field is not serialized into JSON or SARIF; reports loaded from disk rank as
 `unknown`.
+
+## Exploitability context
+
+When the CFG covers a finding line, the report also carries an optional
+`exploitability` object:
+
+```json
+{
+  "reachability": "reachable",
+  "entry_point": "Vault::set"
+}
+```
+
+`reachability` is `reachable` or `unreachable`. `entry_point` is the qualified
+name of the enclosing Soroban contract entry point when one can be identified;
+it is omitted otherwise. `taint` is reserved for a future source-to-sink
+description and is currently `None`, so it is omitted.
+
+The context is derived only from static evidence. If the file did not parse, no
+function contains the line, or the line has no CFG coverage, the entire field
+is omitted instead of guessed. It is additive and optional, so older reports
+and consumers remain valid, and it never changes severity or confidence.
 
 ## Stability and formats
 
