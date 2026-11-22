@@ -152,3 +152,8 @@ why = "Reproduces the documented 'Unvalidated deployer usage' pattern; this samp
 file = "SS-042.rs"
 why = "The only authorization check follows an unconditional return, so the security check is unreachable and must always trigger SS-042."
 
+
+[SS-044]
+file = "SS-044.rs"
+why = "A caller-supplied recipient reaches a token transfer without validation, so SS-044 must always trigger."
+

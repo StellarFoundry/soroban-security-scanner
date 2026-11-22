@@ -139,6 +139,7 @@ rule applies to amount and address sanitizers.
 - [Diagnostics](diagnostics.md) — `TYPE-001` for unresolved and ambiguous type
   names.
 - [`SS-014`](rules/detectors/SS-014.md) — token transfer amount validation.
+- [`SS-044`](rules/detectors/SS-044.md) — cross-contract address argument validation, built on `address_argument_flows`.
 - [`SS-018`](rules/detectors/SS-018.md) — unchecked integer casts.
 - [Control-flow graphs](control-flow.md) — the per-function CFG used for
   reachability.

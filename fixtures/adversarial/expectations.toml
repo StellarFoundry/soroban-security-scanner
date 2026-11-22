@@ -192,3 +192,9 @@ file = "SS-042/sample.rs"
 expect = "trigger"
 why = "A method call split across lines after an unconditional return is still an unreachable security check when the CFG is complete."
 
+
+[SS-044]
+file = "SS-044/sample.rs"
+expect = "trigger"
+why = "A privileged transfer split across lines still receives a caller-supplied recipient with no documented address validation."
+
