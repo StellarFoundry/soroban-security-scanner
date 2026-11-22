@@ -16,6 +16,102 @@ from typing import Any, Callable, Sequence
 class GitHubApiError(RuntimeError):
     """Raised when ``gh api`` exits unsuccessfully."""
 
+# Opt-in override for GitHub Enterprise Server / GHE.com. When unset, ``gh``
+# talks to github.com exactly as before.
+API_URL_ENV = "SOROBAN_SCAN_GITHUB_API_URL"
+_MAX_API_URL_LENGTH = 2048
+_ALLOWED_API_PATHS = ("", "/api/v3")
+
+
+class InvalidApiUrlError(GitHubApiError):
+    """Raised when the configured GitHub API base URL is not acceptable."""
+
+
+def _is_loopback_host(hostname: str) -> bool:
+    if hostname == "localhost":
+        return True
+    try:
+        return ipaddress.ip_address(hostname).is_loopback
+    except ValueError:
+        return False
+
+
+def validate_api_base_url(value: object) -> str:
+    """Validates a GitHub API base URL and returns its normalized form.
+
+    Accepted: ``https`` URLs whose path is empty or ``/api/v3``, plus plain
+    ``http`` for loopback hosts only (local mock servers). Rejected: other
+    schemes, embedded credentials, query strings, fragments, other paths,
+    whitespace/control characters and URLs longer than 2048 characters.
+
+    Error messages deliberately never include the URL so that a secret
+    embedded by mistake cannot leak into CI logs.
+    """
+
+    if not isinstance(value, str):
+        raise InvalidApiUrlError("GitHub API URL must be a string")
+    url = value.strip()
+    if not url:
+        raise InvalidApiUrlError("GitHub API URL must not be empty")
+    if len(url) > _MAX_API_URL_LENGTH:
+        raise InvalidApiUrlError("GitHub API URL is too long")
+    if any(ch.isspace() or ord(ch) < 0x20 or ord(ch) == 0x7F for ch in url):
+        raise InvalidApiUrlError("GitHub API URL must not contain whitespace or control characters")
+    try:
+        parts = urlsplit(url)
+        port = parts.port
+    except ValueError as error:
+        raise InvalidApiUrlError(f"GitHub API URL is malformed: {error}") from None
+    hostname = parts.hostname or ""
+    if parts.scheme not in ("https", "http"):
+        raise InvalidApiUrlError("GitHub API URL must use https")
+    if not hostname:
+        raise InvalidApiUrlError("GitHub API URL must include a host")
+    if parts.scheme == "http" and not _is_loopback_host(hostname):
+        raise InvalidApiUrlError("GitHub API URL must use https (http is allowed only for loopback hosts)")
+    if parts.username is not None or parts.password is not None:
+        raise InvalidApiUrlError("GitHub API URL must not embed credentials")
+    if parts.query or parts.fragment:
+        raise InvalidApiUrlError("GitHub API URL must not contain a query string or fragment")
+    path = parts.path.rstrip("/")
+    if path not in _ALLOWED_API_PATHS:
+        raise InvalidApiUrlError("GitHub API URL path must be empty or /api/v3")
+    netloc = f"[{hostname}]" if ":" in hostname else hostname
+    if port is not None:
+        netloc = f"{netloc}:{port}"
+    return f"{parts.scheme}://{netloc}{path}"
+
+
+def api_hostname(base_url: str) -> str:
+    """Returns the ``gh api --hostname`` value for a validated base URL.
+
+    ``https://api.github.com`` maps to ``github.com`` and a GHE.com style
+    ``https://api.<tenant>.ghe.com`` maps to ``<tenant>.ghe.com``. A GitHub
+    Enterprise Server URL (``https://host/api/v3``) maps to ``host``.
+    """
+
+    parts = urlsplit(validate_api_base_url(base_url))
+    hostname = parts.hostname or ""
+    if parts.path == "" and hostname.startswith("api.") and len(hostname) > len("api."):
+        hostname = hostname[len("api."):]
+    if ":" in hostname:
+        hostname = f"[{hostname}]"
+    return f"{hostname}:{parts.port}" if parts.port else hostname
+
+
+def gh_host_arguments(environ: Mapping[str, str] | None = None) -> list[str]:
+    """Returns extra ``gh api`` arguments selecting the configured API host.
+
+    Empty when ``SOROBAN_SCAN_GITHUB_API_URL`` is unset or blank. Raises
+    :class:`InvalidApiUrlError` when it is set to an unacceptable value.
+    """
+
+    source = os.environ if environ is None else environ
+    raw = source.get(API_URL_ENV, "")
+    if not raw.strip():
+        return []
+    return ["--hostname", api_hostname(raw)]
+
 
 def run_gh(
     arguments: Sequence[str],
@@ -30,7 +126,7 @@ def run_gh(
     arguments.
     """
 
-    command = ["gh", "api", *arguments]
+    command = ["gh", "api", *gh_host_arguments(), *arguments]
     result = subprocess.run(
         command,
         input=json.dumps(payload) if payload is not None else None,

@@ -15,3 +15,12 @@ They support `--dry-run` for local inspection. Run the tests with:
 ```bash
 python -m unittest discover -s tests/github -v
 ```
+
+
+## GitHub Enterprise Server
+
+Set `SOROBAN_SCAN_GITHUB_API_URL` (for example `https://github.example.com/api/v3`)
+to point both scripts at GitHub Enterprise Server. It is opt-in, validated
+(HTTPS only, except loopback; no credentials, query or fragment), and the token
+is still handled only by `gh` (`GH_ENTERPRISE_TOKEN` for Enterprise Server).
+See [GitHub Integration](../../docs/github-integration.md#github-enterprise-server).
