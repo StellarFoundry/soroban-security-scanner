@@ -15,6 +15,7 @@ use globset::Glob;
 use serde::Serialize;
 
 use crate::analysis::cfg::{self, ControlFlowGraph};
+use crate::confidence::Confidence;
 use crate::config::{AnalysisMode, ScanConfig, SuppressionRule, WaiverRule};
 use crate::context::AnalysisContext;
 use crate::error::ScanError;
@@ -26,6 +27,7 @@ use crate::model::{
     ProjectKind, SorobanInfo, TargetInfo,
 };
 use crate::registry::RuleRegistry;
+use crate::severity::Severity;
 use crate::source::ParsedSource;
 use crate::suppression::Suppression;
 
@@ -550,40 +552,71 @@ fn is_safe_relative(path: &Path) -> bool {
 ///
 /// An override is ineffective when its rule id is unknown, the rule is disabled
 /// by default, or the rule is disabled by the effective configuration. The
-/// result is deterministic and contains one diagnostic per rule id.
+/// result is deterministic and contains one diagnostic per rule id. Active
+/// profile entries report `CONFIG-005`; top-level overrides report `CONFIG-001`.
 pub fn override_diagnostics(config: &ScanConfig, registry: &RuleRegistry) -> Vec<Diagnostic> {
-    let mut kinds: BTreeMap<&str, Vec<&str>> = BTreeMap::new();
-    for id in config.rules.severity_overrides.keys() {
-        kinds.entry(id.as_str()).or_default().push("severity");
-    }
-    for id in config.rules.confidence_overrides.keys() {
-        kinds.entry(id.as_str()).or_default().push("confidence");
+    fn kinds<'a>(
+        severity: &'a BTreeMap<String, Severity>,
+        confidence: &'a BTreeMap<String, Confidence>,
+    ) -> BTreeMap<&'a str, Vec<&'a str>> {
+        let mut kinds: BTreeMap<&str, Vec<&str>> = BTreeMap::new();
+        for id in severity.keys() {
+            kinds.entry(id.as_str()).or_default().push("severity");
+        }
+        for id in confidence.keys() {
+            kinds.entry(id.as_str()).or_default().push("confidence");
+        }
+        kinds
     }
 
-    kinds
-        .into_iter()
-        .filter_map(|(id, kinds)| {
-            let reason = match registry.by_id(id) {
-                None => "unknown rule id",
-                Some(rule) if !rule.enabled_by_default() => "rule is disabled by default",
-                Some(rule) => {
-                    let meta = rule.metadata();
-                    if config.rules.is_rule_enabled(meta.id, meta.category) {
-                        return None;
-                    }
-                    "rule is disabled by configuration"
+    fn reason(config: &ScanConfig, registry: &RuleRegistry, id: &str) -> Option<&'static str> {
+        match registry.by_id(id) {
+            None => Some("unknown rule id"),
+            Some(rule) if !rule.enabled_by_default() => Some("rule is disabled by default"),
+            Some(rule) => {
+                let meta = rule.metadata();
+                if config.rules.is_rule_enabled(meta.id, meta.category) {
+                    None
+                } else {
+                    Some("rule is disabled by configuration")
                 }
-            };
-            Some(Diagnostic::warning(
+            }
+        }
+    }
+
+    let mut diagnostics = Vec::new();
+    if let Some(profile) = config.rules.active_profile() {
+        let name = config.rules.profile.as_deref().unwrap_or("active");
+        for (id, kinds) in kinds(&profile.severity_overrides, &profile.confidence_overrides) {
+            if let Some(reason) = reason(config, registry, id) {
+                diagnostics.push(Diagnostic::warning(
+                    DiagnosticCode::InvalidProfile,
+                    format!(
+                        "profile `{name}` {} override for {id} has no effect: {reason}",
+                        kinds.join(" and ")
+                    ),
+                    None,
+                ));
+            }
+        }
+    }
+
+    for (id, kinds) in kinds(
+        &config.rules.severity_overrides,
+        &config.rules.confidence_overrides,
+    ) {
+        if let Some(reason) = reason(config, registry, id) {
+            diagnostics.push(Diagnostic::warning(
                 DiagnosticCode::IneffectiveOverride,
                 format!(
                     "{} override for {id} has no effect: {reason}",
                     kinds.join(" and ")
                 ),
                 None,
-            ))
-        })
-        .collect()
+            ));
+        }
+    }
+    diagnostics
 }
 
 struct CompiledConfigSuppression {
@@ -978,11 +1011,11 @@ pub fn scan_with_hooks(
     let mut rejected = 0usize;
 
     findings.retain_mut(|finding| {
-        if let Some(severity) = config.rules.severity_overrides.get(&finding.rule_id) {
-            finding.severity = *severity;
+        if let Some(severity) = config.severity_override_for(&finding.rule_id) {
+            finding.severity = severity;
         }
-        if let Some(confidence) = config.rules.confidence_overrides.get(&finding.rule_id) {
-            finding.confidence = *confidence;
+        if let Some(confidence) = config.confidence_override_for(&finding.rule_id) {
+            finding.confidence = confidence;
         }
 
         // Relativize and validate the reported location.
@@ -2238,6 +2271,88 @@ mod tests {
                 .any(|message| message.contains("SS-999") && message.contains("unknown rule id")),
             "got: {messages:?}"
         );
+
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn active_profile_applies_overrides_and_reports_ineffective_entries() {
+        let root = project_fixture("profile-overrides");
+        let loaded = project::load(&root, &ScanConfig::default().discovery_options()).unwrap();
+        let mut registry = RuleRegistry::new();
+        registry
+            .register(Box::new(OneFindingRule::new(Severity::Low)))
+            .unwrap();
+
+        let profile = crate::config::RuleProfile {
+            severity_overrides: [
+                ("SS-001".to_string(), Severity::High),
+                ("SS-999".to_string(), Severity::High),
+            ]
+            .into_iter()
+            .collect(),
+            confidence_overrides: [("SS-001".to_string(), Confidence::High)]
+                .into_iter()
+                .collect(),
+        };
+        let rules = crate::config::RulesConfig {
+            profile: Some("strict".into()),
+            profiles: [("strict".to_string(), profile)].into_iter().collect(),
+            ..crate::config::RulesConfig::default()
+        };
+        let config = ScanConfig {
+            rules,
+            ..ScanConfig::default()
+        };
+        assert!(config.rules.validate_profiles().is_ok());
+
+        let outcome = scan(&loaded, &registry, &config);
+        assert_eq!(outcome.findings.len(), 1);
+        assert_eq!(outcome.findings[0].severity, Severity::High);
+        assert_eq!(outcome.findings[0].confidence, Confidence::High);
+
+        let messages: Vec<&str> = outcome
+            .diagnostics
+            .iter()
+            .filter(|d| d.code == crate::model::DiagnosticCode::InvalidProfile)
+            .map(|d| d.message.as_str())
+            .collect();
+        assert_eq!(messages.len(), 1, "got: {messages:?}");
+        assert!(messages[0].contains("profile `strict`"));
+        assert!(messages[0].contains("SS-999"));
+        assert!(messages[0].contains("unknown rule id"));
+
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn top_level_overrides_win_over_the_active_profile() {
+        let root = project_fixture("profile-precedence");
+        let loaded = project::load(&root, &ScanConfig::default().discovery_options()).unwrap();
+        let mut registry = RuleRegistry::new();
+        registry
+            .register(Box::new(OneFindingRule::new(Severity::Low)))
+            .unwrap();
+
+        let profile = crate::config::RuleProfile {
+            severity_overrides: [("SS-001".to_string(), Severity::High)]
+                .into_iter()
+                .collect(),
+            ..crate::config::RuleProfile::default()
+        };
+        let config = ScanConfig {
+            rules: crate::config::RulesConfig {
+                profile: Some("strict".into()),
+                profiles: [("strict".to_string(), profile)].into_iter().collect(),
+                severity_overrides: [("SS-001".to_string(), Severity::Critical)]
+                    .into_iter()
+                    .collect(),
+                ..crate::config::RulesConfig::default()
+            },
+            ..ScanConfig::default()
+        };
+        let outcome = scan(&loaded, &registry, &config);
+        assert_eq!(outcome.findings[0].severity, Severity::Critical);
 
         let _ = std::fs::remove_dir_all(&root);
     }

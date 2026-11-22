@@ -1,0 +1,168 @@
+{
+  "address_decoded.rs": [
+    {
+      "rule_id": "SS-002",
+      "severity": "high",
+      "confidence": "low",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-014",
+      "severity": "medium",
+      "confidence": "low",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-019",
+      "severity": "medium",
+      "confidence": "medium",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-030",
+      "severity": "high",
+      "confidence": "low",
+      "count": 1
+    }
+  ],
+  "address_direct.rs": [
+    {
+      "rule_id": "SS-002",
+      "severity": "high",
+      "confidence": "low",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-014",
+      "severity": "medium",
+      "confidence": "low",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-019",
+      "severity": "medium",
+      "confidence": "medium",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-030",
+      "severity": "high",
+      "confidence": "low",
+      "count": 1
+    }
+  ],
+  "address_validated.rs": [
+    {
+      "rule_id": "SS-002",
+      "severity": "high",
+      "confidence": "low",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-014",
+      "severity": "medium",
+      "confidence": "low",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-019",
+      "severity": "medium",
+      "confidence": "medium",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-030",
+      "severity": "high",
+      "confidence": "low",
+      "count": 1
+    }
+  ],
+  "amount_arithmetic.rs": [
+    {
+      "rule_id": "SS-002",
+      "severity": "high",
+      "confidence": "low",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-008",
+      "severity": "medium",
+      "confidence": "low",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-019",
+      "severity": "medium",
+      "confidence": "medium",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-030",
+      "severity": "high",
+      "confidence": "low",
+      "count": 1
+    }
+  ],
+  "amount_direct.rs": [
+    {
+      "rule_id": "SS-002",
+      "severity": "high",
+      "confidence": "low",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-014",
+      "severity": "medium",
+      "confidence": "low",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-019",
+      "severity": "medium",
+      "confidence": "medium",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-030",
+      "severity": "high",
+      "confidence": "low",
+      "count": 1
+    }
+  ],
+  "amount_validated.rs": [
+    {
+      "rule_id": "SS-002",
+      "severity": "high",
+      "confidence": "low",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-019",
+      "severity": "medium",
+      "confidence": "medium",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-030",
+      "severity": "high",
+      "confidence": "low",
+      "count": 1
+    }
+  ],
+  "auth_direct.rs": [
+    {
+      "rule_id": "SS-006",
+      "severity": "low",
+      "confidence": "low",
+      "count": 1
+    },
+    {
+      "rule_id": "SS-010",
+      "severity": "low",
+      "confidence": "low",
+      "count": 1
+    }
+  ],
+  "auth_helper.rs": [],
+  "auth_sanitized.rs": []
+}

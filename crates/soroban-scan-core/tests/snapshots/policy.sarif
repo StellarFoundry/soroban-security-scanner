@@ -1215,6 +1215,34 @@
               "shortDescription": {
                 "text": "Authorization check inside a loop"
               }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "fullDescription": {
+                "text": "A caller-authorization or validation check appears after a statement that always leaves the function, such as an unconditional `return`. No execution path reaches the check, so it provides a false sense of protection while the actual behaviour is unguarded. The detector reports only when the function's control-flow graph is complete: a truncated graph or one containing constructs the builder does not model suppresses the finding."
+              },
+              "help": {
+                "markdown": "## Security check unreachable on every path\n\nA caller-authorization or validation check appears after a statement that always leaves the function, such as an unconditional `return`. No execution path reaches the check, so it provides a false sense of protection while the actual behaviour is unguarded. The detector reports only when the function's control-flow graph is complete: a truncated graph or one containing constructs the builder does not model suppresses the finding.\n\n### Remediation\n\nRemove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security/authorization\n- https://doc.rust-lang.org/reference/statements.html#unreachable-code",
+                "text": "A caller-authorization or validation check appears after a statement that always leaves the function, such as an unconditional `return`. No execution path reaches the check, so it provides a false sense of protection while the actual behaviour is unguarded. The detector reports only when the function's control-flow graph is complete: a truncated graph or one containing constructs the builder does not model suppresses the finding.\n\nRemediation: Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+              "id": "SS-042",
+              "name": "Security check unreachable on every path",
+              "properties": {
+                "category": "authorization",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+                  "https://doc.rust-lang.org/reference/statements.html#unreachable-code"
+                ],
+                "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
+                "severity": "low"
+              },
+              "shortDescription": {
+                "text": "Security check unreachable on every path"
+              }
             }
           ],
           "version": "0.2.0"
