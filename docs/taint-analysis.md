@@ -24,6 +24,9 @@ Two plain data types describe the vocabulary:
   - `AuthSubject`: the receiver of `require_auth` /
     `require_auth_for_args`, or the first argument of the free-function form.
   - `TransferAmount`: the last argument of `transfer` / `transfer_from`.
+  - `PrivilegedAddress`: an address argument of a documented privileged token
+    call — `transfer` (to), `transfer_from` (from, to), `approve` (spender),
+    `mint`/`burn`/`clawback` (subject), and `burn_from` (from).
 
 Rule authors register descriptors in a `DescriptorRegistry` and query them with
 `sources()`, `sinks()`, `sources_of_kind()`, and `sinks_of_kind()`. Registration
@@ -38,7 +41,8 @@ hooks, so a rule pack cannot execute arbitrary code through registration.
 ## Propagation
 
 `auth_subject_flows(file, entry)` and `transfer_amount_flows(file, entry)` run a
-fixed-point propagation pass over one entry point:
+fixed-point propagation pass over one entry point. `address_argument_flows(file,
+entry)` runs the same pass with privileged-token address arguments as sinks:
 
 - Every non-`Env` parameter is a source.
 - `let` bindings with a plain identifier pattern and plain assignments inherit
@@ -72,6 +76,12 @@ Token amounts (`AMOUNT_SANITIZERS`):
 `try_from`, `try_into`, `clamp`, `min`, `max`, `validate_amount`,
 `checked_amount`, `verified_amount`.
 
+Privileged address arguments (`ADDRESS_SANITIZERS`) use the same documented
+address-validation names as `AUTH_SANITIZERS`: `validate_address`,
+`normalize_address`, `checked_address`, `verified_address`,
+`sanitize_address`. An `Address` type annotation alone is never treated as
+validation; only a documented helper name clears the flow.
+
 The lists are explicit so a typo or an unrelated helper does not silently clear
 taint. Sanitizers are matched by method or free-function **name only**; there is
 no receiver-type or argument check. Extending a list is a security-relevant
@@ -94,15 +104,16 @@ subject.require_auth(); // reported with an Unknown path
 ```
 
 An unconditional reassignment clears the taint normally. The same conservative
-rule applies to amount sanitizers.
+rule applies to amount and address sanitizers.
 
 ## Limits
 
 - The analysis is per entry point and per file. Cross-file helpers, macros, trait
   dispatch, and type inference are not followed.
-- Rules call `auth_subject_flows` / `transfer_amount_flows` with entry points
-  from `contract_entry_functions` (public `#[contractimpl]` functions). The
-  analysis itself does not decide what an entry point is.
+- Rules call `auth_subject_flows`, `transfer_amount_flows`, or
+  `address_argument_flows` with entry points from `contract_entry_functions`
+  (public `#[contractimpl]` functions). The analysis itself does not decide
+  what an entry point is.
 - Only simple identifier patterns are tracked. Tuple/struct destructuring,
   field/index assignment targets, closures, `async` blocks, and method receivers
   that are expressions are outside the model.
@@ -115,6 +126,9 @@ rule applies to amount sanitizers.
 - `transfer` and `transfer_from` are matched by method name, like SS-014, so an
   unrelated method with that name can produce a flow. The sink descriptor
   records the span, and the consumer decides whether to report it.
+- Privileged address sinks are matched by call name and fixed argument index;
+  there is no receiver-type check, so an unrelated `transfer`-shaped method can
+  produce a flow. Only the documented argument positions are inspected.
 - Work is capped by `MAX_SOURCES`, `MAX_SINKS`, `MAX_FLOWS`, `MAX_PATH_STEPS`,
   `MAX_EXPRESSION_LEN`, `MAX_HELPER_DEPTH`, `MAX_HELPERS`, and
   `MAX_ITERATIONS`. Exceeding a cap produces `Unknown` or truncation, never a
