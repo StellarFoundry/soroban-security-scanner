@@ -41,6 +41,8 @@ Submission errors:
 | Status | Code | Cause |
 | ------ | ---- | ----- |
 | `400` | `invalid_request` | Body is not UTF-8 JSON, the schema is wrong, or `file` is unsafe. |
+| `404` | `job_not_found` | No job has that id. |
+| `410` | `job_expired` | The job finished and its retention window elapsed. |
 | `413` | `payload_too_large` | Body or source exceeds the job payload cap. |
 | `503` | `store_full` | The bounded store is at `max_jobs`. |
 
@@ -83,8 +85,11 @@ expires. This prevents accepted work from disappearing without a trace.
 Retention applies only to terminal jobs (`Completed` or `Failed`). A queued or
 running job is never removed, even when it is older than the retention window.
 Pruning runs on submission and can also be requested explicitly with
-`JobStore::remove_expired`. The scanner stores jobs in memory only; a restart
-loses every job.
+`JobStore::remove_expired`. Looking up a terminal job whose retention elapsed
+with `JobStore::get_at` returns `JobStoreError::Expired`, which the adapter maps
+to `410 job_expired`, so clients get a clear terminal error instead of a generic
+`job_not_found`. The scanner stores jobs in memory only; a restart loses every
+job.
 
 ## Lifecycle
 

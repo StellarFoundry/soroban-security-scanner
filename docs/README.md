@@ -22,6 +22,8 @@ Start here.
 - [Baselines](baselines.md) - track new vs. known findings.
 - [Policy and Reporting](policy.md) - policy schema, precedence, waivers, and report formats.
 - [Rule Pack Signing and Verification](rule-pack-signing.md) - detached Ed25519 signatures, keyrings, and verification.
+- [Rule Pack Sandboxing](pack-sandboxing.md) - wall-clock, output, and rule-count limits for community packs.
+- [Rule Pack Moderation](pack-moderation.md) - review criteria, reporting, and removal policy.
 - [Report Retention](retention.md) - deterministic artifact names and retention guidance.
 - [In-process scan service](service-api.md) - bounded job storage for an embedding service.
 - [GitHub Integration](github-integration.md) — Action, SARIF, PR scanning.
