@@ -1954,7 +1954,7 @@ fn resolve_module_paths(
 }
 
 fn path_key(path: &Path) -> PathBuf {
-    path.components().collect()
+    normalize_lexical(path).unwrap_or_else(|| path.components().collect())
 }
 
 fn is_crate_root_file(path: &Path, crate_root: &Path) -> bool {
@@ -2009,9 +2009,19 @@ fn resolve_declared_module(
     declaration: &ModuleDeclaration,
     diagnostics: &mut Vec<Diagnostic>,
 ) -> Option<PathBuf> {
+    let base_dir = module_directory(parent_file, crate_root)?;
+    let crate_root = normalize_lexical(crate_root)?;
     if let Some(raw) = &declaration.path_attr {
-        let base = parent_file.parent()?;
-        let candidate = normalize_lexical(&base.join(raw))?;
+        // Outside an inline module, `#[path]` is relative to the directory of
+        // the file holding the declaration. Inside an inline module the inline
+        // module components become directories first (Rust reference:
+        // "path attributes").
+        let path_dir = if declaration.prefix.is_empty() {
+            parent_file.parent()?.to_path_buf()
+        } else {
+            inline_module_dir(base_dir, &declaration.prefix)
+        };
+        let candidate = normalize_lexical(&path_dir.join(raw))?;
         if !candidate.starts_with(crate_root) {
             diagnostics.push(Diagnostic::warning(
                 DiagnosticCode::SourceModulePathRejected,
@@ -2026,13 +2036,22 @@ fn resolve_declared_module(
         return candidate.is_file().then_some(candidate);
     }
 
-    let module_dir = module_directory(parent_file, crate_root)?;
+    let module_dir = inline_module_dir(base_dir, &declaration.prefix);
     let flat = module_dir.join(format!("{}.rs", declaration.name));
     if flat.is_file() {
         return Some(flat);
     }
     let nested = module_dir.join(&declaration.name).join("mod.rs");
     nested.is_file().then_some(nested)
+}
+
+/// Appends inline module components to a directory, matching the Rust
+/// reference's file lookup rules for modules nested in `mod name { ... }`.
+fn inline_module_dir(base: PathBuf, prefix: &str) -> PathBuf {
+    prefix
+        .split("::")
+        .filter(|segment| !segment.is_empty())
+        .fold(base, |dir, segment| dir.join(segment))
 }
 
 fn module_directory(path: &Path, crate_root: &Path) -> Option<PathBuf> {
@@ -2351,6 +2370,48 @@ mod tests {
 
         let by_file: std::collections::BTreeMap<_, _> = paths.into_iter().collect();
         assert_eq!(by_file["src/alt/custom.rs"], "crate::custom");
+        assert!(!diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == DiagnosticCode::SourceModulePathRejected));
+    }
+
+    #[test]
+    fn module_paths_follow_inline_module_components() {
+        let root = temp_project("inline-modules");
+        let lib = root.join("src/lib.rs");
+        let child = root.join("src/inline/child.rs");
+        let foo = root.join("src/foo.rs");
+        let foo_child = root.join("src/foo/inline/child.rs");
+        write(&lib, "mod inline { mod child; }\nmod foo;\n");
+        write(&child, "pub fn child() {}\n");
+        write(&foo, "mod inline { mod child; }\n");
+        write(&foo_child, "pub fn child() {}\n");
+
+        let (paths, diagnostics) = load_module_paths(&root, &[lib, foo, child, foo_child]);
+
+        let by_file: std::collections::BTreeMap<_, _> = paths.into_iter().collect();
+        assert_eq!(by_file["src/inline/child.rs"], "crate::inline::child");
+        assert_eq!(
+            by_file["src/foo/inline/child.rs"],
+            "crate::foo::inline::child"
+        );
+        assert!(!diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.code == DiagnosticCode::SourceModulePathRejected));
+    }
+
+    #[test]
+    fn path_attributes_inside_inline_modules_use_the_inline_directory() {
+        let root = temp_project("inline-path-attr");
+        let lib = root.join("src/lib.rs");
+        let custom = root.join("src/inline/custom.rs");
+        write(&lib, "mod inline { #[path = \"custom.rs\"] mod custom; }\n");
+        write(&custom, "pub fn custom() {}\n");
+
+        let (paths, diagnostics) = load_module_paths(&root, &[lib, custom]);
+
+        let by_file: std::collections::BTreeMap<_, _> = paths.into_iter().collect();
+        assert_eq!(by_file["src/inline/custom.rs"], "crate::inline::custom");
         assert!(!diagnostics
             .iter()
             .any(|diagnostic| diagnostic.code == DiagnosticCode::SourceModulePathRejected));
