@@ -12,7 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A minimal stdio language server (`soroban-scan lsp`) publishes diagnostics,
   document symbols for contracts, functions, structs, and events, and offline
   hover text for every registered `SS-###` rule id. It uses full-document sync
-  and no network access (`#334`, `#335`).
+  and no network access (`#334`, `#335`). A mock stdio client test exercises
+  initialize, open, change, hover, symbols, shutdown, and a clean exit offline
+  in CI (`#336`).
 - Related-findings correlation links findings that share a source span or a
   concrete symbol, with sorted, bounded `related` fingerprints in JSON and
   `properties.relatedIds` in SARIF. Ambiguous relations are recorded instead of

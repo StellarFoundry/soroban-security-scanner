@@ -120,11 +120,10 @@ pub fn run(registry: &RuleRegistry) -> Result<u8, String> {
                     .unwrap_or(Value::Null);
                 respond(&mut writer, id, result)?;
             }
-            Some(_) => {
-                if id.is_some() {
-                    respond_error(&mut writer, id, -32601, "method not found")?;
-                }
+            Some(_) if id.is_some() => {
+                respond_error(&mut writer, id, -32601, "method not found")?;
             }
+            Some(_) => {}
             None => {}
         }
     }
