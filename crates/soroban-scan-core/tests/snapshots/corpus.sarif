@@ -5474,6 +5474,36 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-009/negative.rs"
+                },
+                "region": {
+                  "startColumn": 12,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked ledger timestamp usage — ledger timestamp comparison without a bounded tolerance window in entry point `close`: env . ledger () . timestamp () > deadline"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "f836784e475f206d8721e5d970b3c2ea"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "remediation": "Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-047"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-009/negative3.rs"
                 },
                 "region": {
@@ -5500,6 +5530,36 @@
             "severity": "medium"
           },
           "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-009/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 12,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked ledger timestamp usage — ledger timestamp comparison without a bounded tolerance window in entry point `close`: env . ledger () . timestamp () > deadline"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "093328f2c0a6e32d6125f55265971cce"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "remediation": "Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-047"
         },
         {
           "level": "warning",
@@ -7278,6 +7338,412 @@
           "ruleId": "SS-044"
         },
         {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_a`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 1 })"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "42992b97b49b9bb41df21b528f7ab48d"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 20
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_b`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 2 })"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "f5032995867ae1afa7398494bc31ed13"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_a`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 1 })"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c427e6c93832e50a4660d2aa048ace61"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_a`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "a6998f61d3cceca6c564584357230a5b"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_b`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & locked)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6da0258d9c362d50c8f2e8854ce831d2"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative4.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_a`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 1 , .. current } ,)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2e59678d5fb08d7ffba3b38015caa6c5"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative4.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 25
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_b`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 1 , unlock : 2 , .. current } ,)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "4f8f5a9124a5f5c86b871549d184868e"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative5.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_b`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 1 , unlock : 2 , } ,)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "abed234d09229e114b213ca4775daa50"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_balance`: env . storage () . temporary () . set (& DataKey :: Balance (user . clone ()) , & Balance { amount : 1 })"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "80ba6a6e97133a8f5165c2a8d9f67f8c"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_balance_locked`: env . storage () . temporary () . set (& DataKey :: Balance (user . clone ()) , & Balance { amount : 1 , unlock : 2 , } ,)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e4159ac990f2928014f158df3965d45e"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/positive.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 22
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Duplicate storage key construction — storage key `& DataKey :: Balance (user . clone ())` in temporary storage is used for values with different field sets ({amount} and {amount, unlock})"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6a0341a981ddf7902c6977b4671eadaf"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Give each logical record its own namespaced key, for example `DataKey::Balance(user)` and `DataKey::BalanceMeta(user)`, or store a single versioned value type per key. Do not rely on the value's field set to tell two records apart; the key must identify exactly one record shape.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-046"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-047/negative.rs"
+                },
+                "region": {
+                  "startColumn": 12,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked arithmetic in a contract entry point — unchecked `+` arithmetic in entry point `close`: now + TOLERANCE (use `checked_add` and handle `None`)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "3a1098e79de3ed56ae5f98123494ad45"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "remediation": "Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-008"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-047/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 19,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked arithmetic in a contract entry point — unchecked `-` arithmetic in entry point `close`: deadline - window (use `checked_sub` and handle `None`)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "09a249c0d71c68fc1ad0d6af75285f74"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "remediation": "Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-008"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-047/positive.rs"
+                },
+                "region": {
+                  "startColumn": 12,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked ledger timestamp usage — ledger timestamp comparison without a bounded tolerance window in entry point `close`: now >= deadline"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b37e253ca8e223d08de3523d10c29b13"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "remediation": "Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-047"
+        },
+        {
           "level": "note",
           "locations": [
             {
@@ -8231,6 +8697,35 @@
             "category": "error-handling",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-047/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 12,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `close` can panic: now . checked_add (5) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "103a86e1c79fcfe3e3b0b4f1de184318"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -10714,6 +11209,64 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-046/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `set_b`: env . storage () . temporary () . set (& DataKey :: Meta (user) , & Meta { owner : 2 })"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "991c775750cb4b44e4e2dbe85bf76e78"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative5.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_a`: env . storage () . persistent () . set (& DataKey :: Balance (user) , & Balance { amount : 1 })"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ebaded02d25b24da6d1b46119acd0e13"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-042/positive.rs"
                 },
                 "region": {
@@ -11858,6 +12411,62 @@
               },
               "shortDescription": {
                 "text": "Cross-contract call with an unvalidated address argument"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract writes different logical records through the same storage key construction. When the key is a literal or a constructor whose arguments do not fully separate the records, one write can overwrite or be mistaken for another record with a different field set. The detector compares the field sets of struct literals written to the same key in the same storage class and reports only when they differ, with low confidence."
+              },
+              "help": {
+                "markdown": "## Duplicate storage key construction\n\nA contract writes different logical records through the same storage key construction. When the key is a literal or a constructor whose arguments do not fully separate the records, one write can overwrite or be mistaken for another record with a different field set. The detector compares the field sets of struct literals written to the same key in the same storage class and reports only when they differ, with low confidence.\n\n### Remediation\n\nGive each logical record its own namespaced key, for example `DataKey::Balance(user)` and `DataKey::BalanceMeta(user)`, or store a single versioned value type per key. Do not rely on the value's field set to tell two records apart; the key must identify exactly one record shape.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A contract writes different logical records through the same storage key construction. When the key is a literal or a constructor whose arguments do not fully separate the records, one write can overwrite or be mistaken for another record with a different field set. The detector compares the field sets of struct literals written to the same key in the same storage class and reports only when they differ, with low confidence.\n\nRemediation: Give each logical record its own namespaced key, for example `DataKey::Balance(user)` and `DataKey::BalanceMeta(user)`, or store a single versioned value type per key. Do not rely on the value's field set to tell two records apart; the key must identify exactly one record shape."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-046",
+              "name": "Duplicate storage key construction",
+              "properties": {
+                "category": "storage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Give each logical record its own namespaced key, for example `DataKey::Balance(user)` and `DataKey::BalanceMeta(user)`, or store a single versioned value type per key. Do not rely on the value's field set to tell two records apart; the key must identify exactly one record shape.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Duplicate storage key construction"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract entry point compares the ledger timestamp with a deadline or another timestamp without a visible tolerance or bounded window. Ledger time is chosen within protocol bounds and can move slightly between submission and execution, so an exact or zero-slack comparison can flip for transactions near the boundary. The detector reports ordered comparisons of a timestamp or a local timestamp alias when no tolerance arithmetic is visible, with low confidence."
+              },
+              "help": {
+                "markdown": "## Unchecked ledger timestamp usage\n\nA contract entry point compares the ledger timestamp with a deadline or another timestamp without a visible tolerance or bounded window. Ledger time is chosen within protocol bounds and can move slightly between submission and execution, so an exact or zero-slack comparison can flip for transactions near the boundary. The detector reports ordered comparisons of a timestamp or a local timestamp alias when no tolerance arithmetic is visible, with low confidence.\n\n### Remediation\n\nCompare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security\n- https://developers.stellar.org/docs/learn/encyclopedia/contract-development",
+                "text": "A contract entry point compares the ledger timestamp with a deadline or another timestamp without a visible tolerance or bounded window. Ledger time is chosen within protocol bounds and can move slightly between submission and execution, so an exact or zero-slack comparison can flip for transactions near the boundary. The detector reports ordered comparisons of a timestamp or a local timestamp alias when no tolerance arithmetic is visible, with low confidence.\n\nRemediation: Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-047",
+              "name": "Unchecked ledger timestamp usage",
+              "properties": {
+                "category": "arithmetic",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/contract-development"
+                ],
+                "remediation": "Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unchecked ledger timestamp usage"
               }
             }
           ],
