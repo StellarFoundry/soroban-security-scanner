@@ -530,10 +530,15 @@ mod tests {
         store.start(&id).unwrap();
         store.complete_at(&id, "report", at(10)).unwrap();
 
-        assert_eq!(store.get_at(&id, at(69)).unwrap().status, JobStatus::Completed);
+        assert_eq!(
+            store.get_at(&id, at(69)).unwrap().status,
+            JobStatus::Completed
+        );
         assert_eq!(
             store.get_at(&id, at(70)),
-            Err(JobStoreError::Expired { retention: Duration::from_secs(60) })
+            Err(JobStoreError::Expired {
+                retention: Duration::from_secs(60)
+            })
         );
 
         let queued = store.submit_at("pending", at(0)).unwrap();

@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Opt-in `soroban-scan serve` HTTP API for submitting source scans and receiving
+  the standard CLI JSON report. The bounded server requires a bearer token and
+  enforces loopback-only binding (`#350`).
 - Additive engine pipeline stages (`discovery`, `parsing`, `analysis`,
   `post_processing`) with optional observation-only `PipelineHooks`. The default
   pipeline is unchanged, and hooks receive only a read-only `StageSummary` with
