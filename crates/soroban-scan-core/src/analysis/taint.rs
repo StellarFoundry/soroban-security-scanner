@@ -491,7 +491,7 @@ fn param_infos(sig: &syn::Signature) -> Vec<ParamInfo> {
         .collect()
 }
 
-fn span_of<T: Spanned>(node: &T) -> Span {
+pub(crate) fn span_of<T: Spanned>(node: &T) -> Span {
     let start = node.span().start();
     let end = node.span().end();
     Span::at(start.line, start.column + 1).with_end(end.line, end.column + 1)
