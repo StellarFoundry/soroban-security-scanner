@@ -3,7 +3,8 @@
 This guide walks through adding a detector to the Soroban Security Scanner. Read
 [`../rules/README.md`](../rules/README.md) first for the severity and confidence
 semantics, then use the shared analysis primitives rather than re-deriving them:
-[taint analysis](../taint-analysis.md) for caller-controlled data and
+[the type model](../type-model.md) for type names and cast source types,
+[taint analysis](../taint-analysis.md) for caller-controlled data, and
 [control-flow graphs](../control-flow.md) for reachability. Finding order is
 defined in [finding ranking](../finding-ranking.md).
 
@@ -88,6 +89,10 @@ once per scan: `ctx.facts_for_source(source)`, `ctx.facts_for_function(source,
 `ctx.function_facts_for_source(source)`, and
 `ctx.cast_facts_for_function(source, &func)`. The cache is keyed by source path
 and function span, so facts never leak across files.
+
+Type-aware rules should read [the type model](../type-model.md) first. It
+documents exactly which names and cast source types are visible, how unknown and
+ambiguous names are surfaced as `TYPE-001`, and why a rule must not guess a type.
 
 ## 3. Add fixtures
 
