@@ -450,3 +450,56 @@ Use a throwaway pull request in a fork or test repository:
    leave the branch unchanged.
 
 Fork pull requests should show none of these side effects.
+
+## GitHub Enterprise Server
+
+The PR comment and check-run helpers
+([`github_api.py`](../.github/scripts/github_api.py)) talk to github.com by
+default. To use GitHub Enterprise Server (or GHE.com), set the opt-in
+environment variable `SOROBAN_SCAN_GITHUB_API_URL` on the step that runs them:
+
+```yaml
+- name: Comment on the pull request
+  env:
+    GH_ENTERPRISE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    SOROBAN_SCAN_GITHUB_API_URL: https://github.example.com/api/v3
+  run: python3 .github/scripts/pr_comment.py --body-file comment.md
+```
+
+The scanner itself still makes no network requests; this only affects those
+two helper scripts.
+
+### Accepted values
+
+| Value | Meaning |
+| ----- | ------- |
+| `https://github.example.com/api/v3` | GitHub Enterprise Server |
+| `https://api.<tenant>.ghe.com` | GHE.com (data residency) |
+| `https://api.github.com` | github.com (same as leaving it unset) |
+| `http://localhost:8080`, `http://127.0.0.1:9000`, `http://[::1]:9000` | Loopback only, for local mock servers and tests |
+
+The value is validated before any request is made. It is rejected when it:
+
+- uses `http` for a non-loopback host, or any scheme other than `https`/`http`;
+- embeds credentials (`user:password@`), a query string or a fragment;
+- has a path other than empty or `/api/v3`;
+- contains whitespace or control characters, or is longer than 2048 characters.
+
+Rejection messages never repeat the value, so a secret pasted into the URL by
+mistake is not written to the job log. Never put a token in the URL.
+
+### Authentication, TLS and proxies
+
+- **Token:** the helpers never read, print or store a token; `gh` does. For a
+  GitHub Enterprise Server host, provide it as `GH_ENTERPRISE_TOKEN` (use
+  `GH_TOKEN` for github.com).
+- **TLS:** certificates are always verified by `gh`. There is no option to
+  disable verification. For a private CA, install the CA in the runner's trust
+  store (or point `SSL_CERT_FILE` / `SSL_CERT_DIR` at it).
+- **Proxy:** `gh` honors `HTTPS_PROXY`, `HTTP_PROXY` and `NO_PROXY`. Set them
+  in the step `env` when the runner reaches your server through a proxy.
+- **Loopback `http`:** accepted by validation for local mock servers. Transport
+  is performed by `gh`, so it works only where your `gh` version supports a
+  plain-HTTP host.
+- **Check run link:** the details link already uses `GITHUB_SERVER_URL`, which
+  GitHub Enterprise Server sets automatically.

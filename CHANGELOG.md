@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and safe relative paths before exposing discoverable entries (#361).
 - Framework-independent bearer auth for the scan API, with fail-closed configuration,
   constant-time comparison, and redacted secrets (#352).
+- Opt-in GitHub Enterprise Server support for the CI helper scripts:
+  `SOROBAN_SCAN_GITHUB_API_URL` selects the API host and is validated before use
+  (HTTPS only, plain HTTP for loopback only, no credentials, query or fragment,
+  path limited to empty or `/api/v3`). TLS and proxy expectations are documented
+  in `docs/github-integration.md` (`#346`).
 
 - Rule pack signing and verification: verify detached Ed25519 signatures (`pack.sig`)
   against trusted keyrings, reject unsigned packs unless allowed via `--allow-unsigned-packs`,
