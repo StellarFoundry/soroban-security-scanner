@@ -86,6 +86,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `project` | Orchestrates discovery, manifest loading, source parsing, Soroban classification, detection evidence, SDK matrix warnings, and optional target analysis. | `detection`, `discovery`, `error`, `manifest`, `model`, `sdk_matrix`, `soroban`, `source`, `target`, `unsupported`. |
 | `soroban` | Soroban evidence and project classification; never executes contracts. | `model`. |
 | `context` | Read-only `AnalysisContext` passed to rules, with a per-source/per-function memoized fact cache (interior mutability is used only for memoization; results stay deterministic and file-scoped). | `model`, `rules::util`, `source`. |
+| `analysis` | Bounded, data-only taint vocabulary and propagation (`analysis::taint`) plus `TYPE-001` unresolved-type diagnostics (`analysis::types`). | `imports`, `model`, `rules::util`, `source`. |
 | `rules` | Built-in detectors, rule metadata validation, and shared analysis helpers. | `category`, `confidence`, `context`, `finding`, `rule`, `severity`, `source`. |
 | `engine` | Runs enabled rules, collects/sorts/deduplicates findings, applies suppressions and baselines, and loads projects through the frontend trait. | `config`, `context`, `error`, `finding`, `frontend`, `model`, `registry`, `suppression`. |
 | `suppression` | Inline `ignore` directives and source ranges. | `finding`-adjacent data only. |
@@ -112,6 +113,8 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `service::jobs` | Thread-safe job lifecycle, count and payload caps, and terminal-job retention. |
 | `report` | Single renderer module (`report::render`, `render_*` helpers). |
 | `rules::*` | One module per detector (for example `rules::missing_authorization`), plus `rules::util` for shared syntax helpers and `rules::validation` for metadata/docs checks. |
+| `analysis::taint` | Data-only source/sink descriptors and bounded propagation into auth subjects and transfer amounts. |
+| `analysis::types` | Bounded `TYPE-001` diagnostics for unresolved and ambiguous type names. |
 | `rules::test_support` | Test-only helpers for detector unit tests. |
 
 Adding a component normally means adding a `pub mod` here, a row in the table,
