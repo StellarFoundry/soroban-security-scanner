@@ -546,9 +546,10 @@ fn annotate_reachability(sources: &[ParsedSource], findings: &mut [Finding]) {
                 .functions
                 .iter()
                 .filter(|function| {
-                    function.is_contract_entry_point
-                        && function.line <= finding.location.line
-                        && finding.location.line <= function.end_line
+                    // `FunctionSummary::end_line` covers the signature, while the
+                    // CFG range covers the body. Match the function by the CFG
+                    // start line so findings inside the body are attributed.
+                    function.is_contract_entry_point && function.line == range.0
                 })
                 .map(|function| function.qualified_name.clone())
                 .next()

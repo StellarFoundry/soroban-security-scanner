@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "rule_id": "SS-047",
+  "fixtures": [
+    {
+      "file": "negative.rs",
+      "findings": [
+        {
+          "rule_id": "SS-008",
+          "count": 1,
+          "severity": "medium",
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "file": "negative2.rs",
+      "findings": [
+        {
+          "rule_id": "SS-004",
+          "count": 1,
+          "severity": "low",
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "file": "negative3.rs",
+      "findings": [
+        {
+          "rule_id": "SS-008",
+          "count": 1,
+          "severity": "medium",
+          "confidence": null
+        }
+      ]
+    },
+    {
+      "file": "negative4.rs",
+      "findings": []
+    },
+    {
+      "file": "negative5.rs",
+      "findings": []
+    },
+    {
+      "file": "positive.rs",
+      "findings": [
+        {
+          "rule_id": "SS-047",
+          "count": 1,
+          "severity": "medium",
+          "confidence": null
+        }
+      ]
+    }
+  ]
+}

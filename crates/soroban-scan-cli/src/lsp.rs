@@ -8,9 +8,14 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::io::{BufRead, BufReader, Write};
 use std::path::{Path, PathBuf};
+use std::sync::mpsc::{self, RecvTimeoutError};
+use std::sync::Arc;
+use std::thread;
+use std::time::{Duration, Instant};
 
 use serde_json::{json, Value};
 
+use soroban_scan_core::confidence::Confidence;
 use soroban_scan_core::config::ScanConfig;
 use soroban_scan_core::engine;
 use soroban_scan_core::model::DiagnosticCode;
@@ -50,28 +55,264 @@ const SYMBOL_FUNCTION: u32 = 12;
 const SYMBOL_STRUCT: u32 = 23;
 const SYMBOL_EVENT: u32 = 24;
 
-/// Runs the language server until the client sends `exit`.
-pub fn run(registry: &RuleRegistry) -> Result<u8, String> {
-    let stdin = std::io::stdin();
-    let mut reader = BufReader::new(stdin.lock());
-    let stdout = std::io::stdout();
-    let mut writer = stdout.lock();
-    let mut documents: BTreeMap<String, String> = BTreeMap::new();
-    let mut workspace_root: Option<PathBuf> = None;
-    let mut workspace_config = WorkspaceConfig::defaults();
-    let mut shutdown_requested = false;
+/// Maximum analyzed document size. Larger buffers are kept for symbols and
+/// hover but are not scanned, so one large file cannot stall the server.
+const MAX_DOCUMENT_BYTES: usize = 1024 * 1024;
 
-    while let Some(message) = read_message(&mut reader)? {
+/// Maximum diagnostics published for one document.
+const MAX_DIAGNOSTICS: usize = 200;
+
+/// Time allowed for one analysis before a warning replaces its diagnostics.
+const ANALYSIS_TIMEOUT: Duration = Duration::from_secs(2);
+
+/// Idle time after a change before analysis starts, so typing does not scan
+/// every keystroke.
+const CHANGE_DEBOUNCE: Duration = Duration::from_millis(150);
+
+/// Bounded work limits for the language server.
+#[derive(Clone, Copy)]
+struct Limits {
+    max_document_bytes: usize,
+    max_diagnostics: usize,
+    analysis_timeout: Duration,
+    debounce: Duration,
+}
+
+impl Default for Limits {
+    fn default() -> Self {
+        Limits {
+            max_document_bytes: MAX_DOCUMENT_BYTES,
+            max_diagnostics: MAX_DIAGNOSTICS,
+            analysis_timeout: ANALYSIS_TIMEOUT,
+            debounce: CHANGE_DEBOUNCE,
+        }
+    }
+}
+
+struct PendingAnalysis {
+    generation: u64,
+    due: Instant,
+}
+
+struct InFlightAnalysis {
+    generation: u64,
+    started: Instant,
+    timed_out: bool,
+}
+
+struct AnalysisResult {
+    uri: String,
+    generation: u64,
+    diagnostics: Vec<Value>,
+}
+
+enum Event {
+    Message(Value),
+    Analyzed(AnalysisResult),
+    Closed,
+    ReadError(String),
+}
+
+struct ServerState {
+    registry: Arc<RuleRegistry>,
+    limits: Limits,
+    documents: BTreeMap<String, String>,
+    pending: BTreeMap<String, PendingAnalysis>,
+    inflight: BTreeMap<String, InFlightAnalysis>,
+    workspace_root: Option<PathBuf>,
+    workspace_config: WorkspaceConfig,
+    next_generation: u64,
+    shutdown_requested: bool,
+}
+
+impl ServerState {
+    fn new(registry: Arc<RuleRegistry>, limits: Limits) -> Self {
+        ServerState {
+            registry,
+            limits,
+            documents: BTreeMap::new(),
+            pending: BTreeMap::new(),
+            inflight: BTreeMap::new(),
+            workspace_root: None,
+            workspace_config: WorkspaceConfig::defaults(),
+            next_generation: 0,
+            shutdown_requested: false,
+        }
+    }
+
+    fn schedule(&mut self, uri: String, debounce: Duration) {
+        self.next_generation += 1;
+        self.pending.insert(
+            uri,
+            PendingAnalysis {
+                generation: self.next_generation,
+                due: Instant::now() + debounce,
+            },
+        );
+    }
+
+    /// Starts analyses that are due. A document with an active worker waits, so
+    /// a burst of changes cannot create unbounded threads.
+    fn start_due<W: Write>(
+        &mut self,
+        writer: &mut W,
+        events: &mpsc::Sender<Event>,
+    ) -> Result<(), String> {
+        let now = Instant::now();
+        let due: Vec<String> = self
+            .pending
+            .iter()
+            .filter(|(uri, pending)| {
+                pending.due <= now
+                    && !self
+                        .inflight
+                        .get(*uri)
+                        .is_some_and(|active| !active.timed_out)
+            })
+            .map(|(uri, _)| uri.clone())
+            .collect();
+
+        for uri in due {
+            let Some(pending) = self.pending.remove(&uri) else {
+                continue;
+            };
+            let text = self
+                .documents
+                .get(&uri)
+                .cloned()
+                .unwrap_or_else(String::new);
+            if text.len() > self.limits.max_document_bytes {
+                publish_diagnostics(
+                    writer,
+                    &uri,
+                    vec![server_diagnostic(
+                        "LSP-DOCUMENT-LIMIT",
+                        2,
+                        format!(
+                            "document is {} bytes; analysis is skipped above the {} byte limit",
+                            text.len(),
+                            self.limits.max_document_bytes
+                        ),
+                    )],
+                )?;
+                continue;
+            }
+
+            self.inflight.insert(
+                uri.clone(),
+                InFlightAnalysis {
+                    generation: pending.generation,
+                    started: now,
+                    timed_out: false,
+                },
+            );
+            let registry = Arc::clone(&self.registry);
+            let config = self.workspace_config.config.clone();
+            let events = events.clone();
+            let max_diagnostics = self.limits.max_diagnostics;
+            let worker_uri = uri.clone();
+            thread::spawn(move || {
+                let diagnostics =
+                    diagnostics_with_limit(&registry, &config, &worker_uri, &text, max_diagnostics);
+                let _ = events.send(Event::Analyzed(AnalysisResult {
+                    uri: worker_uri,
+                    generation: pending.generation,
+                    diagnostics,
+                }));
+            });
+        }
+        Ok(())
+    }
+
+    /// Marks analyses that exceeded the time limit and reports it once.
+    fn expire_inflight<W: Write>(&mut self, writer: &mut W) -> Result<(), String> {
+        let now = Instant::now();
+        let expired: Vec<String> = self
+            .inflight
+            .iter()
+            .filter(|(_, active)| {
+                !active.timed_out && now >= active.started + self.limits.analysis_timeout
+            })
+            .map(|(uri, _)| uri.clone())
+            .collect();
+        for uri in expired {
+            if let Some(active) = self.inflight.get_mut(&uri) {
+                active.timed_out = true;
+            }
+            publish_diagnostics(
+                writer,
+                &uri,
+                vec![server_diagnostic(
+                    "LSP-ANALYSIS-TIMEOUT",
+                    2,
+                    format!(
+                        "analysis exceeded {} ms; diagnostics may be incomplete",
+                        self.limits.analysis_timeout.as_millis()
+                    ),
+                )],
+            )?;
+        }
+        Ok(())
+    }
+
+    /// Time until the next pending deadline or in-flight timeout.
+    fn next_wait(&self) -> Duration {
+        let now = Instant::now();
+        let mut next: Option<Instant> = None;
+        for (uri, pending) in &self.pending {
+            let deadline = match self.inflight.get(uri) {
+                Some(active) if !active.timed_out => active.started + self.limits.analysis_timeout,
+                _ => pending.due,
+            };
+            next = Some(next.map_or(deadline, |current| current.min(deadline)));
+        }
+        for active in self.inflight.values().filter(|active| !active.timed_out) {
+            let deadline = active.started + self.limits.analysis_timeout;
+            next = Some(next.map_or(deadline, |current| current.min(deadline)));
+        }
+        match next {
+            Some(deadline) => deadline.saturating_duration_since(now),
+            None => Duration::from_secs(3600),
+        }
+    }
+
+    fn handle_result<W: Write>(
+        &mut self,
+        writer: &mut W,
+        result: AnalysisResult,
+    ) -> Result<(), String> {
+        let Some(active) = self.inflight.get(&result.uri) else {
+            return Ok(());
+        };
+        if active.generation != result.generation {
+            return Ok(());
+        }
+        let timed_out = active.timed_out;
+        self.inflight.remove(&result.uri);
+        if timed_out || !self.documents.contains_key(&result.uri) {
+            return Ok(());
+        }
+        if self
+            .pending
+            .get(&result.uri)
+            .is_some_and(|pending| pending.generation > result.generation)
+        {
+            return Ok(());
+        }
+        publish_diagnostics(writer, &result.uri, result.diagnostics)
+    }
+
+    fn handle_message<W: Write>(&mut self, writer: &mut W, message: Value) -> Result<bool, String> {
         let id = message.get("id").cloned();
         let method = message.get("method").and_then(Value::as_str);
         let params = message.get("params").cloned().unwrap_or(Value::Null);
 
         match method {
             Some("initialize") => {
-                workspace_root = workspace_root_from(&params);
-                reload_workspace_config(&mut workspace_config, workspace_root.as_deref());
+                self.workspace_root = workspace_root_from(&params);
+                reload_workspace_config(&mut self.workspace_config, self.workspace_root.as_deref());
                 respond(
-                    &mut writer,
+                    writer,
                     id,
                     json!({
                         "capabilities": {
@@ -85,24 +326,18 @@ pub fn run(registry: &RuleRegistry) -> Result<u8, String> {
                         }
                     }),
                 )?;
-                publish_config_diagnostics(&mut writer, &workspace_config)?;
+                publish_config_diagnostics(writer, &self.workspace_config)?;
             }
             Some("initialized") => {}
             Some("shutdown") => {
-                shutdown_requested = true;
-                respond(&mut writer, id, Value::Null)?;
+                self.shutdown_requested = true;
+                respond(writer, id, Value::Null)?;
             }
-            Some("exit") => break,
+            Some("exit") => return Ok(false),
             Some("textDocument/didOpen") => {
                 if let Some((uri, text)) = opened_document(&params) {
-                    documents.insert(uri.clone(), text.clone());
-                    publish_diagnostics(
-                        &mut writer,
-                        registry,
-                        &workspace_config.config,
-                        &uri,
-                        &text,
-                    )?;
+                    self.documents.insert(uri.clone(), text);
+                    self.schedule(uri, Duration::ZERO);
                 }
             }
             Some("textDocument/didChange") => {
@@ -112,84 +347,125 @@ pub fn run(registry: &RuleRegistry) -> Result<u8, String> {
                     .unwrap_or_default()
                     .to_string();
                 if let Some(text) = changed_text(&params) {
-                    documents.insert(uri.clone(), text.clone());
-                    publish_diagnostics(
-                        &mut writer,
-                        registry,
-                        &workspace_config.config,
-                        &uri,
-                        &text,
-                    )?;
+                    self.documents.insert(uri.clone(), text);
+                    self.schedule(uri, self.limits.debounce);
                 }
             }
             Some("textDocument/didSave") => {
                 if let Some(uri) = params.pointer("/textDocument/uri").and_then(Value::as_str) {
-                    if let Some(text) = documents.get(uri) {
-                        publish_diagnostics(
-                            &mut writer,
-                            registry,
-                            &workspace_config.config,
-                            uri,
-                            text,
-                        )?;
+                    if self.documents.contains_key(uri) {
+                        self.schedule(uri.to_string(), Duration::ZERO);
                     }
                 }
             }
             Some("textDocument/didClose") => {
                 if let Some(uri) = params.pointer("/textDocument/uri").and_then(Value::as_str) {
-                    documents.remove(uri);
-                    let notification = json!({
-                        "jsonrpc": "2.0",
-                        "method": "textDocument/publishDiagnostics",
-                        "params": { "uri": uri, "diagnostics": [] }
-                    });
-                    send(&mut writer, &notification)?;
+                    self.documents.remove(uri);
+                    self.pending.remove(uri);
+                    self.inflight.remove(uri);
+                    publish_diagnostics(writer, uri, Vec::new())?;
                 }
             }
-            Some("workspace/didChangeConfiguration")
-            | Some("workspace/didChangeWatchedFiles") => {
-                reload_and_republish(
-                    &mut writer,
-                    registry,
-                    workspace_root.as_deref(),
-                    &mut workspace_config,
-                    &documents,
-                )?;
+            Some("workspace/didChangeConfiguration") | Some("workspace/didChangeWatchedFiles") => {
+                reload_workspace_config(&mut self.workspace_config, self.workspace_root.as_deref());
+                publish_config_diagnostics(writer, &self.workspace_config)?;
+                let uris: Vec<String> = self.documents.keys().cloned().collect();
+                for uri in uris {
+                    self.schedule(uri, Duration::ZERO);
+                }
             }
             Some("textDocument/documentSymbol") => {
                 let result = params
                     .pointer("/textDocument/uri")
                     .and_then(Value::as_str)
-                    .and_then(|uri| documents.get(uri))
+                    .and_then(|uri| self.documents.get(uri))
                     .map(|text| document_symbols(text))
                     .unwrap_or_else(|| json!([]));
-                respond(&mut writer, id, result)?;
+                respond(writer, id, result)?;
             }
             Some("textDocument/hover") => {
                 let result = params
                     .pointer("/textDocument/uri")
                     .and_then(Value::as_str)
-                    .and_then(|uri| documents.get(uri))
+                    .and_then(|uri| self.documents.get(uri))
                     .and_then(|text| {
                         let line = params.pointer("/position/line")?.as_u64()? as usize;
                         let character = params.pointer("/position/character")?.as_u64()? as usize;
-                        hover(registry, text, line, character)
+                        hover(&self.registry, text, line, character)
                     })
                     .unwrap_or(Value::Null);
-                respond(&mut writer, id, result)?;
+                respond(writer, id, result)?;
             }
             Some(_) if id.is_some() => {
-                respond_error(&mut writer, id, -32601, "method not found")?;
+                respond_error(writer, id, -32601, "method not found")?;
             }
             Some(_) => {}
             None => {}
+        }
+        Ok(true)
+    }
+}
+
+/// Runs the language server until the client sends `exit`.
+pub fn run(registry: RuleRegistry) -> Result<u8, String> {
+    let limits = Limits::default();
+    let stdout = std::io::stdout();
+    let mut writer = stdout.lock();
+    let (events, receiver) = mpsc::channel();
+    let reader_events = events.clone();
+    thread::spawn(move || {
+        let stdin = std::io::stdin();
+        let mut reader = BufReader::new(stdin);
+        loop {
+            match read_message(&mut reader) {
+                Ok(Some(message)) => {
+                    if reader_events.send(Event::Message(message)).is_err() {
+                        break;
+                    }
+                }
+                Ok(None) => {
+                    let _ = reader_events.send(Event::Closed);
+                    break;
+                }
+                Err(error) => {
+                    let _ = reader_events.send(Event::ReadError(error));
+                    break;
+                }
+            }
+        }
+    });
+
+    let mut state = ServerState::new(Arc::new(registry), limits);
+    loop {
+        state.start_due(&mut writer, &events)?;
+        state.expire_inflight(&mut writer)?;
+        match receiver.recv_timeout(state.next_wait()) {
+            Ok(Event::Message(message)) => {
+                if !state.handle_message(&mut writer, message)? {
+                    break;
+                }
+            }
+            Ok(Event::Analyzed(result)) => state.handle_result(&mut writer, result)?,
+            Ok(Event::Closed) | Err(RecvTimeoutError::Disconnected) => break,
+            Ok(Event::ReadError(error)) => return Err(error),
+            Err(RecvTimeoutError::Timeout) => {}
         }
     }
 
     // `exit` after `shutdown` is a clean stop; the process still returns 0 so a
     // client that simply closes the pipe is not reported as a crash.
-    let _ = shutdown_requested;
+    let _ = state.shutdown_requested;
     Ok(0)
+}
+
+fn server_diagnostic(code: &str, severity: u8, message: String) -> Value {
+    json!({
+        "range": range_raw(1, 1, 1, 1),
+        "severity": severity,
+        "code": code,
+        "source": SOURCE,
+        "message": message
+    })
 }
 
 /// Extracts the first workspace folder URI, falling back to `rootUri`.
@@ -229,10 +505,7 @@ fn reload_workspace_config(state: &mut WorkspaceConfig, root: Option<&Path>) {
                 state.error = None;
             }
             Err(error) => {
-                state.error = Some(format!(
-                    "invalid configuration {}: {error}",
-                    path.display()
-                ));
+                state.error = Some(format!("invalid configuration {}: {error}", path.display()));
             }
         },
         Err(error) => {
@@ -272,22 +545,6 @@ fn publish_config_diagnostics<W: Write>(
     )
 }
 
-/// Reloads configuration and refreshes diagnostics for every open document.
-fn reload_and_republish<W: Write>(
-    writer: &mut W,
-    registry: &RuleRegistry,
-    root: Option<&Path>,
-    state: &mut WorkspaceConfig,
-    documents: &BTreeMap<String, String>,
-) -> Result<(), String> {
-    reload_workspace_config(state, root);
-    publish_config_diagnostics(writer, state)?;
-    for (uri, text) in documents {
-        publish_diagnostics(writer, registry, &state.config, uri, text)?;
-    }
-    Ok(())
-}
-
 /// Converts a `file:` URI to a filesystem path.
 fn uri_to_path(uri: &str) -> Option<PathBuf> {
     let rest = uri.strip_prefix("file://")?;
@@ -312,8 +569,8 @@ fn path_to_uri(path: &Path) -> String {
     }
     let mut encoded = String::from("file://");
     for byte in text.bytes() {
-        let keep = byte.is_ascii_alphanumeric()
-            || matches!(byte, b'-' | b'.' | b'_' | b'~' | b'/' | b':');
+        let keep =
+            byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'.' | b'_' | b'~' | b'/' | b':');
         if keep {
             encoded.push(byte as char);
         } else {
@@ -428,12 +685,9 @@ fn respond_error<W: Write>(
 
 fn publish_diagnostics<W: Write>(
     writer: &mut W,
-    registry: &RuleRegistry,
-    config: &ScanConfig,
     uri: &str,
-    text: &str,
+    diagnostics: Vec<Value>,
 ) -> Result<(), String> {
-    let diagnostics = diagnostics_for(registry, config, uri, text);
     send(
         writer,
         &json!({
@@ -442,6 +696,28 @@ fn publish_diagnostics<W: Write>(
             "params": { "uri": uri, "diagnostics": diagnostics }
         }),
     )
+}
+
+/// Scans a document and caps the published diagnostics.
+fn diagnostics_with_limit(
+    registry: &RuleRegistry,
+    config: &ScanConfig,
+    uri: &str,
+    text: &str,
+    max_diagnostics: usize,
+) -> Vec<Value> {
+    let mut diagnostics = diagnostics_for(registry, config, uri, text);
+    if diagnostics.len() <= max_diagnostics {
+        return diagnostics;
+    }
+    let omitted = diagnostics.len() - max_diagnostics;
+    diagnostics.truncate(max_diagnostics);
+    diagnostics.push(server_diagnostic(
+        "LSP-DIAGNOSTICS-TRUNCATED",
+        2,
+        format!("{omitted} additional diagnostics omitted (limit {max_diagnostics})"),
+    ));
+    diagnostics
 }
 
 fn diagnostics_for(
@@ -464,17 +740,15 @@ fn diagnostics_for(
             None => 1,
         };
         diagnostics.push(json!({
-            "range": range_raw(line, column, end_line, end_column),
-            "severity": match finding.severity {
-                Severity::Critical | Severity::High => 1,
-                Severity::Medium => 2,
-                Severity::Low => 3,
-                Severity::Info => 4,
-            },
+            "range": range_for(text, line, column, end_line, end_column),
+            "severity": diagnostic_severity(finding.severity, finding.confidence),
             "code": finding.rule_id,
             "source": SOURCE,
             "message": format!("{}: {}", finding.title, finding.evidence),
-            "data": { "fingerprint": finding.fingerprint }
+            "data": {
+                "fingerprint": finding.fingerprint,
+                "confidence": finding.confidence.as_str()
+            }
         }));
     }
 
@@ -724,6 +998,57 @@ fn selection_range(text: &str, line: usize, column: usize, name: &str) -> Value 
     })
 }
 
+/// Maps a finding severity and confidence to an LSP `DiagnosticSeverity`.
+///
+/// Severity supplies the base level: critical/high is error, medium warning,
+/// low information, and info a hint. A low-confidence finding is capped at
+/// warning so a heuristic high-severity result does not look certain.
+fn diagnostic_severity(severity: Severity, confidence: Confidence) -> u8 {
+    let base = match severity {
+        Severity::Critical | Severity::High => 1,
+        Severity::Medium => 2,
+        Severity::Low => 3,
+        Severity::Info => 4,
+    };
+    if confidence == Confidence::Low && base < 2 {
+        2
+    } else {
+        base
+    }
+}
+
+/// Converts a 1-based byte column to a zero-based UTF-16 LSP position.
+///
+/// The scanner reports byte columns. LSP counts UTF-16 code units, so a
+/// multi-byte character occupies more than one byte but one or two UTF-16
+/// units. A column inside a multi-byte character is clamped to its start, and
+/// CRLF line endings are stripped before counting.
+fn lsp_position(text: &str, line: usize, column: usize) -> (usize, usize) {
+    if line == 0 {
+        return (0, 0);
+    }
+    let lines: Vec<&str> = text.lines().collect();
+    let line_index = line - 1;
+    let Some(line_text) = lines.get(line_index) else {
+        return (lines.len().saturating_sub(1), 0);
+    };
+    let mut byte = column.saturating_sub(1).min(line_text.len());
+    while byte > 0 && !line_text.is_char_boundary(byte) {
+        byte -= 1;
+    }
+    (line_index, line_text[..byte].encode_utf16().count())
+}
+
+/// Builds an LSP range from scanner byte positions.
+fn range_for(text: &str, line: usize, column: usize, end_line: usize, end_column: usize) -> Value {
+    let (start_line, start_character) = lsp_position(text, line, column);
+    let (end_line, end_character) = lsp_position(text, end_line, end_column);
+    json!({
+        "start": { "line": start_line, "character": start_character },
+        "end": { "line": end_line, "character": end_character }
+    })
+}
+
 fn range_raw(line: usize, column: usize, end_line: usize, end_column: usize) -> Value {
     json!({
         "start": {
@@ -847,5 +1172,81 @@ mod tests {
                 check_range(child, line_count);
             }
         }
+    }
+
+    #[test]
+    fn ascii_positions_are_zero_based() {
+        let text = "ab\ncd\nef";
+        assert_eq!(lsp_position(text, 1, 1), (0, 0));
+        assert_eq!(lsp_position(text, 2, 3), (1, 2));
+        assert_eq!(lsp_position(text, 9, 1), (2, 0));
+        assert_eq!(lsp_position(text, 0, 1), (0, 0));
+    }
+
+    #[test]
+    fn unicode_columns_become_utf16_units() {
+        // Each Greek letter is two bytes and one UTF-16 unit.
+        let text = "αβx";
+        assert_eq!(lsp_position(text, 1, 1), (0, 0));
+        assert_eq!(lsp_position(text, 1, 3), (0, 1));
+        assert_eq!(lsp_position(text, 1, 5), (0, 2));
+
+        // An emoji is four bytes and two UTF-16 units. A column inside it is
+        // clamped to the character start.
+        let text = "😀x";
+        assert_eq!(lsp_position(text, 1, 5), (0, 2));
+        assert_eq!(lsp_position(text, 1, 3), (0, 0));
+        assert_eq!(lsp_position(text, 1, 99), (0, 3));
+    }
+
+    #[test]
+    fn crlf_lines_keep_the_same_character_offsets() {
+        let text = "α\r\nβx\r\n";
+        assert_eq!(lsp_position(text, 1, 3), (0, 1));
+        assert_eq!(lsp_position(text, 2, 1), (1, 0));
+        assert_eq!(lsp_position(text, 2, 3), (1, 1));
+    }
+
+    #[test]
+    fn severity_and_confidence_map_to_lsp_levels() {
+        let cases = [
+            (Severity::Critical, Confidence::High, 1),
+            (Severity::High, Confidence::Medium, 1),
+            (Severity::Critical, Confidence::Low, 2),
+            (Severity::High, Confidence::Low, 2),
+            (Severity::Medium, Confidence::High, 2),
+            (Severity::Medium, Confidence::Low, 2),
+            (Severity::Low, Confidence::High, 3),
+            (Severity::Info, Confidence::High, 4),
+        ];
+        for (severity, confidence, expected) in cases {
+            assert_eq!(
+                diagnostic_severity(severity, confidence),
+                expected,
+                "{severity:?}/{confidence:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn finding_ranges_use_utf16_offsets() {
+        let registry = RuleRegistry::with_default_rules();
+        let text = r#"#[contractimpl]
+impl Vault {
+    pub fn set(env: Env, value: u32) { /* αβ */ env.storage().persistent().set(&1u32, &value); }
+}
+"#;
+        let diagnostics = diagnostics_for(&registry, &ScanConfig::default(), "unicode.rs", text);
+        let finding = diagnostics
+            .iter()
+            .find(|diagnostic| diagnostic["code"] == "SS-006")
+            .expect("SS-006 diagnostic");
+        // The prefix before `env.storage` is 48 bytes but 46 UTF-16 units
+        // because of the two non-ASCII characters in the comment.
+        let source_line = text.lines().nth(2).unwrap();
+        let byte_column = source_line.find("env.storage").unwrap();
+        assert!(byte_column > 46, "the prefix contains multi-byte text");
+        assert_eq!(finding["range"]["start"]["character"].as_u64(), Some(46));
+        assert_eq!(finding["data"]["confidence"], "low");
     }
 }

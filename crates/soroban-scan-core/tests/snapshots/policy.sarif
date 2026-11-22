@@ -1330,6 +1330,62 @@
               "shortDescription": {
                 "text": "Cross-contract call with an unvalidated address argument"
               }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract writes different logical records through the same storage key construction. When the key is a literal or a constructor whose arguments do not fully separate the records, one write can overwrite or be mistaken for another record with a different field set. The detector compares the field sets of struct literals written to the same key in the same storage class and reports only when they differ, with low confidence."
+              },
+              "help": {
+                "markdown": "## Duplicate storage key construction\n\nA contract writes different logical records through the same storage key construction. When the key is a literal or a constructor whose arguments do not fully separate the records, one write can overwrite or be mistaken for another record with a different field set. The detector compares the field sets of struct literals written to the same key in the same storage class and reports only when they differ, with low confidence.\n\n### Remediation\n\nGive each logical record its own namespaced key, for example `DataKey::Balance(user)` and `DataKey::BalanceMeta(user)`, or store a single versioned value type per key. Do not rely on the value's field set to tell two records apart; the key must identify exactly one record shape.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A contract writes different logical records through the same storage key construction. When the key is a literal or a constructor whose arguments do not fully separate the records, one write can overwrite or be mistaken for another record with a different field set. The detector compares the field sets of struct literals written to the same key in the same storage class and reports only when they differ, with low confidence.\n\nRemediation: Give each logical record its own namespaced key, for example `DataKey::Balance(user)` and `DataKey::BalanceMeta(user)`, or store a single versioned value type per key. Do not rely on the value's field set to tell two records apart; the key must identify exactly one record shape."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-046",
+              "name": "Duplicate storage key construction",
+              "properties": {
+                "category": "storage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Give each logical record its own namespaced key, for example `DataKey::Balance(user)` and `DataKey::BalanceMeta(user)`, or store a single versioned value type per key. Do not rely on the value's field set to tell two records apart; the key must identify exactly one record shape.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Duplicate storage key construction"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract entry point compares the ledger timestamp with a deadline or another timestamp without a visible tolerance or bounded window. Ledger time is chosen within protocol bounds and can move slightly between submission and execution, so an exact or zero-slack comparison can flip for transactions near the boundary. The detector reports ordered comparisons of a timestamp or a local timestamp alias when no tolerance arithmetic is visible, with low confidence."
+              },
+              "help": {
+                "markdown": "## Unchecked ledger timestamp usage\n\nA contract entry point compares the ledger timestamp with a deadline or another timestamp without a visible tolerance or bounded window. Ledger time is chosen within protocol bounds and can move slightly between submission and execution, so an exact or zero-slack comparison can flip for transactions near the boundary. The detector reports ordered comparisons of a timestamp or a local timestamp alias when no tolerance arithmetic is visible, with low confidence.\n\n### Remediation\n\nCompare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security\n- https://developers.stellar.org/docs/learn/encyclopedia/contract-development",
+                "text": "A contract entry point compares the ledger timestamp with a deadline or another timestamp without a visible tolerance or bounded window. Ledger time is chosen within protocol bounds and can move slightly between submission and execution, so an exact or zero-slack comparison can flip for transactions near the boundary. The detector reports ordered comparisons of a timestamp or a local timestamp alias when no tolerance arithmetic is visible, with low confidence.\n\nRemediation: Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-047",
+              "name": "Unchecked ledger timestamp usage",
+              "properties": {
+                "category": "arithmetic",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/contract-development"
+                ],
+                "remediation": "Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unchecked ledger timestamp usage"
+              }
             }
           ],
           "version": "0.2.0"

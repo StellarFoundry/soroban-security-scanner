@@ -90,6 +90,8 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-041](detectors/SS-041.md) | Authorization check inside a loop | medium | low | authorization |
 | [SS-042](detectors/SS-042.md) | Security check unreachable on every path | low | medium | authorization |
 | [SS-044](detectors/SS-044.md) | Cross-contract call with an unvalidated address argument | medium | low | cross-contract |
+| [SS-046](detectors/SS-046.md) | Duplicate storage key construction | medium | low | storage |
+| [SS-047](detectors/SS-047.md) | Unchecked ledger timestamp usage | medium | low | arithmetic |
 
 Each detector has a positive and negative fixture under
 `fixtures/corpus/<RULE-ID>/`, plus an adversarial sample and recorded expected
