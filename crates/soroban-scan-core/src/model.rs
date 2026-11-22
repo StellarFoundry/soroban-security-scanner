@@ -274,6 +274,9 @@ pub enum DiagnosticCode {
     /// A source file uses a language or syntax the selected frontend cannot analyze.
     #[serde(rename = "SYNTAX-001")]
     UnsupportedSyntax,
+    /// A type reference could not be resolved unambiguously.
+    #[serde(rename = "TYPE-001")]
+    UnresolvedType,
     /// The declared `soroban-sdk` version is outside the supported matrix.
     #[serde(rename = "SDK-001")]
     UnsupportedSdkVersion,
@@ -309,6 +312,7 @@ impl DiagnosticCode {
             DiagnosticCode::TargetDetected => "TARGET-002",
             DiagnosticCode::TargetConfigUnreadable => "TARGET-003",
             DiagnosticCode::UnsupportedSyntax => "SYNTAX-001",
+            DiagnosticCode::UnresolvedType => "TYPE-001",
             DiagnosticCode::UnsupportedSdkVersion => "SDK-001",
         }
     }
@@ -333,6 +337,9 @@ pub struct Diagnostic {
     pub path: Option<PathBuf>,
     /// Related line, if any.
     pub line: Option<usize>,
+    /// Related column, if any. Omitted from JSON when unknown.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub column: Option<usize>,
 }
 
 impl Diagnostic {
@@ -344,6 +351,7 @@ impl Diagnostic {
             message: message.into(),
             path,
             line: None,
+            column: None,
         }
     }
 
@@ -359,6 +367,7 @@ impl Diagnostic {
             message: message.into(),
             path,
             line: None,
+            column: None,
         }
     }
 
@@ -370,7 +379,15 @@ impl Diagnostic {
             message: message.into(),
             path,
             line: None,
+            column: None,
         }
+    }
+
+    /// Attaches a 1-based line and column.
+    pub fn with_span(mut self, line: usize, column: usize) -> Self {
+        self.line = Some(line);
+        self.column = Some(column);
+        self
     }
 }
 

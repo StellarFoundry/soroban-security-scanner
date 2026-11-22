@@ -45,11 +45,12 @@ can classify or suppress them without parsing the human-readable message.
 | `TARGET-002` | info | A wasm32 target was detected; target-specific dependencies were filtered. The scanner did not build or execute the project. |
 | `TARGET-003` | warning | A Cargo target configuration file could not be read or parsed and was ignored. |
 | `SYNTAX-001` | warning | Source files in a language the Rust frontend cannot analyze were skipped. Emitted only with `--unsupported-syntax`, aggregated by language, and bounded to 8 kinds plus an omitted-count notice. Only file extensions are inspected; no source text is read or reported. |
+| `TYPE-001` | warning | A type name used by an entry point could not be resolved unambiguously. Emitted for parameter types, local type annotations, and cast targets, aggregated by construct and type name with the first span. Type-aware rules may not apply. Bounded to 8 diagnostics per scan plus an omitted-count notice. |
 | `SDK-001` | warning | The declared `soroban-sdk` version is outside the supported matrix (`>=20.5.0, <30.0.0`). The scan continues, but rule coverage may be inaccurate. The message lists the verified versions. |
 
 Codes are grouped by area: `PARSE-*`, `MANIFEST-*`, `SOURCE-*`, `CRATE-*`,
-`RULE-*`, `CONFIG-*`, `BASELINE-*`, `MODE-*`, `TARGET-*`, `SYNTAX-*`, and
-`SDK-*`. `config validate` prints `CONFIG-*` warnings to
+`RULE-*`, `CONFIG-*`, `BASELINE-*`, `MODE-*`, `TARGET-*`, `SYNTAX-*`,
+`TYPE-*`, and `SDK-*`. `config validate` prints `CONFIG-*` warnings to
 stderr while still exiting successfully, because they do not prevent a scan from
 running.
 
