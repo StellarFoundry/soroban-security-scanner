@@ -247,3 +247,156 @@ Set the repository variables `SOROBAN_SCAN_BASELINE_SCAN_PATH` and
 `SOROBAN_SCAN_BASELINE_FILE` to point the workflow at a contract tree and
 baseline file of your choosing. See
 [GitHub Integration](github-integration.md#scheduled-baseline-refresh).
+
+## Baseline synchronization (`baseline push` and `baseline pull`)
+
+Baseline sync enables CI pipelines and distributed developer environments to share
+and persist baselines across workflow runs without committing baseline files directly
+to git on every change.
+
+### The baseline envelope
+
+When pushed, a baseline payload is wrapped inside a deterministic metadata envelope:
+
+```json
+{
+  "version": 1,
+  "registry_fingerprint": "a4f8b2c1...",
+  "revision": 1,
+  "content_hash": "e3b0c442...",
+  "payload": "{\"version\":1,\"findings\":[...]}"
+}
+```
+
+Envelope fields:
+- `version`: Envelope schema version (`1`).
+- `registry_fingerprint`: SHA-256 digest over the active engine rule IDs and versions,
+  sorted alphabetically. Guarantees that a baseline pulled from storage was produced by
+  a compatible rule set.
+- `revision`: Monotonically increasing revision counter (e.g. GitHub run attempt or build counter).
+- `content_hash`: SHA-256 digest over the raw payload string.
+- `payload`: The serialized baseline document.
+
+### Verification order (fail-closed)
+
+When pulling an artifact, verification executes in a strict order and fails closed:
+1. **Size check**: The artifact cannot exceed 64 MiB (`MAX_ENVELOPE_BYTES`). Rejected before parsing.
+2. **Envelope schema**: JSON deserialization of the envelope.
+3. **Envelope version**: Rejects schema versions other than `1`.
+4. **Registry fingerprint**: Ensures the envelope's rule fingerprint matches the running binary's active rule registry.
+5. **Content hash**: Recalculates SHA-256 over `payload` and compares with `content_hash`.
+6. **Payload deserialization**: Verifies that the payload parses into a valid baseline document.
+
+If any check fails, the command terminates with exit code `3` and an actionable error. A mismatched baseline is never silently used as an empty baseline.
+
+### Key naming and validation
+
+Baseline keys are supplied via `--key` and must conform to:
+- Allowed characters: `[A-Za-z0-9._-]`
+- Length: 1 to 128 characters
+- No directory separators (`/`, `\`) and no relative directory traversal segments (`..`)
+
+Invalid keys are rejected with exit code `2` before any file or storage I/O occurs.
+
+### Overwrite protection
+
+Before pushing an updated baseline, `baseline push` fetches any existing baseline under that key:
+- If no baseline exists: the push proceeds.
+- If local `revision > remote revision`: the push proceeds.
+- If remote `revision > local revision`: the push is refused with exit code `3` unless `--force` is provided.
+- If `local revision == remote revision` but content hashes differ (diverged): the push is refused with exit code `3` unless `--force` is provided.
+
+In non-interactive CI, `--force` should be omitted so concurrent or out-of-order runs cannot overwrite newer state.
+
+### Missing baselines on pull
+
+When pulling a key that does not yet exist in the store (for example, on the first CI run of a new branch or repository), `soroban-scan baseline pull` prints:
+
+```text
+notice: no baseline found for key '<KEY>'; continuing without baseline
+```
+
+and exits `0` without creating a file. Downstream scan commands without `--baseline` will evaluate all findings as new, maintaining seamless onboarding.
+
+### GitHub Actions integration
+
+> [!NOTE]
+> GitHub's REST API allows listing and downloading Actions artifacts, but artifact uploads
+> are not supported over REST—they require runner actions like `actions/upload-artifact` or
+> `actions/cache`. `soroban-scan baseline` uses a directory-backed store (`--store-dir`)
+> designed to interface directly with GitHub Actions primitives.
+
+#### Example: Moving baselines via `actions/cache`
+
+```yaml
+name: Security Scan with Cached Baseline
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Restore the latest baseline directory for the default branch
+      - name: Restore baseline store
+        uses: actions/cache/restore@v4
+        with:
+          path: .soroban-scan-store
+          key: soroban-scan-baseline-main
+          restore-keys: |
+            soroban-scan-baseline-
+
+      # Pull baseline from local store (exits 0 with notice if absent)
+      - name: Pull baseline
+        run: |
+          soroban-scan baseline pull \
+            --key soroban-scan-baseline-main \
+            --output current-baseline.json \
+            --store-dir .soroban-scan-store
+
+      # Scan against the pulled baseline if present
+      - name: Scan contracts
+        run: |
+          if [ -f current-baseline.json ]; then
+            soroban-scan scan ./contracts --baseline current-baseline.json --fail-on high
+          else
+            soroban-scan scan ./contracts --fail-on high
+          fi
+
+      # On main branch: update and push the new baseline into the store
+      - name: Refresh and push baseline
+        if: github.ref == 'refs/heads/main'
+        run: |
+          soroban-scan scan ./contracts --write-baseline new-baseline.json --fail-on none
+          soroban-scan baseline push \
+            --key soroban-scan-baseline-main \
+            --file new-baseline.json \
+            --store-dir .soroban-scan-store \
+            --revision ${{ github.run_number }}
+
+      # Save updated baseline store to GitHub Actions cache
+      - name: Save baseline store
+        if: github.ref == 'refs/heads/main'
+        uses: actions/cache/save@v4
+        with:
+          path: .soroban-scan-store
+          key: soroban-scan-baseline-main-${{ github.run_number }}
+```
+
+### Security & Threat Model
+
+- **Consistency vs Authenticity**: The envelope verification checks provide data integrity,
+  schema compatibility, and rule-set consistency. They do **not** provide cryptographic
+  authenticity or origin proof. Any party with write access to the CI artifact storage
+  can push a baseline envelope that suppresses findings.
+- **Trusted Writers**: Artifact stores must only be updated by trusted workflows (such as
+  protected runs on the default branch `main`). Pull-request runs should only pull baselines
+  and should not be permitted to overwrite store keys.
+- **Secret Redaction**: Error messages and logs automatically redact GitHub tokens (`GITHUB_TOKEN`,
+  `GH_TOKEN`) and bearer token formats to prevent credential leakage in CI logs.
+

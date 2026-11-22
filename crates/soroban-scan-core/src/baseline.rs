@@ -24,6 +24,11 @@ pub const BASELINE_VERSION: u32 = 1;
 /// keep memory use predictable for very large or hostile files.
 pub const MAX_BASELINE_BYTES: usize = 64 * 1024 * 1024;
 
+/// Baseline artifact synchronization module.
+pub mod sync {
+    pub use crate::baseline_sync::*;
+}
+
 /// Marker written to TOML baselines.
 pub const TOML_FORMAT_MARKER: &str = "soroban-scan-baseline";
 

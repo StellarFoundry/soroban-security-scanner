@@ -20,6 +20,7 @@ mod server;
 
 use soroban_scan_core::ai::{self, Assistant};
 use soroban_scan_core::baseline::{self, Baseline, BaselineReport};
+use soroban_scan_core::baseline_sync;
 use soroban_scan_core::category::Category;
 use soroban_scan_core::compare;
 use soroban_scan_core::confidence::Confidence;
@@ -363,6 +364,8 @@ enum Command {
     ArtifactName(ArtifactNameArgs),
     /// Install, list, update, or remove community rule packs.
     Pack(PackArgs),
+    /// Push or pull security baselines to or from an artifact store.
+    Baseline(BaselineArgs),
     /// Generate a shell completion script (bash, zsh, fish, powershell).
     #[command(hide = true)]
     Completions(CompletionsArgs),
@@ -676,6 +679,75 @@ enum CompareFormatArg {
 }
 
 #[derive(Debug, Args)]
+struct BaselineArgs {
+    #[command(subcommand)]
+    command: BaselineSubcommand,
+}
+
+#[derive(Debug, Subcommand)]
+enum BaselineSubcommand {
+    /// Push a baseline artifact to the artifact store.
+    Push(BaselinePushArgs),
+    /// Pull a baseline artifact from the artifact store.
+    Pull(BaselinePullArgs),
+}
+
+#[derive(Debug, Args)]
+#[command(after_help = "Examples:\n  \
+    soroban-scan baseline push --key main-baseline --file .soroban-scan-baseline.json --store-dir ./store\n  \
+    soroban-scan baseline push --key main-baseline --store-dir ./store --force\n\n  \
+    Policy and reporting guide: docs/policy.md")]
+struct BaselinePushArgs {
+    /// Storage key for the baseline artifact.
+    #[arg(long, value_name = "KEY")]
+    key: String,
+
+    /// Local baseline file to push (JSON or TOML).
+    #[arg(
+        long,
+        short = 'f',
+        value_name = "FILE",
+        default_value = ".soroban-scan-baseline.json"
+    )]
+    file: PathBuf,
+
+    /// Directory backing the artifact store.
+    #[arg(long, value_name = "DIR", default_value = ".soroban-scan-store")]
+    store_dir: PathBuf,
+
+    /// Overwrite remote baseline even if newer or diverged.
+    #[arg(long)]
+    force: bool,
+
+    /// Monotonically increasing revision number. Auto-increments if omitted.
+    #[arg(long, value_name = "N")]
+    revision: Option<u64>,
+}
+
+#[derive(Debug, Args)]
+#[command(after_help = "Examples:\n  \
+    soroban-scan baseline pull --key main-baseline --output .soroban-scan-baseline.json --store-dir ./store\n\n  \
+    Policy and reporting guide: docs/policy.md")]
+struct BaselinePullArgs {
+    /// Storage key for the baseline artifact.
+    #[arg(long, value_name = "KEY")]
+    key: String,
+
+    /// Where to write the pulled baseline file.
+    #[arg(
+        long,
+        short = 'o',
+        value_name = "FILE",
+        default_value = ".soroban-scan-baseline.json"
+    )]
+    output: PathBuf,
+
+    /// Directory backing the artifact store.
+    #[arg(long, value_name = "DIR", default_value = ".soroban-scan-store")]
+    store_dir: PathBuf,
+}
+
+#[derive(Debug, Args)]
 struct InitArgs {
     /// Directory in which to create the configuration file.
     #[arg(default_value = ".")]
@@ -809,7 +881,17 @@ fn main() -> ExitCode {
     match run(cli) {
         Ok(code) => ExitCode::from(code),
         Err(error) => {
-            eprintln!("error: {error}");
+            let msg = error.to_string();
+            let mut tokens = Vec::new();
+            if let Ok(tok) = std::env::var("GITHUB_TOKEN") {
+                tokens.push(tok);
+            }
+            if let Ok(tok) = std::env::var("GH_TOKEN") {
+                tokens.push(tok);
+            }
+            let token_refs: Vec<&str> = tokens.iter().map(String::as_str).collect();
+            let redacted = baseline_sync::redact_credentials(&msg, &token_refs);
+            eprintln!("error: {redacted}");
             ExitCode::from(error.exit_code())
         }
     }
@@ -837,6 +919,7 @@ fn run(cli: Cli) -> CliResult<u8> {
         Command::Dashboard(args) => run_dashboard(args),
         Command::ArtifactName(args) => run_artifact_name(args),
         Command::Pack(args) => pack_cli::run(args),
+        Command::Baseline(args) => run_baseline(args, &registry),
         Command::Completions(args) => {
             let mut command = <Cli as clap::CommandFactory>::command();
             let name = command.get_name().to_string();
@@ -1787,6 +1870,93 @@ fn run_artifact_name(args: ArtifactNameArgs) -> CliResult<u8> {
     .map_err(CliError::Usage)?;
     println!("{name}");
     Ok(EXIT_SUCCESS)
+}
+
+fn run_baseline(args: BaselineArgs, registry: &RuleRegistry) -> CliResult<u8> {
+    match args.command {
+        BaselineSubcommand::Push(push_args) => {
+            if let Err(error) = baseline_sync::validate_key(&push_args.key) {
+                return Err(CliError::Usage(error.to_string()));
+            }
+
+            let text = read_baseline_text(&push_args.file)?;
+            let baseline = Baseline::from_text(&text)
+                .map_err(|error| baseline_error(&push_args.file, error))?;
+
+            let store = baseline_sync::DirectoryBaselineStore::new(&push_args.store_dir);
+            let envelope = baseline_sync::push_baseline(
+                &store,
+                &push_args.key,
+                &baseline,
+                registry,
+                push_args.force,
+                push_args.revision,
+            )
+            .map_err(|error| match error {
+                baseline_sync::BaselineSyncError::InvalidKey(msg) => CliError::Usage(msg),
+                _ => CliError::Runtime(error.to_string()),
+            })?;
+
+            println!(
+                "pushed baseline `{}` (revision {}, {} finding(s)) to {}",
+                push_args.key,
+                envelope.revision,
+                baseline.findings.len(),
+                push_args.store_dir.display()
+            );
+            Ok(EXIT_SUCCESS)
+        }
+        BaselineSubcommand::Pull(pull_args) => {
+            if let Err(error) = baseline_sync::validate_key(&pull_args.key) {
+                return Err(CliError::Usage(error.to_string()));
+            }
+
+            let store = baseline_sync::DirectoryBaselineStore::new(&pull_args.store_dir);
+            let pulled = baseline_sync::pull_baseline(&store, &pull_args.key, registry).map_err(
+                |error| match error {
+                    baseline_sync::BaselineSyncError::InvalidKey(msg) => CliError::Usage(msg),
+                    _ => CliError::Runtime(error.to_string()),
+                },
+            )?;
+
+            match pulled {
+                None => {
+                    eprintln!(
+                        "notice: no baseline found for key `{}` in store {}",
+                        pull_args.key,
+                        pull_args.store_dir.display()
+                    );
+                    Ok(EXIT_SUCCESS)
+                }
+                Some((envelope, baseline)) => {
+                    if let Some(parent) = pull_args.output.parent() {
+                        if !parent.as_os_str().is_empty() {
+                            std::fs::create_dir_all(parent).map_err(|e| {
+                                CliError::Runtime(format!(
+                                    "cannot create directory {}: {e}",
+                                    parent.display()
+                                ))
+                            })?;
+                        }
+                    }
+                    std::fs::write(&pull_args.output, &envelope.payload).map_err(|e| {
+                        CliError::Runtime(format!(
+                            "cannot write {}: {e}",
+                            pull_args.output.display()
+                        ))
+                    })?;
+                    println!(
+                        "pulled baseline `{}` (revision {}, {} finding(s)) to {}",
+                        pull_args.key,
+                        envelope.revision,
+                        baseline.findings.len(),
+                        pull_args.output.display()
+                    );
+                    Ok(EXIT_SUCCESS)
+                }
+            }
+        }
+    }
 }
 
 fn run_config(args: ConfigArgs) -> CliResult<u8> {

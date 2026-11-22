@@ -3001,3 +3001,303 @@ fn policy_file_applies_thresholds_and_reports_effective_policy() {
     std::fs::remove_file(policy).ok();
     std::fs::remove_file(invalid).ok();
 }
+
+struct TestDir(std::path::PathBuf);
+
+impl Drop for TestDir {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.0);
+    }
+}
+
+impl TestDir {
+    fn new(name: &str) -> Self {
+        use std::sync::atomic::{AtomicUsize, Ordering};
+        static COUNTER: AtomicUsize = AtomicUsize::new(0);
+        let count = COUNTER.fetch_add(1, Ordering::Relaxed);
+        let path = std::env::temp_dir().join(format!(
+            "soroban-scan-cli-sync-{name}-{}-{count}",
+            std::process::id()
+        ));
+        let _ = std::fs::remove_dir_all(&path);
+        std::fs::create_dir_all(&path).unwrap();
+        Self(path)
+    }
+
+    fn path(&self) -> &std::path::Path {
+        &self.0
+    }
+}
+
+#[test]
+fn baseline_push_and_pull_cli_round_trip() {
+    let temp = TestDir::new("roundtrip");
+    let store_dir = temp.path().join("store");
+    let baseline_file = temp.path().join("baseline.json");
+    let pulled_file = temp.path().join("pulled.json");
+
+    // 1. Generate a real baseline from corpus fixture
+    let scan_out = run(&[
+        "scan",
+        fixture("corpus/SS-001").to_str().unwrap(),
+        "--write-baseline",
+        baseline_file.to_str().unwrap(),
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(scan_out.code, 0, "stderr: {}", scan_out.stderr);
+    assert!(baseline_file.exists());
+
+    // 2. Push to directory-backed store
+    let push_out = run(&[
+        "baseline",
+        "push",
+        "--key",
+        "ss001-baseline",
+        "--file",
+        baseline_file.to_str().unwrap(),
+        "--store-dir",
+        store_dir.to_str().unwrap(),
+    ]);
+    assert_eq!(push_out.code, 0, "stderr: {}", push_out.stderr);
+    assert!(push_out.stdout.contains("pushed baseline `ss001-baseline`"));
+
+    // 3. Pull from store
+    let pull_out = run(&[
+        "baseline",
+        "pull",
+        "--key",
+        "ss001-baseline",
+        "--output",
+        pulled_file.to_str().unwrap(),
+        "--store-dir",
+        store_dir.to_str().unwrap(),
+    ]);
+    assert_eq!(pull_out.code, 0, "stderr: {}", pull_out.stderr);
+    assert!(pull_out.stdout.contains("pulled baseline `ss001-baseline`"));
+    assert!(pulled_file.exists());
+
+    let original = std::fs::read_to_string(&baseline_file).unwrap();
+    let pulled = std::fs::read_to_string(&pulled_file).unwrap();
+    assert_eq!(original, pulled);
+}
+
+#[test]
+fn baseline_cli_rejects_invalid_keys() {
+    let temp = TestDir::new("invalid-keys");
+    let store_dir = temp.path().join("store");
+    let baseline_file = temp.path().join("baseline.json");
+    std::fs::write(&baseline_file, "{}").unwrap();
+
+    let invalid_keys = ["bad/key", "../escape", "", "bad:key", "has spaces"];
+    for key in invalid_keys {
+        let push_out = run(&[
+            "baseline",
+            "push",
+            "--key",
+            key,
+            "--file",
+            baseline_file.to_str().unwrap(),
+            "--store-dir",
+            store_dir.to_str().unwrap(),
+        ]);
+        assert_eq!(
+            push_out.code, 2,
+            "key `{key}` should be rejected with usage error: {}",
+            push_out.stderr
+        );
+        assert!(push_out.stderr.contains("invalid baseline key"));
+
+        let pull_out = run(&[
+            "baseline",
+            "pull",
+            "--key",
+            key,
+            "--output",
+            temp.path().join("out.json").to_str().unwrap(),
+            "--store-dir",
+            store_dir.to_str().unwrap(),
+        ]);
+        assert_eq!(
+            pull_out.code, 2,
+            "key `{key}` should be rejected on pull with usage error: {}",
+            pull_out.stderr
+        );
+    }
+}
+
+#[test]
+fn baseline_cli_overwrite_protection() {
+    let temp = TestDir::new("overwrite");
+    let store_dir = temp.path().join("store");
+    let baseline_file = temp.path().join("baseline.json");
+
+    let scan_out = run(&[
+        "scan",
+        fixture("corpus/SS-001").to_str().unwrap(),
+        "--write-baseline",
+        baseline_file.to_str().unwrap(),
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(scan_out.code, 0);
+
+    // Initial push with revision 10
+    let out1 = run(&[
+        "baseline",
+        "push",
+        "--key",
+        "rev-test",
+        "--file",
+        baseline_file.to_str().unwrap(),
+        "--store-dir",
+        store_dir.to_str().unwrap(),
+        "--revision",
+        "10",
+    ]);
+    assert_eq!(out1.code, 0);
+
+    // Attempt push with lower revision 5 without force -> refused
+    let out2 = run(&[
+        "baseline",
+        "push",
+        "--key",
+        "rev-test",
+        "--file",
+        baseline_file.to_str().unwrap(),
+        "--store-dir",
+        store_dir.to_str().unwrap(),
+        "--revision",
+        "5",
+    ]);
+    assert_eq!(out2.code, 3, "stderr: {}", out2.stderr);
+    assert!(out2
+        .stderr
+        .contains("refusing to overwrite newer remote baseline"));
+
+    // Overwrite with force -> allowed
+    let out3 = run(&[
+        "baseline",
+        "push",
+        "--key",
+        "rev-test",
+        "--file",
+        baseline_file.to_str().unwrap(),
+        "--store-dir",
+        store_dir.to_str().unwrap(),
+        "--revision",
+        "5",
+        "--force",
+    ]);
+    assert_eq!(out3.code, 0, "stderr: {}", out3.stderr);
+}
+
+#[test]
+fn baseline_cli_pull_missing_reported_distinctly() {
+    let temp = TestDir::new("missing");
+    let store_dir = temp.path().join("store");
+    let pulled_file = temp.path().join("pulled.json");
+
+    let pull_out = run(&[
+        "baseline",
+        "pull",
+        "--key",
+        "missing-artifact-key",
+        "--output",
+        pulled_file.to_str().unwrap(),
+        "--store-dir",
+        store_dir.to_str().unwrap(),
+    ]);
+    assert_eq!(
+        pull_out.code, 0,
+        "missing baseline must exit 0, stderr: {}",
+        pull_out.stderr
+    );
+    assert!(pull_out.stderr.contains("notice: no baseline found"));
+    assert!(!pulled_file.exists());
+}
+
+#[test]
+fn baseline_cli_tampered_envelope_rejected() {
+    let temp = TestDir::new("tampered");
+    let store_dir = temp.path().join("store");
+    let baseline_file = temp.path().join("baseline.json");
+    let pulled_file = temp.path().join("pulled.json");
+
+    run(&[
+        "scan",
+        fixture("corpus/SS-001").to_str().unwrap(),
+        "--write-baseline",
+        baseline_file.to_str().unwrap(),
+        "--fail-on",
+        "none",
+    ]);
+
+    run(&[
+        "baseline",
+        "push",
+        "--key",
+        "tamper-test",
+        "--file",
+        baseline_file.to_str().unwrap(),
+        "--store-dir",
+        store_dir.to_str().unwrap(),
+    ]);
+
+    // Corrupt the stored envelope payload
+    let envelope_path = store_dir.join("tamper-test.json");
+    assert!(envelope_path.exists());
+    let mut value: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&envelope_path).unwrap()).unwrap();
+    value["payload"] = serde_json::json!("{\"corrupted\": true}");
+    std::fs::write(
+        &envelope_path,
+        serde_json::to_string_pretty(&value).unwrap(),
+    )
+    .unwrap();
+
+    let pull_out = run(&[
+        "baseline",
+        "pull",
+        "--key",
+        "tamper-test",
+        "--output",
+        pulled_file.to_str().unwrap(),
+        "--store-dir",
+        store_dir.to_str().unwrap(),
+    ]);
+    assert_eq!(
+        pull_out.code, 3,
+        "tampered baseline must fail with exit code 3"
+    );
+    assert!(pull_out.stderr.contains("content hash mismatch"));
+}
+
+#[test]
+fn baseline_cli_redacts_tokens_in_errors() {
+    let token = "ghp_supersecrettoken1234567890abcdef";
+    let temp = TestDir::new("redact");
+    let store_dir = temp.path().join("store");
+
+    // Intentionally cause an error with a non-existent file path that includes the token
+    let out = run_with_env(
+        &[
+            "baseline",
+            "push",
+            "--key",
+            "token-test",
+            "--file",
+            &format!("nonexistent_{token}.json"),
+            "--store-dir",
+            store_dir.to_str().unwrap(),
+        ],
+        &[("GITHUB_TOKEN", token)],
+    );
+    assert_eq!(out.code, 3);
+    assert!(
+        !out.stderr.contains(token),
+        "error must not leak token: {}",
+        out.stderr
+    );
+    assert!(out.stderr.contains("[REDACTED]"));
+}
