@@ -147,13 +147,21 @@ impl RuleMetrics {
     /// Precision at fixture level, when a denominator exists.
     pub fn precision(&self) -> Option<f64> {
         let denominator = self.true_positives + self.false_positives;
-        (denominator > 0).then(|| self.true_positives as f64 / denominator as f64)
+        if denominator == 0 {
+            None
+        } else {
+            Some(self.true_positives as f64 / denominator as f64)
+        }
     }
 
     /// Recall at fixture level, when a denominator exists.
     pub fn recall(&self) -> Option<f64> {
         let denominator = self.true_positives + self.false_negatives;
-        (denominator > 0).then(|| self.true_positives as f64 / denominator as f64)
+        if denominator == 0 {
+            None
+        } else {
+            Some(self.true_positives as f64 / denominator as f64)
+        }
     }
 }
 
