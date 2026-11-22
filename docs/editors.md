@@ -18,9 +18,15 @@ cargo install --path .
 |---|---|
 | Diagnostics (publishDiagnostics) | Yes |
 | Text document sync | Yes |
+| Document symbols (outline) | Yes |
 | Hover | No |
 | Code actions | No |
 | Completion | No |
+
+The outline lists contracts (`#[contract]` / `#[contractimpl]`), functions,
+`#[contracttype]` structs and enums, and `#[contractevent]` declarations.
+Function ranges cover the signature span exposed by the parser; the body end
+line is not tracked, so an outline entry may end on the `fn` signature line.
 
 ## VS Code
 
@@ -72,7 +78,12 @@ Verify with `:checkhealth vim.lsp`. The client should be attached to the buffer.
 
 - Only Rust (`.rs`) files are analyzed.
 - Hover, completion, and code actions are not implemented.
-- Diagnostics may refresh only on open or save.
+- The server uses full-document sync. Diagnostics refresh on open, change, and
+  save; a change replaces the whole document buffer.
+- The language server uses no network access and reads no configuration; it
+  runs the default rule set in Soroban mode.
+- Function and event symbol ranges use the parser's signature span, so the end
+  line may be the declaration line rather than the closing brace.
 
 ## Troubleshooting
 
