@@ -5502,6 +5502,14 @@
       "line": null
     },
     {
+      "code": "TYPE-001",
+      "level": "warning",
+      "message": "ambiguous type `BTreeMap` in local type annotation; type-aware rules may not apply",
+      "path": "SS-033/negative2.rs",
+      "line": 12,
+      "column": 22
+    },
+    {
       "code": "MACRO-001",
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: symbol_short",

@@ -45,7 +45,8 @@ fixed-point propagation pass over one entry point:
   record a `Transformed` path with the rendered expression (bounded to 120
   bytes) when the expression still fits.
 - Intra-file helpers are followed, mapping caller arguments to helper parameters
-  by position, up to `MAX_HELPER_DEPTH` and `MAX_HELPERS`.
+  by position, up to `MAX_HELPER_DEPTH` and `MAX_HELPERS`. Each helper is visited
+  at most once per entry point, using the first tainted call site.
 - If a value has more than one tainted origin, the path is `Unknown` with a
   reason instead of picking one source. The value is still reported.
 

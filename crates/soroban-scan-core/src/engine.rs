@@ -685,6 +685,46 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
         ));
     }
     let mut findings: Vec<Finding> = Vec::new();
+
+    // Type-aware rules can only reason about names that resolve. Surface the
+    // unresolved and ambiguous ones so a silent non-finding is explainable.
+    // The pass is bounded per file and globally.
+    if analysis_mode == AnalysisMode::Soroban {
+        let mut type_diagnostics = Vec::new();
+        for source in &loaded.sources {
+            let relative = ctx.relative_path(&source.path);
+            type_diagnostics.extend(crate::analysis::types::unresolved_type_diagnostics(
+                source, &relative,
+            ));
+        }
+        type_diagnostics.sort_by(|a, b| {
+            (
+                a.path
+                    .as_ref()
+                    .map(|path| path.to_string_lossy().replace('\\', "/")),
+                a.line.unwrap_or(0),
+                a.column.unwrap_or(0),
+            )
+                .cmp(&(
+                    b.path
+                        .as_ref()
+                        .map(|path| path.to_string_lossy().replace('\\', "/")),
+                    b.line.unwrap_or(0),
+                    b.column.unwrap_or(0),
+                ))
+        });
+        if type_diagnostics.len() > crate::analysis::types::MAX_TYPE_DIAGNOSTICS {
+            let omitted = type_diagnostics.len() - crate::analysis::types::MAX_TYPE_DIAGNOSTICS;
+            type_diagnostics.truncate(crate::analysis::types::MAX_TYPE_DIAGNOSTICS);
+            type_diagnostics.push(Diagnostic::info(
+                DiagnosticCode::UnresolvedType,
+                format!("{omitted} additional unresolved type diagnostic(s) omitted"),
+                None,
+            ));
+        }
+        diagnostics.extend(type_diagnostics);
+    }
+
     let mut stats = ScanStats {
         analysis_mode,
         files_analyzed: loaded.sources.len(),
