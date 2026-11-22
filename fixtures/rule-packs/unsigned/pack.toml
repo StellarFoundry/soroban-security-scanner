@@ -1,9 +1,12 @@
+schema_version = 1
+
 [pack]
 name = "soroban-defi-rules"
 version = "0.1.0"
-description = "Community rules for common Soroban DeFi attack vectors"
-authors = ["Stellar Foundry <security@stellarfoundry.org>"]
+description = "Community rule metadata for common Soroban DeFi attack vectors"
+authors = ["Stellar Foundry"]
 min_scanner_version = "0.2.0"
+capabilities = ["rust_source_analysis"]
 
 [[rules]]
 id = "COMM-001"
@@ -12,3 +15,5 @@ category = "defi"
 default_severity = "high"
 default_confidence = "medium"
 description = "Flags swap calls where max_slippage is unconstrained or zero."
+remediation = "Require an explicit nonzero slippage bound."
+checksum = "sha256:41b4971ca5a0aa656406c4e86985de006119bac6a9aa36410eb2038f016c1e61"

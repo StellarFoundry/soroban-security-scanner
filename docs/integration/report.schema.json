@@ -222,6 +222,16 @@
           "remediation": { "type": "string" },
           "references": { "type": "array", "items": { "type": "string" } },
           "fingerprint": { "type": "string" },
+          "related": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 8,
+            "description": "Fingerprints of findings backed by the same concrete evidence (same source span or shared symbol). Sorted, bounded, and omitted when empty. Correlation never removes findings."
+          },
+          "correlation_ambiguous": {
+            "type": "boolean",
+            "description": "Present and true when a relation was deliberately not chosen because the shared evidence was ambiguous or the bounded list was truncated."
+          },
           "baseline_status": {
             "type": "string",
             "enum": ["new", "existing"],

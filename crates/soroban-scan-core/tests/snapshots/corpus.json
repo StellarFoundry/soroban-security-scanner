@@ -270,7 +270,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "b8dcb181ecf494d8e030e2dca900c3d2"
+      "fingerprint": "b8dcb181ecf494d8e030e2dca900c3d2",
+      "related": [
+        "23f90f900c6921c553ab52a53e297168"
+      ]
     },
     {
       "rule_id": "SS-010",
@@ -289,7 +292,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/events"
       ],
-      "fingerprint": "23f90f900c6921c553ab52a53e297168"
+      "fingerprint": "23f90f900c6921c553ab52a53e297168",
+      "related": [
+        "b8dcb181ecf494d8e030e2dca900c3d2"
+      ]
     },
     {
       "rule_id": "SS-006",
@@ -346,7 +352,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "37fe40fc78731d20edf55db9a5029ee0"
+      "fingerprint": "37fe40fc78731d20edf55db9a5029ee0",
+      "related": [
+        "b982a2ba60e8c8f253068dba014abca0"
+      ]
     },
     {
       "rule_id": "SS-010",
@@ -365,7 +374,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/events"
       ],
-      "fingerprint": "b982a2ba60e8c8f253068dba014abca0"
+      "fingerprint": "b982a2ba60e8c8f253068dba014abca0",
+      "related": [
+        "37fe40fc78731d20edf55db9a5029ee0"
+      ]
     },
     {
       "rule_id": "SS-006",
@@ -422,7 +434,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "9442c62d879817c31bf6857f993e5c47"
+      "fingerprint": "9442c62d879817c31bf6857f993e5c47",
+      "related": [
+        "8c0e85c2b992ad8024de3fb9914a448f"
+      ]
     },
     {
       "rule_id": "SS-010",
@@ -441,7 +456,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/events"
       ],
-      "fingerprint": "8c0e85c2b992ad8024de3fb9914a448f"
+      "fingerprint": "8c0e85c2b992ad8024de3fb9914a448f",
+      "related": [
+        "9442c62d879817c31bf6857f993e5c47"
+      ]
     },
     {
       "rule_id": "SS-006",
@@ -498,7 +516,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "c3e233e2b9601a95c29d47ed756e21b9"
+      "fingerprint": "c3e233e2b9601a95c29d47ed756e21b9",
+      "related": [
+        "661329002094a11864b18361688ec9d6",
+        "e110395ff3f6329d1b4e10dcc87ef51f"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -517,7 +540,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "e110395ff3f6329d1b4e10dcc87ef51f"
+      "fingerprint": "e110395ff3f6329d1b4e10dcc87ef51f",
+      "related": [
+        "661329002094a11864b18361688ec9d6",
+        "c3e233e2b9601a95c29d47ed756e21b9"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-010",
@@ -536,7 +564,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/events"
       ],
-      "fingerprint": "661329002094a11864b18361688ec9d6"
+      "fingerprint": "661329002094a11864b18361688ec9d6",
+      "related": [
+        "c3e233e2b9601a95c29d47ed756e21b9",
+        "e110395ff3f6329d1b4e10dcc87ef51f"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-008",
@@ -556,7 +589,8 @@
         "https://doc.rust-lang.org/reference/expressions/operator-expr.html#overflow",
         "https://developers.stellar.org/docs"
       ],
-      "fingerprint": "62719aa444f19e75991d50ad53b0abaa"
+      "fingerprint": "62719aa444f19e75991d50ad53b0abaa",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -575,7 +609,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "34c6e80ed102dd08157ec8d820e5cd01"
+      "fingerprint": "34c6e80ed102dd08157ec8d820e5cd01",
+      "related": [
+        "081e0141f5201a517f311d3ea111a6c4"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -594,7 +632,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "081e0141f5201a517f311d3ea111a6c4"
+      "fingerprint": "081e0141f5201a517f311d3ea111a6c4",
+      "related": [
+        "34c6e80ed102dd08157ec8d820e5cd01"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -614,7 +656,8 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "8ca3cdfa6ccf47df8093428159bf690e"
+      "fingerprint": "8ca3cdfa6ccf47df8093428159bf690e",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -634,7 +677,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "d5475c0cbf4d93267f0783dbf8255c86"
+      "fingerprint": "d5475c0cbf4d93267f0783dbf8255c86",
+      "related": [
+        "7b9c2285cafe0c7695c46f22694bbda5"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -654,7 +701,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "7b9c2285cafe0c7695c46f22694bbda5"
+      "fingerprint": "7b9c2285cafe0c7695c46f22694bbda5",
+      "related": [
+        "d5475c0cbf4d93267f0783dbf8255c86"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -674,7 +725,8 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "82b039fcd6e1f58153ce79b2709a6ae9"
+      "fingerprint": "82b039fcd6e1f58153ce79b2709a6ae9",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -694,7 +746,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "a362fd34490f0f54cfdbbb67ce42d6ee"
+      "fingerprint": "a362fd34490f0f54cfdbbb67ce42d6ee",
+      "related": [
+        "acede228d48f4693b023d19b85fdff01"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -714,7 +770,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "acede228d48f4693b023d19b85fdff01"
+      "fingerprint": "acede228d48f4693b023d19b85fdff01",
+      "related": [
+        "a362fd34490f0f54cfdbbb67ce42d6ee"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-007",
@@ -753,7 +813,10 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "7d4a08e424b4e0ffc20ef938ea5e2000"
+      "fingerprint": "7d4a08e424b4e0ffc20ef938ea5e2000",
+      "related": [
+        "e5053eb8c254a77c84f95f7ecbd5026c"
+      ]
     },
     {
       "rule_id": "SS-019",
@@ -773,7 +836,10 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "e5053eb8c254a77c84f95f7ecbd5026c"
+      "fingerprint": "e5053eb8c254a77c84f95f7ecbd5026c",
+      "related": [
+        "7d4a08e424b4e0ffc20ef938ea5e2000"
+      ]
     },
     {
       "rule_id": "SS-004",
@@ -793,7 +859,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "38e4d47246474277fb41cce1a73725a7"
+      "fingerprint": "38e4d47246474277fb41cce1a73725a7",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -813,7 +880,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "547dea37a4cd38f87a0e74848ce1949d"
+      "fingerprint": "547dea37a4cd38f87a0e74848ce1949d",
+      "related": [
+        "40814c10be9dce76435571e9ad3c9eab"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -833,7 +904,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "40814c10be9dce76435571e9ad3c9eab"
+      "fingerprint": "40814c10be9dce76435571e9ad3c9eab",
+      "related": [
+        "547dea37a4cd38f87a0e74848ce1949d"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -853,7 +928,8 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "2b43a42c040d6d8663860fc22cf6b36d"
+      "fingerprint": "2b43a42c040d6d8663860fc22cf6b36d",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -873,7 +949,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "e8bbd271b173fc302e7875bd7557d93b"
+      "fingerprint": "e8bbd271b173fc302e7875bd7557d93b",
+      "related": [
+        "51b60ca5ffa9f7c9d2b54307b1954fc8"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -893,7 +973,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "51b60ca5ffa9f7c9d2b54307b1954fc8"
+      "fingerprint": "51b60ca5ffa9f7c9d2b54307b1954fc8",
+      "related": [
+        "e8bbd271b173fc302e7875bd7557d93b"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -913,7 +997,8 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "df61f85c0bd0d4eceab2246c0913dd0b"
+      "fingerprint": "df61f85c0bd0d4eceab2246c0913dd0b",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -933,7 +1018,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "16ae2ff5dac988b965881be178ce6079"
+      "fingerprint": "16ae2ff5dac988b965881be178ce6079",
+      "related": [
+        "d29c8d617e14f3f024df7360ed7b8c87"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -953,7 +1042,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "d29c8d617e14f3f024df7360ed7b8c87"
+      "fingerprint": "d29c8d617e14f3f024df7360ed7b8c87",
+      "related": [
+        "16ae2ff5dac988b965881be178ce6079"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-002",
@@ -972,7 +1065,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "c399badb33485c8496d429125c15e476"
+      "fingerprint": "c399badb33485c8496d429125c15e476",
+      "related": [
+        "74cf86ad21eed79956679865289208da"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -992,7 +1089,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "74cf86ad21eed79956679865289208da"
+      "fingerprint": "74cf86ad21eed79956679865289208da",
+      "related": [
+        "c399badb33485c8496d429125c15e476"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -1012,7 +1113,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "3dfc41148c088ed584c759e633059253"
+      "fingerprint": "3dfc41148c088ed584c759e633059253",
+      "related": [
+        "2af3668a68b8b8fff15113220e75af66"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -1032,7 +1137,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "2af3668a68b8b8fff15113220e75af66"
+      "fingerprint": "2af3668a68b8b8fff15113220e75af66",
+      "related": [
+        "3dfc41148c088ed584c759e633059253"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-003",
@@ -1247,7 +1356,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "34bcd75b26a59f32ed27bc3d6af7ada2"
+      "fingerprint": "34bcd75b26a59f32ed27bc3d6af7ada2",
+      "related": [
+        "2a6346c2270dab2c59ed044705715246"
+      ]
     },
     {
       "rule_id": "SS-010",
@@ -1266,7 +1378,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/events"
       ],
-      "fingerprint": "2a6346c2270dab2c59ed044705715246"
+      "fingerprint": "2a6346c2270dab2c59ed044705715246",
+      "related": [
+        "34bcd75b26a59f32ed27bc3d6af7ada2"
+      ]
     },
     {
       "rule_id": "SS-007",
@@ -1325,7 +1440,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "7e9a6ccdbf1e26365ef4b3c29b17b212"
+      "fingerprint": "7e9a6ccdbf1e26365ef4b3c29b17b212",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -1344,7 +1460,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "dfee15a21d1e3f058f92ca19828df74f"
+      "fingerprint": "dfee15a21d1e3f058f92ca19828df74f",
+      "related": [
+        "95cd5eeb72a9efc15496a8c1d7916d67"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -1363,7 +1483,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "95cd5eeb72a9efc15496a8c1d7916d67"
+      "fingerprint": "95cd5eeb72a9efc15496a8c1d7916d67",
+      "related": [
+        "dfee15a21d1e3f058f92ca19828df74f"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-004",
@@ -1383,7 +1507,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "9d121bdfd459606ded2db6ea4db1ec51"
+      "fingerprint": "9d121bdfd459606ded2db6ea4db1ec51",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -1402,7 +1527,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "a6da6843f263dcad78406e521ecdebf8"
+      "fingerprint": "a6da6843f263dcad78406e521ecdebf8",
+      "related": [
+        "8e915611cfb7d11a563968c7b7bd2af4"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -1421,7 +1550,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "8e915611cfb7d11a563968c7b7bd2af4"
+      "fingerprint": "8e915611cfb7d11a563968c7b7bd2af4",
+      "related": [
+        "a6da6843f263dcad78406e521ecdebf8"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-009",
@@ -1460,7 +1593,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "2693cc4c84faf22776dd204da8c1f8c4"
+      "fingerprint": "2693cc4c84faf22776dd204da8c1f8c4",
+      "related": [
+        "95b2ae1df09dff1b1d86d07c95b964b5"
+      ]
     },
     {
       "rule_id": "SS-006",
@@ -1479,7 +1615,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "95b2ae1df09dff1b1d86d07c95b964b5"
+      "fingerprint": "95b2ae1df09dff1b1d86d07c95b964b5",
+      "related": [
+        "2693cc4c84faf22776dd204da8c1f8c4"
+      ]
     },
     {
       "rule_id": "SS-001",
@@ -1498,7 +1637,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "193e358f4a82348ecf21de0a35ec158d"
+      "fingerprint": "193e358f4a82348ecf21de0a35ec158d",
+      "related": [
+        "bb1abfaecd4b8442a9ea052e06cf9ccb"
+      ]
     },
     {
       "rule_id": "SS-006",
@@ -1517,7 +1659,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "bb1abfaecd4b8442a9ea052e06cf9ccb"
+      "fingerprint": "bb1abfaecd4b8442a9ea052e06cf9ccb",
+      "related": [
+        "193e358f4a82348ecf21de0a35ec158d"
+      ]
     },
     {
       "rule_id": "SS-001",
@@ -1536,7 +1681,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "90b372bac3f6a7d01fb6adddd5822924"
+      "fingerprint": "90b372bac3f6a7d01fb6adddd5822924",
+      "related": [
+        "56712e7374e1b71b081e1b2acd1a0708"
+      ]
     },
     {
       "rule_id": "SS-006",
@@ -1555,7 +1703,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "56712e7374e1b71b081e1b2acd1a0708"
+      "fingerprint": "56712e7374e1b71b081e1b2acd1a0708",
+      "related": [
+        "90b372bac3f6a7d01fb6adddd5822924"
+      ]
     },
     {
       "rule_id": "SS-001",
@@ -1574,7 +1725,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "bd762510cb052a4b83765d5ac6db8744"
+      "fingerprint": "bd762510cb052a4b83765d5ac6db8744",
+      "related": [
+        "b1e4cf218a5ed9689787bebd39412d3e",
+        "dc609f3069ca74e4358813dadce5d9e4"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -1593,7 +1749,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "b1e4cf218a5ed9689787bebd39412d3e"
+      "fingerprint": "b1e4cf218a5ed9689787bebd39412d3e",
+      "related": [
+        "bd762510cb052a4b83765d5ac6db8744",
+        "dc609f3069ca74e4358813dadce5d9e4"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-010",
@@ -1612,7 +1773,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/events"
       ],
-      "fingerprint": "dc609f3069ca74e4358813dadce5d9e4"
+      "fingerprint": "dc609f3069ca74e4358813dadce5d9e4",
+      "related": [
+        "b1e4cf218a5ed9689787bebd39412d3e",
+        "bd762510cb052a4b83765d5ac6db8744"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -1631,7 +1797,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "df2367f567c56c4a988a964302f179ca"
+      "fingerprint": "df2367f567c56c4a988a964302f179ca",
+      "related": [
+        "2ac2897090d1ecd72453fd5af19f6387",
+        "a26955621a43cd95b5ff53606111d3ec"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -1650,7 +1821,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "a26955621a43cd95b5ff53606111d3ec"
+      "fingerprint": "a26955621a43cd95b5ff53606111d3ec",
+      "related": [
+        "2ac2897090d1ecd72453fd5af19f6387",
+        "df2367f567c56c4a988a964302f179ca"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-010",
@@ -1669,7 +1845,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/events"
       ],
-      "fingerprint": "2ac2897090d1ecd72453fd5af19f6387"
+      "fingerprint": "2ac2897090d1ecd72453fd5af19f6387",
+      "related": [
+        "a26955621a43cd95b5ff53606111d3ec",
+        "df2367f567c56c4a988a964302f179ca"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -1688,7 +1869,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "0297bd333ae8bd85e622642073e257d8"
+      "fingerprint": "0297bd333ae8bd85e622642073e257d8",
+      "related": [
+        "0d11170fbdae7d05de08d58d3faad85e",
+        "ccee50206e3f5ad36dc0b82be4da9d72"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -1707,7 +1893,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "0d11170fbdae7d05de08d58d3faad85e"
+      "fingerprint": "0d11170fbdae7d05de08d58d3faad85e",
+      "related": [
+        "0297bd333ae8bd85e622642073e257d8",
+        "ccee50206e3f5ad36dc0b82be4da9d72"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-010",
@@ -1726,7 +1917,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/events"
       ],
-      "fingerprint": "ccee50206e3f5ad36dc0b82be4da9d72"
+      "fingerprint": "ccee50206e3f5ad36dc0b82be4da9d72",
+      "related": [
+        "0297bd333ae8bd85e622642073e257d8",
+        "0d11170fbdae7d05de08d58d3faad85e"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -1745,7 +1941,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "e56bd39024ffdeab4625b1e981795ef2"
+      "fingerprint": "e56bd39024ffdeab4625b1e981795ef2",
+      "related": [
+        "46ff535f980da7e6d80328e1a2a641d8",
+        "a294c57f05be0627bbf48fd92932e071"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -1764,7 +1965,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "a294c57f05be0627bbf48fd92932e071"
+      "fingerprint": "a294c57f05be0627bbf48fd92932e071",
+      "related": [
+        "46ff535f980da7e6d80328e1a2a641d8",
+        "e56bd39024ffdeab4625b1e981795ef2"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-010",
@@ -1783,7 +1989,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/events"
       ],
-      "fingerprint": "46ff535f980da7e6d80328e1a2a641d8"
+      "fingerprint": "46ff535f980da7e6d80328e1a2a641d8",
+      "related": [
+        "a294c57f05be0627bbf48fd92932e071",
+        "e56bd39024ffdeab4625b1e981795ef2"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -1802,7 +2013,13 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "6e620bd49a33ed5dd9e693eb21d2ee7b"
+      "fingerprint": "6e620bd49a33ed5dd9e693eb21d2ee7b",
+      "related": [
+        "039db96b21a90887b7223acbae663ab9",
+        "53b3aca264cd5312ab7cb35db92a0f26",
+        "75019a8663138f87811480b25147c5ce"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -1821,7 +2038,13 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "039db96b21a90887b7223acbae663ab9"
+      "fingerprint": "039db96b21a90887b7223acbae663ab9",
+      "related": [
+        "53b3aca264cd5312ab7cb35db92a0f26",
+        "6e620bd49a33ed5dd9e693eb21d2ee7b",
+        "75019a8663138f87811480b25147c5ce"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-010",
@@ -1840,7 +2063,13 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/events"
       ],
-      "fingerprint": "75019a8663138f87811480b25147c5ce"
+      "fingerprint": "75019a8663138f87811480b25147c5ce",
+      "related": [
+        "039db96b21a90887b7223acbae663ab9",
+        "53b3aca264cd5312ab7cb35db92a0f26",
+        "6e620bd49a33ed5dd9e693eb21d2ee7b"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-011",
@@ -1859,7 +2088,13 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "53b3aca264cd5312ab7cb35db92a0f26"
+      "fingerprint": "53b3aca264cd5312ab7cb35db92a0f26",
+      "related": [
+        "039db96b21a90887b7223acbae663ab9",
+        "6e620bd49a33ed5dd9e693eb21d2ee7b",
+        "75019a8663138f87811480b25147c5ce"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-004",
@@ -1879,7 +2114,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "a4f5fe78a74e6af5604da48afb246f62"
+      "fingerprint": "a4f5fe78a74e6af5604da48afb246f62",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -1898,7 +2134,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "4266573d71d97557c0a370ba11282c46"
+      "fingerprint": "4266573d71d97557c0a370ba11282c46",
+      "related": [
+        "4c717380a94b9599f33894136ee7573e"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -1917,7 +2157,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "4c717380a94b9599f33894136ee7573e"
+      "fingerprint": "4c717380a94b9599f33894136ee7573e",
+      "related": [
+        "4266573d71d97557c0a370ba11282c46"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-004",
@@ -1937,7 +2181,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "a76f7829c6df71794f1f25f39ae21222"
+      "fingerprint": "a76f7829c6df71794f1f25f39ae21222",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -1956,7 +2201,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "13479d49c4d00c19c7009826a649b57c"
+      "fingerprint": "13479d49c4d00c19c7009826a649b57c",
+      "related": [
+        "9e6235e6af26cd33cd3d0c4df78cb9ff"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -1975,7 +2224,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "9e6235e6af26cd33cd3d0c4df78cb9ff"
+      "fingerprint": "9e6235e6af26cd33cd3d0c4df78cb9ff",
+      "related": [
+        "13479d49c4d00c19c7009826a649b57c"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-004",
@@ -1995,7 +2248,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "ec2815b80a3aa500b0efa2a39f4c3eed"
+      "fingerprint": "ec2815b80a3aa500b0efa2a39f4c3eed",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -2014,7 +2268,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "c20aea01156b4621ff5ee989e0afc91d"
+      "fingerprint": "c20aea01156b4621ff5ee989e0afc91d",
+      "related": [
+        "7c0187710f5a7946468cee8f6eed300a"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -2033,7 +2291,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "7c0187710f5a7946468cee8f6eed300a"
+      "fingerprint": "7c0187710f5a7946468cee8f6eed300a",
+      "related": [
+        "c20aea01156b4621ff5ee989e0afc91d"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-012",
@@ -2052,7 +2314,8 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/resource-limits"
       ],
-      "fingerprint": "36f7919f3413aa60d79ff229e8b33961"
+      "fingerprint": "36f7919f3413aa60d79ff229e8b33961",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -2071,7 +2334,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "a39c12d558fc7b44310207ba8108ecab"
+      "fingerprint": "a39c12d558fc7b44310207ba8108ecab",
+      "related": [
+        "1b817a9cf8e8c6fcce93cb968585a84d"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -2090,7 +2357,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "1b817a9cf8e8c6fcce93cb968585a84d"
+      "fingerprint": "1b817a9cf8e8c6fcce93cb968585a84d",
+      "related": [
+        "a39c12d558fc7b44310207ba8108ecab"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -2109,7 +2380,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "5c3fa64e6e570324688bed66d18ca426"
+      "fingerprint": "5c3fa64e6e570324688bed66d18ca426",
+      "related": [
+        "87a76d3c698134ccf4a8389e7718285d"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -2128,7 +2403,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "87a76d3c698134ccf4a8389e7718285d"
+      "fingerprint": "87a76d3c698134ccf4a8389e7718285d",
+      "related": [
+        "5c3fa64e6e570324688bed66d18ca426"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-002",
@@ -2147,7 +2426,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "28fd1b7c89283ed13d151e50de739072"
+      "fingerprint": "28fd1b7c89283ed13d151e50de739072",
+      "related": [
+        "3ad6e609e43b4242f70de844c8b072fa"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -2167,7 +2450,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "3ad6e609e43b4242f70de844c8b072fa"
+      "fingerprint": "3ad6e609e43b4242f70de844c8b072fa",
+      "related": [
+        "28fd1b7c89283ed13d151e50de739072"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -2187,7 +2474,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "7868cde3c25c6fe4ad03ed928848d963"
+      "fingerprint": "7868cde3c25c6fe4ad03ed928848d963",
+      "related": [
+        "8b86f2b60e6a444b286971c481179811"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -2207,7 +2498,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "8b86f2b60e6a444b286971c481179811"
+      "fingerprint": "8b86f2b60e6a444b286971c481179811",
+      "related": [
+        "7868cde3c25c6fe4ad03ed928848d963"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-002",
@@ -2226,7 +2521,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "5fdcc5ba111ac7bed47f4d170941ec83"
+      "fingerprint": "5fdcc5ba111ac7bed47f4d170941ec83",
+      "related": [
+        "898dec5e2d22a423180cfe2bdb77234d"
+      ]
     },
     {
       "rule_id": "SS-030",
@@ -2246,7 +2544,10 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "898dec5e2d22a423180cfe2bdb77234d"
+      "fingerprint": "898dec5e2d22a423180cfe2bdb77234d",
+      "related": [
+        "5fdcc5ba111ac7bed47f4d170941ec83"
+      ]
     },
     {
       "rule_id": "SS-001",
@@ -2265,7 +2566,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "31d2414fbf129f918912feebd87917fb"
+      "fingerprint": "31d2414fbf129f918912feebd87917fb",
+      "related": [
+        "2528c0d9d700e7d35b6af55e5c455d0d"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -2284,7 +2589,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "2528c0d9d700e7d35b6af55e5c455d0d"
+      "fingerprint": "2528c0d9d700e7d35b6af55e5c455d0d",
+      "related": [
+        "31d2414fbf129f918912feebd87917fb"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-002",
@@ -2303,7 +2612,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "627c340067eaeb267b1fd346c78dda42"
+      "fingerprint": "627c340067eaeb267b1fd346c78dda42",
+      "related": [
+        "c3a8b4bbe274a02826b05c8a7eb26bdc"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -2323,7 +2636,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "c3a8b4bbe274a02826b05c8a7eb26bdc"
+      "fingerprint": "c3a8b4bbe274a02826b05c8a7eb26bdc",
+      "related": [
+        "627c340067eaeb267b1fd346c78dda42"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -2343,7 +2660,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "cf8a4241f25d646a75abbf4a8ebb523e"
+      "fingerprint": "cf8a4241f25d646a75abbf4a8ebb523e",
+      "related": [
+        "fd7ae9e1a00f6c952bc4f11d3045a6ca"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -2363,7 +2684,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "fd7ae9e1a00f6c952bc4f11d3045a6ca"
+      "fingerprint": "fd7ae9e1a00f6c952bc4f11d3045a6ca",
+      "related": [
+        "cf8a4241f25d646a75abbf4a8ebb523e"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-002",
@@ -2382,7 +2707,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "f76644376aad7f3084b884153534e79e"
+      "fingerprint": "f76644376aad7f3084b884153534e79e",
+      "related": [
+        "ba27766e93f440e49c92c70b74da3f6c"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -2402,7 +2731,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "ba27766e93f440e49c92c70b74da3f6c"
+      "fingerprint": "ba27766e93f440e49c92c70b74da3f6c",
+      "related": [
+        "f76644376aad7f3084b884153534e79e"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-013",
@@ -2422,7 +2755,13 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs"
       ],
-      "fingerprint": "96471f7dd91c176605db04047f9b0508"
+      "fingerprint": "96471f7dd91c176605db04047f9b0508",
+      "related": [
+        "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+        "a540d0552854c83a2e514ebe3addb904",
+        "d53729124e927bdf3c7454cc7eb67305"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -2442,7 +2781,13 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "a540d0552854c83a2e514ebe3addb904"
+      "fingerprint": "a540d0552854c83a2e514ebe3addb904",
+      "related": [
+        "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+        "96471f7dd91c176605db04047f9b0508",
+        "d53729124e927bdf3c7454cc7eb67305"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -2462,7 +2807,13 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "d53729124e927bdf3c7454cc7eb67305"
+      "fingerprint": "d53729124e927bdf3c7454cc7eb67305",
+      "related": [
+        "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+        "96471f7dd91c176605db04047f9b0508",
+        "a540d0552854c83a2e514ebe3addb904"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-028",
@@ -2482,7 +2833,13 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs"
       ],
-      "fingerprint": "2a86e785ad5ffa58b7b6fe74a5c7ee64"
+      "fingerprint": "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+      "related": [
+        "96471f7dd91c176605db04047f9b0508",
+        "a540d0552854c83a2e514ebe3addb904",
+        "d53729124e927bdf3c7454cc7eb67305"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -2501,7 +2858,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "e5a0a9fb95f553d4c1abcff9bb163fcd"
+      "fingerprint": "e5a0a9fb95f553d4c1abcff9bb163fcd",
+      "related": [
+        "6a579809f30b4ea6f2b470881ba456be"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -2520,7 +2881,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "6a579809f30b4ea6f2b470881ba456be"
+      "fingerprint": "6a579809f30b4ea6f2b470881ba456be",
+      "related": [
+        "e5a0a9fb95f553d4c1abcff9bb163fcd"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-004",
@@ -2540,7 +2905,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "c816c3f652afe99b5c5cc1c345f26b95"
+      "fingerprint": "c816c3f652afe99b5c5cc1c345f26b95",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -2560,7 +2926,8 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "e558aa7e6ec4363b688b5a374ebb8149"
+      "fingerprint": "e558aa7e6ec4363b688b5a374ebb8149",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -2580,7 +2947,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "5cdc6740236002705c69fda6050c99dc"
+      "fingerprint": "5cdc6740236002705c69fda6050c99dc",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-004",
@@ -2600,7 +2968,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "fa2381818fcd85efdde26e59e8f2c653"
+      "fingerprint": "fa2381818fcd85efdde26e59e8f2c653",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -2620,7 +2989,8 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "239f51d2ae09b388a7c43287b36fb964"
+      "fingerprint": "239f51d2ae09b388a7c43287b36fb964",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -2640,7 +3010,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "d830436e31c7dae6ebcb77b6726f0a02"
+      "fingerprint": "d830436e31c7dae6ebcb77b6726f0a02",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-004",
@@ -2660,7 +3031,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "efe35dd5c831d97cf66e1ef6cb49173d"
+      "fingerprint": "efe35dd5c831d97cf66e1ef6cb49173d",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -2680,7 +3052,8 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "0844da756fa17bf3abe018e1be8ae34f"
+      "fingerprint": "0844da756fa17bf3abe018e1be8ae34f",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -2700,7 +3073,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "f768e05ab79654785b73117762ee1540"
+      "fingerprint": "f768e05ab79654785b73117762ee1540",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -2720,7 +3094,8 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "3c9595e61965acac8e1016affd7b6490"
+      "fingerprint": "3c9595e61965acac8e1016affd7b6490",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -2740,7 +3115,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "1a0210bc82d9870ef2668c400ed7b078"
+      "fingerprint": "1a0210bc82d9870ef2668c400ed7b078",
+      "related": [
+        "34ec8ca36a47b0434c16fa976a058c3b"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -2760,7 +3139,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "34ec8ca36a47b0434c16fa976a058c3b"
+      "fingerprint": "34ec8ca36a47b0434c16fa976a058c3b",
+      "related": [
+        "1a0210bc82d9870ef2668c400ed7b078"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -2779,7 +3162,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "4818ed69d217652b629399ebefc4899f"
+      "fingerprint": "4818ed69d217652b629399ebefc4899f",
+      "related": [
+        "16ecc88fdd2bf218c7db9e6a3fd04f37"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-011",
@@ -2798,7 +3185,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "16ecc88fdd2bf218c7db9e6a3fd04f37"
+      "fingerprint": "16ecc88fdd2bf218c7db9e6a3fd04f37",
+      "related": [
+        "4818ed69d217652b629399ebefc4899f"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -2817,7 +3208,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "bd967ce4f944e1ce41143b19ccf48d7e"
+      "fingerprint": "bd967ce4f944e1ce41143b19ccf48d7e",
+      "related": [
+        "0e31c94f8f3fbfef435c4005f47e71d4",
+        "f2d02bc6d17e9f687515f2857255cb8e"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -2836,7 +3232,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "0e31c94f8f3fbfef435c4005f47e71d4"
+      "fingerprint": "0e31c94f8f3fbfef435c4005f47e71d4",
+      "related": [
+        "bd967ce4f944e1ce41143b19ccf48d7e",
+        "f2d02bc6d17e9f687515f2857255cb8e"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-011",
@@ -2855,7 +3256,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "f2d02bc6d17e9f687515f2857255cb8e"
+      "fingerprint": "f2d02bc6d17e9f687515f2857255cb8e",
+      "related": [
+        "0e31c94f8f3fbfef435c4005f47e71d4",
+        "bd967ce4f944e1ce41143b19ccf48d7e"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -2874,7 +3280,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "1670ea29badda93d45f1893af80f9d1f"
+      "fingerprint": "1670ea29badda93d45f1893af80f9d1f",
+      "related": [
+        "8cbf9c0252485933744e05bd6bafcf1c"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-011",
@@ -2893,7 +3303,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "8cbf9c0252485933744e05bd6bafcf1c"
+      "fingerprint": "8cbf9c0252485933744e05bd6bafcf1c",
+      "related": [
+        "1670ea29badda93d45f1893af80f9d1f"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -2912,7 +3326,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "70433fc9d2d6b994e3b89ef11b97f9d2"
+      "fingerprint": "70433fc9d2d6b994e3b89ef11b97f9d2",
+      "related": [
+        "3dfb5aae09dd9b505a0996b41cfc753c",
+        "a7cc2c88fccb0642bd7037ca3f6d21f2"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -2931,7 +3350,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "a7cc2c88fccb0642bd7037ca3f6d21f2"
+      "fingerprint": "a7cc2c88fccb0642bd7037ca3f6d21f2",
+      "related": [
+        "3dfb5aae09dd9b505a0996b41cfc753c",
+        "70433fc9d2d6b994e3b89ef11b97f9d2"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-011",
@@ -2950,7 +3374,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "3dfb5aae09dd9b505a0996b41cfc753c"
+      "fingerprint": "3dfb5aae09dd9b505a0996b41cfc753c",
+      "related": [
+        "70433fc9d2d6b994e3b89ef11b97f9d2",
+        "a7cc2c88fccb0642bd7037ca3f6d21f2"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -2969,7 +3398,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "fbeae4f63d1aeb884688ea3281d84736"
+      "fingerprint": "fbeae4f63d1aeb884688ea3281d84736",
+      "related": [
+        "25d152fd88ac81caa0bd0275b2ab4fba"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-011",
@@ -2988,7 +3421,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "25d152fd88ac81caa0bd0275b2ab4fba"
+      "fingerprint": "25d152fd88ac81caa0bd0275b2ab4fba",
+      "related": [
+        "fbeae4f63d1aeb884688ea3281d84736"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -3007,7 +3444,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "f2be6e36496eb1c0e4effc18e7da8838"
+      "fingerprint": "f2be6e36496eb1c0e4effc18e7da8838",
+      "related": [
+        "17e1f27c6f5cc90d25493e1875811b98",
+        "977717cb945ed2b2f37d818963cceba3"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -3026,7 +3468,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "977717cb945ed2b2f37d818963cceba3"
+      "fingerprint": "977717cb945ed2b2f37d818963cceba3",
+      "related": [
+        "17e1f27c6f5cc90d25493e1875811b98",
+        "f2be6e36496eb1c0e4effc18e7da8838"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-011",
@@ -3045,7 +3492,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "17e1f27c6f5cc90d25493e1875811b98"
+      "fingerprint": "17e1f27c6f5cc90d25493e1875811b98",
+      "related": [
+        "977717cb945ed2b2f37d818963cceba3",
+        "f2be6e36496eb1c0e4effc18e7da8838"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -3064,7 +3516,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "64511a6c4862f557012e7a274614dbdf"
+      "fingerprint": "64511a6c4862f557012e7a274614dbdf",
+      "related": [
+        "0cb1efb1a006f0e476a1be0487adfab4",
+        "5555426d372f99e3d602cf38d65acf4c"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-011",
@@ -3083,7 +3540,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "5555426d372f99e3d602cf38d65acf4c"
+      "fingerprint": "5555426d372f99e3d602cf38d65acf4c",
+      "related": [
+        "0cb1efb1a006f0e476a1be0487adfab4",
+        "64511a6c4862f557012e7a274614dbdf"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-016",
@@ -3102,7 +3564,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "0cb1efb1a006f0e476a1be0487adfab4"
+      "fingerprint": "0cb1efb1a006f0e476a1be0487adfab4",
+      "related": [
+        "5555426d372f99e3d602cf38d65acf4c",
+        "64511a6c4862f557012e7a274614dbdf"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -3121,7 +3588,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "40b18bea271c88c2b221edb11b7ea58b"
+      "fingerprint": "40b18bea271c88c2b221edb11b7ea58b",
+      "related": [
+        "04637f34a8290f5734c2f0436359c2bc",
+        "28e8764093d6d631285f4c302b420684"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-011",
@@ -3140,7 +3612,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "04637f34a8290f5734c2f0436359c2bc"
+      "fingerprint": "04637f34a8290f5734c2f0436359c2bc",
+      "related": [
+        "28e8764093d6d631285f4c302b420684",
+        "40b18bea271c88c2b221edb11b7ea58b"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-016",
@@ -3159,7 +3636,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "28e8764093d6d631285f4c302b420684"
+      "fingerprint": "28e8764093d6d631285f4c302b420684",
+      "related": [
+        "04637f34a8290f5734c2f0436359c2bc",
+        "40b18bea271c88c2b221edb11b7ea58b"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-016",
@@ -3331,7 +3813,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "509268ab4a288383acf40b26c7d4f0cb"
+      "fingerprint": "509268ab4a288383acf40b26c7d4f0cb",
+      "related": [
+        "fbf6d16b047d6733f4408c670b9ca2ee"
+      ]
     },
     {
       "rule_id": "SS-017",
@@ -3350,7 +3835,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "fbf6d16b047d6733f4408c670b9ca2ee"
+      "fingerprint": "fbf6d16b047d6733f4408c670b9ca2ee",
+      "related": [
+        "509268ab4a288383acf40b26c7d4f0cb"
+      ]
     },
     {
       "rule_id": "SS-004",
@@ -3469,7 +3957,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "d30a4b1e82ff740a5dc33d6af6a6fc3c"
+      "fingerprint": "d30a4b1e82ff740a5dc33d6af6a6fc3c",
+      "related": [
+        "7322879d377122e5338cb715ae0c4186",
+        "9f645cbf384d9657ac5bbcdadeeb9144"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -3488,7 +3981,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "7322879d377122e5338cb715ae0c4186"
+      "fingerprint": "7322879d377122e5338cb715ae0c4186",
+      "related": [
+        "9f645cbf384d9657ac5bbcdadeeb9144",
+        "d30a4b1e82ff740a5dc33d6af6a6fc3c"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-010",
@@ -3507,7 +4005,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/events"
       ],
-      "fingerprint": "9f645cbf384d9657ac5bbcdadeeb9144"
+      "fingerprint": "9f645cbf384d9657ac5bbcdadeeb9144",
+      "related": [
+        "7322879d377122e5338cb715ae0c4186",
+        "d30a4b1e82ff740a5dc33d6af6a6fc3c"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -3545,7 +4048,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "e0649fc59d351d8af0c99fbb38dc4663"
+      "fingerprint": "e0649fc59d351d8af0c99fbb38dc4663",
+      "related": [
+        "852b64bc1ec2a632158cd1bb5757b199",
+        "aa9c9ef26230bfef934d82ca38df7b15"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-010",
@@ -3564,7 +4072,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/events"
       ],
-      "fingerprint": "aa9c9ef26230bfef934d82ca38df7b15"
+      "fingerprint": "aa9c9ef26230bfef934d82ca38df7b15",
+      "related": [
+        "852b64bc1ec2a632158cd1bb5757b199",
+        "e0649fc59d351d8af0c99fbb38dc4663"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-021",
@@ -3584,7 +4097,12 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
       ],
-      "fingerprint": "852b64bc1ec2a632158cd1bb5757b199"
+      "fingerprint": "852b64bc1ec2a632158cd1bb5757b199",
+      "related": [
+        "aa9c9ef26230bfef934d82ca38df7b15",
+        "e0649fc59d351d8af0c99fbb38dc4663"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -3661,7 +4179,10 @@
         "https://docs.rs/soroban-sdk/latest/soroban_sdk/macro.symbol_short.html",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "0f62769aa68303799bfc41e2a79f8861"
+      "fingerprint": "0f62769aa68303799bfc41e2a79f8861",
+      "related": [
+        "1c44dedf7609d76135e1e2acc13067ac"
+      ]
     },
     {
       "rule_id": "SS-001",
@@ -3680,7 +4201,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "1c44dedf7609d76135e1e2acc13067ac"
+      "fingerprint": "1c44dedf7609d76135e1e2acc13067ac",
+      "related": [
+        "0f62769aa68303799bfc41e2a79f8861"
+      ]
     },
     {
       "rule_id": "SS-022",
@@ -3700,7 +4224,10 @@
         "https://docs.rs/soroban-sdk/latest/soroban_sdk/macro.symbol_short.html",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "73041493412dc2e5c7f7f7bfe515c335"
+      "fingerprint": "73041493412dc2e5c7f7f7bfe515c335",
+      "related": [
+        "d678ee90fd3bd753a68752cfbca298f7"
+      ]
     },
     {
       "rule_id": "SS-001",
@@ -3719,7 +4246,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "d678ee90fd3bd753a68752cfbca298f7"
+      "fingerprint": "d678ee90fd3bd753a68752cfbca298f7",
+      "related": [
+        "73041493412dc2e5c7f7f7bfe515c335"
+      ]
     },
     {
       "rule_id": "SS-023",
@@ -3759,7 +4289,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "6c4a97ba1ecd48ac7fef516a0555513f"
+      "fingerprint": "6c4a97ba1ecd48ac7fef516a0555513f",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -3778,7 +4309,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "ea12d748478dea8b32f212d3b2255611"
+      "fingerprint": "ea12d748478dea8b32f212d3b2255611",
+      "related": [
+        "896f4cd2636fb46c5dc433890edbed13"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -3797,7 +4332,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "896f4cd2636fb46c5dc433890edbed13"
+      "fingerprint": "896f4cd2636fb46c5dc433890edbed13",
+      "related": [
+        "ea12d748478dea8b32f212d3b2255611"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -3816,7 +4355,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "de237e99f4ef0c7e6a885edc04d2e57b"
+      "fingerprint": "de237e99f4ef0c7e6a885edc04d2e57b",
+      "related": [
+        "6fc60f6ec5780151995fae2f56cdc771"
+      ]
     },
     {
       "rule_id": "SS-006",
@@ -3835,7 +4377,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "6fc60f6ec5780151995fae2f56cdc771"
+      "fingerprint": "6fc60f6ec5780151995fae2f56cdc771",
+      "related": [
+        "de237e99f4ef0c7e6a885edc04d2e57b"
+      ]
     },
     {
       "rule_id": "SS-001",
@@ -3854,7 +4399,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "11d86bada61e82188159d467e30aab12"
+      "fingerprint": "11d86bada61e82188159d467e30aab12",
+      "related": [
+        "431c0acb156f003e5e1979a7221ee718",
+        "ade9c6081a006f620a73a3e72655568d"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -3873,7 +4423,12 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "ade9c6081a006f620a73a3e72655568d"
+      "fingerprint": "ade9c6081a006f620a73a3e72655568d",
+      "related": [
+        "11d86bada61e82188159d467e30aab12",
+        "431c0acb156f003e5e1979a7221ee718"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-025",
@@ -3893,7 +4448,12 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "431c0acb156f003e5e1979a7221ee718"
+      "fingerprint": "431c0acb156f003e5e1979a7221ee718",
+      "related": [
+        "11d86bada61e82188159d467e30aab12",
+        "ade9c6081a006f620a73a3e72655568d"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-026",
@@ -3953,7 +4513,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "35bcca1b5c66fe21911ef802669d2a31"
+      "fingerprint": "35bcca1b5c66fe21911ef802669d2a31",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -3972,7 +4533,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "cfe0afbc3ca2c5f32e7bd65fae6e9294"
+      "fingerprint": "cfe0afbc3ca2c5f32e7bd65fae6e9294",
+      "related": [
+        "1d1db31d573676e9ed1bf9f0b4df12da"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -3991,7 +4556,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "1d1db31d573676e9ed1bf9f0b4df12da"
+      "fingerprint": "1d1db31d573676e9ed1bf9f0b4df12da",
+      "related": [
+        "cfe0afbc3ca2c5f32e7bd65fae6e9294"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-002",
@@ -4010,7 +4579,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "8a5f043f6501f9d291b36d7d1b4565e1"
+      "fingerprint": "8a5f043f6501f9d291b36d7d1b4565e1",
+      "related": [
+        "a6833cca85cdefc6c3c3d976037c98b2"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -4030,7 +4603,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "a6833cca85cdefc6c3c3d976037c98b2"
+      "fingerprint": "a6833cca85cdefc6c3c3d976037c98b2",
+      "related": [
+        "8a5f043f6501f9d291b36d7d1b4565e1"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -4050,7 +4627,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "b246a6af181e82c822350ad4e63a1c99"
+      "fingerprint": "b246a6af181e82c822350ad4e63a1c99",
+      "related": [
+        "de6b286d5c77a9568c549f49d54db1b7"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -4070,7 +4651,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "de6b286d5c77a9568c549f49d54db1b7"
+      "fingerprint": "de6b286d5c77a9568c549f49d54db1b7",
+      "related": [
+        "b246a6af181e82c822350ad4e63a1c99"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -4089,7 +4674,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "0a689d578d918651ed75f62df2df4563"
+      "fingerprint": "0a689d578d918651ed75f62df2df4563",
+      "related": [
+        "b83c4a6cd821a6c273aef3c46054e728"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -4108,7 +4697,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "b83c4a6cd821a6c273aef3c46054e728"
+      "fingerprint": "b83c4a6cd821a6c273aef3c46054e728",
+      "related": [
+        "0a689d578d918651ed75f62df2df4563"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -4127,7 +4720,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "196cae8847f246987eea0907886b2346"
+      "fingerprint": "196cae8847f246987eea0907886b2346",
+      "related": [
+        "d2cc256db0361c3c0abd6cc3133ceca3"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -4146,7 +4743,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "d2cc256db0361c3c0abd6cc3133ceca3"
+      "fingerprint": "d2cc256db0361c3c0abd6cc3133ceca3",
+      "related": [
+        "196cae8847f246987eea0907886b2346"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-002",
@@ -4165,7 +4766,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "256239d6165e9a6f5b11ea7beca1009e"
+      "fingerprint": "256239d6165e9a6f5b11ea7beca1009e",
+      "related": [
+        "bc7f8d6006ab176203f70ac24ed3c3c8"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -4185,7 +4790,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "bc7f8d6006ab176203f70ac24ed3c3c8"
+      "fingerprint": "bc7f8d6006ab176203f70ac24ed3c3c8",
+      "related": [
+        "256239d6165e9a6f5b11ea7beca1009e"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -4205,7 +4814,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "3b059e2094045bb07bd10904f219b6cb"
+      "fingerprint": "3b059e2094045bb07bd10904f219b6cb",
+      "related": [
+        "1b98a6a5f598c533eb1b25bd5b8fe250"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -4225,7 +4838,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "1b98a6a5f598c533eb1b25bd5b8fe250"
+      "fingerprint": "1b98a6a5f598c533eb1b25bd5b8fe250",
+      "related": [
+        "3b059e2094045bb07bd10904f219b6cb"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -4264,7 +4881,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "c87f9f55c61c007cfebbe82a8ef54571"
+      "fingerprint": "c87f9f55c61c007cfebbe82a8ef54571",
+      "related": [
+        "469ced2b262aa986c5c7ad98822b5dd8"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -4284,7 +4905,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "469ced2b262aa986c5c7ad98822b5dd8"
+      "fingerprint": "469ced2b262aa986c5c7ad98822b5dd8",
+      "related": [
+        "c87f9f55c61c007cfebbe82a8ef54571"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-013",
@@ -4304,7 +4929,13 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs"
       ],
-      "fingerprint": "91372358a70638073c121aa93fb854ad"
+      "fingerprint": "91372358a70638073c121aa93fb854ad",
+      "related": [
+        "abf517d48bfba243b2c0554830570edf",
+        "dabd871e475d6d115bb8025943652d89",
+        "ee16d4000bb6d884c3d94aa068300561"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -4324,7 +4955,13 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "ee16d4000bb6d884c3d94aa068300561"
+      "fingerprint": "ee16d4000bb6d884c3d94aa068300561",
+      "related": [
+        "91372358a70638073c121aa93fb854ad",
+        "abf517d48bfba243b2c0554830570edf",
+        "dabd871e475d6d115bb8025943652d89"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -4344,7 +4981,13 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "abf517d48bfba243b2c0554830570edf"
+      "fingerprint": "abf517d48bfba243b2c0554830570edf",
+      "related": [
+        "91372358a70638073c121aa93fb854ad",
+        "dabd871e475d6d115bb8025943652d89",
+        "ee16d4000bb6d884c3d94aa068300561"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-028",
@@ -4364,7 +5007,13 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs"
       ],
-      "fingerprint": "dabd871e475d6d115bb8025943652d89"
+      "fingerprint": "dabd871e475d6d115bb8025943652d89",
+      "related": [
+        "91372358a70638073c121aa93fb854ad",
+        "abf517d48bfba243b2c0554830570edf",
+        "ee16d4000bb6d884c3d94aa068300561"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-001",
@@ -4383,7 +5032,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "757ee1e079580fab11d10dcb83ded1a8"
+      "fingerprint": "757ee1e079580fab11d10dcb83ded1a8",
+      "related": [
+        "3860def458a71ab0ee0e2e0899610264"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -4402,7 +5055,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "3860def458a71ab0ee0e2e0899610264"
+      "fingerprint": "3860def458a71ab0ee0e2e0899610264",
+      "related": [
+        "757ee1e079580fab11d10dcb83ded1a8"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-029",
@@ -4441,7 +5098,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "e71091ffde52f91a460ccdedbbbfd0bd"
+      "fingerprint": "e71091ffde52f91a460ccdedbbbfd0bd",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-004",
@@ -4461,7 +5119,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "de35d5cbe0f9a44397924d1ae6437e73"
+      "fingerprint": "de35d5cbe0f9a44397924d1ae6437e73",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-002",
@@ -4480,7 +5139,8 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "5d31bf4207eb98132b763ac25bc52f4c"
+      "fingerprint": "5d31bf4207eb98132b763ac25bc52f4c",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -4500,7 +5160,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "c24246d25d23e1c883acfad3de5e9585"
+      "fingerprint": "c24246d25d23e1c883acfad3de5e9585",
+      "related": [
+        "dd7d962c7fe2636603c07cea1b7d90b6"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -4520,7 +5184,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "dd7d962c7fe2636603c07cea1b7d90b6"
+      "fingerprint": "dd7d962c7fe2636603c07cea1b7d90b6",
+      "related": [
+        "c24246d25d23e1c883acfad3de5e9585"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-004",
@@ -4540,7 +5208,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
         "https://developers.stellar.org/docs/tools/cli/stellar-cli"
       ],
-      "fingerprint": "a7f66e471208cdd28bbd07198e4ceb34"
+      "fingerprint": "a7f66e471208cdd28bbd07198e4ceb34",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-002",
@@ -4559,7 +5228,8 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "cc83f628eb1bb4540aa8bf4a49ea5bbe"
+      "fingerprint": "cc83f628eb1bb4540aa8bf4a49ea5bbe",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -4579,7 +5249,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "e935aa3e1867c9fce22f03b037bf4e26"
+      "fingerprint": "e935aa3e1867c9fce22f03b037bf4e26",
+      "related": [
+        "763b03471d0c48d8cff72c2ca1a66ec8"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -4599,7 +5273,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "763b03471d0c48d8cff72c2ca1a66ec8"
+      "fingerprint": "763b03471d0c48d8cff72c2ca1a66ec8",
+      "related": [
+        "e935aa3e1867c9fce22f03b037bf4e26"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -4638,7 +5316,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "2020f41b706098cbe1d7748dadd463cc"
+      "fingerprint": "2020f41b706098cbe1d7748dadd463cc",
+      "related": [
+        "b343b1171b31c9a5b9a58a8a01dd08ac"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -4658,7 +5340,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "b343b1171b31c9a5b9a58a8a01dd08ac"
+      "fingerprint": "b343b1171b31c9a5b9a58a8a01dd08ac",
+      "related": [
+        "2020f41b706098cbe1d7748dadd463cc"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-014",
@@ -4678,7 +5364,11 @@
         "https://developers.stellar.org/docs/tokens/token-interface",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "e4d1d7c7329ff42ad1330aa88e145a75"
+      "fingerprint": "e4d1d7c7329ff42ad1330aa88e145a75",
+      "related": [
+        "e1f40c9883b82b58e7e8c067bc28c021"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-019",
@@ -4698,7 +5388,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security",
         "https://developers.stellar.org/docs/build/guides/contract-interactions"
       ],
-      "fingerprint": "e1f40c9883b82b58e7e8c067bc28c021"
+      "fingerprint": "e1f40c9883b82b58e7e8c067bc28c021",
+      "related": [
+        "e4d1d7c7329ff42ad1330aa88e145a75"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-031",
@@ -4738,7 +5432,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "e958de6eb749dfb68c30d9e853bf64e4"
+      "fingerprint": "e958de6eb749dfb68c30d9e853bf64e4",
+      "related": [
+        "e346c1fe2a11ac05f6c6d4b4690d64a6"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-037",
@@ -4758,7 +5456,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "e346c1fe2a11ac05f6c6d4b4690d64a6"
+      "fingerprint": "e346c1fe2a11ac05f6c6d4b4690d64a6",
+      "related": [
+        "e958de6eb749dfb68c30d9e853bf64e4"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-032",
@@ -4778,7 +5480,8 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "72fafc452ff283431d58ebd4c8423a82"
+      "fingerprint": "72fafc452ff283431d58ebd4c8423a82",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-030",
@@ -4898,7 +5601,10 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "06399ceb1ec0000b5a42f1651c8a15d6"
+      "fingerprint": "06399ceb1ec0000b5a42f1651c8a15d6",
+      "related": [
+        "2f4160b3f2cb9cfdc09e0c45ac4e36ed"
+      ]
     },
     {
       "rule_id": "SS-006",
@@ -4917,7 +5623,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "2f4160b3f2cb9cfdc09e0c45ac4e36ed"
+      "fingerprint": "2f4160b3f2cb9cfdc09e0c45ac4e36ed",
+      "related": [
+        "06399ceb1ec0000b5a42f1651c8a15d6"
+      ]
     },
     {
       "rule_id": "SS-006",
@@ -4955,7 +5664,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "b156a84476d6d0f6988436db73bac1fd"
+      "fingerprint": "b156a84476d6d0f6988436db73bac1fd",
+      "related": [
+        "3d1713dded003cdfe150fb7b71eacfae"
+      ]
     },
     {
       "rule_id": "SS-010",
@@ -4974,7 +5686,10 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/events"
       ],
-      "fingerprint": "3d1713dded003cdfe150fb7b71eacfae"
+      "fingerprint": "3d1713dded003cdfe150fb7b71eacfae",
+      "related": [
+        "b156a84476d6d0f6988436db73bac1fd"
+      ]
     },
     {
       "rule_id": "SS-032",
@@ -4994,7 +5709,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "c91230c765f00d51d0a61cafccfb855e"
+      "fingerprint": "c91230c765f00d51d0a61cafccfb855e",
+      "related": [
+        "08233f12c8d4d043bb78f7fc8f06cbaa"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-041",
@@ -5014,7 +5733,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "08233f12c8d4d043bb78f7fc8f06cbaa"
+      "fingerprint": "08233f12c8d4d043bb78f7fc8f06cbaa",
+      "related": [
+        "c91230c765f00d51d0a61cafccfb855e"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -5033,7 +5756,8 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "b4aaf589c86370d5661188b310cf95a1"
+      "fingerprint": "b4aaf589c86370d5661188b310cf95a1",
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-006",
@@ -5052,7 +5776,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
       ],
-      "fingerprint": "5e9e1aa866e0cc01c89f8120bf293ab7"
+      "fingerprint": "5e9e1aa866e0cc01c89f8120bf293ab7",
+      "related": [
+        "9f2c4935ab37dd019c335356cd993ec4"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-017",
@@ -5071,7 +5799,11 @@
       "references": [
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
       ],
-      "fingerprint": "9f2c4935ab37dd019c335356cd993ec4"
+      "fingerprint": "9f2c4935ab37dd019c335356cd993ec4",
+      "related": [
+        "5e9e1aa866e0cc01c89f8120bf293ab7"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-032",
@@ -5091,7 +5823,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "f4561253eafb06f8a5fbde545cad9bd8"
+      "fingerprint": "f4561253eafb06f8a5fbde545cad9bd8",
+      "related": [
+        "97095df6a92c90808cb51a3985f5c3dc"
+      ],
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-041",
@@ -5111,7 +5847,11 @@
         "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
         "https://developers.stellar.org/docs/learn/encyclopedia/security"
       ],
-      "fingerprint": "97095df6a92c90808cb51a3985f5c3dc"
+      "fingerprint": "97095df6a92c90808cb51a3985f5c3dc",
+      "related": [
+        "f4561253eafb06f8a5fbde545cad9bd8"
+      ],
+      "correlation_ambiguous": true
     }
   ],
   "suppressed": [],

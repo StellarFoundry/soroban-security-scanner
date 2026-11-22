@@ -27,8 +27,13 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "policyReason": "severity high meets the policy threshold high",
             "policyStatus": "fail",
+            "relatedIds": [
+              "8e7fd2ef89cdb87afedd8004cb80e1d7",
+              "8f6087141dd1cca533087cd6af3f6d20"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -58,8 +63,13 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "policyReason": "severity low is below the policy threshold high",
             "policyStatus": "pass",
+            "relatedIds": [
+              "25b58acab18e8c25be7d846c7b336d5b",
+              "8e7fd2ef89cdb87afedd8004cb80e1d7"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -89,8 +99,13 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "policyReason": "severity low is below the policy threshold high",
             "policyStatus": "pass",
+            "relatedIds": [
+              "25b58acab18e8c25be7d846c7b336d5b",
+              "8f6087141dd1cca533087cd6af3f6d20"
+            ],
             "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
             "severity": "low"
           },
@@ -120,6 +135,7 @@
           "properties": {
             "category": "arithmetic",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "policyReason": "severity medium is below the policy threshold high",
             "policyStatus": "pass",
             "remediation": "Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.",
@@ -151,8 +167,12 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "policyReason": "severity high meets the policy threshold high",
             "policyStatus": "fail",
+            "relatedIds": [
+              "bc335ac75bcdb2f37bb23e25e9fc3aea"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -182,8 +202,12 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "policyReason": "severity low is below the policy threshold high",
             "policyStatus": "pass",
+            "relatedIds": [
+              "2409db0240752ada2e699033b37c550e"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },

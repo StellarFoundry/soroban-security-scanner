@@ -27,6 +27,9 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "relatedIds": [
+              "23f90f900c6921c553ab52a53e297168"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -56,6 +59,9 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "relatedIds": [
+              "b8dcb181ecf494d8e030e2dca900c3d2"
+            ],
             "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
             "severity": "low"
           },
@@ -143,6 +149,9 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "relatedIds": [
+              "b982a2ba60e8c8f253068dba014abca0"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -172,6 +181,9 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "relatedIds": [
+              "37fe40fc78731d20edf55db9a5029ee0"
+            ],
             "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
             "severity": "low"
           },
@@ -259,6 +271,9 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "relatedIds": [
+              "8c0e85c2b992ad8024de3fb9914a448f"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -288,6 +303,9 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "relatedIds": [
+              "9442c62d879817c31bf6857f993e5c47"
+            ],
             "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
             "severity": "low"
           },
@@ -375,6 +393,11 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "661329002094a11864b18361688ec9d6",
+              "e110395ff3f6329d1b4e10dcc87ef51f"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -404,6 +427,11 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "661329002094a11864b18361688ec9d6",
+              "c3e233e2b9601a95c29d47ed756e21b9"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -433,6 +461,11 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "c3e233e2b9601a95c29d47ed756e21b9",
+              "e110395ff3f6329d1b4e10dcc87ef51f"
+            ],
             "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
             "severity": "low"
           },
@@ -462,6 +495,7 @@
           "properties": {
             "category": "arithmetic",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "remediation": "Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.",
             "severity": "medium"
           },
@@ -491,6 +525,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "081e0141f5201a517f311d3ea111a6c4"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -520,6 +558,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "34c6e80ed102dd08157ec8d820e5cd01"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -549,6 +591,7 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -578,6 +621,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "7b9c2285cafe0c7695c46f22694bbda5"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -607,6 +654,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "d5475c0cbf4d93267f0783dbf8255c86"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -636,6 +687,7 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -665,6 +717,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "acede228d48f4693b023d19b85fdff01"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -694,6 +750,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "a362fd34490f0f54cfdbbb67ce42d6ee"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -752,6 +812,9 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "relatedIds": [
+              "e5053eb8c254a77c84f95f7ecbd5026c"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -781,6 +844,9 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "relatedIds": [
+              "7d4a08e424b4e0ffc20ef938ea5e2000"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -810,6 +876,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -839,6 +906,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "40814c10be9dce76435571e9ad3c9eab"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -868,6 +939,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "547dea37a4cd38f87a0e74848ce1949d"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -897,6 +972,7 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -926,6 +1002,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "51b60ca5ffa9f7c9d2b54307b1954fc8"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -955,6 +1035,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "e8bbd271b173fc302e7875bd7557d93b"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -984,6 +1068,7 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -1013,6 +1098,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "d29c8d617e14f3f024df7360ed7b8c87"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -1042,6 +1131,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "16ae2ff5dac988b965881be178ce6079"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -1071,6 +1164,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "74cf86ad21eed79956679865289208da"
+            ],
             "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
             "severity": "high"
           },
@@ -1100,6 +1197,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "c399badb33485c8496d429125c15e476"
+            ],
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -1129,6 +1230,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "2af3668a68b8b8fff15113220e75af66"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -1158,6 +1263,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "3dfc41148c088ed584c759e633059253"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -1477,6 +1586,9 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "relatedIds": [
+              "2a6346c2270dab2c59ed044705715246"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -1506,6 +1618,9 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "relatedIds": [
+              "34bcd75b26a59f32ed27bc3d6af7ada2"
+            ],
             "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
             "severity": "low"
           },
@@ -1593,6 +1708,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -1622,6 +1738,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "95cd5eeb72a9efc15496a8c1d7916d67"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -1651,6 +1771,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "dfee15a21d1e3f058f92ca19828df74f"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -1680,6 +1804,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -1709,6 +1834,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "8e915611cfb7d11a563968c7b7bd2af4"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -1738,6 +1867,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "a6da6843f263dcad78406e521ecdebf8"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -1796,6 +1929,9 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "relatedIds": [
+              "95b2ae1df09dff1b1d86d07c95b964b5"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -1825,6 +1961,9 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "relatedIds": [
+              "2693cc4c84faf22776dd204da8c1f8c4"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -1854,6 +1993,9 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "relatedIds": [
+              "bb1abfaecd4b8442a9ea052e06cf9ccb"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -1883,6 +2025,9 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "relatedIds": [
+              "193e358f4a82348ecf21de0a35ec158d"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -1912,6 +2057,9 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "relatedIds": [
+              "56712e7374e1b71b081e1b2acd1a0708"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -1941,6 +2089,9 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "relatedIds": [
+              "90b372bac3f6a7d01fb6adddd5822924"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -1970,6 +2121,11 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "b1e4cf218a5ed9689787bebd39412d3e",
+              "dc609f3069ca74e4358813dadce5d9e4"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -1999,6 +2155,11 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "bd762510cb052a4b83765d5ac6db8744",
+              "dc609f3069ca74e4358813dadce5d9e4"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -2028,6 +2189,11 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "b1e4cf218a5ed9689787bebd39412d3e",
+              "bd762510cb052a4b83765d5ac6db8744"
+            ],
             "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
             "severity": "low"
           },
@@ -2057,6 +2223,11 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "2ac2897090d1ecd72453fd5af19f6387",
+              "a26955621a43cd95b5ff53606111d3ec"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -2086,6 +2257,11 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "2ac2897090d1ecd72453fd5af19f6387",
+              "df2367f567c56c4a988a964302f179ca"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -2115,6 +2291,11 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "a26955621a43cd95b5ff53606111d3ec",
+              "df2367f567c56c4a988a964302f179ca"
+            ],
             "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
             "severity": "low"
           },
@@ -2144,6 +2325,11 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "0d11170fbdae7d05de08d58d3faad85e",
+              "ccee50206e3f5ad36dc0b82be4da9d72"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -2173,6 +2359,11 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "0297bd333ae8bd85e622642073e257d8",
+              "ccee50206e3f5ad36dc0b82be4da9d72"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -2202,6 +2393,11 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "0297bd333ae8bd85e622642073e257d8",
+              "0d11170fbdae7d05de08d58d3faad85e"
+            ],
             "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
             "severity": "low"
           },
@@ -2231,6 +2427,11 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "46ff535f980da7e6d80328e1a2a641d8",
+              "a294c57f05be0627bbf48fd92932e071"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -2260,6 +2461,11 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "46ff535f980da7e6d80328e1a2a641d8",
+              "e56bd39024ffdeab4625b1e981795ef2"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -2289,6 +2495,11 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "a294c57f05be0627bbf48fd92932e071",
+              "e56bd39024ffdeab4625b1e981795ef2"
+            ],
             "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
             "severity": "low"
           },
@@ -2318,6 +2529,12 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "039db96b21a90887b7223acbae663ab9",
+              "53b3aca264cd5312ab7cb35db92a0f26",
+              "75019a8663138f87811480b25147c5ce"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -2347,6 +2564,12 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "53b3aca264cd5312ab7cb35db92a0f26",
+              "6e620bd49a33ed5dd9e693eb21d2ee7b",
+              "75019a8663138f87811480b25147c5ce"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -2376,6 +2599,12 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "039db96b21a90887b7223acbae663ab9",
+              "53b3aca264cd5312ab7cb35db92a0f26",
+              "6e620bd49a33ed5dd9e693eb21d2ee7b"
+            ],
             "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
             "severity": "low"
           },
@@ -2405,6 +2634,12 @@
           "properties": {
             "category": "access-control",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "039db96b21a90887b7223acbae663ab9",
+              "6e620bd49a33ed5dd9e693eb21d2ee7b",
+              "75019a8663138f87811480b25147c5ce"
+            ],
             "remediation": "Guard initialization by checking that the contract is not already initialized before writing (for example `if env.storage().instance().has(&KEY) { return Err(Error::AlreadyInitialized) }`), or perform initialization in a constructor (`__constructor`) so it runs only at deploy time.",
             "severity": "high"
           },
@@ -2434,6 +2669,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -2463,6 +2699,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "4c717380a94b9599f33894136ee7573e"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -2492,6 +2732,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "4266573d71d97557c0a370ba11282c46"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -2521,6 +2765,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -2550,6 +2795,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "9e6235e6af26cd33cd3d0c4df78cb9ff"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -2579,6 +2828,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "13479d49c4d00c19c7009826a649b57c"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -2608,6 +2861,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -2637,6 +2891,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "7c0187710f5a7946468cee8f6eed300a"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -2666,6 +2924,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "c20aea01156b4621ff5ee989e0afc91d"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -2695,6 +2957,7 @@
           "properties": {
             "category": "resource-usage",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "remediation": "Cap the collection size before growing it: read the current length and reject the operation at a documented maximum, or store a bounded aggregate instead. Return a typed contract error when the cap is reached.",
             "severity": "medium"
           },
@@ -2724,6 +2987,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "1b817a9cf8e8c6fcce93cb968585a84d"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -2753,6 +3020,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "a39c12d558fc7b44310207ba8108ecab"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -2782,6 +3053,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "87a76d3c698134ccf4a8389e7718285d"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -2811,6 +3086,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "5c3fa64e6e570324688bed66d18ca426"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -2840,6 +3119,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "3ad6e609e43b4242f70de844c8b072fa"
+            ],
             "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
             "severity": "high"
           },
@@ -2869,6 +3152,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "28fd1b7c89283ed13d151e50de739072"
+            ],
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -2898,6 +3185,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "8b86f2b60e6a444b286971c481179811"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -2927,6 +3218,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "7868cde3c25c6fe4ad03ed928848d963"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -2956,6 +3251,9 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "relatedIds": [
+              "898dec5e2d22a423180cfe2bdb77234d"
+            ],
             "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
             "severity": "high"
           },
@@ -2985,6 +3283,9 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "relatedIds": [
+              "5fdcc5ba111ac7bed47f4d170941ec83"
+            ],
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -3014,6 +3315,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "2528c0d9d700e7d35b6af55e5c455d0d"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -3043,6 +3348,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "31d2414fbf129f918912feebd87917fb"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -3072,6 +3381,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "c3a8b4bbe274a02826b05c8a7eb26bdc"
+            ],
             "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
             "severity": "high"
           },
@@ -3101,6 +3414,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "627c340067eaeb267b1fd346c78dda42"
+            ],
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -3130,6 +3447,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "fd7ae9e1a00f6c952bc4f11d3045a6ca"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -3159,6 +3480,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "cf8a4241f25d646a75abbf4a8ebb523e"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -3188,6 +3513,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "ba27766e93f440e49c92c70b74da3f6c"
+            ],
             "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
             "severity": "high"
           },
@@ -3217,6 +3546,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "f76644376aad7f3084b884153534e79e"
+            ],
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -3246,6 +3579,12 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+              "a540d0552854c83a2e514ebe3addb904",
+              "d53729124e927bdf3c7454cc7eb67305"
+            ],
             "remediation": "Follow checks-effects-interactions: validate inputs, update all relevant contract state, and only then invoke another contract. If an external call must happen first, add an explicit reentrancy guard and document why the intermediate state is safe to observe.",
             "severity": "high"
           },
@@ -3275,6 +3614,12 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+              "96471f7dd91c176605db04047f9b0508",
+              "d53729124e927bdf3c7454cc7eb67305"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -3304,6 +3649,12 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+              "96471f7dd91c176605db04047f9b0508",
+              "a540d0552854c83a2e514ebe3addb904"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -3333,6 +3684,12 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "96471f7dd91c176605db04047f9b0508",
+              "a540d0552854c83a2e514ebe3addb904",
+              "d53729124e927bdf3c7454cc7eb67305"
+            ],
             "remediation": "Before the external call, read a lock flag from storage, reject when it is already set, and set it; clear it after the state update. Or follow checks-effects-interactions and update all state before calling out.",
             "severity": "high"
           },
@@ -3362,6 +3719,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "6a579809f30b4ea6f2b470881ba456be"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -3391,6 +3752,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "e5a0a9fb95f553d4c1abcff9bb163fcd"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -3420,6 +3785,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -3449,6 +3815,7 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -3478,6 +3845,7 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -3507,6 +3875,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -3536,6 +3905,7 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -3565,6 +3935,7 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -3594,6 +3965,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -3623,6 +3995,7 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -3652,6 +4025,7 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -3681,6 +4055,7 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -3710,6 +4085,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "34ec8ca36a47b0434c16fa976a058c3b"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -3739,6 +4118,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "1a0210bc82d9870ef2668c400ed7b078"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -3768,6 +4151,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "16ecc88fdd2bf218c7db9e6a3fd04f37"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -3797,6 +4184,10 @@
           "properties": {
             "category": "access-control",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "4818ed69d217652b629399ebefc4899f"
+            ],
             "remediation": "Guard initialization by checking that the contract is not already initialized before writing (for example `if env.storage().instance().has(&KEY) { return Err(Error::AlreadyInitialized) }`), or perform initialization in a constructor (`__constructor`) so it runs only at deploy time.",
             "severity": "high"
           },
@@ -3826,6 +4217,11 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "0e31c94f8f3fbfef435c4005f47e71d4",
+              "f2d02bc6d17e9f687515f2857255cb8e"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -3855,6 +4251,11 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "bd967ce4f944e1ce41143b19ccf48d7e",
+              "f2d02bc6d17e9f687515f2857255cb8e"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -3884,6 +4285,11 @@
           "properties": {
             "category": "access-control",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "0e31c94f8f3fbfef435c4005f47e71d4",
+              "bd967ce4f944e1ce41143b19ccf48d7e"
+            ],
             "remediation": "Guard initialization by checking that the contract is not already initialized before writing (for example `if env.storage().instance().has(&KEY) { return Err(Error::AlreadyInitialized) }`), or perform initialization in a constructor (`__constructor`) so it runs only at deploy time.",
             "severity": "high"
           },
@@ -3913,6 +4319,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "8cbf9c0252485933744e05bd6bafcf1c"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -3942,6 +4352,10 @@
           "properties": {
             "category": "access-control",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "1670ea29badda93d45f1893af80f9d1f"
+            ],
             "remediation": "Guard initialization by checking that the contract is not already initialized before writing (for example `if env.storage().instance().has(&KEY) { return Err(Error::AlreadyInitialized) }`), or perform initialization in a constructor (`__constructor`) so it runs only at deploy time.",
             "severity": "high"
           },
@@ -3971,6 +4385,11 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "3dfb5aae09dd9b505a0996b41cfc753c",
+              "a7cc2c88fccb0642bd7037ca3f6d21f2"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -4000,6 +4419,11 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "3dfb5aae09dd9b505a0996b41cfc753c",
+              "70433fc9d2d6b994e3b89ef11b97f9d2"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -4029,6 +4453,11 @@
           "properties": {
             "category": "access-control",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "70433fc9d2d6b994e3b89ef11b97f9d2",
+              "a7cc2c88fccb0642bd7037ca3f6d21f2"
+            ],
             "remediation": "Guard initialization by checking that the contract is not already initialized before writing (for example `if env.storage().instance().has(&KEY) { return Err(Error::AlreadyInitialized) }`), or perform initialization in a constructor (`__constructor`) so it runs only at deploy time.",
             "severity": "high"
           },
@@ -4058,6 +4487,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "25d152fd88ac81caa0bd0275b2ab4fba"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -4087,6 +4520,10 @@
           "properties": {
             "category": "access-control",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "fbeae4f63d1aeb884688ea3281d84736"
+            ],
             "remediation": "Guard initialization by checking that the contract is not already initialized before writing (for example `if env.storage().instance().has(&KEY) { return Err(Error::AlreadyInitialized) }`), or perform initialization in a constructor (`__constructor`) so it runs only at deploy time.",
             "severity": "high"
           },
@@ -4116,6 +4553,11 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "17e1f27c6f5cc90d25493e1875811b98",
+              "977717cb945ed2b2f37d818963cceba3"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -4145,6 +4587,11 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "17e1f27c6f5cc90d25493e1875811b98",
+              "f2be6e36496eb1c0e4effc18e7da8838"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -4174,6 +4621,11 @@
           "properties": {
             "category": "access-control",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "977717cb945ed2b2f37d818963cceba3",
+              "f2be6e36496eb1c0e4effc18e7da8838"
+            ],
             "remediation": "Guard initialization by checking that the contract is not already initialized before writing (for example `if env.storage().instance().has(&KEY) { return Err(Error::AlreadyInitialized) }`), or perform initialization in a constructor (`__constructor`) so it runs only at deploy time.",
             "severity": "high"
           },
@@ -4203,6 +4655,11 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "0cb1efb1a006f0e476a1be0487adfab4",
+              "5555426d372f99e3d602cf38d65acf4c"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -4232,6 +4689,11 @@
           "properties": {
             "category": "access-control",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "0cb1efb1a006f0e476a1be0487adfab4",
+              "64511a6c4862f557012e7a274614dbdf"
+            ],
             "remediation": "Guard initialization by checking that the contract is not already initialized before writing (for example `if env.storage().instance().has(&KEY) { return Err(Error::AlreadyInitialized) }`), or perform initialization in a constructor (`__constructor`) so it runs only at deploy time.",
             "severity": "high"
           },
@@ -4261,6 +4723,11 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "5555426d372f99e3d602cf38d65acf4c",
+              "64511a6c4862f557012e7a274614dbdf"
+            ],
             "remediation": "Keep instance storage for small, fixed configuration. Store growing collections in persistent storage, and bound their size explicitly.",
             "severity": "medium"
           },
@@ -4290,6 +4757,11 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "04637f34a8290f5734c2f0436359c2bc",
+              "28e8764093d6d631285f4c302b420684"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -4319,6 +4791,11 @@
           "properties": {
             "category": "access-control",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "28e8764093d6d631285f4c302b420684",
+              "40b18bea271c88c2b221edb11b7ea58b"
+            ],
             "remediation": "Guard initialization by checking that the contract is not already initialized before writing (for example `if env.storage().instance().has(&KEY) { return Err(Error::AlreadyInitialized) }`), or perform initialization in a constructor (`__constructor`) so it runs only at deploy time.",
             "severity": "high"
           },
@@ -4348,6 +4825,11 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "04637f34a8290f5734c2f0436359c2bc",
+              "40b18bea271c88c2b221edb11b7ea58b"
+            ],
             "remediation": "Keep instance storage for small, fixed configuration. Store growing collections in persistent storage, and bound their size explicitly.",
             "severity": "medium"
           },
@@ -4609,6 +5091,9 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "relatedIds": [
+              "fbf6d16b047d6733f4408c670b9ca2ee"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -4638,6 +5123,9 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "relatedIds": [
+              "509268ab4a288383acf40b26c7d4f0cb"
+            ],
             "remediation": "Authorize the caller at the start of the entry point, before any storage read or write that depends on the caller. Call `require_auth` or `require_auth_for_args` first, then perform the state change.",
             "severity": "medium"
           },
@@ -4812,6 +5300,11 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "7322879d377122e5338cb715ae0c4186",
+              "9f645cbf384d9657ac5bbcdadeeb9144"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -4841,6 +5334,11 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "9f645cbf384d9657ac5bbcdadeeb9144",
+              "d30a4b1e82ff740a5dc33d6af6a6fc3c"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -4870,6 +5368,11 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "7322879d377122e5338cb715ae0c4186",
+              "d30a4b1e82ff740a5dc33d6af6a6fc3c"
+            ],
             "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
             "severity": "low"
           },
@@ -4928,6 +5431,11 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "852b64bc1ec2a632158cd1bb5757b199",
+              "aa9c9ef26230bfef934d82ca38df7b15"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -4957,6 +5465,11 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "852b64bc1ec2a632158cd1bb5757b199",
+              "e0649fc59d351d8af0c99fbb38dc4663"
+            ],
             "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
             "severity": "low"
           },
@@ -4986,6 +5499,11 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "aa9c9ef26230bfef934d82ca38df7b15",
+              "e0649fc59d351d8af0c99fbb38dc4663"
+            ],
             "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
             "severity": "medium"
           },
@@ -5102,6 +5620,9 @@
           "properties": {
             "category": "storage",
             "confidence": "medium",
+            "relatedIds": [
+              "1c44dedf7609d76135e1e2acc13067ac"
+            ],
             "remediation": "Use a constant literal of at most nine characters such as `symbol_short!(\"transfer\")`, or use `Symbol::new(&env, value)` for longer or dynamic values. Never derive a storage key directly from caller input; map it through an allowlist of known keys.",
             "severity": "medium"
           },
@@ -5131,6 +5652,9 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "relatedIds": [
+              "0f62769aa68303799bfc41e2a79f8861"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -5160,6 +5684,9 @@
           "properties": {
             "category": "storage",
             "confidence": "medium",
+            "relatedIds": [
+              "d678ee90fd3bd753a68752cfbca298f7"
+            ],
             "remediation": "Use a constant literal of at most nine characters such as `symbol_short!(\"transfer\")`, or use `Symbol::new(&env, value)` for longer or dynamic values. Never derive a storage key directly from caller input; map it through an allowlist of known keys.",
             "severity": "medium"
           },
@@ -5189,6 +5716,9 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "relatedIds": [
+              "73041493412dc2e5c7f7f7bfe515c335"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -5247,6 +5777,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -5276,6 +5807,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "896f4cd2636fb46c5dc433890edbed13"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -5305,6 +5840,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "ea12d748478dea8b32f212d3b2255611"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -5334,6 +5873,9 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "relatedIds": [
+              "6fc60f6ec5780151995fae2f56cdc771"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -5363,6 +5905,9 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "relatedIds": [
+              "de237e99f4ef0c7e6a885edc04d2e57b"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -5392,6 +5937,11 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "431c0acb156f003e5e1979a7221ee718",
+              "ade9c6081a006f620a73a3e72655568d"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -5421,6 +5971,11 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "11d86bada61e82188159d467e30aab12",
+              "431c0acb156f003e5e1979a7221ee718"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -5450,6 +6005,11 @@
           "properties": {
             "category": "storage",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "11d86bada61e82188159d467e30aab12",
+              "ade9c6081a006f620a73a3e72655568d"
+            ],
             "remediation": "Reject or truncate values above an explicit maximum before persisting them (for example `if value.len() > MAX { return Err(...) }`). Storing a fixed-size hash instead of the raw value is usually safer.",
             "severity": "medium"
           },
@@ -5537,6 +6097,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -5566,6 +6127,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "1d1db31d573676e9ed1bf9f0b4df12da"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -5595,6 +6160,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "cfe0afbc3ca2c5f32e7bd65fae6e9294"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -5624,6 +6193,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "a6833cca85cdefc6c3c3d976037c98b2"
+            ],
             "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
             "severity": "high"
           },
@@ -5653,6 +6226,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "8a5f043f6501f9d291b36d7d1b4565e1"
+            ],
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -5682,6 +6259,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "de6b286d5c77a9568c549f49d54db1b7"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -5711,6 +6292,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "b246a6af181e82c822350ad4e63a1c99"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -5740,6 +6325,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "b83c4a6cd821a6c273aef3c46054e728"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -5769,6 +6358,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "0a689d578d918651ed75f62df2df4563"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -5798,6 +6391,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "d2cc256db0361c3c0abd6cc3133ceca3"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -5827,6 +6424,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "196cae8847f246987eea0907886b2346"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -5856,6 +6457,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "bc7f8d6006ab176203f70ac24ed3c3c8"
+            ],
             "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
             "severity": "high"
           },
@@ -5885,6 +6490,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "256239d6165e9a6f5b11ea7beca1009e"
+            ],
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -5914,6 +6523,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "1b98a6a5f598c533eb1b25bd5b8fe250"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -5943,6 +6556,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "3b059e2094045bb07bd10904f219b6cb"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -6001,6 +6618,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "469ced2b262aa986c5c7ad98822b5dd8"
+            ],
             "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
             "severity": "high"
           },
@@ -6030,6 +6651,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "c87f9f55c61c007cfebbe82a8ef54571"
+            ],
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -6059,6 +6684,12 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "abf517d48bfba243b2c0554830570edf",
+              "dabd871e475d6d115bb8025943652d89",
+              "ee16d4000bb6d884c3d94aa068300561"
+            ],
             "remediation": "Follow checks-effects-interactions: validate inputs, update all relevant contract state, and only then invoke another contract. If an external call must happen first, add an explicit reentrancy guard and document why the intermediate state is safe to observe.",
             "severity": "high"
           },
@@ -6088,6 +6719,12 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "91372358a70638073c121aa93fb854ad",
+              "abf517d48bfba243b2c0554830570edf",
+              "dabd871e475d6d115bb8025943652d89"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -6117,6 +6754,12 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "91372358a70638073c121aa93fb854ad",
+              "dabd871e475d6d115bb8025943652d89",
+              "ee16d4000bb6d884c3d94aa068300561"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -6146,6 +6789,12 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "91372358a70638073c121aa93fb854ad",
+              "abf517d48bfba243b2c0554830570edf",
+              "ee16d4000bb6d884c3d94aa068300561"
+            ],
             "remediation": "Before the external call, read a lock flag from storage, reject when it is already set, and set it; clear it after the state update. Or follow checks-effects-interactions and update all state before calling out.",
             "severity": "high"
           },
@@ -6175,6 +6824,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "3860def458a71ab0ee0e2e0899610264"
+            ],
             "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
             "severity": "high"
           },
@@ -6204,6 +6857,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "757ee1e079580fab11d10dcb83ded1a8"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -6262,6 +6919,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -6291,6 +6949,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -6320,6 +6979,7 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
             "severity": "high"
           },
@@ -6349,6 +7009,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "dd7d962c7fe2636603c07cea1b7d90b6"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -6378,6 +7042,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "c24246d25d23e1c883acfad3de5e9585"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -6407,6 +7075,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -6436,6 +7105,7 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
             "severity": "high"
           },
@@ -6465,6 +7135,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "763b03471d0c48d8cff72c2ca1a66ec8"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -6494,6 +7168,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "e935aa3e1867c9fce22f03b037bf4e26"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -6552,6 +7230,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "b343b1171b31c9a5b9a58a8a01dd08ac"
+            ],
             "remediation": "Authorize the caller with `address.require_auth()` before invoking another contract on the contract's behalf, and bind the approval to the specific arguments of the operation. Verify that any address used to construct the client is the expected contract.",
             "severity": "high"
           },
@@ -6581,6 +7263,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "2020f41b706098cbe1d7748dadd463cc"
+            ],
             "remediation": "Compare the supplied token address with the address stored when the contract was configured, and reject mismatches with a typed error before constructing the client.",
             "severity": "high"
           },
@@ -6610,6 +7296,10 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "e1f40c9883b82b58e7e8c067bc28c021"
+            ],
             "remediation": "Validate the amount before transferring, for example reject `amount <= 0` with a typed contract error (or check both bounds when the token has a maximum). Validate once at the entry point and pass the checked value to `transfer`/`transfer_from`.",
             "severity": "medium"
           },
@@ -6639,6 +7329,10 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "e4d1d7c7329ff42ad1330aa88e145a75"
+            ],
             "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
             "severity": "medium"
           },
@@ -6697,6 +7391,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "e346c1fe2a11ac05f6c6d4b4690d64a6"
+            ],
             "remediation": "Authorize once before the loop, for example `admin.require_auth();` followed by the loop, or use `require_auth_for_args` with the complete argument set the operation depends on. If every iteration genuinely authorizes a different actor, document why the per-iteration check is required.",
             "severity": "low"
           },
@@ -6726,6 +7424,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "e958de6eb749dfb68c30d9e853bf64e4"
+            ],
             "remediation": "Prefer a single, explicit authorization for the actor whose operation this is, or bind all required parties through one documented multi-sig pattern. If the flow genuinely requires several independent approvals, document the policy and suppress the finding with a justified inline directive.",
             "severity": "medium"
           },
@@ -6755,6 +7457,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
             "remediation": "Authorize once before the loop, for example `admin.require_auth();` followed by the loop, or use `require_auth_for_args` with the complete argument set the operation depends on. If every iteration genuinely authorizes a different actor, document why the per-iteration check is required.",
             "severity": "low"
           },
@@ -6929,6 +7632,9 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "relatedIds": [
+              "2f4160b3f2cb9cfdc09e0c45ac4e36ed"
+            ],
             "remediation": "Authorize once before the loop, for example `admin.require_auth();` followed by the loop, or use `require_auth_for_args` with the complete argument set the operation depends on. If every iteration genuinely authorizes a different actor, document why the per-iteration check is required.",
             "severity": "low"
           },
@@ -6958,6 +7664,9 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "relatedIds": [
+              "06399ceb1ec0000b5a42f1651c8a15d6"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -7016,6 +7725,9 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "relatedIds": [
+              "3d1713dded003cdfe150fb7b71eacfae"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -7045,6 +7757,9 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "relatedIds": [
+              "b156a84476d6d0f6988436db73bac1fd"
+            ],
             "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
             "severity": "low"
           },
@@ -7074,6 +7789,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "08233f12c8d4d043bb78f7fc8f06cbaa"
+            ],
             "remediation": "Authorize once before the loop, for example `admin.require_auth();` followed by the loop, or use `require_auth_for_args` with the complete argument set the operation depends on. If every iteration genuinely authorizes a different actor, document why the per-iteration check is required.",
             "severity": "low"
           },
@@ -7103,6 +7822,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "c91230c765f00d51d0a61cafccfb855e"
+            ],
             "remediation": "Authorize the actor before any state change and outside any conditional branch that can skip iterations, or authorize each distinct actor explicitly for every loop item with `require_auth_for_args`. Document intentional per-item authorization.",
             "severity": "medium"
           },
@@ -7132,6 +7855,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -7161,6 +7885,10 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "9f2c4935ab37dd019c335356cd993ec4"
+            ],
             "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
             "severity": "low"
           },
@@ -7190,6 +7918,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "5e9e1aa866e0cc01c89f8120bf293ab7"
+            ],
             "remediation": "Authorize the caller at the start of the entry point, before any storage read or write that depends on the caller. Call `require_auth` or `require_auth_for_args` first, then perform the state change.",
             "severity": "medium"
           },
@@ -7219,6 +7951,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "97095df6a92c90808cb51a3985f5c3dc"
+            ],
             "remediation": "Authorize once before the loop, for example `admin.require_auth();` followed by the loop, or use `require_auth_for_args` with the complete argument set the operation depends on. If every iteration genuinely authorizes a different actor, document why the per-iteration check is required.",
             "severity": "low"
           },
@@ -7248,6 +7984,10 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "f4561253eafb06f8a5fbde545cad9bd8"
+            ],
             "remediation": "Authorize the actor before any state change and outside any conditional branch that can skip iterations, or authorize each distinct actor explicitly for every loop item with `require_auth_for_args`. Document intentional per-item authorization.",
             "severity": "medium"
           },
