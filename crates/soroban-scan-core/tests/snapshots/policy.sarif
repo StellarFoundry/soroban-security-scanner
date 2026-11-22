@@ -750,6 +750,33 @@
                 "level": "warning"
               },
               "fullDescription": {
+                "text": "An entry point accepts or returns a local struct or enum that is not annotated with `#[contracttype]`. Soroban requires boundary types to be XDR-serializable; a missing attribute usually fails at runtime (or when the contract is invoked) rather than at compile time, so it is easy to miss in review."
+              },
+              "help": {
+                "markdown": "## Missing contracttype on boundary types\n\nAn entry point accepts or returns a local struct or enum that is not annotated with `#[contracttype]`. Soroban requires boundary types to be XDR-serializable; a missing attribute usually fails at runtime (or when the contract is invoked) rather than at compile time, so it is easy to miss in review.\n\n### Remediation\n\nAnnotate every local struct and enum used in a public entry point signature with `#[contracttype]` (and derive the required traits), or replace it with an SDK type such as `Address`, `Bytes`, or a primitive.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/contract-development/types/custom-types",
+                "text": "An entry point accepts or returns a local struct or enum that is not annotated with `#[contracttype]`. Soroban requires boundary types to be XDR-serializable; a missing attribute usually fails at runtime (or when the contract is invoked) rather than at compile time, so it is easy to miss in review.\n\nRemediation: Annotate every local struct and enum used in a public entry point signature with `#[contracttype]` (and derive the required traits), or replace it with an SDK type such as `Address`, `Bytes`, or a primitive."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/contract-development/types/custom-types",
+              "id": "SS-024",
+              "name": "Missing contracttype on boundary types",
+              "properties": {
+                "category": "configuration",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/contract-development/types/custom-types"
+                ],
+                "remediation": "Annotate every local struct and enum used in a public entry point signature with `#[contracttype]` (and derive the required traits), or replace it with an SDK type such as `Address`, `Bytes`, or a primitive.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Missing contracttype on boundary types"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
                 "text": "Persisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write."
               },
               "help": {
@@ -994,6 +1021,33 @@
               },
               "shortDescription": {
                 "text": "Ignored checked-arithmetic result"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "fullDescription": {
+                "text": "The contract calls a Soroban SDK API that has been deprecated or removed. The code may fail to build against a newer SDK, and the old API can carry stale behavior or security assumptions."
+              },
+              "help": {
+                "markdown": "## Deprecated SDK API usage\n\nThe contract calls a Soroban SDK API that has been deprecated or removed. The code may fail to build against a newer SDK, and the old API can carry stale behavior or security assumptions.\n\n### Remediation\n\nUse the documented replacement for the SDK version in use, then re-run the scanner after upgrading `soroban-sdk`.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "The contract calls a Soroban SDK API that has been deprecated or removed. The code may fail to build against a newer SDK, and the old API can carry stale behavior or security assumptions.\n\nRemediation: Use the documented replacement for the SDK version in use, then re-run the scanner after upgrading `soroban-sdk`."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-036",
+              "name": "Deprecated SDK API usage",
+              "properties": {
+                "category": "dependencies",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Use the documented replacement for the SDK version in use, then re-run the scanner after upgrading `soroban-sdk`.",
+                "severity": "low"
+              },
+              "shortDescription": {
+                "text": "Deprecated SDK API usage"
               }
             },
             {

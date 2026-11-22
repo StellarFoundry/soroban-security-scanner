@@ -401,6 +401,9 @@ pub struct ScanConfig {
     pub exclude_generated: bool,
     /// Whether to follow symbolic links during discovery.
     pub follow_symlinks: bool,
+    /// Optional overall scan deadline in milliseconds. When it expires the scan
+    /// stops cooperatively and the report is marked partial.
+    pub deadline_ms: Option<u64>,
     /// Minimum supported `soroban-sdk` version for the SS-015 policy check.
     pub minimum_soroban_sdk: String,
     /// Path- and rule-scoped suppressions.
@@ -434,6 +437,7 @@ impl Default for ScanConfig {
             include_cfg_test: false,
             exclude_generated: false,
             follow_symlinks: false,
+            deadline_ms: None,
             minimum_soroban_sdk: "21.0.0".to_string(),
             suppressions: Vec::new(),
             waivers: Vec::new(),

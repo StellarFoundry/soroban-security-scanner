@@ -8,7 +8,7 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 118,
+    "source_files": 126,
     "soroban_sdk_versions": []
   },
   "stats": {
@@ -179,13 +179,13 @@
         }
       ]
     },
-    "files_analyzed": 118,
-    "files_parsed": 118,
+    "files_analyzed": 126,
+    "files_parsed": 126,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 30,
+    "rules_run": 32,
     "rules_skipped": 0,
-    "findings_raw": 204,
+    "findings_raw": 206,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -199,9 +199,9 @@
       "access-control": 10,
       "arithmetic": 8,
       "authorization": 43,
-      "configuration": 2,
+      "configuration": 3,
       "cross-contract": 15,
-      "dependencies": 2,
+      "dependencies": 3,
       "error-handling": 17,
       "events": 17,
       "resource-usage": 2,
@@ -3267,6 +3267,25 @@
       "fingerprint": "4c7bb8c7dcd42d55faab7be992707e40"
     },
     {
+      "rule_id": "SS-024",
+      "title": "Missing contracttype on boundary types",
+      "description": "An entry point accepts or returns a local struct or enum that is not annotated with `#[contracttype]`. Soroban requires boundary types to be XDR-serializable; a missing attribute usually fails at runtime (or when the contract is invoked) rather than at compile time, so it is easy to miss in review.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "configuration",
+      "location": {
+        "file": "SS-024/positive.rs",
+        "line": 11,
+        "column": 9
+      },
+      "evidence": "entry point `store` uses local types without #[contracttype]: parameter `value` uses `Payload`; returns `Receipt`",
+      "remediation": "Annotate every local struct and enum used in a public entry point signature with `#[contracttype]` (and derive the required traits), or replace it with an SDK type such as `Address`, `Bytes`, or a primitive.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/contract-development/types/custom-types"
+      ],
+      "fingerprint": "845478967378639abbeb12098615ab61"
+    },
+    {
       "rule_id": "SS-004",
       "title": "Panic-prone construct in a contract entry point",
       "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
@@ -4186,6 +4205,25 @@
       "fingerprint": "c0a7f9835ef546f2d4e5470d088a672c"
     },
     {
+      "rule_id": "SS-036",
+      "title": "Deprecated SDK API usage",
+      "description": "The contract calls a Soroban SDK API that has been deprecated or removed. The code may fail to build against a newer SDK, and the old API can carry stale behavior or security assumptions.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "dependencies",
+      "location": {
+        "file": "SS-036/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "deprecated `log` API (since 20.0.0, use env.events().publish(...)): env . logger () . log (\"deprecated\")",
+      "remediation": "Use the documented replacement for the SDK version in use, then re-run the scanner after upgrading `soroban-sdk`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "8ef595f3e363cf32b29c971aba7329ca"
+    },
+    {
       "rule_id": "SS-037",
       "title": "Competing authorization calls",
       "description": "A contract entry point calls `require_auth` for two or more distinct actors. Multiple separate approvals in a single operation usually indicate confused authorization semantics: it is hard to tell which actor is actually required, and a missing check elsewhere may be masked. Legitimate multi-party flows exist, so review each finding in context.",
@@ -4426,6 +4464,13 @@
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: symbol_short",
       "path": "SS-033/positive.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-036/negative.rs",
       "line": null
     }
   ]

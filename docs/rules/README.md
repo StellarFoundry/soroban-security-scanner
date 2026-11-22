@@ -71,6 +71,7 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-018](detectors/SS-018.md) | Unchecked integer cast | medium | low | arithmetic |
 | [SS-021](detectors/SS-021.md) | Durable data written to temporary storage | medium | low | storage |
 | [SS-023](detectors/SS-023.md) | Sensitive-looking data published in events | medium | low | events |
+| [SS-024](detectors/SS-024.md) | Missing contracttype on boundary types | medium | medium | configuration |
 | [SS-025](detectors/SS-025.md) | Unbounded string/bytes persisted from caller input | medium | medium | storage |
 | [SS-027](detectors/SS-027.md) | Contract's own address used as an authorization subject | high | medium | authorization |
 | [SS-028](detectors/SS-028.md) | Cross-contract call without a reentrancy guard | high | low | cross-contract |
@@ -80,6 +81,7 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-032](detectors/SS-032.md) | Redundant require_auth in loop | low | medium | authorization |
 | [SS-033](detectors/SS-033.md) | Wildcard import from the Soroban SDK | low | high | dependencies |
 | [SS-035](detectors/SS-035.md) | Ignored checked-arithmetic result | high | medium | arithmetic |
+| [SS-036](detectors/SS-036.md) | Deprecated SDK API usage | low | medium | dependencies |
 | [SS-037](detectors/SS-037.md) | Competing authorization calls | medium | low | authorization |
 
 Each detector has a positive and negative fixture under

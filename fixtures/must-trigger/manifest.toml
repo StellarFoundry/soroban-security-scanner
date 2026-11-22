@@ -123,3 +123,11 @@ why = "Reproduces the documented 'Wildcard import from the Soroban SDK' pattern;
 file = "SS-037.rs"
 why = "Reproduces the documented 'Competing authorization calls' pattern; this sample must always trigger SS-037."
 
+
+[SS-024]
+file = "SS-024.rs"
+why = "An entry point uses local types without #[contracttype], which is the documented false-negative guard for SS-024."
+
+[SS-036]
+file = "SS-036.rs"
+why = "A contract calls the removed Env::logger API, which must always trigger SS-036."

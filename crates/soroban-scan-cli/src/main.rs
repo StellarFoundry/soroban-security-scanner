@@ -6,7 +6,7 @@
 //! * `2` — usage error (bad arguments, unknown rule, invalid configuration).
 //! * `3` — runtime error (I/O failure, unreadable scan root).
 
-use std::path::{Path, PathBuf};
+use std::path::{Component, Path, PathBuf};
 use std::process::ExitCode;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Mutex;
@@ -472,6 +472,19 @@ struct ScanArgs {
     #[arg(long, value_name = "FILE")]
     files_from: Option<PathBuf>,
 
+    /// Scan only Rust files changed since this git revision (read-only git diff).
+    #[arg(long, value_name = "REF", conflicts_with = "files_from")]
+    changed_since: Option<String>,
+
+    /// Read changed file paths from FILE when git is unavailable.
+    #[arg(long, value_name = "FILE", requires = "changed_since")]
+    changed_from_file: Option<PathBuf>,
+
+    /// Overall scan deadline in milliseconds; the report is marked partial if
+    /// it expires.
+    #[arg(long, value_name = "MS")]
+    deadline_ms: Option<u64>,
+
     /// Disable a rule by id. Repeatable.
     #[arg(long = "disable", value_name = "RULE")]
     disable: Vec<String>,
@@ -854,6 +867,7 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
         config.rules.rule_time_budget_ms = Some(budget);
     }
     config.redact.extend(args.redact.iter().cloned());
+    config.deadline_ms = args.deadline_ms;
     if let Some(strategy) = &args.fingerprint_strategy {
         config.fingerprint = FingerprintStrategy::parse(strategy).map_err(CliError::Usage)?;
     }
@@ -874,10 +888,32 @@ fn run_scan(args: ScanArgs, registry: &RuleRegistry) -> CliResult<u8> {
         }),
     );
 
+    let changed = if let Some(reference) = &args.changed_since {
+        let path = single_path(&args.paths, "--changed-since")?;
+        if path.is_file() {
+            return Err(CliError::Usage(
+                "--changed-since requires PATH to be a directory".to_string(),
+            ));
+        }
+        Some(changed_files(
+            path,
+            reference,
+            args.changed_from_file.as_deref(),
+        )?)
+    } else {
+        None
+    };
+
     let mut outcome = if let Some(name) = &args.stdin_filename {
         let file_name = validate_logical_filename(name)?;
         let source = read_stdin_bounded()?;
         engine::scan_source_str(&source, &file_name, &config, registry)
+    } else if let Some(files) = &changed {
+        let path = &args.paths[0];
+        let loaded = frontend::default_frontend()
+            .load_files(path, files, &config.discovery_options())
+            .map_err(runtime)?;
+        engine::scan(&loaded, registry, &config)
     } else if let Some(list) = &args.files_from {
         let path = single_path(&args.paths, "--files-from")?;
         if path.is_file() {
@@ -1805,6 +1841,54 @@ fn read_file_list(list: &Path, root: &Path) -> CliResult<Vec<PathBuf>> {
 }
 
 /// Returns the single allowed path, or a usage error naming the offending flag.
+fn changed_files(root: &Path, reference: &str, list: Option<&Path>) -> CliResult<Vec<PathBuf>> {
+    if let Some(list) = list {
+        return read_file_list(list, root);
+    }
+    let output = std::process::Command::new("git")
+        .arg("-C")
+        .arg(root)
+        .args([
+            "diff",
+            "--name-only",
+            "--diff-filter=ACMR",
+            reference,
+            "--",
+            "*.rs",
+        ])
+        .output()
+        .map_err(|_| {
+            CliError::Usage("--changed-since requires git; pass --changed-from-file".to_string())
+        })?;
+    if !output.status.success() {
+        return Err(CliError::Usage(format!(
+            "git diff failed for `{reference}`: {}",
+            String::from_utf8_lossy(&output.stderr).trim()
+        )));
+    }
+    let text = String::from_utf8(output.stdout)
+        .map_err(|_| CliError::Usage("git returned a non-UTF-8 path".to_string()))?;
+    let mut files = Vec::new();
+    for line in text.lines() {
+        let line = line.trim();
+        if line.is_empty() || !line.ends_with(".rs") {
+            continue;
+        }
+        let path = PathBuf::from(line);
+        if path.is_absolute()
+            || path
+                .components()
+                .any(|component| matches!(component, Component::ParentDir))
+        {
+            return Err(CliError::Usage(format!(
+                "git returned an unsafe path: {line}"
+            )));
+        }
+        files.push(path);
+    }
+    Ok(files)
+}
+
 fn single_path<'a>(paths: &'a [PathBuf], flag: &str) -> CliResult<&'a Path> {
     match paths {
         [only] => Ok(only.as_path()),

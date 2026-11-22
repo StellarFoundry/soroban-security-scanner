@@ -4528,6 +4528,35 @@
           "ruleId": "SS-023"
         },
         {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-024/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Missing contracttype on boundary types — entry point `store` uses local types without #[contracttype]: parameter `value` uses `Payload`; returns `Receipt`"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "845478967378639abbeb12098615ab61"
+          },
+          "properties": {
+            "category": "configuration",
+            "confidence": "medium",
+            "remediation": "Annotate every local struct and enum used in a public entry point signature with `#[contracttype]` (and derive the required traits), or replace it with an SDK type such as `Address`, `Bytes`, or a primitive.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-024"
+        },
+        {
           "level": "note",
           "locations": [
             {
@@ -5891,6 +5920,35 @@
           "ruleId": "SS-035"
         },
         {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-036/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Deprecated SDK API usage — deprecated `log` API (since 20.0.0, use env.events().publish(...)): env . logger () . log (\"deprecated\")"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "8ef595f3e363cf32b29c971aba7329ca"
+          },
+          "properties": {
+            "category": "dependencies",
+            "confidence": "medium",
+            "remediation": "Use the documented replacement for the SDK version in use, then re-run the scanner after upgrading `soroban-sdk`.",
+            "severity": "low"
+          },
+          "ruleId": "SS-036"
+        },
+        {
           "level": "warning",
           "locations": [
             {
@@ -6480,6 +6538,33 @@
                 "level": "warning"
               },
               "fullDescription": {
+                "text": "An entry point accepts or returns a local struct or enum that is not annotated with `#[contracttype]`. Soroban requires boundary types to be XDR-serializable; a missing attribute usually fails at runtime (or when the contract is invoked) rather than at compile time, so it is easy to miss in review."
+              },
+              "help": {
+                "markdown": "## Missing contracttype on boundary types\n\nAn entry point accepts or returns a local struct or enum that is not annotated with `#[contracttype]`. Soroban requires boundary types to be XDR-serializable; a missing attribute usually fails at runtime (or when the contract is invoked) rather than at compile time, so it is easy to miss in review.\n\n### Remediation\n\nAnnotate every local struct and enum used in a public entry point signature with `#[contracttype]` (and derive the required traits), or replace it with an SDK type such as `Address`, `Bytes`, or a primitive.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/contract-development/types/custom-types",
+                "text": "An entry point accepts or returns a local struct or enum that is not annotated with `#[contracttype]`. Soroban requires boundary types to be XDR-serializable; a missing attribute usually fails at runtime (or when the contract is invoked) rather than at compile time, so it is easy to miss in review.\n\nRemediation: Annotate every local struct and enum used in a public entry point signature with `#[contracttype]` (and derive the required traits), or replace it with an SDK type such as `Address`, `Bytes`, or a primitive."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/contract-development/types/custom-types",
+              "id": "SS-024",
+              "name": "Missing contracttype on boundary types",
+              "properties": {
+                "category": "configuration",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/contract-development/types/custom-types"
+                ],
+                "remediation": "Annotate every local struct and enum used in a public entry point signature with `#[contracttype]` (and derive the required traits), or replace it with an SDK type such as `Address`, `Bytes`, or a primitive.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Missing contracttype on boundary types"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
                 "text": "Persisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write."
               },
               "help": {
@@ -6724,6 +6809,33 @@
               },
               "shortDescription": {
                 "text": "Ignored checked-arithmetic result"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "fullDescription": {
+                "text": "The contract calls a Soroban SDK API that has been deprecated or removed. The code may fail to build against a newer SDK, and the old API can carry stale behavior or security assumptions."
+              },
+              "help": {
+                "markdown": "## Deprecated SDK API usage\n\nThe contract calls a Soroban SDK API that has been deprecated or removed. The code may fail to build against a newer SDK, and the old API can carry stale behavior or security assumptions.\n\n### Remediation\n\nUse the documented replacement for the SDK version in use, then re-run the scanner after upgrading `soroban-sdk`.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "The contract calls a Soroban SDK API that has been deprecated or removed. The code may fail to build against a newer SDK, and the old API can carry stale behavior or security assumptions.\n\nRemediation: Use the documented replacement for the SDK version in use, then re-run the scanner after upgrading `soroban-sdk`."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-036",
+              "name": "Deprecated SDK API usage",
+              "properties": {
+                "category": "dependencies",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Use the documented replacement for the SDK version in use, then re-run the scanner after upgrading `soroban-sdk`.",
+                "severity": "low"
+              },
+              "shortDescription": {
+                "text": "Deprecated SDK API usage"
               }
             },
             {

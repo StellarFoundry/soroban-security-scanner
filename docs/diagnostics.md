@@ -46,6 +46,7 @@ can classify or suppress them without parsing the human-readable message.
 | `TARGET-003` | warning | A Cargo target configuration file could not be read or parsed and was ignored. |
 | `SYNTAX-001` | warning | Source files in a language the Rust frontend cannot analyze were skipped. Emitted only with `--unsupported-syntax`, aggregated by language, and bounded to 8 kinds plus an omitted-count notice. Only file extensions are inspected; no source text is read or reported. |
 | `SDK-001` | warning | The declared `soroban-sdk` version is outside the supported matrix (`>=20.5.0, <30.0.0`). The scan continues, but rule coverage may be inaccurate. The message lists the verified versions. |
+| `SCAN-001` | warning | The overall scan deadline expired. Remaining rules were skipped and the report is **partial**; do not treat it as a complete result. |
 
 Codes are grouped by area: `PARSE-*`, `MANIFEST-*`, `SOURCE-*`, `CRATE-*`,
 `RULE-*`, `CONFIG-*`, `BASELINE-*`, `MODE-*`, `TARGET-*`, `SYNTAX-*`, and

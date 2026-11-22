@@ -156,3 +156,13 @@ why = "Nested for/loop bodies still count as lexically inside a loop, and requir
 file = "SS-037/sample.rs"
 expect = "trigger"
 why = "Parenthesized and borrowed receivers still render as two distinct actors, so the competing-authorization signal is preserved."
+
+[SS-024]
+file = "SS-024/sample.rs"
+expect = "trigger"
+why = "A local boundary type nested inside Vec still lacks #[contracttype]."
+
+[SS-036]
+file = "SS-036/sample.rs"
+expect = "trigger"
+why = "Whitespace does not hide a deprecated SDK call chain."

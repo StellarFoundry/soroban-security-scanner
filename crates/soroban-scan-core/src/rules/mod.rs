@@ -15,11 +15,13 @@ mod cross_contract_auth;
 mod cross_contract_before_state_update;
 mod current_contract_address_auth;
 mod deprecated_sdk;
+mod deprecated_sdk_api_usage;
 mod hardcoded_address;
 mod ignored_checked_result;
 mod insecure_randomness;
 mod instance_storage_unbounded;
 mod missing_authorization;
+mod missing_contracttype_on_boundary_types;
 mod missing_events;
 mod missing_reentrancy_guard;
 mod panic_prone;
@@ -95,6 +97,10 @@ pub fn register_all(registry: &mut RuleRegistry) -> Result<(), RegistryError> {
     registry.register(Box::new(ignored_checked_result::IgnoredCheckedResult))?;
     registry.register(Box::new(missing_reentrancy_guard::MissingReentrancyGuard))?;
     registry.register(Box::new(unvalidated_token_address::UnvalidatedTokenAddress))?;
+    registry.register(Box::new(
+        missing_contracttype_on_boundary_types::MissingContracttypeOnBoundaryTypes,
+    ))?;
+    registry.register(Box::new(deprecated_sdk_api_usage::DeprecatedSdkApiUsage))?;
     Ok(())
 }
 
@@ -111,8 +117,8 @@ mod tests {
             vec![
                 "SS-001", "SS-002", "SS-003", "SS-004", "SS-005", "SS-006", "SS-007", "SS-008",
                 "SS-009", "SS-010", "SS-011", "SS-012", "SS-013", "SS-014", "SS-015", "SS-016",
-                "SS-017", "SS-018", "SS-021", "SS-023", "SS-025", "SS-027", "SS-028", "SS-029",
-                "SS-030", "SS-031", "SS-032", "SS-033", "SS-035", "SS-037"
+                "SS-017", "SS-018", "SS-021", "SS-023", "SS-024", "SS-025", "SS-027", "SS-028",
+                "SS-029", "SS-030", "SS-031", "SS-032", "SS-033", "SS-035", "SS-036", "SS-037"
             ]
         );
     }
