@@ -1,4 +1,4 @@
-import type { ApiErrorBody, ScanStatus } from "./types.js";
+import type { ApiErrorBody, Job } from "./types.js";
 
 /** Base class for every error thrown by this package. */
 export class SorobanScanError extends Error {
@@ -40,16 +40,16 @@ export class ApiError extends SorobanScanError {
   }
 }
 
-/** The scan reached the `failed` state. */
+/** The job reached the `failed` state. */
 export class ScanFailedError extends SorobanScanError {
-  readonly scan: ScanStatus;
+  readonly job: Job;
 
-  constructor(scan: ScanStatus) {
+  constructor(job: Job) {
     super(
-      scan.error
-        ? `scan ${scan.id} failed: ${scan.error.code}: ${scan.error.message}`
-        : `scan ${scan.id} failed`,
+      job.error
+        ? `scan job ${job.job_id} failed: ${job.error.code}: ${job.error.message}`
+        : `scan job ${job.job_id} failed`,
     );
-    this.scan = scan;
+    this.job = job;
   }
 }

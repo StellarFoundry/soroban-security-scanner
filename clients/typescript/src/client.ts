@@ -9,11 +9,13 @@ import {
 } from "./errors.js";
 import { parseReport } from "./report.js";
 import type {
+  ApiErrorBody,
   ClientOptions,
+  CompletedJob,
+  Job,
+  JobStatus,
   PollOptions,
   Report,
-  ScanState,
-  ScanStatus,
   ScanSubmission,
   SubmitScanRequest,
   TokenProvider,
@@ -22,17 +24,17 @@ import { isRecord, validateBaseUrl } from "./validate.js";
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 const MAX_TIMEOUT_MS = 300_000;
-const DEFAULT_MAX_BYTES = 10 * 1024 * 1024;
+const DEFAULT_MAX_REQUEST_BYTES = 1024 * 1024;
+const DEFAULT_MAX_RESPONSE_BYTES = 10 * 1024 * 1024;
 const MAX_BYTES_LIMIT = 100 * 1024 * 1024;
 const DEFAULT_POLL_INTERVAL_MS = 1_000;
 const MAX_POLL_INTERVAL_MS = 60_000;
 const DEFAULT_POLL_TIMEOUT_MS = 600_000;
 const MAX_POLL_TIMEOUT_MS = 3_600_000;
 const MAX_TOKEN_LENGTH = 4096;
-const MAX_SOURCES = 5000;
-const MAX_PATH_LENGTH = 1024;
-const SCAN_STATES: readonly string[] = ["queued", "running", "succeeded", "failed"];
+const JOB_STATES: readonly string[] = ["queued", "running", "completed", "failed"];
 const ID_PATTERN = /^[A-Za-z0-9._-]{1,128}$/;
+const FILE_PATTERN = /^[A-Za-z0-9_][A-Za-z0-9._-]{0,126}\.rs$/;
 const TOKEN_UNSAFE = /[\s\u0000-\u001f\u007f]/;
 
 function boundedInteger(
@@ -64,9 +66,9 @@ function assertToken(token: unknown): asserts token is string {
   }
 }
 
-function assertId(id: unknown): asserts id is string {
+function assertJobId(id: unknown): asserts id is string {
   if (typeof id !== "string" || !ID_PATTERN.test(id)) {
-    throw new SorobanScanError("scan id must be 1-128 characters of A-Z, a-z, 0-9, '.', '_' or '-'");
+    throw new SorobanScanError("job id must be 1-128 characters of A-Z, a-z, 0-9, '.', '_' or '-'");
   }
 }
 
@@ -74,11 +76,19 @@ function truncate(text: string, max: number): string {
   return text.length > max ? text.slice(0, max) : text;
 }
 
-function parseState(value: unknown): ScanState {
-  if (typeof value === "string" && SCAN_STATES.includes(value)) {
-    return value as ScanState;
+function parseJobStatus(value: unknown): JobStatus | undefined {
+  return typeof value === "string" && JOB_STATES.includes(value) ? (value as JobStatus) : undefined;
+}
+
+function parseErrorBody(value: unknown): ApiErrorBody | undefined {
+  if (isRecord(value) && typeof value.code === "string" && typeof value.message === "string") {
+    return {
+      code: truncate(value.code, 100),
+      message: truncate(value.message, 500),
+      details: value.details,
+    };
   }
-  throw new InvalidResponseError("response contains an unknown scan status");
+  return undefined;
 }
 
 function validateSubmitRequest(request: SubmitScanRequest): void {
@@ -86,37 +96,13 @@ function validateSubmitRequest(request: SubmitScanRequest): void {
   if (!isRecord(candidate)) {
     throw new SorobanScanError("scan request must be an object");
   }
-  const sources = candidate.sources;
-  if (!Array.isArray(sources) || sources.length === 0 || sources.length > MAX_SOURCES) {
-    throw new SorobanScanError(`sources must be an array of 1 to ${MAX_SOURCES} files`);
+  if (typeof candidate.source !== "string" || candidate.source.length === 0) {
+    throw new SorobanScanError("source must be a non-empty string");
   }
-  for (const entry of sources) {
-    if (!isRecord(entry)) {
-      throw new SorobanScanError("each source must be an object with a path and content");
-    }
-    const path = entry.path;
-    const content = entry.content;
-    if (typeof path !== "string" || typeof content !== "string") {
-      throw new SorobanScanError("each source must have a string path and string content");
-    }
-    if (
-      path.length === 0 ||
-      path.length > MAX_PATH_LENGTH ||
-      path.startsWith("/") ||
-      path.includes("\\") ||
-      path.includes("\u0000") ||
-      path.split("/").includes("..")
-    ) {
-      throw new SorobanScanError("source paths must be relative, use '/', and not contain '..'");
-    }
-  }
-  const options = candidate.options;
-  if (options !== undefined) {
-    if (!isRecord(options)) {
-      throw new SorobanScanError("options must be an object");
-    }
-    if (options.fail_on !== undefined && typeof options.fail_on !== "string") {
-      throw new SorobanScanError("options.fail_on must be a string");
+  const file = candidate.file;
+  if (file !== undefined) {
+    if (typeof file !== "string" || !FILE_PATTERN.test(file) || file.includes("..")) {
+      throw new SorobanScanError("file must be a plain .rs file name such as lib.rs (no directories)");
     }
   }
 }
@@ -125,36 +111,47 @@ function parseSubmission(data: unknown): ScanSubmission {
   if (!isRecord(data)) {
     throw new InvalidResponseError("submission response must be a JSON object");
   }
-  const id = data.id;
+  const id = data.job_id;
   if (typeof id !== "string" || !ID_PATTERN.test(id)) {
-    throw new InvalidResponseError("submission response has an invalid scan id");
+    throw new InvalidResponseError("submission response has an invalid job id");
   }
-  return { id, status: parseState(data.status) };
+  return { job_id: id, status: parseJobStatus(data.status) ?? "queued" };
 }
 
-function parseScanStatus(data: unknown, expectedId: string): ScanStatus {
+function parseJob(data: unknown, expectedId: string, httpStatus: number): Job {
   if (!isRecord(data)) {
-    throw new InvalidResponseError("scan status must be a JSON object");
+    throw new InvalidResponseError("job response must be a JSON object");
   }
-  if (data.id !== expectedId) {
-    throw new InvalidResponseError("scan status id does not match the request");
+  if (data.job_id !== expectedId) {
+    throw new InvalidResponseError("job response id does not match the request");
   }
-  const scan: ScanStatus = { id: expectedId, status: parseState(data.status) };
-  if (typeof data.created_at === "string") {
-    scan.created_at = data.created_at;
+  let status = parseJobStatus(data.status);
+  if (status === undefined) {
+    if (httpStatus === 202) {
+      // HTTP 202 means the job is still queued or running.
+      status = "running";
+    } else {
+      throw new InvalidResponseError("job response has an unknown status");
+    }
   }
-  if (typeof data.updated_at === "string") {
-    scan.updated_at = data.updated_at;
+  const job: Job = { job_id: expectedId, status };
+  if (status === "completed") {
+    let raw: unknown = data.report;
+    if (typeof raw === "string") {
+      try {
+        raw = JSON.parse(raw) as unknown;
+      } catch {
+        throw new InvalidResponseError("job report is not valid JSON");
+      }
+    }
+    if (raw === undefined || raw === null) {
+      throw new InvalidResponseError("completed job has no report");
+    }
+    job.report = parseReport(raw);
+  } else if (status === "failed") {
+    job.error = parseErrorBody(data.error) ?? { code: "scan_failed", message: "scan failed" };
   }
-  const err = data.error;
-  if (isRecord(err) && typeof err.code === "string" && typeof err.message === "string") {
-    scan.error = {
-      code: truncate(err.code, 100),
-      message: truncate(err.message, 500),
-      details: err.details,
-    };
-  }
-  return scan;
+  return job;
 }
 
 function sleep(ms: number, signal?: AbortSignal): Promise<void> {
@@ -180,8 +177,8 @@ function sleep(ms: number, signal?: AbortSignal): Promise<void> {
 }
 
 /**
- * Client for the soroban-scan service API described in
- * docs/integration/api.md: submit a scan, poll it, and fetch its report.
+ * Client for the scan API described in docs/service-api.md: submit Rust source,
+ * poll the job, and read its report.
  */
 export class SorobanScanClient {
   private readonly baseUrl: string;
@@ -211,14 +208,14 @@ export class SorobanScanClient {
     this.maxResponseBytes = boundedInteger(
       "maxResponseBytes",
       options.maxResponseBytes,
-      DEFAULT_MAX_BYTES,
+      DEFAULT_MAX_RESPONSE_BYTES,
       1,
       MAX_BYTES_LIMIT,
     );
     this.maxRequestBytes = boundedInteger(
       "maxRequestBytes",
       options.maxRequestBytes,
-      DEFAULT_MAX_BYTES,
+      DEFAULT_MAX_REQUEST_BYTES,
       1,
       MAX_BYTES_LIMIT,
     );
@@ -232,31 +229,31 @@ export class SorobanScanClient {
     }
   }
 
-  /** Submits sources for scanning. Returns the scan id and initial status. */
+  /** `POST /v1/scans`: queues a scan job. Returns the job id and initial status. */
   async submitScan(request: SubmitScanRequest): Promise<ScanSubmission> {
     validateSubmitRequest(request);
-    return parseSubmission(await this.request("POST", "/v1/scans", request));
+    const body: { source: string; file?: string } = { source: request.source };
+    if (request.file !== undefined) {
+      body.file = request.file;
+    }
+    const response = await this.request("POST", "/v1/scans", body);
+    return parseSubmission(response.data);
   }
 
-  /** Fetches the current status of a scan. */
-  async getScan(id: string): Promise<ScanStatus> {
-    assertId(id);
-    return parseScanStatus(await this.request("GET", `/v1/scans/${id}`), id);
-  }
-
-  /** Fetches the report of a finished scan. */
-  async getReport(id: string): Promise<Report> {
-    assertId(id);
-    return parseReport(await this.request("GET", `/v1/scans/${id}/report`));
+  /** `GET /v1/jobs/{id}`: fetches the current state of a job (including its report once completed). */
+  async getJob(id: string): Promise<Job> {
+    assertJobId(id);
+    const response = await this.request("GET", `/v1/jobs/${id}`);
+    return parseJob(response.data, id, response.status);
   }
 
   /**
-   * Polls until the scan succeeds, with a growing delay between polls.
-   * Throws {@link ScanFailedError} if it fails and {@link PollTimeoutError} if
-   * it does not finish within `timeoutMs`.
+   * Polls until the job completes, with a growing delay between polls.
+   * Throws {@link ScanFailedError} if the job fails and {@link PollTimeoutError}
+   * if it does not finish within `timeoutMs`.
    */
-  async waitForScan(id: string, options: PollOptions = {}): Promise<ScanStatus> {
-    assertId(id);
+  async waitForJob(id: string, options: PollOptions = {}): Promise<CompletedJob> {
+    assertJobId(id);
     const interval = boundedInteger(
       "intervalMs",
       options.intervalMs,
@@ -275,29 +272,45 @@ export class SorobanScanClient {
     let delay = interval;
 
     for (;;) {
-      const scan = await this.getScan(id);
-      if (scan.status === "succeeded") {
-        return scan;
+      const job = await this.getJob(id);
+      if (job.status === "completed" && job.report) {
+        return { job_id: job.job_id, status: "completed", report: job.report };
       }
-      if (scan.status === "failed") {
-        throw new ScanFailedError(scan);
+      if (job.status === "failed") {
+        throw new ScanFailedError(job);
       }
       if (Date.now() + delay > deadline) {
-        throw new PollTimeoutError(`scan ${id} did not finish within ${timeout} ms`);
+        throw new PollTimeoutError(`job ${id} did not finish within ${timeout} ms`);
       }
       await sleep(delay, options.signal);
       delay = Math.min(Math.ceil(delay * 1.5), MAX_POLL_INTERVAL_MS);
     }
   }
 
+  /** Returns the report of a completed job. Throws if the job has not completed. */
+  async getReport(id: string): Promise<Report> {
+    const job = await this.getJob(id);
+    if (job.status === "completed" && job.report) {
+      return job.report;
+    }
+    if (job.status === "failed") {
+      throw new ScanFailedError(job);
+    }
+    throw new SorobanScanError(`job ${id} is not finished (status: ${job.status})`);
+  }
+
   /** Convenience: submit, wait for completion, and return the report. */
   async scan(request: SubmitScanRequest, poll?: PollOptions): Promise<Report> {
     const submission = await this.submitScan(request);
-    await this.waitForScan(submission.id, poll);
-    return this.getReport(submission.id);
+    const job = await this.waitForJob(submission.job_id, poll);
+    return job.report;
   }
 
-  private async request(method: "GET" | "POST", path: string, body?: unknown): Promise<unknown> {
+  private async request(
+    method: "GET" | "POST",
+    path: string,
+    body?: unknown,
+  ): Promise<{ status: number; data: unknown }> {
     const token = await this.tokenProvider();
     assertToken(token);
 
@@ -351,7 +364,7 @@ export class SorobanScanClient {
         throw new InvalidResponseError("response body is empty");
       }
       try {
-        return JSON.parse(text) as unknown;
+        return { status: response.status, data: JSON.parse(text) as unknown };
       } catch {
         throw new InvalidResponseError("response body is not valid JSON");
       }
@@ -412,26 +425,18 @@ export class SorobanScanClient {
   }
 
   private apiError(status: number, text: string): ApiError {
-    let code = `http_${status}`;
-    let message = `HTTP ${status}`;
-    let details: unknown;
+    let body: ApiErrorBody = { code: `http_${status}`, message: `HTTP ${status}` };
     try {
       const parsed: unknown = JSON.parse(text);
       if (isRecord(parsed)) {
-        const err = parsed.error;
-        if (isRecord(err)) {
-          if (typeof err.code === "string" && err.code.length > 0) {
-            code = truncate(err.code, 100);
-          }
-          if (typeof err.message === "string" && err.message.length > 0) {
-            message = truncate(err.message, 500);
-          }
-          details = err.details;
+        const err = parseErrorBody(parsed.error);
+        if (err) {
+          body = err;
         }
       }
     } catch {
       // Not JSON: keep the generic status-based error.
     }
-    return new ApiError(status, { code, message, details });
+    return new ApiError(status, body);
   }
 }

@@ -17,7 +17,7 @@ import mock from "./mock-server.cjs";
 
 const { startServer, json } = mock;
 const TOKEN = "test-token-123";
-const REQUEST = { sources: [{ path: "src/lib.rs", content: "// contract" }] };
+const REQUEST = { source: "pub fn f() {}", file: "lib.rs" };
 
 function sampleReport() {
   return {
@@ -27,7 +27,7 @@ function sampleReport() {
     stats: { files_analyzed: 1, rules_run: 1, rules_skipped: 0, findings_raw: 1, findings_rejected: 0 },
     effective_config: {},
     findings: [
-      { rule_id: "SS-001", severity: "high", title: "Missing authorization", location: { file: "src/lib.rs", line: 3 } },
+      { rule_id: "SS-001", severity: "high", title: "Missing authorization", location: { file: "lib.rs", line: 3 } },
     ],
     diagnostics: [],
   };
@@ -97,37 +97,49 @@ test("constructor validates its options", () => {
   assert.throws(() => new SorobanScanClient({ baseUrl: "http://scan.example.com", token: TOKEN }), InvalidBaseUrlError);
 });
 
-test("submitScan sends bearer auth and a JSON body", async () => {
+test("submitScan posts source and file with bearer auth", async () => {
   await withServer(
-    (req, res) => json(res, 202, { id: "scan-1", status: "queued" }),
+    (req, res) => json(res, 202, { job_id: "job-1", status: "queued" }),
     async (server) => {
-      const submission = await newClient(server).submitScan({ ...REQUEST, options: { fail_on: "high" } });
-      assert.deepEqual(submission, { id: "scan-1", status: "queued" });
+      const submission = await newClient(server).submitScan(REQUEST);
+      assert.deepEqual(submission, { job_id: "job-1", status: "queued" });
       const [request] = server.requests;
       assert.equal(request.method, "POST");
       assert.equal(request.url, "/v1/scans");
       assert.equal(request.headers.authorization, `Bearer ${TOKEN}`);
       assert.match(request.headers["content-type"], /application\/json/);
-      assert.equal(request.body.sources[0].path, "src/lib.rs");
-      assert.equal(request.body.options.fail_on, "high");
+      assert.deepEqual(request.body, { source: "pub fn f() {}", file: "lib.rs" });
+    },
+  );
+});
+
+test("submitScan omits file when it is not given", async () => {
+  await withServer(
+    (req, res) => json(res, 202, { job_id: "job-1", status: "queued" }),
+    async (server) => {
+      await newClient(server).submitScan({ source: "pub fn f() {}" });
+      assert.deepEqual(server.requests[0].body, { source: "pub fn f() {}" });
     },
   );
 });
 
 test("submitScan rejects bad requests without sending anything", async () => {
   await withServer(
-    (req, res) => json(res, 202, { id: "scan-1", status: "queued" }),
+    (req, res) => json(res, 202, { job_id: "job-1", status: "queued" }),
     async (server) => {
       const client = newClient(server, { maxRequestBytes: 64 });
       const bad = [
         undefined,
         {},
-        { sources: [] },
-        { sources: [{ path: "../etc/passwd", content: "x" }] },
-        { sources: [{ path: "/abs.rs", content: "x" }] },
-        { sources: [{ path: "a\\b.rs", content: "x" }] },
-        { sources: [{ path: "a.rs", content: 5 }] },
-        { sources: [{ path: "a.rs", content: "x".repeat(500) }] },
+        { source: "" },
+        { source: 5 },
+        { source: "x", file: "../a.rs" },
+        { source: "x", file: "a/b.rs" },
+        { source: "x", file: "a\\b.rs" },
+        { source: "x", file: "notes.txt" },
+        { source: "x", file: "a..b.rs" },
+        { source: "x", file: 5 },
+        { source: "x".repeat(500) },
       ];
       for (const request of bad) {
         await assert.rejects(client.submitScan(request), SorobanScanError);
@@ -137,13 +149,13 @@ test("submitScan rejects bad requests without sending anything", async () => {
   );
 });
 
-test("getScan rejects unsafe ids locally", async () => {
+test("getJob rejects unsafe ids locally", async () => {
   await withServer(
     (req, res) => json(res, 200, {}),
     async (server) => {
       const client = newClient(server);
       for (const id of ["../etc", "a/b", "", "x".repeat(200), "a b"]) {
-        await assert.rejects(client.getScan(id), SorobanScanError);
+        await assert.rejects(client.getJob(id), SorobanScanError);
       }
       assert.equal(server.requests.length, 0);
     },
@@ -152,18 +164,40 @@ test("getScan rejects unsafe ids locally", async () => {
 
 test("API errors become ApiError and never leak the token", async () => {
   await withServer(
-    (req, res) => json(res, 401, { error: { code: "unauthorized", message: "bad credentials", details: { hint: 1 } } }),
+    (req, res) => json(res, 401, { error: { code: "unauthorized", message: "missing or invalid bearer token" } }),
     async (server) => {
-      await assert.rejects(newClient(server).getScan("scan-1"), (error) => {
+      await assert.rejects(newClient(server).getJob("job-1"), (error) => {
         assert.ok(error instanceof ApiError);
         assert.equal(error.status, 401);
         assert.equal(error.code, "unauthorized");
-        assert.deepEqual(error.details, { hint: 1 });
         assert.ok(!error.message.includes(TOKEN));
         return true;
       });
     },
   );
+});
+
+test("documented error codes map to ApiError", async () => {
+  const cases = [
+    [400, "invalid_request"],
+    [413, "payload_too_large"],
+    [503, "store_full"],
+    [503, "authentication_not_configured"],
+    [404, "not_found"],
+  ];
+  for (const [status, code] of cases) {
+    await withServer(
+      (req, res) => json(res, status, { error: { code, message: "x" } }),
+      async (server) => {
+        await assert.rejects(newClient(server).submitScan(REQUEST), (error) => {
+          assert.ok(error instanceof ApiError);
+          assert.equal(error.status, status);
+          assert.equal(error.code, code);
+          return true;
+        });
+      },
+    );
+  }
 });
 
 test("non-JSON error bodies fall back to a status-based error", async () => {
@@ -173,7 +207,7 @@ test("non-JSON error bodies fall back to a status-based error", async () => {
       res.end("<html>bad gateway</html>");
     },
     async (server) => {
-      await assert.rejects(newClient(server).getScan("scan-1"), (error) => {
+      await assert.rejects(newClient(server).getJob("job-1"), (error) => {
         assert.ok(error instanceof ApiError);
         assert.equal(error.code, "http_502");
         assert.ok(!error.message.includes("<html>"));
@@ -183,72 +217,139 @@ test("non-JSON error bodies fall back to a status-based error", async () => {
   );
 });
 
-test("waitForScan polls until the scan succeeds", async () => {
+test("getJob reads queued, running and completed jobs", async () => {
   let polls = 0;
   await withServer(
     (req, res) => {
       polls += 1;
-      const status = polls === 1 ? "queued" : polls === 2 ? "running" : "succeeded";
-      json(res, 200, { id: "scan-1", status });
+      if (polls === 1) return json(res, 202, { job_id: "job-1", status: "queued" });
+      if (polls === 2) return json(res, 202, { job_id: "job-1", status: "running" });
+      return json(res, 200, { job_id: "job-1", status: "completed", report: sampleReport() });
     },
     async (server) => {
-      const scan = await newClient(server).waitForScan("scan-1", { intervalMs: 10, timeoutMs: 5000 });
-      assert.equal(scan.status, "succeeded");
+      const client = newClient(server);
+      assert.equal((await client.getJob("job-1")).status, "queued");
+      assert.equal((await client.getJob("job-1")).status, "running");
+      const done = await client.getJob("job-1");
+      assert.equal(done.status, "completed");
+      assert.equal(done.report.findings[0].rule_id, "SS-001");
+      assert.equal(server.requests[0].url, "/v1/jobs/job-1");
+    },
+  );
+});
+
+test("a 202 response without a status is treated as still running", async () => {
+  await withServer(
+    (req, res) => json(res, 202, { job_id: "job-1" }),
+    async (server) => {
+      assert.equal((await newClient(server).getJob("job-1")).status, "running");
+    },
+  );
+});
+
+test("a report delivered as a JSON string is parsed", async () => {
+  await withServer(
+    (req, res) => json(res, 200, { job_id: "job-1", status: "completed", report: JSON.stringify(sampleReport()) }),
+    async (server) => {
+      const job = await newClient(server).getJob("job-1");
+      assert.equal(job.report.schema_version, "1");
+    },
+  );
+});
+
+test("job responses with a mismatched id or missing report are rejected", async () => {
+  await withServer(
+    (req, res) => json(res, 200, { job_id: "other", status: "running" }),
+    async (server) => {
+      await assert.rejects(newClient(server).getJob("job-1"), InvalidResponseError);
+    },
+  );
+  await withServer(
+    (req, res) => json(res, 200, { job_id: "job-1", status: "completed" }),
+    async (server) => {
+      await assert.rejects(newClient(server).getJob("job-1"), InvalidResponseError);
+    },
+  );
+  await withServer(
+    (req, res) => json(res, 200, { job_id: "job-1", status: "weird" }),
+    async (server) => {
+      await assert.rejects(newClient(server).getJob("job-1"), InvalidResponseError);
+    },
+  );
+});
+
+test("waitForJob polls until the job completes", async () => {
+  let polls = 0;
+  await withServer(
+    (req, res) => {
+      polls += 1;
+      if (polls === 1) return json(res, 202, { job_id: "job-1", status: "queued" });
+      if (polls === 2) return json(res, 202, { job_id: "job-1", status: "running" });
+      return json(res, 200, { job_id: "job-1", status: "completed", report: sampleReport() });
+    },
+    async (server) => {
+      const job = await newClient(server).waitForJob("job-1", { intervalMs: 10, timeoutMs: 5000 });
+      assert.equal(job.status, "completed");
+      assert.equal(job.report.findings.length, 1);
       assert.equal(polls, 3);
     },
   );
 });
 
-test("waitForScan throws ScanFailedError for a failed scan", async () => {
+test("waitForJob throws ScanFailedError for a failed job", async () => {
   await withServer(
-    (req, res) => json(res, 200, { id: "scan-1", status: "failed", error: { code: "analysis_failed", message: "boom" } }),
+    (req, res) => json(res, 200, { job_id: "job-1", status: "failed", error: { code: "analysis_failed", message: "boom" } }),
     async (server) => {
-      await assert.rejects(newClient(server).waitForScan("scan-1", { intervalMs: 10 }), (error) => {
+      await assert.rejects(newClient(server).waitForJob("job-1", { intervalMs: 10 }), (error) => {
         assert.ok(error instanceof ScanFailedError);
-        assert.equal(error.scan.error.code, "analysis_failed");
+        assert.equal(error.job.error.code, "analysis_failed");
         return true;
       });
     },
   );
 });
 
-test("waitForScan times out with PollTimeoutError", async () => {
+test("waitForJob times out with PollTimeoutError", async () => {
   await withServer(
-    (req, res) => json(res, 200, { id: "scan-1", status: "running" }),
+    (req, res) => json(res, 202, { job_id: "job-1", status: "running" }),
     async (server) => {
       await assert.rejects(
-        newClient(server).waitForScan("scan-1", { intervalMs: 10, timeoutMs: 80 }),
+        newClient(server).waitForJob("job-1", { intervalMs: 10, timeoutMs: 80 }),
         PollTimeoutError,
       );
     },
   );
 });
 
-test("waitForScan can be aborted", async () => {
+test("waitForJob can be aborted", async () => {
   await withServer(
-    (req, res) => json(res, 200, { id: "scan-1", status: "running" }),
+    (req, res) => json(res, 202, { job_id: "job-1", status: "running" }),
     async (server) => {
       const controller = new AbortController();
-      const promise = newClient(server).waitForScan("scan-1", { intervalMs: 50, timeoutMs: 5000, signal: controller.signal });
+      const promise = newClient(server).waitForJob("job-1", { intervalMs: 50, timeoutMs: 5000, signal: controller.signal });
       setTimeout(() => controller.abort(), 20);
       await assert.rejects(promise, SorobanScanError);
     },
   );
 });
 
-test("getReport returns a validated report", async () => {
+test("getReport returns the report of a completed job and rejects unfinished ones", async () => {
   await withServer(
-    (req, res) => json(res, 200, sampleReport()),
+    (req, res) => json(res, 200, { job_id: "job-1", status: "completed", report: sampleReport() }),
     async (server) => {
-      const report = await newClient(server).getReport("scan-1");
+      const report = await newClient(server).getReport("job-1");
       assert.equal(report.schema_version, "1");
-      assert.equal(report.findings[0].rule_id, "SS-001");
-      assert.equal(server.requests[0].url, "/v1/scans/scan-1/report");
+    },
+  );
+  await withServer(
+    (req, res) => json(res, 202, { job_id: "job-1", status: "running" }),
+    async (server) => {
+      await assert.rejects(newClient(server).getReport("job-1"), SorobanScanError);
     },
   );
 });
 
-test("getReport rejects malformed reports", async () => {
+test("parseReport rejects malformed reports", () => {
   const broken = [
     { ...sampleReport(), schema_version: "2" },
     { ...sampleReport(), findings: "nope" },
@@ -266,14 +367,13 @@ test("scan() submits, waits, and returns the report", async () => {
   await withServer(
     (req, res) => {
       if (req.method === "POST" && req.url === "/v1/scans") {
-        return json(res, 202, { id: "scan-9", status: "queued" });
+        return json(res, 202, { job_id: "job-9", status: "queued" });
       }
-      if (req.url === "/v1/scans/scan-9") {
+      if (req.url === "/v1/jobs/job-9") {
         polls += 1;
-        return json(res, 200, { id: "scan-9", status: polls < 2 ? "running" : "succeeded" });
-      }
-      if (req.url === "/v1/scans/scan-9/report") {
-        return json(res, 200, sampleReport());
+        return polls < 2
+          ? json(res, 202, { job_id: "job-9", status: "running" })
+          : json(res, 200, { job_id: "job-9", status: "completed", report: sampleReport() });
       }
       return json(res, 404, { error: { code: "not_found", message: "no such route" } });
     },
@@ -282,7 +382,7 @@ test("scan() submits, waits, and returns the report", async () => {
       assert.equal(report.findings.length, 1);
       assert.deepEqual(
         server.requests.map((request) => `${request.method} ${request.url}`),
-        ["POST /v1/scans", "GET /v1/scans/scan-9", "GET /v1/scans/scan-9", "GET /v1/scans/scan-9/report"],
+        ["POST /v1/scans", "GET /v1/jobs/job-9", "GET /v1/jobs/job-9"],
       );
       assert.ok(server.requests.every((request) => request.headers.authorization === `Bearer ${TOKEN}`));
     },
@@ -292,7 +392,7 @@ test("scan() submits, waits, and returns the report", async () => {
 test("a token provider function is called for every request", async () => {
   let calls = 0;
   await withServer(
-    (req, res) => json(res, 200, { id: "scan-1", status: "running" }),
+    (req, res) => json(res, 202, { job_id: "job-1", status: "running" }),
     async (server) => {
       const client = newClient(server, {
         token: async () => {
@@ -300,8 +400,8 @@ test("a token provider function is called for every request", async () => {
           return `token-${calls}`;
         },
       });
-      await client.getScan("scan-1");
-      await client.getScan("scan-1");
+      await client.getJob("job-1");
+      await client.getJob("job-1");
       assert.equal(calls, 2);
       assert.equal(server.requests[0].headers.authorization, "Bearer token-1");
       assert.equal(server.requests[1].headers.authorization, "Bearer token-2");
@@ -311,9 +411,9 @@ test("a token provider function is called for every request", async () => {
 
 test("oversized responses are rejected", async () => {
   await withServer(
-    (req, res) => json(res, 200, { id: "scan-1", status: "running", pad: "x".repeat(1000) }),
+    (req, res) => json(res, 202, { job_id: "job-1", status: "running", pad: "x".repeat(1000) }),
     async (server) => {
-      await assert.rejects(newClient(server, { maxResponseBytes: 100 }).getScan("scan-1"), ResponseTooLargeError);
+      await assert.rejects(newClient(server, { maxResponseBytes: 100 }).getJob("job-1"), ResponseTooLargeError);
     },
   );
 });
@@ -324,7 +424,7 @@ test("requests time out with ClientTimeoutError", async () => {
       // Never respond.
     },
     async (server) => {
-      await assert.rejects(newClient(server, { timeoutMs: 50 }).getScan("scan-1"), ClientTimeoutError);
+      await assert.rejects(newClient(server, { timeoutMs: 50 }).getJob("job-1"), ClientTimeoutError);
     },
   );
 });
@@ -336,7 +436,7 @@ test("redirects are refused so the token cannot leak", async () => {
       res.end();
     },
     async (server) => {
-      await assert.rejects(newClient(server).getScan("scan-1"), SorobanScanError);
+      await assert.rejects(newClient(server).getJob("job-1"), SorobanScanError);
       assert.equal(server.requests.length, 1);
     },
   );
@@ -349,7 +449,7 @@ test("an invalid JSON success body is an InvalidResponseError", async () => {
       res.end("not json");
     },
     async (server) => {
-      await assert.rejects(newClient(server).getScan("scan-1"), InvalidResponseError);
+      await assert.rejects(newClient(server).getJob("job-1"), InvalidResponseError);
     },
   );
 });

@@ -61,40 +61,43 @@ export interface Report {
   [key: string]: unknown;
 }
 
-export type ScanState = "queued" | "running" | "succeeded" | "failed";
+/** Job lifecycle from docs/service-api.md: queued -> running -> completed | failed. */
+export type JobStatus = "queued" | "running" | "completed" | "failed";
 
+/** Structured error body: `{"error": {"code", "message"}}`. */
 export interface ApiErrorBody {
   code: string;
   message: string;
   details?: unknown;
 }
 
-export interface SourceFile {
-  /** Relative path, forward slashes, no `..` segments. */
-  path: string;
-  content: string;
-}
-
-export interface ScanOptions {
-  fail_on?: Severity | "none";
-}
-
+/** Body of `POST /v1/scans`. `file` defaults to `input.rs` on the server. */
 export interface SubmitScanRequest {
-  sources: SourceFile[];
-  options?: ScanOptions;
+  /** Rust source to scan. */
+  source: string;
+  /** A plain `.rs` file name such as `lib.rs` (no directories). */
+  file?: string;
 }
 
+/** Response of `POST /v1/scans` (HTTP 202). */
 export interface ScanSubmission {
-  id: string;
-  status: ScanState;
+  job_id: string;
+  status: JobStatus;
 }
 
-export interface ScanStatus {
-  id: string;
-  status: ScanState;
-  created_at?: string;
-  updated_at?: string;
+/** Response of `GET /v1/jobs/{id}`. */
+export interface Job {
+  job_id: string;
+  status: JobStatus;
+  /** Present when `status` is `completed`. */
+  report?: Report;
+  /** Present when `status` is `failed`. */
   error?: ApiErrorBody;
+}
+
+export interface CompletedJob extends Job {
+  status: "completed";
+  report: Report;
 }
 
 export type TokenProvider = () => string | Promise<string>;
@@ -108,7 +111,7 @@ export interface ClientOptions {
   timeoutMs?: number;
   /** Maximum response body size in bytes (default 10 MiB, max 100 MiB). */
   maxResponseBytes?: number;
-  /** Maximum request body size in bytes (default 10 MiB, max 100 MiB). */
+  /** Maximum request body size in bytes (default 1 MiB, the service default; max 100 MiB). */
   maxRequestBytes?: number;
   /** Custom fetch implementation (defaults to the global fetch). */
   fetch?: typeof fetch;

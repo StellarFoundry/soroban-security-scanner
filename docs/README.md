@@ -25,8 +25,7 @@ Start here.
 - [GitHub Action](github-action.md) — inputs, outputs, and usage examples.
 - [CI Recipes](ci-recipes.md) — copy-paste snippets for common CI systems and hooks.
 - [Observatory Integration](integration/observatory.md) — the stable, versioned report contract.
-- [Scanner service API (proposed contract)](integration/api.md) - endpoints, auth and errors the TypeScript client targets.
-- [TypeScript API client](../clients/typescript/README.md) - typed client with auth, submit, poll and fetch-report helpers.- [Editor integration (LSP spike)](integration/editor-integration.md) — diagnostics-in-editor scope and plan.
+- [TypeScript API client](../clients/typescript/README.md) - typed client for the scan API in [service-api.md](service-api.md): submit, poll, fetch report.
 - [Optional AI Assistance](ai.md) — off by default, never authoritative.
 - [AI privacy and data flow](ai-privacy.md) — exactly what can leave the machine.
 - [Opt-in telemetry](telemetry.md) — off by default; bounded event schema and retention.
