@@ -146,8 +146,7 @@ pub fn run(registry: &RuleRegistry) -> Result<u8, String> {
                     send(&mut writer, &notification)?;
                 }
             }
-            Some("workspace/didChangeConfiguration")
-            | Some("workspace/didChangeWatchedFiles") => {
+            Some("workspace/didChangeConfiguration") | Some("workspace/didChangeWatchedFiles") => {
                 reload_and_republish(
                     &mut writer,
                     registry,
@@ -229,10 +228,7 @@ fn reload_workspace_config(state: &mut WorkspaceConfig, root: Option<&Path>) {
                 state.error = None;
             }
             Err(error) => {
-                state.error = Some(format!(
-                    "invalid configuration {}: {error}",
-                    path.display()
-                ));
+                state.error = Some(format!("invalid configuration {}: {error}", path.display()));
             }
         },
         Err(error) => {
@@ -312,8 +308,8 @@ fn path_to_uri(path: &Path) -> String {
     }
     let mut encoded = String::from("file://");
     for byte in text.bytes() {
-        let keep = byte.is_ascii_alphanumeric()
-            || matches!(byte, b'-' | b'.' | b'_' | b'~' | b'/' | b':');
+        let keep =
+            byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'.' | b'_' | b'~' | b'/' | b':');
         if keep {
             encoded.push(byte as char);
         } else {

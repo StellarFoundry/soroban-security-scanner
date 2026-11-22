@@ -118,8 +118,16 @@ fn every_shipped_rule_is_covered_by_the_corpus_report() {
     let report = metrics::evaluate_corpus(&corpus, "fixtures/corpus", &config, &registry)
         .expect("corpus metrics must evaluate");
 
-    let expected: Vec<&str> = registry.metadata_sorted().iter().map(|meta| meta.id).collect();
-    let actual: Vec<&str> = report.rules.iter().map(|rule| rule.rule_id.as_str()).collect();
+    let expected: Vec<&str> = registry
+        .metadata_sorted()
+        .iter()
+        .map(|meta| meta.id)
+        .collect();
+    let actual: Vec<&str> = report
+        .rules
+        .iter()
+        .map(|rule| rule.rule_id.as_str())
+        .collect();
     assert_eq!(actual, expected);
     assert_eq!(report.totals.rules, registry.len());
     assert!(!report.rules.is_empty());

@@ -262,11 +262,7 @@ impl<'a> AnalysisContext<'a> {
     /// [`crate::analysis::type_env::TypeInfo::Unknown`] for missing or
     /// out-of-scope items rather than panicking.
     pub fn type_environment(&self, source: &ParsedSource) -> Arc<TypeEnvironment> {
-        if let Some(cached) = lock_cache(&self.cache)
-            .type_envs
-            .get(&source.path)
-            .cloned()
-        {
+        if let Some(cached) = lock_cache(&self.cache).type_envs.get(&source.path).cloned() {
             return cached;
         }
         let computed = Arc::new(TypeEnvironment::from_source(source));

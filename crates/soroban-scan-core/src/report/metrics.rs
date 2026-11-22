@@ -261,7 +261,10 @@ pub fn evaluate_corpus(
                 path: path.clone(),
                 message: error.to_string(),
             })?;
-            let outcome = if path.extension().is_some_and(|extension| extension == "toml") {
+            let outcome = if path
+                .extension()
+                .is_some_and(|extension| extension == "toml")
+            {
                 engine::scan_manifest_str("Cargo.toml", &content, config, registry).map_err(
                     |error| MetricsError::Scan {
                         path: path.clone(),
@@ -370,10 +373,7 @@ fn fixture_label(file: &str, expected_hits: usize) -> FixtureLabel {
     }
 }
 
-fn accumulate_timings(
-    outcome: &ScanOutcome,
-    timings: &mut BTreeMap<String, (u64, &'static str)>,
-) {
+fn accumulate_timings(outcome: &ScanOutcome, timings: &mut BTreeMap<String, (u64, &'static str)>) {
     for timing in &outcome.rule_timings {
         let elapsed = u64::try_from(timing.elapsed_micros).unwrap_or(u64::MAX);
         let entry = timings
@@ -385,12 +385,9 @@ fn accumulate_timings(
 }
 
 fn merge_status(current: &'static str, status: RuleTimingStatus) -> &'static str {
-    if current == RuleTimingStatus::Panicked.as_str()
-        || status == RuleTimingStatus::Panicked
-    {
+    if current == RuleTimingStatus::Panicked.as_str() || status == RuleTimingStatus::Panicked {
         RuleTimingStatus::Panicked.as_str()
-    } else if current == RuleTimingStatus::TimedOut.as_str()
-        || status == RuleTimingStatus::TimedOut
+    } else if current == RuleTimingStatus::TimedOut.as_str() || status == RuleTimingStatus::TimedOut
     {
         RuleTimingStatus::TimedOut.as_str()
     } else {
@@ -410,7 +407,10 @@ pub fn render_json(report: &MetricsReport) -> Result<String, serde_json::Error> 
 pub fn render_markdown(report: &MetricsReport) -> String {
     let mut out = String::new();
     out.push_str("# Rule Evaluation Metrics\n\n");
-    out.push_str(&format!("- **Schema version:** {}\n", report.schema_version));
+    out.push_str(&format!(
+        "- **Schema version:** {}\n",
+        report.schema_version
+    ));
     out.push_str(&format!("- **Tool:** {}\n", report.tool));
     out.push_str(&format!("- **Corpus:** `{}`\n", report.corpus));
     out.push_str(&format!("- **Rules covered:** {}\n", report.totals.rules));
@@ -421,7 +421,9 @@ pub fn render_markdown(report: &MetricsReport) -> String {
          corpus manifests. Ambiguous fixtures are recorded and excluded from \
          the metric totals, never guessed.\n\n",
     );
-    out.push_str("Runtime is measured in microseconds and is the only non-deterministic field.\n\n");
+    out.push_str(
+        "Runtime is measured in microseconds and is the only non-deterministic field.\n\n",
+    );
 
     out.push_str(
         "| Rule | Findings | TP | FP | FN | TN | Positive | Negative | Ambiguous | Runtime (µs) | Status |\n",
@@ -495,7 +497,11 @@ mod tests {
             "fixtures/corpus",
             vec![rule("SS-002", 3, 1, 0, 0, 2), rule("SS-001", 2, 2, 1, 0, 1)],
         );
-        let ids: Vec<_> = report.rules.iter().map(|rule| rule.rule_id.as_str()).collect();
+        let ids: Vec<_> = report
+            .rules
+            .iter()
+            .map(|rule| rule.rule_id.as_str())
+            .collect();
         assert_eq!(ids, vec!["SS-001", "SS-002"]);
         assert_eq!(report.totals.rules, 2);
         assert_eq!(report.totals.findings, 5);

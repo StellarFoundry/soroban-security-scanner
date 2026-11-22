@@ -131,8 +131,7 @@ impl TypeEnvironment {
 
     /// Inserts an entry, replacing an entry with the same item and span.
     pub fn insert(&mut self, entry: TypeEntry) {
-        self.entries
-            .insert((entry.item.clone(), entry.span), entry);
+        self.entries.insert((entry.item.clone(), entry.span), entry);
     }
 
     /// Iterates over entries in deterministic `(item, span)` order.
@@ -284,7 +283,7 @@ impl<'ast> Visit<'ast> for TypeVisitor<'_> {
                 // Its type is unknown rather than inferred.
                 self.record(
                     pattern.ident.to_string(),
-                    SpanKey::start_of(&*node.pat),
+                    SpanKey::start_of(&node.pat),
                     TypeInfo::Unknown,
                 );
             }
@@ -350,10 +349,7 @@ mod tests {
             environment.lookup("value", inner.span),
             TypeInfo::known("u64")
         );
-        assert_eq!(
-            environment.lookup_at("value", 7, 5),
-            TypeInfo::known("u32")
-        );
+        assert_eq!(environment.lookup_at("value", 7, 5), TypeInfo::known("u32"));
         assert_eq!(
             environment.lookup("value", outer.span),
             TypeInfo::known("u32")
@@ -373,42 +369,24 @@ mod tests {
             .entries()
             .find(|entry| entry.item == "value" && entry.info == TypeInfo::Unknown)
             .expect("untyped shadow entry");
-        assert_eq!(
-            environment.lookup("value", shadow.span),
-            TypeInfo::Unknown
-        );
-        assert_eq!(
-            environment.lookup_at("value", 4, 5),
-            TypeInfo::Unknown
-        );
+        assert_eq!(environment.lookup("value", shadow.span), TypeInfo::Unknown);
+        assert_eq!(environment.lookup_at("value", 4, 5), TypeInfo::Unknown);
     }
 
     #[test]
     fn missing_entries_and_out_of_scope_lookups_return_unknown() {
         let environment = environment("fn f() {\n    let value: u32 = 1;\n}\n");
-        assert_eq!(
-            environment.lookup_at("missing", 2, 5),
-            TypeInfo::Unknown
-        );
+        assert_eq!(environment.lookup_at("missing", 2, 5), TypeInfo::Unknown);
         assert!(environment.get("value", SpanKey::new(99, 1)).is_none());
-        assert_eq!(
-            environment.lookup_at("value", 99, 1),
-            TypeInfo::Unknown
-        );
+        assert_eq!(environment.lookup_at("value", 99, 1), TypeInfo::Unknown);
     }
 
     #[test]
     fn parses_fail_gracefully_with_an_empty_environment() {
-        let parsed = crate::source::parse_source(
-            Path::new("src/broken.rs"),
-            Path::new("."),
-            "fn broken( {",
-        );
+        let parsed =
+            crate::source::parse_source(Path::new("src/broken.rs"), Path::new("."), "fn broken( {");
         let environment = TypeEnvironment::from_source(&parsed);
         assert!(environment.is_empty());
-        assert_eq!(
-            environment.lookup_at("anything", 1, 1),
-            TypeInfo::Unknown
-        );
+        assert_eq!(environment.lookup_at("anything", 1, 1), TypeInfo::Unknown);
     }
 }
