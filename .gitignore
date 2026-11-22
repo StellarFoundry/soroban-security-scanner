@@ -37,6 +37,7 @@ venv/
 # Scanner local artifacts
 *.soroban-scan.local.*
 .scanner-cache/
+.soroban-scan/
 
 # Secrets / environment
 .env

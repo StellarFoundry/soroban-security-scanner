@@ -6,7 +6,6 @@ use std::io::Read;
 use std::path::{Component, Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
 
 use super::manifest::PackManifest;
 
@@ -88,8 +87,7 @@ impl PackRegistry {
             }
             let manifest_path = resolve_manifest(&root, &entry.manifest)?;
             let manifest_bytes = read_bounded(&manifest_path, MAX_REGISTRY_MANIFEST_BYTES)?;
-            let actual_checksum =
-                format!("sha256:{}", hex::encode(Sha256::digest(&manifest_bytes)),);
+            let actual_checksum = super::manifest::sha256_checksum(&manifest_bytes);
             if entry.checksum != actual_checksum {
                 return Err(PackRegistryError::Validation(format!(
                     "checksum mismatch for pack {}@{}",

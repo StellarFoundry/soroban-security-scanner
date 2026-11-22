@@ -17,6 +17,11 @@ pub const MAX_PACK_MANIFEST_BYTES: usize = 10 * 1024 * 1024;
 /// Current version of the rule pack manifest schema.
 pub const PACK_MANIFEST_SCHEMA_VERSION: u32 = 1;
 
+/// Returns the `sha256:` checksum of exact manifest bytes.
+pub fn sha256_checksum(bytes: &[u8]) -> String {
+    format!("sha256:{}", hex::encode(Sha256::digest(bytes)))
+}
+
 /// Capabilities a pack may require from the scanner.
 ///
 /// These name scanner input support only; v1 manifests contain metadata and do
