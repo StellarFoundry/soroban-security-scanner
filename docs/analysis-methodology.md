@@ -54,6 +54,15 @@ These are **presence and absence facts about syntax**, not statements about
 runtime behavior. They are reproducible: the same source and configuration
 produce the same findings in the same order.
 
+### Type environment
+
+Rules can query an immutable type environment exposed by the analysis context.
+It records type names that are written in the source for items, function
+parameters, and typed locals, keyed by the declared item and its span. Lookups
+respect lexical shadowing and return `unknown` for a missing item, an
+out-of-scope span, or a declaration without a written type. The environment does
+not infer types, so `unknown` means "not visible here", never a guessed type.
+
 ## What static analysis cannot establish
 
 The scanner cannot generally prove:

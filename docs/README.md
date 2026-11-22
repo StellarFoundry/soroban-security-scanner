@@ -40,6 +40,7 @@ Start here.
 - [Troubleshooting](troubleshooting.md) — common problems.
 
 - [Evaluation Methodology](evaluation-methodology.md) - fixture labels, metric definitions, benchmark commands, and limits.
+- [Rule Evaluation Metrics](rule-metrics.md) - per-rule findings, false positives, false negatives, runtime, and JSON/Markdown formats.
 
 ## Contributing
 

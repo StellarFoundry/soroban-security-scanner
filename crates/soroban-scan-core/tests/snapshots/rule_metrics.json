@@ -1,0 +1,47 @@
+{
+  "schema_version": "1",
+  "tool": "soroban-scan",
+  "corpus": "fixtures/metrics-sample",
+  "rules": [
+    {
+      "rule_id": "SS-001",
+      "title": "Example one",
+      "category": "authorization",
+      "findings": 2,
+      "true_positives": 2,
+      "false_positives": 1,
+      "false_negatives": 0,
+      "true_negatives": 1,
+      "positive_fixtures": 2,
+      "negative_fixtures": 2,
+      "ambiguous_fixtures": 1,
+      "runtime_micros": 250,
+      "status": "completed"
+    },
+    {
+      "rule_id": "SS-002",
+      "title": "Example two",
+      "category": "storage",
+      "findings": 3,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 2,
+      "positive_fixtures": 1,
+      "negative_fixtures": 2,
+      "ambiguous_fixtures": 0,
+      "runtime_micros": 120,
+      "status": "completed"
+    }
+  ],
+  "totals": {
+    "rules": 2,
+    "findings": 5,
+    "true_positives": 3,
+    "false_positives": 1,
+    "false_negatives": 0,
+    "true_negatives": 3,
+    "ambiguous_fixtures": 1,
+    "runtime_micros": 370
+  }
+}
