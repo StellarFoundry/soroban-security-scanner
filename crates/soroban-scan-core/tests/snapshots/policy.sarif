@@ -40,6 +40,73 @@
           "ruleId": "SS-001"
         },
         {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `withdraw`: env . storage () . persistent () . set (& symbol_short ! (\"BAL\") , & new_balance)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2409db0240752ada2e699033b37c550e"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "policyReason": "severity high meets the policy threshold high",
+            "policyStatus": "fail",
+            "relatedIds": [
+              "bc335ac75bcdb2f37bb23e25e9fc3aea"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "positive.rs"
+                },
+                "region": {
+                  "startColumn": 27,
+                  "startLine": 20
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked arithmetic in a contract entry point — unchecked `-` arithmetic in entry point `withdraw`: balance - amount (use `checked_sub` and handle `None`)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "4eaccf1c3ce89ad12f06685a18208d0a"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "policyReason": "severity medium is below the policy threshold high",
+            "policyStatus": "pass",
+            "remediation": "Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-008"
+        },
+        {
           "level": "note",
           "locations": [
             {
@@ -110,73 +177,6 @@
             "severity": "low"
           },
           "ruleId": "SS-010"
-        },
-        {
-          "level": "warning",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "positive.rs"
-                },
-                "region": {
-                  "startColumn": 27,
-                  "startLine": 20
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "Unchecked arithmetic in a contract entry point — unchecked `-` arithmetic in entry point `withdraw`: balance - amount (use `checked_sub` and handle `None`)"
-          },
-          "partialFingerprints": {
-            "sorobanScanFingerprint": "4eaccf1c3ce89ad12f06685a18208d0a"
-          },
-          "properties": {
-            "category": "arithmetic",
-            "confidence": "low",
-            "correlationAmbiguous": true,
-            "policyReason": "severity medium is below the policy threshold high",
-            "policyStatus": "pass",
-            "remediation": "Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.",
-            "severity": "medium"
-          },
-          "ruleId": "SS-008"
-        },
-        {
-          "level": "error",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "positive.rs"
-                },
-                "region": {
-                  "startColumn": 9,
-                  "startLine": 21
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `withdraw`: env . storage () . persistent () . set (& symbol_short ! (\"BAL\") , & new_balance)"
-          },
-          "partialFingerprints": {
-            "sorobanScanFingerprint": "2409db0240752ada2e699033b37c550e"
-          },
-          "properties": {
-            "category": "authorization",
-            "confidence": "medium",
-            "correlationAmbiguous": true,
-            "policyReason": "severity high meets the policy threshold high",
-            "policyStatus": "fail",
-            "relatedIds": [
-              "bc335ac75bcdb2f37bb23e25e9fc3aea"
-            ],
-            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
-            "severity": "high"
-          },
-          "ruleId": "SS-001"
         },
         {
           "level": "note",

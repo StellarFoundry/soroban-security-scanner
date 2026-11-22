@@ -8,11 +8,13 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use globset::Glob;
 use serde::Serialize;
 
+use crate::analysis::cfg::{self, ControlFlowGraph};
 use crate::config::{AnalysisMode, ScanConfig, SuppressionRule, WaiverRule};
 use crate::context::AnalysisContext;
 use crate::error::ScanError;
@@ -24,6 +26,7 @@ use crate::model::{
     ProjectKind, SorobanInfo, TargetInfo,
 };
 use crate::registry::RuleRegistry;
+use crate::source::ParsedSource;
 use crate::suppression::Suppression;
 
 /// A logical stage of the scan pipeline.
@@ -494,6 +497,38 @@ fn deduplicate_overlapping(findings: &mut Vec<Finding>) {
 
     kept.sort_by_key(Finding::sort_key);
     *findings = kept;
+}
+
+/// Annotates each finding with the reachability of its line.
+///
+/// Findings outside a parsed function keep `Unknown`. Graphs are built once per
+/// function and cached by (file, line range), so a file with many findings in
+/// the same function is not re-analysed per finding.
+fn annotate_reachability(sources: &[ParsedSource], findings: &mut [Finding]) {
+    let indexes: BTreeMap<String, cfg::FunctionIndex<'_>> = sources
+        .iter()
+        .filter_map(|source| {
+            source
+                .syntax
+                .as_ref()
+                .map(|syntax| (normalize_rel(&source.path), cfg::FunctionIndex::new(syntax)))
+        })
+        .collect();
+    let mut graphs: BTreeMap<(String, usize, usize), Arc<ControlFlowGraph>> = BTreeMap::new();
+
+    for finding in findings {
+        let file = normalize_rel(&finding.location.file);
+        let Some(index) = indexes.get(&file) else {
+            continue;
+        };
+        let Some((block, range)) = index.find(finding.location.line) else {
+            continue;
+        };
+        let graph = graphs
+            .entry((file, range.0, range.1))
+            .or_insert_with(|| Arc::new(cfg::build_function_cfg(block)));
+        finding.reachability = graph.reachability_at(finding.location.line);
+    }
 }
 
 /// Returns true if `path` is a safe, relative path with no traversal.
@@ -996,6 +1031,9 @@ pub fn scan_with_hooks(
     });
 
     stats.findings_rejected = rejected;
+
+    // Reachability only ranks findings; it never changes detection.
+    annotate_reachability(&loaded.sources, &mut findings);
 
     // Deterministic ordering, then overlap-aware de-duplication.
     findings.sort_by_key(Finding::sort_key);

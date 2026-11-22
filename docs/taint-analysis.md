@@ -15,8 +15,10 @@ Two plain data types describe the vocabulary:
 - `SourceDescriptor` — a name, a `SourceKind`, and a `Span`.
   - `FunctionParameter`: a public contract entry-point parameter other than the
     `Env`.
-  - `DecodedInput`: a local produced by a documented decoder such as
-    `from_xdr`, `from_bytes`, `from_string`, `from_str`, or `try_from`.
+  - `DecodedInput`: a local whose initializer calls a documented decoder such as
+    `from_xdr`, `from_bytes`, `from_string`, `from_str`, or `try_from` and whose
+    value is still tainted. `source_descriptors` reports the decoder as
+    provenance; it never seeds taint on its own.
 - `SinkDescriptor` — a name, a `SinkKind`, an optional zero-based argument
   index, and a `Span`.
   - `AuthSubject`: the receiver of `require_auth` /
@@ -39,7 +41,8 @@ hooks, so a rule pack cannot execute arbitrary code through registration.
 fixed-point propagation pass over one entry point:
 
 - Every non-`Env` parameter is a source.
-- `let` bindings and assignments inherit taint from their right-hand side.
+- `let` bindings with a plain identifier pattern and plain assignments inherit
+  taint from their right-hand side.
 - References, parentheses, casts, `?`, and `await` are transparent.
 - Arithmetic, method calls, field access, indexing, and free-function calls
   record a `Transformed` path with the rendered expression (bounded to 120
@@ -55,8 +58,8 @@ result is `Unknown`, never a guessed longer path.
 
 ## Documented sanitizers
 
-A value passed through one of these names is treated as sanitized and is **not**
-reported as a flow:
+An unconditionally assigned value passed through one of these names is treated
+as sanitized and is **not** reported as a flow.
 
 Authorization subjects (`AUTH_SANITIZERS`):
 
@@ -70,22 +73,52 @@ Token amounts (`AMOUNT_SANITIZERS`):
 `checked_amount`, `verified_amount`.
 
 The lists are explicit so a typo or an unrelated helper does not silently clear
-taint. Extending a list is a security-relevant change and requires tests for the
-sanitized and unsanitized paths.
+taint. Sanitizers are matched by method or free-function **name only**; there is
+no receiver-type or argument check. Extending a list is a security-relevant
+change and requires tests for the sanitized and unsanitized paths.
+
+### Conditional sanitization
+
+Propagation is not path-sensitive. When a tainted binding is reassigned to a
+sanitized value only inside an `if`, loop, or `match` arm, the analysis cannot
+prove the sanitizer ran on every path. In that case the value becomes
+`TaintPath::Unknown` and the flow is still reported, instead of being silently
+cleared:
+
+```rust
+let mut subject = owner;
+if trusted {
+    subject = validate_address(&env, owner);
+}
+subject.require_auth(); // reported with an Unknown path
+```
+
+An unconditional reassignment clears the taint normally. The same conservative
+rule applies to amount sanitizers.
 
 ## Limits
 
 - The analysis is per entry point and per file. Cross-file helpers, macros, trait
   dispatch, and type inference are not followed.
-- Only `#[contractimpl]` public functions are treated as entry points.
+- Rules call `auth_subject_flows` / `transfer_amount_flows` with entry points
+  from `contract_entry_functions` (public `#[contractimpl]` functions). The
+  analysis itself does not decide what an entry point is.
+- Only simple identifier patterns are tracked. Tuple/struct destructuring,
+  field/index assignment targets, closures, `async` blocks, and method receivers
+  that are expressions are outside the model.
+- The propagation pass is not path-sensitive: every branch is visited once and a
+  fixed point is reached syntactically. Loops do not get an implicit second
+  tainted iteration.
 - A bare comparison (`if amount > 0`) is not a sanitizer for this analysis;
   existing detector logic can still recognize such guards. Only the documented
   helper names stop taint.
-- `transfer` is matched by method name, like SS-014, so an unrelated method with
-  that name can produce a flow. The sink descriptor records the span, and the
-  consumer decides whether to report it.
-- Work is capped by `MAX_SOURCES`, `MAX_SINKS`, `MAX_FLOWS`, `MAX_HELPER_DEPTH`,
-  `MAX_HELPERS`, and `MAX_ITERATIONS`.
+- `transfer` and `transfer_from` are matched by method name, like SS-014, so an
+  unrelated method with that name can produce a flow. The sink descriptor
+  records the span, and the consumer decides whether to report it.
+- Work is capped by `MAX_SOURCES`, `MAX_SINKS`, `MAX_FLOWS`, `MAX_PATH_STEPS`,
+  `MAX_EXPRESSION_LEN`, `MAX_HELPER_DEPTH`, `MAX_HELPERS`, and
+  `MAX_ITERATIONS`. Exceeding a cap produces `Unknown` or truncation, never a
+  guessed path.
 
 ## See also
 
@@ -93,3 +126,7 @@ sanitized and unsanitized paths.
   names.
 - [`SS-014`](rules/detectors/SS-014.md) — token transfer amount validation.
 - [`SS-018`](rules/detectors/SS-018.md) — unchecked integer casts.
+- [Control-flow graphs](control-flow.md) — the per-function CFG used for
+  reachability.
+- [Finding ranking](finding-ranking.md) — how reachability and impact order
+  output.

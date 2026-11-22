@@ -245,6 +245,7 @@ mod tests {
             remediation: "call require_auth".to_string(),
             references: vec![],
             fingerprint: "stable-fingerprint".to_string(),
+            reachability: crate::analysis::cfg::Reachability::Unknown,
         }
     }
 

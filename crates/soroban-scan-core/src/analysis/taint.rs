@@ -491,7 +491,7 @@ fn param_infos(sig: &syn::Signature) -> Vec<ParamInfo> {
         .collect()
 }
 
-fn span_of<T: Spanned>(node: &T) -> Span {
+pub(crate) fn span_of<T: Spanned>(node: &T) -> Span {
     let start = node.span().start();
     let end = node.span().end();
     Span::at(start.line, start.column + 1).with_end(end.line, end.column + 1)
@@ -660,6 +660,7 @@ fn seeds_for(params: &[ParamInfo]) -> BTreeMap<String, TaintPath> {
 struct PropagationVisitor<'a> {
     tainted: &'a mut BTreeMap<String, TaintPath>,
     sanitizers: &'a [&'a str],
+    conditional_depth: usize,
 }
 
 impl PropagationVisitor<'_> {
@@ -678,7 +679,17 @@ impl PropagationVisitor<'_> {
                 self.tainted.insert(name.to_string(), path);
             }
             None => {
-                self.tainted.remove(name);
+                if self.conditional_depth > 0 && self.tainted.contains_key(name) {
+                    // Path-insensitive propagation cannot prove that a
+                    // conditional assignment cleared the value. Record the
+                    // ambiguity instead of silently dropping the taint.
+                    self.tainted.insert(
+                        name.to_string(),
+                        TaintPath::unknown("conditionally reassigned to an untainted value"),
+                    );
+                } else {
+                    self.tainted.remove(name);
+                }
             }
         }
     }
@@ -691,7 +702,28 @@ fn path_name(expr: &syn::Expr) -> Option<&syn::Ident> {
     }
 }
 
+/// Tracks nesting inside a conditional construct.
+///
+/// The propagation pass is not path-sensitive: it visits every branch once.
+/// The depth lets an assignment that appears to clear taint inside a branch be
+/// recorded as [`TaintPath::Unknown`] instead of assuming the branch always ran.
+macro_rules! visit_conditional {
+    ($name:ident, $node:ty) => {
+        fn $name(&mut self, node: &'ast $node) {
+            self.conditional_depth += 1;
+            visit::$name(self, node);
+            self.conditional_depth -= 1;
+        }
+    };
+}
+
 impl<'ast> Visit<'ast> for PropagationVisitor<'_> {
+    visit_conditional!(visit_expr_if, syn::ExprIf);
+    visit_conditional!(visit_expr_while, syn::ExprWhile);
+    visit_conditional!(visit_expr_for_loop, syn::ExprForLoop);
+    visit_conditional!(visit_expr_loop, syn::ExprLoop);
+    visit_conditional!(visit_expr_match, syn::ExprMatch);
+
     fn visit_local(&mut self, node: &'ast syn::Local) {
         if let (syn::Pat::Ident(pattern), Some(init)) = (&node.pat, &node.init) {
             let value = taint_of_expr(&init.expr, self.tainted, self.sanitizers);
@@ -741,6 +773,7 @@ fn propagate(
         let mut visitor = PropagationVisitor {
             tainted: &mut next,
             sanitizers,
+            conditional_depth: 0,
         };
         visitor.visit_block(block);
         if next == current {

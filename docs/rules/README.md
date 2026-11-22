@@ -156,7 +156,10 @@ examples, [`TEMPLATE.md`](TEMPLATE.md) for the rule document template,
 layout, and [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md) for the definition
 of done.
 
-For the limits of the analysis and the meaning of confidence, see
+For reusable analysis primitives, see [Taint Analysis](../taint-analysis.md)
+(sources, sinks, sanitizers, and limits), [Control-flow graphs](../control-flow.md),
+and [Finding ranking](../finding-ranking.md). For the limits of the analysis
+and the meaning of confidence, see
 [Analysis Methodology](../analysis-methodology.md).
 
 ## Rule documentation template
