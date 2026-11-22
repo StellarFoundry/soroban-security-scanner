@@ -62,6 +62,26 @@ A low-confidence finding is capped at Warning so a heuristic result is not
 presented with more certainty than the detector has. The diagnostic `data`
 field also carries the finding fingerprint and lowercase confidence.
 
+## Performance limits
+
+Live analysis is bounded so a large buffer or a burst of edits cannot block the
+server:
+
+| Limit | Value | Behavior when exceeded |
+|---|---|---|
+| Document size | 1 MiB | The buffer is kept for outline and hover, but analysis is skipped and a `LSP-DOCUMENT-LIMIT` warning is published. |
+| Analysis time | 2 seconds | The worker result is discarded and an `LSP-ANALYSIS-TIMEOUT` warning is published. |
+| Diagnostics per document | 200 | The remaining diagnostics are dropped and an `LSP-DIAGNOSTICS-TRUNCATED` warning is published with the omitted count. |
+| Change debounce | 150 ms | Analysis starts after the typing pause. |
+
+Analysis runs on a worker thread. A newer edit increments the document
+generation, and a result from an older generation is discarded instead of
+overwriting newer diagnostics. Changes to a document that is already being
+analyzed wait for that analysis (or its timeout) before starting again, so a
+burst of keystrokes cannot create an unbounded number of scan threads. These
+limits are fixed and need no configuration; the server remains offline and
+reads no secrets.
+
 ## Workspace configuration
 
 The server reads `soroban-scan.toml` from the workspace root reported by the
