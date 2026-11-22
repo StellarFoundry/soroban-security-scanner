@@ -7,10 +7,7 @@ use crate::finding::Finding;
 use crate::rule::{Rule, RuleMetadata};
 use crate::severity::Severity;
 
-use super::util::{
-    contract_entry_functions, facts_with_helpers_from_with_imports, function_facts_with_imports,
-    location_for,
-};
+use super::util::{contract_entry_functions, location_for};
 
 /// Rule metadata.
 pub const METADATA: RuleMetadata = RuleMetadata {
@@ -49,13 +46,11 @@ impl Rule for CrossContractAuth {
             let Some(file) = &source.syntax else {
                 continue;
             };
-            let summaries = function_facts_with_imports(file, &source.imports);
             for func in contract_entry_functions(file) {
                 if !func.is_public {
                     continue;
                 }
-                let facts =
-                    facts_with_helpers_from_with_imports(&summaries, &func, &source.imports);
+                let facts = ctx.helper_facts_for_function(source, &func);
                 if facts.has_require_auth() {
                     continue;
                 }

@@ -13,12 +13,27 @@ soroban-scan <COMMAND>
 | `rules` | List available security rules. |
 | `explain <RULE-ID>` | Explain a rule in detail. |
 | `version` | Print the scanner name and version. |
+| `lsp` | Start the editor language server on stdio (see [editors.md](editors.md)). |
 | `init` | Write a starter configuration file. |
 | `doctor` | Explain project classification, excludes, and effective configuration. |
 | `compare` | Compare two JSON scan reports by finding fingerprint. |
 | `dashboard` | Render a static trend dashboard from several JSON scan reports. |
 | `artifact-name` | Print the canonical, deterministic report artifact name. |
 | `config show` / `config validate` | Inspect or validate configuration. |
+
+---
+
+## `lsp`
+
+```text
+soroban-scan lsp
+```
+
+Starts the stdio language server. It speaks JSON-RPC 2.0 with `Content-Length`
+framing, performs no network access, and exits when the client sends `exit`.
+Supported capabilities are diagnostics (`textDocument/publishDiagnostics`),
+full-document sync, and document symbols. See [editors.md](editors.md) for the
+VS Code and Neovim setup and the current limitations.
 
 ---
 

@@ -11,7 +11,7 @@ use crate::finding::Finding;
 use crate::rule::{Rule, RuleMetadata};
 use crate::severity::Severity;
 
-use super::util::{contract_entry_functions, facts_from_block_with_imports, location_for};
+use super::util::{contract_entry_functions, location_for};
 
 /// Rule metadata.
 pub const METADATA: RuleMetadata = RuleMetadata {
@@ -54,7 +54,7 @@ impl Rule for CurrentContractAddressAuth {
                 if !func.is_public {
                     continue;
                 }
-                let facts = facts_from_block_with_imports(func.block, &source.imports);
+                let facts = ctx.facts_for_function(source, &func);
                 for call in &facts.method_calls {
                     if !is_require_auth(&call.name)
                         || !mentions_current_contract_address(&call.context)

@@ -85,12 +85,13 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `imports` | Best-effort per-file `use` import map and path canonicalization. | Nothing in the crate. |
 | `project` | Orchestrates discovery, manifest loading, source parsing, Soroban classification, detection evidence, SDK matrix warnings, and optional target analysis. | `detection`, `discovery`, `error`, `manifest`, `model`, `sdk_matrix`, `soroban`, `source`, `target`, `unsupported`. |
 | `soroban` | Soroban evidence and project classification; never executes contracts. | `model`. |
-| `context` | Immutable `AnalysisContext` passed to rules. | `model`, `source`. |
+| `context` | Read-only `AnalysisContext` passed to rules, with a per-source/per-function memoized fact cache (interior mutability is used only for memoization; results stay deterministic and file-scoped). | `model`, `rules::util`, `source`. |
 | `rules` | Built-in detectors, rule metadata validation, and shared analysis helpers. | `category`, `confidence`, `context`, `finding`, `rule`, `severity`, `source`. |
 | `engine` | Runs enabled rules, collects/sorts/deduplicates findings, applies suppressions and baselines, and loads projects through the frontend trait. | `config`, `context`, `error`, `finding`, `frontend`, `model`, `registry`, `suppression`. |
 | `suppression` | Inline `ignore` directives and source ranges. | `finding`-adjacent data only. |
 | `baseline` | Fingerprint baselines, JSON/TOML parsing, merge/prune, unknown-rule diagnostics. | `error`, `finding`, `model`, `registry`, `severity`. |
 | `report` | Terminal, JSON, SARIF, Markdown, HTML, and GitHub renderers. | `config`, `engine`, `finding`, `model`, `registry`, `rule`, `severity`. |
+| `correlation` | Deterministic, bounded related-finding links shared between JSON and SARIF; ambiguity is recorded, never guessed. | `finding`. |
 | `redaction` | Opt-in hashing of selected report fields at render time; fingerprints stay intact. | `baseline`, `engine`, `finding`. |
 | `pack` | Rule pack manifest parsing, detached signature verification, keyrings, and rotation/revocation. | `config`, `error`. |
 | `policy` | Policy document parsing, validation, and deterministic evaluation. | `config`, `error`, `model`. |

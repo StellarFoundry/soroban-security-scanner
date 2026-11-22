@@ -69,7 +69,9 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-016](detectors/SS-016.md) | Unbounded data stored in instance storage | medium | low | storage |
 | [SS-017](detectors/SS-017.md) | Authorization after state mutation | medium | medium | authorization |
 | [SS-018](detectors/SS-018.md) | Unchecked integer cast | medium | low | arithmetic |
+| [SS-020](detectors/SS-020.md) | Unvalidated XDR or bytes deserialization | medium | low | error-handling |
 | [SS-021](detectors/SS-021.md) | Durable data written to temporary storage | medium | low | storage |
+| [SS-022](detectors/SS-022.md) | Unsafe symbol_short key | medium | medium | storage |
 | [SS-023](detectors/SS-023.md) | Sensitive-looking data published in events | medium | low | events |
 | [SS-024](detectors/SS-024.md) | Missing contracttype on boundary types | medium | medium | configuration |
 | [SS-025](detectors/SS-025.md) | Unbounded string/bytes persisted from caller input | medium | medium | storage |
@@ -83,6 +85,7 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-035](detectors/SS-035.md) | Ignored checked-arithmetic result | high | medium | arithmetic |
 | [SS-036](detectors/SS-036.md) | Deprecated SDK API usage | low | medium | dependencies |
 | [SS-037](detectors/SS-037.md) | Competing authorization calls | medium | low | authorization |
+| [SS-041](detectors/SS-041.md) | Authorization check inside a loop | medium | low | authorization |
 
 Each detector has a positive and negative fixture under
 `fixtures/corpus/<RULE-ID>/`, plus an adversarial sample and recorded expected

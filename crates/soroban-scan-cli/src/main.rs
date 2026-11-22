@@ -14,6 +14,8 @@ use std::time::Instant;
 
 use clap::{Args, Parser, Subcommand, ValueEnum};
 
+mod lsp;
+
 use soroban_scan_core::ai::{self, Assistant};
 use soroban_scan_core::baseline::{self, Baseline, BaselineReport};
 use soroban_scan_core::category::Category;
@@ -341,6 +343,8 @@ enum Command {
     Explain(ExplainArgs),
     /// Print the scanner name and version.
     Version,
+    /// Start the editor language server on stdio.
+    Lsp,
     /// Write a starter configuration file.
     Init(InitArgs),
     /// Inspect the scanner configuration.
@@ -773,6 +777,7 @@ fn run(cli: Cli) -> CliResult<u8> {
             println!("{}", soroban_scan_core::version_string());
             Ok(EXIT_SUCCESS)
         }
+        Command::Lsp => lsp::run(&registry).map_err(CliError::Runtime),
         Command::Scan(args) => run_scan(args, &registry),
         Command::Rules(args) => run_rules(args, &registry),
         Command::Explain(args) => run_explain(args, &registry),

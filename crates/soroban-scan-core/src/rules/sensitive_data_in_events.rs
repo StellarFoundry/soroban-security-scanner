@@ -13,7 +13,7 @@ use crate::finding::Finding;
 use crate::rule::{Rule, RuleMetadata};
 use crate::severity::Severity;
 
-use super::util::{contract_entry_functions, facts_from_block_with_imports, location_for};
+use super::util::{contract_entry_functions, location_for};
 
 /// Rule metadata.
 pub const METADATA: RuleMetadata = RuleMetadata {
@@ -61,7 +61,7 @@ impl Rule for SensitiveDataInEvents {
                     .map(|(name, _)| name.clone())
                     .filter(|name| sensitive_identifier(name))
                     .collect();
-                let facts = facts_from_block_with_imports(func.block, &source.imports);
+                let facts = ctx.facts_for_function(source, &func);
                 for call in &facts.method_calls {
                     if call.name != "publish"
                         || !call.context.to_ascii_lowercase().contains("event")

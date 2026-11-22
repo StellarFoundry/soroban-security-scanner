@@ -1,0 +1,280 @@
+//! Black-box language-server test with a mock stdio client (#336).
+//!
+//! Spawns `soroban-scan lsp`, frames JSON-RPC messages by hand, and exercises
+//! initialize, open, change, hover, document symbols, shutdown, and exit. Every
+//! wait is bounded so a hung server fails the test instead of blocking CI.
+
+use std::io::{BufRead, BufReader, Write};
+use std::path::PathBuf;
+use std::process::{Child, ChildStdin, Command, ExitStatus, Stdio};
+use std::sync::mpsc::{self, Receiver};
+use std::thread;
+use std::time::{Duration, Instant};
+
+use serde_json::{json, Value};
+
+fn bin() -> PathBuf {
+    PathBuf::from(env!("CARGO_BIN_EXE_soroban-scan"))
+}
+
+fn violation_source() -> &'static str {
+    r#"use soroban_sdk::{contractimpl, Env};
+
+#[contractimpl]
+impl Vault {
+    pub fn set(env: Env, value: u32) {
+        env.storage().persistent().set(&1u32, &value);
+    }
+}
+"#
+}
+
+fn clean_source() -> &'static str {
+    r#"use soroban_sdk::{contractimpl, symbol_short, Address, Env};
+
+// SS-001 reference for hover.
+#[contractimpl]
+impl Vault {
+    pub fn set(env: Env, admin: Address, value: u32) {
+        admin.require_auth();
+        env.storage().temporary().set(&1u32, &value);
+        env.events().publish((symbol_short!("set"),), value);
+    }
+}
+"#
+}
+
+struct Client {
+    child: Option<Child>,
+    stdin: Option<ChildStdin>,
+    rx: Receiver<Value>,
+}
+
+impl Client {
+    fn spawn() -> Self {
+        let mut child = Command::new(bin())
+            .arg("lsp")
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::null())
+            .spawn()
+            .expect("failed to spawn soroban-scan lsp");
+        let stdout = child.stdout.take().expect("stdout was piped");
+        let (tx, rx) = mpsc::channel();
+
+        thread::spawn(move || {
+            let mut reader = BufReader::new(stdout);
+            while let Some(message) = read_message(&mut reader) {
+                if tx.send(message).is_err() {
+                    break;
+                }
+            }
+        });
+
+        Client {
+            stdin: child.stdin.take(),
+            child: Some(child),
+            rx,
+        }
+    }
+
+    fn send(&mut self, message: &Value) {
+        let body = serde_json::to_vec(message).expect("serialize message");
+        let stdin = self.stdin.as_mut().expect("stdin is open");
+        write!(stdin, "Content-Length: {}\r\n\r\n", body.len()).expect("write header");
+        stdin.write_all(&body).expect("write body");
+        stdin.flush().expect("flush");
+    }
+
+    fn recv_until<F>(&self, mut predicate: F) -> Value
+    where
+        F: FnMut(&Value) -> bool,
+    {
+        let deadline = Instant::now() + Duration::from_secs(15);
+        loop {
+            let remaining = deadline.saturating_duration_since(Instant::now());
+            let message = self
+                .rx
+                .recv_timeout(remaining)
+                .expect("timed out waiting for a language-server message");
+            if predicate(&message) {
+                return message;
+            }
+        }
+    }
+
+    fn wait_for_exit(mut self, timeout: Duration) -> ExitStatus {
+        drop(self.stdin.take());
+        let mut child = self.child.take().expect("child is present");
+        let (tx, rx) = mpsc::channel();
+        thread::spawn(move || {
+            let _ = tx.send(child.wait());
+        });
+        rx.recv_timeout(timeout)
+            .expect("language server did not exit within the time limit")
+            .expect("failed to wait for the language server")
+    }
+}
+
+impl Drop for Client {
+    fn drop(&mut self) {
+        if let Some(child) = &mut self.child {
+            let _ = child.kill();
+            let _ = child.wait();
+        }
+    }
+}
+
+fn read_message<R: BufRead>(reader: &mut R) -> Option<Value> {
+    let mut length = None;
+    loop {
+        let mut line = String::new();
+        if reader.read_line(&mut line).ok()? == 0 {
+            return None;
+        }
+        let header = line.trim_end_matches(['\r', '\n']);
+        if header.is_empty() {
+            break;
+        }
+        if let Some(value) = header.to_ascii_lowercase().strip_prefix("content-length:") {
+            length = value.trim().parse::<usize>().ok();
+        }
+    }
+    let mut body = vec![0u8; length?];
+    reader.read_exact(&mut body).ok()?;
+    serde_json::from_slice(&body).ok()
+}
+
+fn request(id: u64, method: &str, params: Value) -> Value {
+    json!({ "jsonrpc": "2.0", "id": id, "method": method, "params": params })
+}
+
+fn notification(method: &str, params: Value) -> Value {
+    json!({ "jsonrpc": "2.0", "method": method, "params": params })
+}
+
+fn did_open(uri: &str, text: &str) -> Value {
+    notification(
+        "textDocument/didOpen",
+        json!({ "textDocument": { "uri": uri, "languageId": "rust", "version": 1, "text": text } }),
+    )
+}
+
+fn did_change(uri: &str, version: u64, text: &str) -> Value {
+    notification(
+        "textDocument/didChange",
+        json!({
+            "textDocument": { "uri": uri, "version": version },
+            "contentChanges": [{ "text": text }]
+        }),
+    )
+}
+
+fn diagnostics_for(uri: &str) -> impl FnMut(&Value) -> bool {
+    let uri = uri.to_string();
+    move |message: &Value| {
+        message["method"] == "textDocument/publishDiagnostics" && message["params"]["uri"] == uri
+    }
+}
+
+fn rule_codes(message: &Value) -> Vec<&str> {
+    message["params"]["diagnostics"]
+        .as_array()
+        .map(|diagnostics| {
+            diagnostics
+                .iter()
+                .filter_map(|diagnostic| diagnostic["code"].as_str())
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
+#[test]
+fn language_server_handles_open_change_hover_symbols_and_shutdown() {
+    let uri = "file:///tmp/soroban-scan-lsp.rs";
+    let mut client = Client::spawn();
+
+    client.send(&request(
+        1,
+        "initialize",
+        json!({ "processId": null, "capabilities": {} }),
+    ));
+    let initialized = client.recv_until(|message| message["id"] == json!(1));
+    let capabilities = &initialized["result"]["capabilities"];
+    assert!(capabilities.get("textDocumentSync").is_some());
+    assert_eq!(capabilities["hoverProvider"], json!(true));
+    assert_eq!(capabilities["documentSymbolProvider"], json!(true));
+
+    client.send(&notification("initialized", json!({})));
+    client.send(&did_open(uri, violation_source()));
+
+    let opened = client.recv_until(diagnostics_for(uri));
+    assert!(
+        rule_codes(&opened).contains(&"SS-001"),
+        "expected SS-001 diagnostics, got: {opened}"
+    );
+
+    client.send(&did_change(uri, 2, clean_source()));
+    let changed = client.recv_until(diagnostics_for(uri));
+    assert!(
+        !rule_codes(&changed).contains(&"SS-001"),
+        "didChange must replace the document buffer and clear SS-001: {changed}"
+    );
+
+    let (line, character) = rule_id_position(clean_source(), "SS-001");
+    client.send(&request(
+        2,
+        "textDocument/hover",
+        json!({
+            "textDocument": { "uri": uri },
+            "position": { "line": line, "character": character }
+        }),
+    ));
+    let hovered = client.recv_until(|message| message["id"] == json!(2));
+    let content = hovered["result"]["contents"]["value"]
+        .as_str()
+        .expect("hover markdown");
+    assert!(content.contains("SS-001"));
+    assert!(content.contains("Severity:"));
+    assert!(content.contains("Remediation:"));
+
+    client.send(&request(
+        3,
+        "textDocument/documentSymbol",
+        json!({ "textDocument": { "uri": uri } }),
+    ));
+    let symbols = client.recv_until(|message| message["id"] == json!(3));
+    let symbols = symbols["result"].as_array().expect("document symbols");
+    assert!(symbols.iter().any(|symbol| symbol["name"] == "Vault"));
+    assert!(symbol_names(symbols).contains(&"set".to_string()));
+
+    client.send(&request(4, "shutdown", Value::Null));
+    let shutdown = client.recv_until(|message| message["id"] == json!(4));
+    assert_eq!(shutdown["result"], Value::Null);
+
+    client.send(&notification("exit", Value::Null));
+    let status = client.wait_for_exit(Duration::from_secs(10));
+    assert!(status.success(), "language server exited with {status:?}");
+}
+
+fn rule_id_position(text: &str, rule: &str) -> (usize, usize) {
+    for (line, content) in text.lines().enumerate() {
+        if let Some(byte) = content.find(rule) {
+            return (line, content[..byte].chars().count());
+        }
+    }
+    panic!("rule id {rule} is not present in the fixture");
+}
+
+fn symbol_names(symbols: &[Value]) -> Vec<String> {
+    let mut names = Vec::new();
+    for symbol in symbols {
+        if let Some(name) = symbol["name"].as_str() {
+            names.push(name.to_string());
+        }
+        if let Some(children) = symbol["children"].as_array() {
+            names.extend(symbol_names(children));
+        }
+    }
+    names
+}

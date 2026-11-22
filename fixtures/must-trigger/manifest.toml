@@ -1,4 +1,4 @@
-﻿# Must-trigger samples (#138).
+# Must-trigger samples (#138).
 #
 # Each shipped detector has one known-vulnerable sample that must never be missed.
 # The corpus test scans each file and requires the named rule to trigger.
@@ -131,3 +131,15 @@ why = "An entry point uses local types without #[contracttype], which is the doc
 [SS-036]
 file = "SS-036.rs"
 why = "A contract calls the removed Env::logger API, which must always trigger SS-036."
+[SS-020]
+file = "SS-020.rs"
+why = "Reproduces the documented 'Unvalidated XDR or bytes deserialization' pattern; this sample must always trigger SS-020."
+
+[SS-022]
+file = "SS-022.rs"
+why = "Reproduces the documented 'Unsafe symbol_short key' pattern; this sample must always trigger SS-022."
+
+[SS-041]
+file = "SS-041.rs"
+why = "Reproduces the documented 'Authorization check inside a loop' pattern; this sample must always trigger SS-041."
+

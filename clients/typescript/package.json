@@ -1,0 +1,29 @@
+{
+  "name": "soroban-scan-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Typed TypeScript client for the soroban-scan service API: auth, submit, poll and fetch report helpers.",
+  "license": "MIT",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": ["dist", "README.md"],
+  "sideEffects": false,
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "clean": "node scripts/clean.mjs",
+    "build": "tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && node scripts/postbuild.mjs",
+    "test": "npm run clean && npm run build && node --test test/client.test.mjs test/cjs.test.cjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}

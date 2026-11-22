@@ -25,6 +25,7 @@ pub mod confidence;
 pub mod config;
 pub mod context;
 pub mod corpus;
+pub mod correlation;
 pub mod detection;
 pub mod discovery;
 pub mod engine;
