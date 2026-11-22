@@ -34,6 +34,34 @@ from the in-process rule registry: no network request, file read, or external
 documentation lookup is performed. An unregistered id shows a short fallback
 instead of an error.
 
+## Diagnostic ranges and severities
+
+The scanner reports 1-based line and byte-column spans. The language server
+converts them to LSP positions before publishing:
+
+- LSP lines and characters are zero-based.
+- Columns are counted in UTF-16 code units, not bytes. A multi-byte character
+  takes one or two UTF-16 units; a byte offset inside a character is clamped to
+  the character start.
+- CRLF line endings are stripped before counting, so `\r` never shifts a
+  position.
+- Positions past the end of the document or line are clamped instead of
+  producing an out-of-range diagnostic.
+
+Severity combines the finding severity with its confidence:
+
+| Finding severity | Confidence | LSP severity |
+|---|---|---|
+| critical, high | medium, high | Error |
+| critical, high | low | Warning |
+| medium | any | Warning |
+| low | any | Information |
+| info | any | Hint |
+
+A low-confidence finding is capped at Warning so a heuristic result is not
+presented with more certainty than the detector has. The diagnostic `data`
+field also carries the finding fingerprint and lowercase confidence.
+
 ## Workspace configuration
 
 The server reads `soroban-scan.toml` from the workspace root reported by the

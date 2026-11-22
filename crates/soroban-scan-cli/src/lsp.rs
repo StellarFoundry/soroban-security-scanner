@@ -11,6 +11,7 @@ use std::path::{Path, PathBuf};
 
 use serde_json::{json, Value};
 
+use soroban_scan_core::confidence::Confidence;
 use soroban_scan_core::config::ScanConfig;
 use soroban_scan_core::engine;
 use soroban_scan_core::model::DiagnosticCode;
@@ -146,8 +147,7 @@ pub fn run(registry: &RuleRegistry) -> Result<u8, String> {
                     send(&mut writer, &notification)?;
                 }
             }
-            Some("workspace/didChangeConfiguration")
-            | Some("workspace/didChangeWatchedFiles") => {
+            Some("workspace/didChangeConfiguration") | Some("workspace/didChangeWatchedFiles") => {
                 reload_and_republish(
                     &mut writer,
                     registry,
@@ -229,10 +229,7 @@ fn reload_workspace_config(state: &mut WorkspaceConfig, root: Option<&Path>) {
                 state.error = None;
             }
             Err(error) => {
-                state.error = Some(format!(
-                    "invalid configuration {}: {error}",
-                    path.display()
-                ));
+                state.error = Some(format!("invalid configuration {}: {error}", path.display()));
             }
         },
         Err(error) => {
@@ -312,8 +309,8 @@ fn path_to_uri(path: &Path) -> String {
     }
     let mut encoded = String::from("file://");
     for byte in text.bytes() {
-        let keep = byte.is_ascii_alphanumeric()
-            || matches!(byte, b'-' | b'.' | b'_' | b'~' | b'/' | b':');
+        let keep =
+            byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'.' | b'_' | b'~' | b'/' | b':');
         if keep {
             encoded.push(byte as char);
         } else {
@@ -464,17 +461,15 @@ fn diagnostics_for(
             None => 1,
         };
         diagnostics.push(json!({
-            "range": range_raw(line, column, end_line, end_column),
-            "severity": match finding.severity {
-                Severity::Critical | Severity::High => 1,
-                Severity::Medium => 2,
-                Severity::Low => 3,
-                Severity::Info => 4,
-            },
+            "range": range_for(text, line, column, end_line, end_column),
+            "severity": diagnostic_severity(finding.severity, finding.confidence),
             "code": finding.rule_id,
             "source": SOURCE,
             "message": format!("{}: {}", finding.title, finding.evidence),
-            "data": { "fingerprint": finding.fingerprint }
+            "data": {
+                "fingerprint": finding.fingerprint,
+                "confidence": finding.confidence.as_str()
+            }
         }));
     }
 
@@ -724,6 +719,57 @@ fn selection_range(text: &str, line: usize, column: usize, name: &str) -> Value 
     })
 }
 
+/// Maps a finding severity and confidence to an LSP `DiagnosticSeverity`.
+///
+/// Severity supplies the base level: critical/high is error, medium warning,
+/// low information, and info a hint. A low-confidence finding is capped at
+/// warning so a heuristic high-severity result does not look certain.
+fn diagnostic_severity(severity: Severity, confidence: Confidence) -> u8 {
+    let base = match severity {
+        Severity::Critical | Severity::High => 1,
+        Severity::Medium => 2,
+        Severity::Low => 3,
+        Severity::Info => 4,
+    };
+    if confidence == Confidence::Low && base < 2 {
+        2
+    } else {
+        base
+    }
+}
+
+/// Converts a 1-based byte column to a zero-based UTF-16 LSP position.
+///
+/// The scanner reports byte columns. LSP counts UTF-16 code units, so a
+/// multi-byte character occupies more than one byte but one or two UTF-16
+/// units. A column inside a multi-byte character is clamped to its start, and
+/// CRLF line endings are stripped before counting.
+fn lsp_position(text: &str, line: usize, column: usize) -> (usize, usize) {
+    if line == 0 {
+        return (0, 0);
+    }
+    let lines: Vec<&str> = text.lines().collect();
+    let line_index = line - 1;
+    let Some(line_text) = lines.get(line_index) else {
+        return (lines.len().saturating_sub(1), 0);
+    };
+    let mut byte = column.saturating_sub(1).min(line_text.len());
+    while byte > 0 && !line_text.is_char_boundary(byte) {
+        byte -= 1;
+    }
+    (line_index, line_text[..byte].encode_utf16().count())
+}
+
+/// Builds an LSP range from scanner byte positions.
+fn range_for(text: &str, line: usize, column: usize, end_line: usize, end_column: usize) -> Value {
+    let (start_line, start_character) = lsp_position(text, line, column);
+    let (end_line, end_character) = lsp_position(text, end_line, end_column);
+    json!({
+        "start": { "line": start_line, "character": start_character },
+        "end": { "line": end_line, "character": end_character }
+    })
+}
+
 fn range_raw(line: usize, column: usize, end_line: usize, end_column: usize) -> Value {
     json!({
         "start": {
@@ -847,5 +893,81 @@ mod tests {
                 check_range(child, line_count);
             }
         }
+    }
+
+    #[test]
+    fn ascii_positions_are_zero_based() {
+        let text = "ab\ncd\nef";
+        assert_eq!(lsp_position(text, 1, 1), (0, 0));
+        assert_eq!(lsp_position(text, 2, 3), (1, 2));
+        assert_eq!(lsp_position(text, 9, 1), (2, 0));
+        assert_eq!(lsp_position(text, 0, 1), (0, 0));
+    }
+
+    #[test]
+    fn unicode_columns_become_utf16_units() {
+        // Each Greek letter is two bytes and one UTF-16 unit.
+        let text = "αβx";
+        assert_eq!(lsp_position(text, 1, 1), (0, 0));
+        assert_eq!(lsp_position(text, 1, 3), (0, 1));
+        assert_eq!(lsp_position(text, 1, 5), (0, 2));
+
+        // An emoji is four bytes and two UTF-16 units. A column inside it is
+        // clamped to the character start.
+        let text = "😀x";
+        assert_eq!(lsp_position(text, 1, 5), (0, 2));
+        assert_eq!(lsp_position(text, 1, 3), (0, 0));
+        assert_eq!(lsp_position(text, 1, 99), (0, 3));
+    }
+
+    #[test]
+    fn crlf_lines_keep_the_same_character_offsets() {
+        let text = "α\r\nβx\r\n";
+        assert_eq!(lsp_position(text, 1, 3), (0, 1));
+        assert_eq!(lsp_position(text, 2, 1), (1, 0));
+        assert_eq!(lsp_position(text, 2, 3), (1, 1));
+    }
+
+    #[test]
+    fn severity_and_confidence_map_to_lsp_levels() {
+        let cases = [
+            (Severity::Critical, Confidence::High, 1),
+            (Severity::High, Confidence::Medium, 1),
+            (Severity::Critical, Confidence::Low, 2),
+            (Severity::High, Confidence::Low, 2),
+            (Severity::Medium, Confidence::High, 2),
+            (Severity::Medium, Confidence::Low, 2),
+            (Severity::Low, Confidence::High, 3),
+            (Severity::Info, Confidence::High, 4),
+        ];
+        for (severity, confidence, expected) in cases {
+            assert_eq!(
+                diagnostic_severity(severity, confidence),
+                expected,
+                "{severity:?}/{confidence:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn finding_ranges_use_utf16_offsets() {
+        let registry = RuleRegistry::with_default_rules();
+        let text = r#"#[contractimpl]
+impl Vault {
+    pub fn set(env: Env, value: u32) { /* αβ */ env.storage().persistent().set(&1u32, &value); }
+}
+"#;
+        let diagnostics = diagnostics_for(&registry, &ScanConfig::default(), "unicode.rs", text);
+        let finding = diagnostics
+            .iter()
+            .find(|diagnostic| diagnostic["code"] == "SS-006")
+            .expect("SS-006 diagnostic");
+        // The prefix before `env.storage` is 48 bytes but 46 UTF-16 units
+        // because of the two non-ASCII characters in the comment.
+        let source_line = text.lines().nth(2).unwrap();
+        let byte_column = source_line.find("env.storage").unwrap();
+        assert!(byte_column > 46, "the prefix contains multi-byte text");
+        assert_eq!(finding["range"]["start"]["character"].as_u64(), Some(46));
+        assert_eq!(finding["data"]["confidence"], "low");
     }
 }
