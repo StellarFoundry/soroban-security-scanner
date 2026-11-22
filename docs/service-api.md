@@ -14,6 +14,7 @@ and worker loop.
   size, report size, and retention.
 - Bearer authentication for API adapters (`api_auth`), independent of any web
   framework.
+- An opt-in, bounded per-token rate limiter (`service::rate_limit`).
 
 No HTTP listener, queue daemon, database, or remote worker exists in this
 repository. Passing `ApiRequest` values to `ScanApi::handle` and writing the
@@ -60,6 +61,55 @@ of that kind; reject configuration that does not make sense for your service.
 Memory is bounded by roughly `max_jobs * max_payload_bytes` for queued and
 running jobs, and by the same maximum for finished reports. Error messages are
 truncated to `max_payload_bytes` on a UTF-8 boundary.
+
+## Rate limiting
+
+Rate limiting is disabled by default. Enable it by building the adapter with an
+explicit configuration:
+
+```rust
+use std::time::Duration;
+use soroban_scan_core::service::RateLimitConfig;
+
+let api = ScanApi::new(auth, JobLimits::default())
+    .with_rate_limit(RateLimitConfig::per_window(60, Duration::from_secs(60)));
+```
+
+`RateLimitConfig` is a fixed-window limit per bearer token:
+
+| Field | Meaning |
+| ----- | ------- |
+| `requests_per_window` | Requests allowed per window. `0` denies every request. |
+| `window` | Window length. Zero denies every request. |
+| `max_tracked_tokens` | Cap on retained token buckets (default `DEFAULT_MAX_TRACKED_TOKENS`, 1024). `0` denies every request. |
+
+Authentication runs before the limit, so missing or invalid credentials never
+consume a budget. Buckets are keyed by a non-cryptographic fingerprint; the
+token itself is not stored. When the cap is reached, the bucket whose window
+started earliest is evicted, so memory does not grow with the number of tokens
+seen. Because a deployment configures one bearer token, a collision can only
+share the same budget and cannot disclose a credential.
+
+Every authenticated response carries these headers:
+
+| Header | Value |
+| ------ | ----- |
+| `RateLimit-Limit` | Configured requests per window. |
+| `RateLimit-Remaining` | Requests left in the current window, after this one when allowed. |
+| `RateLimit-Reset` | Whole seconds until the window resets. |
+| `Retry-After` | Present only on `429`; same value as `RateLimit-Reset`. |
+
+Headers contain counters only. Neither the bearer token nor any token-derived
+identifier is emitted. A rejected request returns `429` with the stable code
+`rate_limited` and the usual structured error body:
+
+```json
+{"error":{"code":"rate_limited","message":"rate limit exceeded; retry after the current window resets"}}
+```
+
+Responses expose the headers in `ApiResponse::headers`; the embedding transport
+writes them to the wire. `ScanApi::handle_at` accepts an explicit time so tests
+and schedulers can exercise refill behavior without sleeping.
 
 ## Full-store behavior
 
