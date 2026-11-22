@@ -68,6 +68,49 @@ runs:
       working-directory: ${{ github.action_path }}
       run: cargo build --release -p soroban-scan-cli
 
+    - name: Validate inputs
+      shell: bash
+      env:
+        SCAN_PATH: ${{ inputs.path }}
+        SCAN_FORMAT: ${{ inputs.format }}
+        SCAN_OUTPUT: ${{ inputs.output }}
+        SCAN_FAIL_ON: ${{ inputs.fail-on }}
+        SCAN_BASELINE: ${{ inputs.baseline }}
+        SCAN_FILES_FROM: ${{ inputs.files-from }}
+      run: |
+        set -euo pipefail
+        fail() {
+          echo "::error title=Invalid action input::$1"
+          exit 2
+        }
+
+        case "${SCAN_FORMAT}" in
+          terminal|json|sarif|markdown|github) ;;
+          *) fail "format must be one of terminal, json, sarif, markdown, github (got '${SCAN_FORMAT}')" ;;
+        esac
+
+        case "${SCAN_FAIL_ON}" in
+          none|info|low|medium|high|critical) ;;
+          *) fail "fail-on must be one of none, info, low, medium, high, critical (got '${SCAN_FAIL_ON}')" ;;
+        esac
+
+        [ -n "${SCAN_PATH}" ] || fail "path must not be empty"
+        [ -e "${SCAN_PATH}" ] || fail "path '${SCAN_PATH}' does not exist"
+
+        if [ -n "${SCAN_BASELINE}" ] && [ ! -f "${SCAN_BASELINE}" ]; then
+          fail "baseline '${SCAN_BASELINE}' is not a readable file"
+        fi
+        if [ -n "${SCAN_FILES_FROM}" ] && [ ! -f "${SCAN_FILES_FROM}" ]; then
+          fail "files-from '${SCAN_FILES_FROM}' is not a readable file"
+        fi
+
+        if [ -n "${SCAN_FILES_FROM}" ] && [ "${SCAN_PATH}" != "." ]; then
+          fail "path and files-from are mutually exclusive; set only one of them"
+        fi
+        if [ -n "${SCAN_OUTPUT}" ] && [ -d "${SCAN_OUTPUT}" ]; then
+          fail "output '${SCAN_OUTPUT}' is a directory; pass a file path"
+        fi
+
     - name: Run scan
       id: scan
       shell: bash

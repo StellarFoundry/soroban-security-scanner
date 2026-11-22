@@ -277,7 +277,7 @@ impl ScanApi {
     }
 
     fn job(&self, id: &str) -> ApiResponse {
-        let job = match self.jobs.get(id) {
+        let job = match self.jobs.get_at(id, SystemTime::now()) {
             Ok(job) => job,
             Err(error) => return job_error_response(&error),
         };
@@ -370,6 +370,7 @@ fn job_error_response(error: &JobStoreError) -> ApiResponse {
         }
         JobStoreError::StoreFull { .. } => error_response(503, error.code(), &error.to_string()),
         JobStoreError::NotFound => error_response(404, error.code(), "unknown job id"),
+        JobStoreError::Expired { .. } => error_response(410, error.code(), &error.to_string()),
         JobStoreError::InvalidTransition { .. } => {
             error_response(409, error.code(), "invalid job transition")
         }

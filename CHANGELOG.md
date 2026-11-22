@@ -121,6 +121,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   globs. SS-016 uses it to detect aliased instance-storage calls, and the
   limitations are documented in `docs/architecture/import-resolution.md` (`#41`).
 
+- `pack::sandbox` runs community packs with bounded wall-clock time, output
+  size, and rule count. Timeouts, oversized output, and panics fail closed and
+  are reported as diagnostics (`#365`).
+- `JobStore::get_at` reports a finished job whose retention elapsed as
+  `job_expired`, and the API maps it to `410` instead of `job_not_found`
+  (`#351`).
+- The composite GitHub Action validates paths, formats, thresholds, and
+  mutually exclusive inputs before running the scanner (`#347`).
+- Documented the community pack review, reporting, and removal policy
+  (`docs/pack-moderation.md`) and pack sandboxing limits (`#366`).
+
 ### Fixed
 
 - Compilation and TOML parsing were restored after the `syn` 3 and `toml` 1.x
