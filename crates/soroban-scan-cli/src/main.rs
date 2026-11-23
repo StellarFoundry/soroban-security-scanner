@@ -835,7 +835,7 @@ fn run(cli: Cli) -> CliResult<u8> {
             println!("{}", soroban_scan_core::version_string());
             Ok(EXIT_SUCCESS)
         }
-        Command::Lsp => lsp::run(&registry).map_err(CliError::Runtime),
+        Command::Lsp => lsp::run(registry).map_err(CliError::Runtime),
         Command::Serve(args) => {
             let config = load_config(args.config.as_deref(), Path::new("."), !args.no_config)?;
             server::run(args.bind, config, registry).map_err(CliError::Runtime)

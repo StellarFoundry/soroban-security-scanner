@@ -28,6 +28,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-25b58acab18e8c25be7d846c7b336d5b",
             "policyReason": "severity high meets the policy threshold high",
             "policyStatus": "fail",
             "relatedIds": [
@@ -64,6 +65,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-2409db0240752ada2e699033b37c550e",
             "policyReason": "severity high meets the policy threshold high",
             "policyStatus": "fail",
             "relatedIds": [
@@ -163,6 +165,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-25b58acab18e8c25be7d846c7b336d5b",
             "policyReason": "severity low is below the policy threshold high",
             "policyStatus": "pass",
             "relatedIds": [
@@ -199,6 +202,7 @@
             "category": "events",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-25b58acab18e8c25be7d846c7b336d5b",
             "policyReason": "severity low is below the policy threshold high",
             "policyStatus": "pass",
             "relatedIds": [
@@ -235,6 +239,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2409db0240752ada2e699033b37c550e",
             "policyReason": "severity low is below the policy threshold high",
             "policyStatus": "pass",
             "relatedIds": [
@@ -1383,6 +1388,118 @@
               },
               "shortDescription": {
                 "text": "Cross-contract call with an unvalidated address argument"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract writes different logical records through the same storage key construction. When the key is a literal or a constructor whose arguments do not fully separate the records, one write can overwrite or be mistaken for another record with a different field set. The detector compares the field sets of struct literals written to the same key in the same storage class and reports only when they differ, with low confidence."
+              },
+              "help": {
+                "markdown": "## Duplicate storage key construction\n\nA contract writes different logical records through the same storage key construction. When the key is a literal or a constructor whose arguments do not fully separate the records, one write can overwrite or be mistaken for another record with a different field set. The detector compares the field sets of struct literals written to the same key in the same storage class and reports only when they differ, with low confidence.\n\n### Remediation\n\nGive each logical record its own namespaced key, for example `DataKey::Balance(user)` and `DataKey::BalanceMeta(user)`, or store a single versioned value type per key. Do not rely on the value's field set to tell two records apart; the key must identify exactly one record shape.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A contract writes different logical records through the same storage key construction. When the key is a literal or a constructor whose arguments do not fully separate the records, one write can overwrite or be mistaken for another record with a different field set. The detector compares the field sets of struct literals written to the same key in the same storage class and reports only when they differ, with low confidence.\n\nRemediation: Give each logical record its own namespaced key, for example `DataKey::Balance(user)` and `DataKey::BalanceMeta(user)`, or store a single versioned value type per key. Do not rely on the value's field set to tell two records apart; the key must identify exactly one record shape."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-046",
+              "name": "Duplicate storage key construction",
+              "properties": {
+                "category": "storage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Give each logical record its own namespaced key, for example `DataKey::Balance(user)` and `DataKey::BalanceMeta(user)`, or store a single versioned value type per key. Do not rely on the value's field set to tell two records apart; the key must identify exactly one record shape.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Duplicate storage key construction"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract entry point compares the ledger timestamp with a deadline or another timestamp without a visible tolerance or bounded window. Ledger time is chosen within protocol bounds and can move slightly between submission and execution, so an exact or zero-slack comparison can flip for transactions near the boundary. The detector reports ordered comparisons of a timestamp or a local timestamp alias when no tolerance arithmetic is visible, with low confidence."
+              },
+              "help": {
+                "markdown": "## Unchecked ledger timestamp usage\n\nA contract entry point compares the ledger timestamp with a deadline or another timestamp without a visible tolerance or bounded window. Ledger time is chosen within protocol bounds and can move slightly between submission and execution, so an exact or zero-slack comparison can flip for transactions near the boundary. The detector reports ordered comparisons of a timestamp or a local timestamp alias when no tolerance arithmetic is visible, with low confidence.\n\n### Remediation\n\nCompare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security\n- https://developers.stellar.org/docs/learn/encyclopedia/contract-development",
+                "text": "A contract entry point compares the ledger timestamp with a deadline or another timestamp without a visible tolerance or bounded window. Ledger time is chosen within protocol bounds and can move slightly between submission and execution, so an exact or zero-slack comparison can flip for transactions near the boundary. The detector reports ordered comparisons of a timestamp or a local timestamp alias when no tolerance arithmetic is visible, with low confidence.\n\nRemediation: Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-047",
+              "name": "Unchecked ledger timestamp usage",
+              "properties": {
+                "category": "arithmetic",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/contract-development"
+                ],
+                "remediation": "Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unchecked ledger timestamp usage"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Publishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable."
+              },
+              "help": {
+                "markdown": "## Unbounded event payload\n\nPublishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable.\n\n### Remediation\n\nBound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/events\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Publishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable.\n\nRemediation: Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/events",
+              "id": "SS-048",
+              "name": "Unbounded event payload",
+              "properties": {
+                "category": "events",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/events",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unbounded event payload"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A public entry point converts caller-supplied bytes to a `String` with `from_utf8(...).unwrap()`/`.expect(...)` or `from_utf8_unchecked`. Invalid UTF-8 makes the first two panic and the last one produce an unsound `String`, so a crafted argument can abort or corrupt the call."
+              },
+              "help": {
+                "markdown": "## Unchecked bytes-to-string conversion\n\nA public entry point converts caller-supplied bytes to a `String` with `from_utf8(...).unwrap()`/`.expect(...)` or `from_utf8_unchecked`. Invalid UTF-8 makes the first two panic and the last one produce an unsound `String`, so a crafted argument can abort or corrupt the call.\n\n### Remediation\n\nHandle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes.\n\n### References\n\n- https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8\n- https://doc.rust-lang.org/std/str/fn.from_utf8.html",
+                "text": "A public entry point converts caller-supplied bytes to a `String` with `from_utf8(...).unwrap()`/`.expect(...)` or `from_utf8_unchecked`. Invalid UTF-8 makes the first two panic and the last one produce an unsound `String`, so a crafted argument can abort or corrupt the call.\n\nRemediation: Handle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes."
+              },
+              "helpUri": "https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8",
+              "id": "SS-049",
+              "name": "Unchecked bytes-to-string conversion",
+              "properties": {
+                "category": "error-handling",
+                "confidence": "high",
+                "references": [
+                  "https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8",
+                  "https://doc.rust-lang.org/std/str/fn.from_utf8.html"
+                ],
+                "remediation": "Handle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unchecked bytes-to-string conversion"
               }
             }
           ],

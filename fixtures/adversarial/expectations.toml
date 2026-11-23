@@ -213,3 +213,24 @@ file = "SS-039/sample.rs"
 expect = "trigger"
 why = "A persistent get split across lines is still a read with no TTL extension in the entry point or its helpers."
 
+
+[SS-046]
+file = "SS-046/sample.rs"
+expect = "trigger"
+why = "A storage chain and key construction split across lines still use one key for two struct value shapes."
+
+[SS-047]
+file = "SS-047/sample.rs"
+expect = "trigger"
+why = "An alias of an alias still reaches the ledger timestamp, and the split comparison has no tolerance window."
+
+[SS-048]
+file = "SS-048/sample.rs"
+expect = "trigger"
+why = "A publish chain split across lines still carries an unbounded Vec parameter as the event payload."
+
+[SS-049]
+file = "SS-049/sample.rs"
+expect = "trigger"
+why = "A from_utf8 result split across lines is still unwrapped, so invalid UTF-8 panics."
+

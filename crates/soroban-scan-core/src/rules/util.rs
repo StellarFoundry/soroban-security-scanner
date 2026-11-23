@@ -132,6 +132,96 @@ pub enum CastOrigin {
     Other,
 }
 
+/// Signedness of a Rust integer type.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum IntegerSignedness {
+    /// `i8`, `i16`, `i32`, `i64`, `i128`, `i256`, `isize`.
+    Signed,
+    /// `u8`, `u16`, `u32`, `u64`, `u128`, `u256`, `usize`.
+    Unsigned,
+}
+
+/// A Rust integer type name reduced to its width and signedness.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct IntegerType {
+    /// Signedness.
+    pub signedness: IntegerSignedness,
+    /// Width in bits.
+    pub bits: u32,
+}
+
+impl IntegerType {
+    /// Parses an integer type name, accepting a leading reference and a
+    /// qualified path (`&u32`, `std::primitive::i128`).
+    ///
+    /// Returns `None` for every non-integer type; callers must keep the operand
+    /// unknown instead of guessing.
+    pub fn parse(type_text: &str) -> Option<Self> {
+        let text = type_text.trim().trim_start_matches('&').trim();
+        let name = text.rsplit("::").next().unwrap_or(text).trim();
+        let (signedness, bits) = match name {
+            "u8" => (IntegerSignedness::Unsigned, 8),
+            "u16" => (IntegerSignedness::Unsigned, 16),
+            "u32" => (IntegerSignedness::Unsigned, 32),
+            "u64" | "usize" => (IntegerSignedness::Unsigned, 64),
+            "u128" => (IntegerSignedness::Unsigned, 128),
+            "u256" => (IntegerSignedness::Unsigned, 256),
+            "i8" => (IntegerSignedness::Signed, 8),
+            "i16" => (IntegerSignedness::Signed, 16),
+            "i32" => (IntegerSignedness::Signed, 32),
+            "i64" | "isize" => (IntegerSignedness::Signed, 64),
+            "i128" => (IntegerSignedness::Signed, 128),
+            "i256" => (IntegerSignedness::Signed, 256),
+            _ => return None,
+        };
+        Some(IntegerType { signedness, bits })
+    }
+}
+
+/// A cast between two concrete integer types.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct IntegerCast {
+    /// Source integer type.
+    pub source: IntegerType,
+    /// Destination integer type.
+    pub target: IntegerType,
+}
+
+impl IntegerCast {
+    /// True when the destination is narrower than the source, so high bits are
+    /// truncated.
+    pub fn is_truncating(self) -> bool {
+        self.target.bits < self.source.bits
+    }
+
+    /// True when the cast changes signedness.
+    pub fn changes_signedness(self) -> bool {
+        self.source.signedness != self.target.signedness
+    }
+
+    /// True when some source values do not round-trip through the target.
+    ///
+    /// This covers truncation as well as signedness changes: a negative signed
+    /// value reinterpreted as unsigned, or an unsigned value that does not fit
+    /// in a signed target, is potentially lossy even at the same width.
+    pub fn is_lossy(self) -> bool {
+        match (self.source.signedness, self.target.signedness) {
+            // Same signedness: only an overflow at the high end is possible.
+            (IntegerSignedness::Signed, IntegerSignedness::Signed)
+            | (IntegerSignedness::Unsigned, IntegerSignedness::Unsigned) => {
+                self.target.bits < self.source.bits
+            }
+            // Negative signed values cannot be represented as unsigned, even
+            // when the target is wider.
+            (IntegerSignedness::Signed, IntegerSignedness::Unsigned) => true,
+            // An unsigned maximum fits only when the signed target is wider.
+            (IntegerSignedness::Unsigned, IntegerSignedness::Signed) => {
+                self.target.bits <= self.source.bits
+            }
+        }
+    }
+}
+
 /// A cast fact (`expr as Type`).
 ///
 /// `source_type` is only populated when the source makes it visible: a literal
@@ -145,6 +235,10 @@ pub struct CastFact {
     pub source_type: String,
     /// Rendered target type.
     pub target_type: String,
+    /// Source integer type when visible and known.
+    pub source_integer: Option<IntegerType>,
+    /// Destination integer type when visible and known.
+    pub target_integer: Option<IntegerType>,
     /// Where the operand comes from.
     pub origin: CastOrigin,
     /// 1-based line.
@@ -153,6 +247,26 @@ pub struct CastFact {
     pub column: usize,
     /// Rendered cast text (may be truncated).
     pub text: String,
+}
+
+impl CastFact {
+    /// The concrete integer cast, when both types are visible and are integers.
+    ///
+    /// An unknown operand yields `None`; the cast is never guessed.
+    pub fn integer_cast(&self) -> Option<IntegerCast> {
+        Some(IntegerCast {
+            source: self.source_integer?,
+            target: self.target_integer?,
+        })
+    }
+
+    /// True when the cast can truncate or change signedness.
+    ///
+    /// `false` when either type is unknown, because losslessness cannot be
+    /// proven.
+    pub fn is_potentially_lossy(&self) -> bool {
+        self.integer_cast().is_some_and(IntegerCast::is_lossy)
+    }
 }
 
 /// Returns the bit width of a Rust integer type name, if it is one.
@@ -217,11 +331,15 @@ pub fn cast_facts(block: &syn::Block, param_types: &BTreeMap<String, String>) ->
 
         fn visit_expr_cast(&mut self, node: &'ast syn::ExprCast) {
             let (line, column) = span_line_col(node);
+            let source_type =
+                source_type_of(&node.expr, self.param_types, &self.local_types).unwrap_or_default();
+            let target_type = node.ty.to_token_stream().to_string();
             self.casts.push(CastFact {
                 source: truncate(&node.expr.to_token_stream().to_string(), 120),
-                source_type: source_type_of(&node.expr, self.param_types, &self.local_types)
-                    .unwrap_or_default(),
-                target_type: node.ty.to_token_stream().to_string(),
+                source_integer: IntegerType::parse(&source_type),
+                target_integer: IntegerType::parse(&target_type),
+                source_type,
+                target_type,
                 origin: origin_of(
                     &node.expr,
                     self.param_types,
@@ -1297,5 +1415,76 @@ mod tests {
         assert_eq!(integer_bit_width("usize"), Some(64));
         assert_eq!(integer_bit_width("bool"), None);
         assert_eq!(integer_bit_width("Address"), None);
+    }
+
+    #[test]
+    fn classifies_integer_cast_lossiness() {
+        let cast = |source: &str, target: &str| IntegerCast {
+            source: IntegerType::parse(source).unwrap(),
+            target: IntegerType::parse(target).unwrap(),
+        };
+        // Widening keeps every value.
+        assert!(!cast("u32", "u64").is_lossy());
+        assert!(!cast("u32", "i64").is_lossy());
+        assert!(!cast("i32", "i64").is_lossy());
+        // Narrowing truncates.
+        assert!(cast("u64", "u32").is_truncating());
+        assert!(cast("u64", "u32").is_lossy());
+        // Signedness changes are marked even at the same width.
+        assert!(cast("i64", "u64").changes_signedness());
+        assert!(cast("i64", "u64").is_lossy());
+        assert!(cast("u64", "i64").is_lossy());
+        // A negative value never fits an unsigned target, regardless of width.
+        assert!(cast("i32", "u64").is_lossy());
+        // Non-integer operands stay unknown.
+        assert_eq!(IntegerType::parse("Address"), None);
+        assert_eq!(IntegerType::parse("Map<Symbol, u32>"), None);
+    }
+
+    #[test]
+    fn casts_carry_integer_types_and_lossiness() {
+        let block = syn::parse_file(
+            r#"
+            fn f(amount: i128, count: u32) {
+                let _ = amount as u32;
+                let _ = count as u64;
+                let _ = amount as u64;
+                let _ = 1u64 as u32;
+                let unknown = compute();
+                let _ = unknown as u8;
+            }
+            "#,
+        )
+        .unwrap();
+        let syn::Item::Fn(function) = &block.items[0] else {
+            panic!("expected a function");
+        };
+        let params: BTreeMap<String, String> = [
+            ("amount".to_string(), "i128".to_string()),
+            ("count".to_string(), "u32".to_string()),
+        ]
+        .into_iter()
+        .collect();
+        let casts = cast_facts(&function.block, &params);
+
+        let narrowing = &casts[0];
+        assert_eq!(narrowing.source_integer, IntegerType::parse("i128"));
+        assert_eq!(narrowing.target_integer, IntegerType::parse("u32"));
+        assert!(narrowing.is_potentially_lossy());
+
+        let widening = &casts[1];
+        assert!(!widening.is_potentially_lossy());
+
+        let signedness = &casts[2];
+        assert!(signedness.integer_cast().unwrap().changes_signedness());
+        assert!(signedness.is_potentially_lossy());
+
+        // A literal suffix is visible, so the cast is classified.
+        assert!(casts[3].is_potentially_lossy());
+
+        // An operand with no visible type stays unknown, never guessed.
+        assert_eq!(casts[4].source_integer, None);
+        assert_eq!(casts[4].integer_cast(), None);
+        assert!(!casts[4].is_potentially_lossy());
     }
 }

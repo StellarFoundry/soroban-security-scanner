@@ -134,10 +134,29 @@ rule applies to amount and address sanitizers.
   `MAX_ITERATIONS`. Exceeding a cap produces `Unknown` or truncation, never a
   guessed path.
 
+## Diagnostics for unresolved flows
+
+`unresolved_flow_diagnostics(source, relative_path)` reports why a taint rule may
+have declined to fire. It runs the same per-entry-point analysis as the flow
+APIs and records three bounded reasons:
+
+- `unresolved_call`: a free function called with tainted arguments is not
+  defined in the file, so the analysis cannot follow it.
+- `unsupported_syntax`: a tainted value reaches a construct the propagation pass
+  does not model (for example a `match` expression or a closure).
+- `truncated`: a helper, depth, or flow bound was reached.
+
+The records are aggregated per source file by `(reason, sink)` with the first
+span, bounded to `MAX_TAINT_DIAGNOSTICS`, and emitted in the report as
+`TAINT-001` diagnostics. Only counts and fixed labels are included: no
+expression, argument, literal, function name, or other source text is stored or
+reported. A `TAINT-001` diagnostic never changes a finding and is never a finding
+itself.
+
 ## See also
 
-- [Diagnostics](diagnostics.md) — `TYPE-001` for unresolved and ambiguous type
-  names.
+- [Diagnostics](diagnostics.md) - `TYPE-001` for unresolved and ambiguous type
+  names and `TAINT-001` for unresolved taint flows.
 - [`SS-014`](rules/detectors/SS-014.md) — token transfer amount validation.
 - [`SS-044`](rules/detectors/SS-044.md) — cross-contract address argument validation, built on `address_argument_flows`.
 - [`SS-018`](rules/detectors/SS-018.md) — unchecked integer casts.

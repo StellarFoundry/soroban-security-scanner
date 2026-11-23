@@ -337,6 +337,66 @@ fn language_server_loads_and_reloads_workspace_configuration() {
     let _ = fs::remove_dir_all(root);
 }
 
+#[test]
+fn large_documents_are_bounded_and_truncation_is_reported() {
+    let mut client = Client::spawn();
+    client.send(&request(
+        1,
+        "initialize",
+        json!({ "processId": null, "capabilities": {} }),
+    ));
+    client.recv_until(|message| message["id"] == json!(1));
+    client.send(&notification("initialized", json!({})));
+
+    // Enough violating entry points to exceed the diagnostic cap.
+    let mut noisy =
+        String::from("use soroban_sdk::{contractimpl, Env};\n#[contractimpl]\nimpl Vault {\n");
+    for i in 0..300 {
+        noisy.push_str(&format!(
+            "    pub fn f{i}(env: Env, value: u32) {{ env.storage().persistent().set(&{i}u32, &value); }}\n"
+        ));
+    }
+    noisy.push_str("}\n");
+    let noisy_uri = "file:///tmp/soroban-scan-lsp-noisy.rs";
+    client.send(&did_open(noisy_uri, &noisy));
+    let noisy_diagnostics = client.recv_until(diagnostics_for(noisy_uri));
+    let codes = rule_codes(&noisy_diagnostics);
+    assert!(
+        codes.contains(&"LSP-DIAGNOSTICS-TRUNCATED"),
+        "expected a truncation diagnostic, got: {noisy_diagnostics}"
+    );
+    let count = noisy_diagnostics["params"]["diagnostics"]
+        .as_array()
+        .expect("diagnostics array")
+        .len();
+    assert!(count <= 201, "diagnostics were not capped: {count}");
+
+    // A document over the size limit is kept for outline/hover but not scanned.
+    let oversized = format!("// {}\n", "x".repeat(1024 * 1024 + 1));
+    let large_uri = "file:///tmp/soroban-scan-lsp-large.rs";
+    client.send(&did_open(large_uri, &oversized));
+    let large_diagnostics = client.recv_until(diagnostics_for(large_uri));
+    assert!(
+        rule_codes(&large_diagnostics).contains(&"LSP-DOCUMENT-LIMIT"),
+        "expected a document-limit diagnostic, got: {large_diagnostics}"
+    );
+
+    // The server must still answer requests after skipping the large document.
+    client.send(&request(
+        2,
+        "textDocument/documentSymbol",
+        json!({ "textDocument": { "uri": large_uri } }),
+    ));
+    let symbols = client.recv_until(|message| message["id"] == json!(2));
+    assert!(symbols["result"].is_array());
+
+    client.send(&request(3, "shutdown", Value::Null));
+    client.recv_until(|message| message["id"] == json!(3));
+    client.send(&notification("exit", Value::Null));
+    let status = client.wait_for_exit(Duration::from_secs(10));
+    assert!(status.success(), "language server exited with {status:?}");
+}
+
 fn rule_id_position(text: &str, rule: &str) -> (usize, usize) {
     for (line, content) in text.lines().enumerate() {
         if let Some(byte) = content.find(rule) {

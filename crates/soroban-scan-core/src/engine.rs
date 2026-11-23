@@ -545,7 +545,12 @@ fn annotate_reachability(sources: &[ParsedSource], findings: &mut [Finding]) {
             source
                 .functions
                 .iter()
-                .filter(|function| function.is_contract_entry_point && function.line == range.0)
+                .filter(|function| {
+                    // `FunctionSummary::end_line` covers the signature, while the
+                    // CFG range covers the body. Match the function by the CFG
+                    // start line so findings inside the body are attributed.
+                    function.is_contract_entry_point && function.line == range.0
+                })
                 .map(|function| function.qualified_name.clone())
                 .next()
         });
@@ -831,6 +836,73 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
     scan_with_hooks(loaded, registry, config, &PipelineHooks::default())
 }
 
+/// Reports control-flow graphs that hit a builder cap.
+///
+/// A truncated graph cannot prove reachability, so consumers skip the function.
+/// The diagnostic makes that skip observable instead of leaving a silent gap.
+/// The list is sorted and capped so a pathological file cannot flood the report.
+fn cfg_truncation_diagnostics(
+    ctx: &AnalysisContext<'_>,
+    sources: &[ParsedSource],
+) -> Vec<Diagnostic> {
+    let mut found = Vec::new();
+    for source in sources {
+        let Some(file) = &source.syntax else {
+            continue;
+        };
+        for func in crate::rules::util::contract_entry_functions(file) {
+            if !func.is_public {
+                continue;
+            }
+            let graph = ctx.cfg_for_function(source, &func);
+            if !graph.truncated {
+                continue;
+            }
+            let mut diagnostic = Diagnostic::warning(
+                DiagnosticCode::CfgTruncated,
+                format!(
+                    "control-flow graph for `{}` was truncated at {} node(s) and {} \
+                     edge(s) (caps: {} nodes, {} edges, depth {}); rules that need a \
+                     complete graph skipped this function",
+                    func.name,
+                    graph.nodes.len(),
+                    graph.edges.len(),
+                    cfg::MAX_CFG_NODES,
+                    cfg::MAX_CFG_EDGES,
+                    cfg::MAX_CFG_DEPTH
+                ),
+                Some(ctx.relative_path(&source.path)),
+            );
+            diagnostic.line = Some(func.line);
+            found.push(diagnostic);
+        }
+    }
+    found.sort_by(|a, b| {
+        (
+            a.path
+                .as_ref()
+                .map(|path| path.to_string_lossy().replace('\\', "/")),
+            a.line.unwrap_or(0),
+        )
+            .cmp(&(
+                b.path
+                    .as_ref()
+                    .map(|path| path.to_string_lossy().replace('\\', "/")),
+                b.line.unwrap_or(0),
+            ))
+    });
+    if found.len() > cfg::MAX_CFG_DIAGNOSTICS {
+        let omitted = found.len() - cfg::MAX_CFG_DIAGNOSTICS;
+        found.truncate(cfg::MAX_CFG_DIAGNOSTICS);
+        found.push(Diagnostic::info(
+            DiagnosticCode::CfgTruncated,
+            format!("{omitted} additional control-flow graph truncation diagnostic(s) omitted"),
+            None,
+        ));
+    }
+    found
+}
+
 /// Runs the scanner over a loaded project with optional pipeline hooks.
 ///
 /// This is an additive variant of [`scan`]. Discovery and parsing already
@@ -926,6 +998,49 @@ pub fn scan_with_hooks(
             ));
         }
         diagnostics.extend(type_diagnostics);
+    }
+
+    if analysis_mode == AnalysisMode::Soroban {
+        diagnostics.extend(cfg_truncation_diagnostics(&ctx, &loaded.sources));
+    }
+
+    // Taint rules can decline to fire when a helper is undefined, a construct is
+    // outside the model, or a bound is reached. Surface that as bounded,
+    // aggregated, source-text-free diagnostics.
+    if analysis_mode == AnalysisMode::Soroban {
+        let mut taint_diagnostics = Vec::new();
+        for source in &loaded.sources {
+            let relative = ctx.relative_path(&source.path);
+            taint_diagnostics.extend(crate::analysis::taint::unresolved_flow_diagnostics(
+                source, &relative,
+            ));
+        }
+        taint_diagnostics.sort_by(|a, b| {
+            (
+                a.path
+                    .as_ref()
+                    .map(|path| path.to_string_lossy().replace('\\', "/")),
+                a.line.unwrap_or(0),
+                a.column.unwrap_or(0),
+            )
+                .cmp(&(
+                    b.path
+                        .as_ref()
+                        .map(|path| path.to_string_lossy().replace('\\', "/")),
+                    b.line.unwrap_or(0),
+                    b.column.unwrap_or(0),
+                ))
+        });
+        if taint_diagnostics.len() > crate::analysis::taint::MAX_TAINT_DIAGNOSTICS {
+            let omitted = taint_diagnostics.len() - crate::analysis::taint::MAX_TAINT_DIAGNOSTICS;
+            taint_diagnostics.truncate(crate::analysis::taint::MAX_TAINT_DIAGNOSTICS);
+            taint_diagnostics.push(Diagnostic::info(
+                DiagnosticCode::TaintIncomplete,
+                format!("{omitted} additional taint diagnostic(s) omitted"),
+                None,
+            ));
+        }
+        diagnostics.extend(taint_diagnostics);
     }
 
     let mut stats = ScanStats {

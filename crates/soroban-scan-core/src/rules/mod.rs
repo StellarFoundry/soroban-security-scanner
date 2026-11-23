@@ -17,6 +17,7 @@ mod cross_contract_before_state_update;
 mod current_contract_address_auth;
 mod deprecated_sdk;
 mod deprecated_sdk_api_usage;
+mod duplicate_storage_key_construction;
 mod hardcoded_address;
 mod ignored_checked_result;
 mod ignored_cross_contract_result;
@@ -37,10 +38,13 @@ mod temporary_storage_durable_state;
 mod token_transfer_amount;
 mod ttl_management;
 mod unbounded_bytes_persistence;
+mod unbounded_event_payload;
 mod unbounded_iteration;
 mod unbounded_vec_growth;
 mod unchecked_arithmetic;
+mod unchecked_bytes_to_string;
 mod unchecked_integer_cast;
+mod unchecked_ledger_timestamp_usage;
 mod unprotected_initializer;
 mod unreachable_security_check;
 mod unsafe_code;
@@ -133,6 +137,14 @@ pub fn register_all(registry: &mut RuleRegistry) -> Result<(), RegistryError> {
     registry.register(Box::new(
         unreachable_security_check::UnreachableSecurityCheck,
     ))?;
+    registry.register(Box::new(
+        duplicate_storage_key_construction::DuplicateStorageKeyConstruction,
+    ))?;
+    registry.register(Box::new(
+        unchecked_ledger_timestamp_usage::UncheckedLedgerTimestampUsage,
+    ))?;
+    registry.register(Box::new(unbounded_event_payload::UnboundedEventPayload))?;
+    registry.register(Box::new(unchecked_bytes_to_string::UncheckedBytesToString))?;
     Ok(())
 }
 
@@ -152,7 +164,7 @@ mod tests {
                 "SS-017", "SS-018", "SS-019", "SS-020", "SS-021", "SS-022", "SS-023", "SS-024",
                 "SS-025", "SS-026", "SS-027", "SS-028", "SS-029", "SS-030", "SS-031", "SS-032",
                 "SS-033", "SS-034", "SS-035", "SS-036", "SS-037", "SS-039", "SS-041", "SS-042",
-                "SS-044"
+                "SS-044", "SS-046", "SS-047", "SS-048", "SS-049"
             ]
         );
     }

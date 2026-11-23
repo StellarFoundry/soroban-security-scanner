@@ -8,7 +8,7 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 166,
+    "source_files": 190,
     "soroban_sdk_versions": []
   },
   "stats": {
@@ -179,13 +179,13 @@
         }
       ]
     },
-    "files_analyzed": 166,
-    "files_parsed": 166,
+    "files_analyzed": 190,
+    "files_parsed": 190,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 41,
+    "rules_run": 45,
     "rules_skipped": 0,
-    "findings_raw": 336,
+    "findings_raw": 376,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -197,15 +197,15 @@
     "generated_files_excluded": 0,
     "findings_by_category": {
       "access-control": 11,
-      "arithmetic": 8,
-      "authorization": 59,
+      "arithmetic": 13,
+      "authorization": 66,
       "configuration": 3,
       "cross-contract": 68,
       "dependencies": 3,
-      "error-handling": 25,
-      "events": 23,
+      "error-handling": 31,
+      "events": 26,
       "resource-usage": 3,
-      "storage": 88,
+      "storage": 107,
       "token": 44,
       "unsafe": 1
     }
@@ -280,7 +280,8 @@
         "661329002094a11864b18361688ec9d6",
         "e110395ff3f6329d1b4e10dcc87ef51f"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-661329002094a11864b18361688ec9d6"
     },
     {
       "rule_id": "SS-001",
@@ -307,7 +308,8 @@
       "related": [
         "081e0141f5201a517f311d3ea111a6c4"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-081e0141f5201a517f311d3ea111a6c4"
     },
     {
       "rule_id": "SS-001",
@@ -334,7 +336,8 @@
       "related": [
         "95cd5eeb72a9efc15496a8c1d7916d67"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-95cd5eeb72a9efc15496a8c1d7916d67"
     },
     {
       "rule_id": "SS-001",
@@ -361,7 +364,8 @@
       "related": [
         "8e915611cfb7d11a563968c7b7bd2af4"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-8e915611cfb7d11a563968c7b7bd2af4"
     },
     {
       "rule_id": "SS-001",
@@ -387,7 +391,8 @@
       },
       "related": [
         "95b2ae1df09dff1b1d86d07c95b964b5"
-      ]
+      ],
+      "group_id": "group-2693cc4c84faf22776dd204da8c1f8c4"
     },
     {
       "rule_id": "SS-001",
@@ -413,7 +418,8 @@
       },
       "related": [
         "bb1abfaecd4b8442a9ea052e06cf9ccb"
-      ]
+      ],
+      "group_id": "group-193e358f4a82348ecf21de0a35ec158d"
     },
     {
       "rule_id": "SS-001",
@@ -439,7 +445,8 @@
       },
       "related": [
         "56712e7374e1b71b081e1b2acd1a0708"
-      ]
+      ],
+      "group_id": "group-56712e7374e1b71b081e1b2acd1a0708"
     },
     {
       "rule_id": "SS-001",
@@ -467,7 +474,8 @@
         "b1e4cf218a5ed9689787bebd39412d3e",
         "dc609f3069ca74e4358813dadce5d9e4"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-b1e4cf218a5ed9689787bebd39412d3e"
     },
     {
       "rule_id": "SS-001",
@@ -495,7 +503,8 @@
         "2ac2897090d1ecd72453fd5af19f6387",
         "a26955621a43cd95b5ff53606111d3ec"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2ac2897090d1ecd72453fd5af19f6387"
     },
     {
       "rule_id": "SS-001",
@@ -523,7 +532,8 @@
         "0d11170fbdae7d05de08d58d3faad85e",
         "ccee50206e3f5ad36dc0b82be4da9d72"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0297bd333ae8bd85e622642073e257d8"
     },
     {
       "rule_id": "SS-001",
@@ -551,7 +561,8 @@
         "46ff535f980da7e6d80328e1a2a641d8",
         "a294c57f05be0627bbf48fd92932e071"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-46ff535f980da7e6d80328e1a2a641d8"
     },
     {
       "rule_id": "SS-001",
@@ -580,7 +591,8 @@
         "53b3aca264cd5312ab7cb35db92a0f26",
         "75019a8663138f87811480b25147c5ce"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-039db96b21a90887b7223acbae663ab9"
     },
     {
       "rule_id": "SS-001",
@@ -607,7 +619,8 @@
       "related": [
         "4c717380a94b9599f33894136ee7573e"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-4266573d71d97557c0a370ba11282c46"
     },
     {
       "rule_id": "SS-001",
@@ -634,7 +647,8 @@
       "related": [
         "9e6235e6af26cd33cd3d0c4df78cb9ff"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-13479d49c4d00c19c7009826a649b57c"
     },
     {
       "rule_id": "SS-001",
@@ -661,7 +675,8 @@
       "related": [
         "7c0187710f5a7946468cee8f6eed300a"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-7c0187710f5a7946468cee8f6eed300a"
     },
     {
       "rule_id": "SS-001",
@@ -688,7 +703,8 @@
       "related": [
         "1b817a9cf8e8c6fcce93cb968585a84d"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-1b817a9cf8e8c6fcce93cb968585a84d"
     },
     {
       "rule_id": "SS-001",
@@ -715,7 +731,8 @@
       "related": [
         "87a76d3c698134ccf4a8389e7718285d"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-5c3fa64e6e570324688bed66d18ca426"
     },
     {
       "rule_id": "SS-001",
@@ -742,7 +759,8 @@
       "related": [
         "2528c0d9d700e7d35b6af55e5c455d0d"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2528c0d9d700e7d35b6af55e5c455d0d"
     },
     {
       "rule_id": "SS-001",
@@ -769,7 +787,8 @@
       "related": [
         "6a579809f30b4ea6f2b470881ba456be"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-6a579809f30b4ea6f2b470881ba456be"
     },
     {
       "rule_id": "SS-001",
@@ -796,7 +815,8 @@
       "related": [
         "16ecc88fdd2bf218c7db9e6a3fd04f37"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-16ecc88fdd2bf218c7db9e6a3fd04f37"
     },
     {
       "rule_id": "SS-001",
@@ -824,7 +844,8 @@
         "0e31c94f8f3fbfef435c4005f47e71d4",
         "f2d02bc6d17e9f687515f2857255cb8e"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0e31c94f8f3fbfef435c4005f47e71d4"
     },
     {
       "rule_id": "SS-001",
@@ -851,7 +872,8 @@
       "related": [
         "8cbf9c0252485933744e05bd6bafcf1c"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-1670ea29badda93d45f1893af80f9d1f"
     },
     {
       "rule_id": "SS-001",
@@ -879,7 +901,8 @@
         "3dfb5aae09dd9b505a0996b41cfc753c",
         "a7cc2c88fccb0642bd7037ca3f6d21f2"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-3dfb5aae09dd9b505a0996b41cfc753c"
     },
     {
       "rule_id": "SS-001",
@@ -906,7 +929,8 @@
       "related": [
         "25d152fd88ac81caa0bd0275b2ab4fba"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-25d152fd88ac81caa0bd0275b2ab4fba"
     },
     {
       "rule_id": "SS-001",
@@ -934,7 +958,8 @@
         "17e1f27c6f5cc90d25493e1875811b98",
         "977717cb945ed2b2f37d818963cceba3"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-17e1f27c6f5cc90d25493e1875811b98"
     },
     {
       "rule_id": "SS-001",
@@ -962,7 +987,8 @@
         "0cb1efb1a006f0e476a1be0487adfab4",
         "5555426d372f99e3d602cf38d65acf4c"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0cb1efb1a006f0e476a1be0487adfab4"
     },
     {
       "rule_id": "SS-001",
@@ -990,7 +1016,8 @@
         "04637f34a8290f5734c2f0436359c2bc",
         "28e8764093d6d631285f4c302b420684"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-04637f34a8290f5734c2f0436359c2bc"
     },
     {
       "rule_id": "SS-001",
@@ -1018,7 +1045,8 @@
         "7322879d377122e5338cb715ae0c4186",
         "9f645cbf384d9657ac5bbcdadeeb9144"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-7322879d377122e5338cb715ae0c4186"
     },
     {
       "rule_id": "SS-001",
@@ -1069,7 +1097,8 @@
         "852b64bc1ec2a632158cd1bb5757b199",
         "aa9c9ef26230bfef934d82ca38df7b15"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-852b64bc1ec2a632158cd1bb5757b199"
     },
     {
       "rule_id": "SS-001",
@@ -1164,7 +1193,8 @@
       },
       "related": [
         "0f62769aa68303799bfc41e2a79f8861"
-      ]
+      ],
+      "group_id": "group-0f62769aa68303799bfc41e2a79f8861"
     },
     {
       "rule_id": "SS-001",
@@ -1190,7 +1220,8 @@
       },
       "related": [
         "73041493412dc2e5c7f7f7bfe515c335"
-      ]
+      ],
+      "group_id": "group-73041493412dc2e5c7f7f7bfe515c335"
     },
     {
       "rule_id": "SS-001",
@@ -1217,7 +1248,8 @@
       "related": [
         "896f4cd2636fb46c5dc433890edbed13"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-896f4cd2636fb46c5dc433890edbed13"
     },
     {
       "rule_id": "SS-001",
@@ -1243,7 +1275,8 @@
       },
       "related": [
         "6fc60f6ec5780151995fae2f56cdc771"
-      ]
+      ],
+      "group_id": "group-6fc60f6ec5780151995fae2f56cdc771"
     },
     {
       "rule_id": "SS-001",
@@ -1271,7 +1304,8 @@
         "431c0acb156f003e5e1979a7221ee718",
         "ade9c6081a006f620a73a3e72655568d"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-11d86bada61e82188159d467e30aab12"
     },
     {
       "rule_id": "SS-027",
@@ -1322,7 +1356,8 @@
       "related": [
         "1d1db31d573676e9ed1bf9f0b4df12da"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-1d1db31d573676e9ed1bf9f0b4df12da"
     },
     {
       "rule_id": "SS-001",
@@ -1349,7 +1384,8 @@
       "related": [
         "b83c4a6cd821a6c273aef3c46054e728"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0a689d578d918651ed75f62df2df4563"
     },
     {
       "rule_id": "SS-001",
@@ -1376,7 +1412,8 @@
       "related": [
         "d2cc256db0361c3c0abd6cc3133ceca3"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-196cae8847f246987eea0907886b2346"
     },
     {
       "rule_id": "SS-001",
@@ -1403,7 +1440,8 @@
       "related": [
         "3860def458a71ab0ee0e2e0899610264"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-3860def458a71ab0ee0e2e0899610264"
     },
     {
       "rule_id": "SS-035",
@@ -1453,7 +1491,8 @@
       },
       "related": [
         "5324ac98037688f608f5ccdcf92f3929"
-      ]
+      ],
+      "group_id": "group-26f40bd11c8b96b541374822f06fa692"
     },
     {
       "rule_id": "SS-001",
@@ -1478,7 +1517,199 @@
       },
       "related": [
         "4c1b130b1c40c0851bcc360e2ee36abe"
-      ]
+      ],
+      "group_id": "group-4c1b130b1c40c0851bcc360e2ee36abe"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-049/negative.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "b38aa4df2b382dc74164b6760f42ecb6",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_name"
+      },
+      "related": [
+        "b9328a393e90b88b1e97bc67b51b5fdb"
+      ],
+      "group_id": "group-b38aa4df2b382dc74164b6760f42ecb6"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-049/negative2.rs",
+        "line": 13,
+        "column": 17
+      },
+      "evidence": "`set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "c8235eaace7e49bbf5183f5deb5a6c92",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_name"
+      },
+      "related": [
+        "07f40caa91ced79a2fef0aaca14753d6"
+      ],
+      "group_id": "group-07f40caa91ced79a2fef0aaca14753d6"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-049/negative3.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "f585cde2091c1a7b0f574e6ac645f38e",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_name"
+      },
+      "related": [
+        "2bc8b98f658c7c959e3fc260fe9e8ec2"
+      ],
+      "group_id": "group-2bc8b98f658c7c959e3fc260fe9e8ec2"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-049/negative4.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "0d647291cc7330b5b0207a5dae07136f",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_name"
+      },
+      "related": [
+        "83f477e711a53c4edb2a436eb145b1c4"
+      ],
+      "group_id": "group-0d647291cc7330b5b0207a5dae07136f"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-049/negative5.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "bcbc4bf8f3846a25b53e32edf6b0731b",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_name"
+      },
+      "related": [
+        "c45831d99040d8c2bf8998b3beb7b4f8"
+      ],
+      "group_id": "group-bcbc4bf8f3846a25b53e32edf6b0731b"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-049/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "055b293f33f9de442bd89e94c7aac95a",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_name"
+      },
+      "related": [
+        "01c42f8d3f92a4dff264aa66598d8bc5"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-01c42f8d3f92a4dff264aa66598d8bc5"
+    },
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "description": "A public contract function mutates storage but does not call require_auth or require_auth_for_args anywhere in its body or in the intra-file helper functions it calls. Without an authorization check, any account can invoke the function and change contract state, which may allow theft, privilege escalation, or corruption of contract data. This is a heuristic: authorization may legitimately be enforced by a callee or be intentionally absent for permissionless operations.",
+      "severity": "high",
+      "confidence": "medium",
+      "category": "authorization",
+      "location": {
+        "file": "SS-049/positive.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "`set` storage mutation with no authorization in `set_description`: env . storage () . persistent () . set (& Key :: Description , & text)",
+      "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization"
+      ],
+      "fingerprint": "b96662552bfb718088584f4870316f78",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_description"
+      },
+      "related": [
+        "ee7bf8daf95d73015c44378c9db2b27e"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-b96662552bfb718088584f4870316f78"
     },
     {
       "rule_id": "SS-030",
@@ -1605,7 +1836,8 @@
       "related": [
         "74cf86ad21eed79956679865289208da"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-74cf86ad21eed79956679865289208da"
     },
     {
       "rule_id": "SS-030",
@@ -1633,7 +1865,8 @@
       "related": [
         "c399badb33485c8496d429125c15e476"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-74cf86ad21eed79956679865289208da"
     },
     {
       "rule_id": "SS-011",
@@ -1662,7 +1895,8 @@
         "6e620bd49a33ed5dd9e693eb21d2ee7b",
         "75019a8663138f87811480b25147c5ce"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-039db96b21a90887b7223acbae663ab9"
     },
     {
       "rule_id": "SS-002",
@@ -1689,7 +1923,8 @@
       "related": [
         "3ad6e609e43b4242f70de844c8b072fa"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-28fd1b7c89283ed13d151e50de739072"
     },
     {
       "rule_id": "SS-030",
@@ -1717,7 +1952,8 @@
       "related": [
         "28fd1b7c89283ed13d151e50de739072"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-28fd1b7c89283ed13d151e50de739072"
     },
     {
       "rule_id": "SS-002",
@@ -1743,7 +1979,8 @@
       },
       "related": [
         "898dec5e2d22a423180cfe2bdb77234d"
-      ]
+      ],
+      "group_id": "group-5fdcc5ba111ac7bed47f4d170941ec83"
     },
     {
       "rule_id": "SS-030",
@@ -1770,7 +2007,8 @@
       },
       "related": [
         "5fdcc5ba111ac7bed47f4d170941ec83"
-      ]
+      ],
+      "group_id": "group-5fdcc5ba111ac7bed47f4d170941ec83"
     },
     {
       "rule_id": "SS-002",
@@ -1797,7 +2035,8 @@
       "related": [
         "c3a8b4bbe274a02826b05c8a7eb26bdc"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-627c340067eaeb267b1fd346c78dda42"
     },
     {
       "rule_id": "SS-030",
@@ -1825,7 +2064,8 @@
       "related": [
         "627c340067eaeb267b1fd346c78dda42"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-627c340067eaeb267b1fd346c78dda42"
     },
     {
       "rule_id": "SS-002",
@@ -1852,7 +2092,8 @@
       "related": [
         "ba27766e93f440e49c92c70b74da3f6c"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-ba27766e93f440e49c92c70b74da3f6c"
     },
     {
       "rule_id": "SS-030",
@@ -1880,7 +2121,8 @@
       "related": [
         "f76644376aad7f3084b884153534e79e"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-ba27766e93f440e49c92c70b74da3f6c"
     },
     {
       "rule_id": "SS-013",
@@ -1911,7 +2153,8 @@
         "a540d0552854c83a2e514ebe3addb904",
         "d53729124e927bdf3c7454cc7eb67305"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64"
     },
     {
       "rule_id": "SS-028",
@@ -1942,7 +2185,8 @@
         "a540d0552854c83a2e514ebe3addb904",
         "d53729124e927bdf3c7454cc7eb67305"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64"
     },
     {
       "rule_id": "SS-030",
@@ -2069,7 +2313,8 @@
       "related": [
         "4818ed69d217652b629399ebefc4899f"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-16ecc88fdd2bf218c7db9e6a3fd04f37"
     },
     {
       "rule_id": "SS-011",
@@ -2097,7 +2342,8 @@
         "0e31c94f8f3fbfef435c4005f47e71d4",
         "bd967ce4f944e1ce41143b19ccf48d7e"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0e31c94f8f3fbfef435c4005f47e71d4"
     },
     {
       "rule_id": "SS-011",
@@ -2124,7 +2370,8 @@
       "related": [
         "1670ea29badda93d45f1893af80f9d1f"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-1670ea29badda93d45f1893af80f9d1f"
     },
     {
       "rule_id": "SS-011",
@@ -2152,7 +2399,8 @@
         "70433fc9d2d6b994e3b89ef11b97f9d2",
         "a7cc2c88fccb0642bd7037ca3f6d21f2"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-3dfb5aae09dd9b505a0996b41cfc753c"
     },
     {
       "rule_id": "SS-011",
@@ -2179,7 +2427,8 @@
       "related": [
         "fbeae4f63d1aeb884688ea3281d84736"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-25d152fd88ac81caa0bd0275b2ab4fba"
     },
     {
       "rule_id": "SS-011",
@@ -2207,7 +2456,8 @@
         "977717cb945ed2b2f37d818963cceba3",
         "f2be6e36496eb1c0e4effc18e7da8838"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-17e1f27c6f5cc90d25493e1875811b98"
     },
     {
       "rule_id": "SS-011",
@@ -2235,7 +2485,8 @@
         "0cb1efb1a006f0e476a1be0487adfab4",
         "64511a6c4862f557012e7a274614dbdf"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0cb1efb1a006f0e476a1be0487adfab4"
     },
     {
       "rule_id": "SS-011",
@@ -2263,7 +2514,8 @@
         "28e8764093d6d631285f4c302b420684",
         "40b18bea271c88c2b221edb11b7ea58b"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-04637f34a8290f5734c2f0436359c2bc"
     },
     {
       "rule_id": "SS-002",
@@ -2290,7 +2542,8 @@
       "related": [
         "a6833cca85cdefc6c3c3d976037c98b2"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-8a5f043f6501f9d291b36d7d1b4565e1"
     },
     {
       "rule_id": "SS-030",
@@ -2318,7 +2571,8 @@
       "related": [
         "8a5f043f6501f9d291b36d7d1b4565e1"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-8a5f043f6501f9d291b36d7d1b4565e1"
     },
     {
       "rule_id": "SS-002",
@@ -2345,7 +2599,8 @@
       "related": [
         "bc7f8d6006ab176203f70ac24ed3c3c8"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-256239d6165e9a6f5b11ea7beca1009e"
     },
     {
       "rule_id": "SS-030",
@@ -2373,7 +2628,8 @@
       "related": [
         "256239d6165e9a6f5b11ea7beca1009e"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-256239d6165e9a6f5b11ea7beca1009e"
     },
     {
       "rule_id": "SS-002",
@@ -2400,7 +2656,8 @@
       "related": [
         "469ced2b262aa986c5c7ad98822b5dd8"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-469ced2b262aa986c5c7ad98822b5dd8"
     },
     {
       "rule_id": "SS-030",
@@ -2428,7 +2685,8 @@
       "related": [
         "c87f9f55c61c007cfebbe82a8ef54571"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-469ced2b262aa986c5c7ad98822b5dd8"
     },
     {
       "rule_id": "SS-013",
@@ -2459,7 +2717,8 @@
         "dabd871e475d6d115bb8025943652d89",
         "ee16d4000bb6d884c3d94aa068300561"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-38596df81ee5f515b07be4226e5f9724"
     },
     {
       "rule_id": "SS-028",
@@ -2490,7 +2749,8 @@
         "abf517d48bfba243b2c0554830570edf",
         "ee16d4000bb6d884c3d94aa068300561"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-38596df81ee5f515b07be4226e5f9724"
     },
     {
       "rule_id": "SS-002",
@@ -2565,7 +2825,8 @@
       "related": [
         "b343b1171b31c9a5b9a58a8a01dd08ac"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2020f41b706098cbe1d7748dadd463cc"
     },
     {
       "rule_id": "SS-030",
@@ -2593,7 +2854,8 @@
       "related": [
         "2020f41b706098cbe1d7748dadd463cc"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2020f41b706098cbe1d7748dadd463cc"
     },
     {
       "rule_id": "SS-030",
@@ -2668,7 +2930,8 @@
       "related": [
         "cd14e6d032c2b9149a1616ac374a4148"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2e99ae2564152f54c6c0fb3db933002f"
     },
     {
       "rule_id": "SS-030",
@@ -2696,7 +2959,8 @@
       "related": [
         "2e99ae2564152f54c6c0fb3db933002f"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2e99ae2564152f54c6c0fb3db933002f"
     },
     {
       "rule_id": "SS-002",
@@ -2723,7 +2987,8 @@
       "related": [
         "fd3cf84445f4f4050a2de83a28f896d4"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-7f12d0173ea697e9a985a03d3aef0497"
     },
     {
       "rule_id": "SS-030",
@@ -2751,7 +3016,8 @@
       "related": [
         "7f12d0173ea697e9a985a03d3aef0497"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-7f12d0173ea697e9a985a03d3aef0497"
     },
     {
       "rule_id": "SS-002",
@@ -2778,7 +3044,8 @@
       "related": [
         "f026ae544ab95fd865ea98b161a9c77e"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-ae5cada40640045fc5e6d4bc771de9c3"
     },
     {
       "rule_id": "SS-030",
@@ -2806,7 +3073,8 @@
       "related": [
         "ae5cada40640045fc5e6d4bc771de9c3"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-ae5cada40640045fc5e6d4bc771de9c3"
     },
     {
       "rule_id": "SS-002",
@@ -2832,7 +3100,8 @@
       },
       "related": [
         "ac4a8287883c3f86ea90e00079c47064"
-      ]
+      ],
+      "group_id": "group-5337a1e054dca861298f2ab74368a3e7"
     },
     {
       "rule_id": "SS-030",
@@ -2859,7 +3128,8 @@
       },
       "related": [
         "5337a1e054dca861298f2ab74368a3e7"
-      ]
+      ],
+      "group_id": "group-5337a1e054dca861298f2ab74368a3e7"
     },
     {
       "rule_id": "SS-002",
@@ -2886,7 +3156,8 @@
       "related": [
         "5a1d0f25a4704d97bd42371d0570ef80"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-5a1d0f25a4704d97bd42371d0570ef80"
     },
     {
       "rule_id": "SS-030",
@@ -2914,7 +3185,8 @@
       "related": [
         "cb9154a32d7840fdc8322b83051c9757"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-5a1d0f25a4704d97bd42371d0570ef80"
     },
     {
       "rule_id": "SS-005",
@@ -2939,6 +3211,64 @@
         "reachability": "reachable",
         "entry_point": "Raw::load"
       }
+    },
+    {
+      "rule_id": "SS-049",
+      "title": "Unchecked bytes-to-string conversion",
+      "description": "A public entry point converts caller-supplied bytes to a `String` with `from_utf8(...).unwrap()`/`.expect(...)` or `from_utf8_unchecked`. Invalid UTF-8 makes the first two panic and the last one produce an unsound `String`, so a crafted argument can abort or corrupt the call.",
+      "severity": "medium",
+      "confidence": "high",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-049/positive.rs",
+        "line": 12,
+        "column": 20
+      },
+      "evidence": "`from_utf8` result is unwrapped with `unwrap` in entry point `set_name`, so invalid UTF-8 panics: String :: from_utf8 (bytes) . unwrap ()",
+      "remediation": "Handle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes.",
+      "references": [
+        "https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8",
+        "https://doc.rust-lang.org/std/str/fn.from_utf8.html"
+      ],
+      "fingerprint": "15ad3d38e97fb6dadcb0c4a8b73d392c",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_name"
+      },
+      "related": [
+        "6a600484c97d70aa5197db339a805466"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-15ad3d38e97fb6dadcb0c4a8b73d392c"
+    },
+    {
+      "rule_id": "SS-049",
+      "title": "Unchecked bytes-to-string conversion",
+      "description": "A public entry point converts caller-supplied bytes to a `String` with `from_utf8(...).unwrap()`/`.expect(...)` or `from_utf8_unchecked`. Invalid UTF-8 makes the first two panic and the last one produce an unsound `String`, so a crafted argument can abort or corrupt the call.",
+      "severity": "medium",
+      "confidence": "high",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-049/positive.rs",
+        "line": 17,
+        "column": 20
+      },
+      "evidence": "`from_utf8` result is unwrapped with `expect` in entry point `set_description`, so invalid UTF-8 panics: std :: str :: from_utf8 (& bytes) . expect (\"valid utf-8\")",
+      "remediation": "Handle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes.",
+      "references": [
+        "https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8",
+        "https://doc.rust-lang.org/std/str/fn.from_utf8.html"
+      ],
+      "fingerprint": "c1336fd5d5741a3e5487e4fd959501f0",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_description"
+      },
+      "related": [
+        "2ab86cffaba4ec1209dce3d7d15d1726"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-2ab86cffaba4ec1209dce3d7d15d1726"
     },
     {
       "rule_id": "SS-019",
@@ -2967,7 +3297,8 @@
         "0be9f5344f226568677ab5e99abfc6f4",
         "d5475c0cbf4d93267f0783dbf8255c86"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0be9f5344f226568677ab5e99abfc6f4"
     },
     {
       "rule_id": "SS-019",
@@ -2996,7 +3327,8 @@
         "8adc97c9ebea073ca91b1be726aadb3c",
         "a362fd34490f0f54cfdbbb67ce42d6ee"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-8adc97c9ebea073ca91b1be726aadb3c"
     },
     {
       "rule_id": "SS-019",
@@ -3025,7 +3357,8 @@
         "7d4a08e424b4e0ffc20ef938ea5e2000",
         "eef1aae7728ff3da31ba5b3bb1fc3ca2"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-7d4a08e424b4e0ffc20ef938ea5e2000"
     },
     {
       "rule_id": "SS-019",
@@ -3054,7 +3387,8 @@
         "328b650bdb827caae9d740968006f0dc",
         "547dea37a4cd38f87a0e74848ce1949d"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-328b650bdb827caae9d740968006f0dc"
     },
     {
       "rule_id": "SS-019",
@@ -3083,7 +3417,8 @@
         "2c0ad5f35847c792f4f0c2601a5310f3",
         "e8bbd271b173fc302e7875bd7557d93b"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2c0ad5f35847c792f4f0c2601a5310f3"
     },
     {
       "rule_id": "SS-019",
@@ -3112,7 +3447,8 @@
         "16ae2ff5dac988b965881be178ce6079",
         "bb133c7cb974e38979862568c7ae8504"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-16ae2ff5dac988b965881be178ce6079"
     },
     {
       "rule_id": "SS-019",
@@ -3141,7 +3477,8 @@
         "3dfc41148c088ed584c759e633059253",
         "85a2b2f1a89e41ebe961cf8e0ddc7d59"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2af3668a68b8b8fff15113220e75af66"
     },
     {
       "rule_id": "SS-019",
@@ -3170,7 +3507,8 @@
         "60dcd6e6d8870acb998437dcc30148bb",
         "7868cde3c25c6fe4ad03ed928848d963"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-60dcd6e6d8870acb998437dcc30148bb"
     },
     {
       "rule_id": "SS-019",
@@ -3199,7 +3537,8 @@
         "81e7b60122b5fd2c76f651276d06768a",
         "cf8a4241f25d646a75abbf4a8ebb523e"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-81e7b60122b5fd2c76f651276d06768a"
     },
     {
       "rule_id": "SS-019",
@@ -3230,7 +3569,8 @@
         "96471f7dd91c176605db04047f9b0508",
         "a540d0552854c83a2e514ebe3addb904"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64"
     },
     {
       "rule_id": "SS-019",
@@ -3258,7 +3598,8 @@
       "related": [
         "eaf81a87f58710688ca1496570ccedee"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-5cdc6740236002705c69fda6050c99dc"
     },
     {
       "rule_id": "SS-019",
@@ -3286,7 +3627,8 @@
       "related": [
         "ab3aa1676a7dc29ade3bb462a73fe0b8"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-ab3aa1676a7dc29ade3bb462a73fe0b8"
     },
     {
       "rule_id": "SS-019",
@@ -3314,7 +3656,8 @@
       "related": [
         "8ac6744f5fb6451bd7069bc548dbed20"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-8ac6744f5fb6451bd7069bc548dbed20"
     },
     {
       "rule_id": "SS-019",
@@ -3343,7 +3686,8 @@
         "1a0210bc82d9870ef2668c400ed7b078",
         "2b5bf3f8376bf0f80ab8ac9f00da94dc"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-1a0210bc82d9870ef2668c400ed7b078"
     },
     {
       "rule_id": "SS-017",
@@ -3369,7 +3713,8 @@
       },
       "related": [
         "509268ab4a288383acf40b26c7d4f0cb"
-      ]
+      ],
+      "group_id": "group-509268ab4a288383acf40b26c7d4f0cb"
     },
     {
       "rule_id": "SS-019",
@@ -3396,7 +3741,8 @@
       },
       "related": [
         "59dfee0175a75e4aef1c46583640189e"
-      ]
+      ],
+      "group_id": "group-59dfee0175a75e4aef1c46583640189e"
     },
     {
       "rule_id": "SS-022",
@@ -3423,7 +3769,8 @@
       },
       "related": [
         "1c44dedf7609d76135e1e2acc13067ac"
-      ]
+      ],
+      "group_id": "group-0f62769aa68303799bfc41e2a79f8861"
     },
     {
       "rule_id": "SS-022",
@@ -3450,7 +3797,36 @@
       },
       "related": [
         "d678ee90fd3bd753a68752cfbca298f7"
-      ]
+      ],
+      "group_id": "group-73041493412dc2e5c7f7f7bfe515c335"
+    },
+    {
+      "rule_id": "SS-048",
+      "title": "Unbounded event payload",
+      "description": "Publishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "events",
+      "location": {
+        "file": "SS-023/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "event publish in `commit` includes user-controlled `Bytes` parameter `secret` with no visible length bound: env . events () . publish (symbol_short ! (\"commit\") , secret)",
+      "remediation": "Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "8ba0420bd4ea3e853d9d23c5cba2fd97",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Commitments::commit"
+      },
+      "related": [
+        "4c7bb8c7dcd42d55faab7be992707e40"
+      ],
+      "group_id": "group-4c7bb8c7dcd42d55faab7be992707e40"
     },
     {
       "rule_id": "SS-024",
@@ -3502,7 +3878,8 @@
         "11d86bada61e82188159d467e30aab12",
         "ade9c6081a006f620a73a3e72655568d"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-11d86bada61e82188159d467e30aab12"
     },
     {
       "rule_id": "SS-019",
@@ -3531,7 +3908,8 @@
         "b246a6af181e82c822350ad4e63a1c99",
         "c1094608dc3ee75c4c8599a06d25a9b8"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-b246a6af181e82c822350ad4e63a1c99"
     },
     {
       "rule_id": "SS-019",
@@ -3560,7 +3938,8 @@
         "3b059e2094045bb07bd10904f219b6cb",
         "f37d556c2d707f25f61c7b3db5cc3413"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-1b98a6a5f598c533eb1b25bd5b8fe250"
     },
     {
       "rule_id": "SS-019",
@@ -3614,7 +3993,8 @@
         "dabd871e475d6d115bb8025943652d89",
         "ee16d4000bb6d884c3d94aa068300561"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-38596df81ee5f515b07be4226e5f9724"
     },
     {
       "rule_id": "SS-029",
@@ -3666,7 +4046,8 @@
         "830264a95828084109f5e7b0edffe357",
         "c24246d25d23e1c883acfad3de5e9585"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-830264a95828084109f5e7b0edffe357"
     },
     {
       "rule_id": "SS-019",
@@ -3695,7 +4076,8 @@
         "100da6fb77795c318413a10871dc8322",
         "e935aa3e1867c9fce22f03b037bf4e26"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-100da6fb77795c318413a10871dc8322"
     },
     {
       "rule_id": "SS-019",
@@ -3747,7 +4129,8 @@
         "280073fd0c392575b928a4eec05ee5d9",
         "e4d1d7c7329ff42ad1330aa88e145a75"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-280073fd0c392575b928a4eec05ee5d9"
     },
     {
       "rule_id": "SS-041",
@@ -3775,7 +4158,8 @@
       "related": [
         "c91230c765f00d51d0a61cafccfb855e"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-08233f12c8d4d043bb78f7fc8f06cbaa"
     },
     {
       "rule_id": "SS-017",
@@ -3802,7 +4186,8 @@
       "related": [
         "5e9e1aa866e0cc01c89f8120bf293ab7"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-5e9e1aa866e0cc01c89f8120bf293ab7"
     },
     {
       "rule_id": "SS-041",
@@ -3830,7 +4215,8 @@
       "related": [
         "f4561253eafb06f8a5fbde545cad9bd8"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-97095df6a92c90808cb51a3985f5c3dc"
     },
     {
       "rule_id": "SS-019",
@@ -3858,7 +4244,8 @@
       "related": [
         "b688629950a0d3b3e7227182ada171f8"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-6b812ca2363af13c411c3fc45863afde"
     },
     {
       "rule_id": "SS-019",
@@ -3886,7 +4273,8 @@
       "related": [
         "b3333a41a4e39a39c7286d55ee8c13bd"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-421f9eade5a4334f041cbba2bea4137c"
     },
     {
       "rule_id": "SS-019",
@@ -3914,7 +4302,8 @@
       "related": [
         "41801c7c97f3cf0aeed49a383e167725"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-41801c7c97f3cf0aeed49a383e167725"
     },
     {
       "rule_id": "SS-019",
@@ -3943,7 +4332,32 @@
         "af85bf440d0340bcb30935ebaf8504cc",
         "bdf3b0c31758e632a82f8f89d0082eb8"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-a8f84b11be78a859620a1e96419831d2"
+    },
+    {
+      "rule_id": "SS-048",
+      "title": "Unbounded event payload",
+      "description": "Publishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "events",
+      "location": {
+        "file": "SS-048/positive.rs",
+        "line": 11,
+        "column": 9
+      },
+      "evidence": "event publish in `record` includes user-controlled `Vec` parameter `items` with no visible length bound: env . events () . publish ((symbol_short ! (\"record\") ,) , items)",
+      "remediation": "Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "1b2d255b5c4ce4f4dc671a6c5a6b6812",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::record"
+      }
     },
     {
       "rule_id": "SS-039",
@@ -4090,7 +4504,8 @@
         "0be9f5344f226568677ab5e99abfc6f4",
         "7b9c2285cafe0c7695c46f22694bbda5"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0be9f5344f226568677ab5e99abfc6f4"
     },
     {
       "rule_id": "SS-044",
@@ -4119,7 +4534,8 @@
         "7b9c2285cafe0c7695c46f22694bbda5",
         "d5475c0cbf4d93267f0783dbf8255c86"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0be9f5344f226568677ab5e99abfc6f4"
     },
     {
       "rule_id": "SS-014",
@@ -4148,7 +4564,8 @@
         "8adc97c9ebea073ca91b1be726aadb3c",
         "acede228d48f4693b023d19b85fdff01"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-8adc97c9ebea073ca91b1be726aadb3c"
     },
     {
       "rule_id": "SS-044",
@@ -4177,7 +4594,8 @@
         "a362fd34490f0f54cfdbbb67ce42d6ee",
         "acede228d48f4693b023d19b85fdff01"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-8adc97c9ebea073ca91b1be726aadb3c"
     },
     {
       "rule_id": "SS-007",
@@ -4229,7 +4647,8 @@
         "e5053eb8c254a77c84f95f7ecbd5026c",
         "eef1aae7728ff3da31ba5b3bb1fc3ca2"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-7d4a08e424b4e0ffc20ef938ea5e2000"
     },
     {
       "rule_id": "SS-044",
@@ -4258,7 +4677,8 @@
         "7d4a08e424b4e0ffc20ef938ea5e2000",
         "e5053eb8c254a77c84f95f7ecbd5026c"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-7d4a08e424b4e0ffc20ef938ea5e2000"
     },
     {
       "rule_id": "SS-039",
@@ -4285,7 +4705,8 @@
       "related": [
         "38e4d47246474277fb41cce1a73725a7"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-38e4d47246474277fb41cce1a73725a7"
     },
     {
       "rule_id": "SS-014",
@@ -4314,7 +4735,8 @@
         "328b650bdb827caae9d740968006f0dc",
         "40814c10be9dce76435571e9ad3c9eab"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-328b650bdb827caae9d740968006f0dc"
     },
     {
       "rule_id": "SS-044",
@@ -4343,7 +4765,8 @@
         "40814c10be9dce76435571e9ad3c9eab",
         "547dea37a4cd38f87a0e74848ce1949d"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-328b650bdb827caae9d740968006f0dc"
     },
     {
       "rule_id": "SS-014",
@@ -4372,7 +4795,8 @@
         "2c0ad5f35847c792f4f0c2601a5310f3",
         "51b60ca5ffa9f7c9d2b54307b1954fc8"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2c0ad5f35847c792f4f0c2601a5310f3"
     },
     {
       "rule_id": "SS-044",
@@ -4401,7 +4825,8 @@
         "51b60ca5ffa9f7c9d2b54307b1954fc8",
         "e8bbd271b173fc302e7875bd7557d93b"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2c0ad5f35847c792f4f0c2601a5310f3"
     },
     {
       "rule_id": "SS-014",
@@ -4430,7 +4855,8 @@
         "bb133c7cb974e38979862568c7ae8504",
         "d29c8d617e14f3f024df7360ed7b8c87"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-16ae2ff5dac988b965881be178ce6079"
     },
     {
       "rule_id": "SS-044",
@@ -4459,7 +4885,8 @@
         "16ae2ff5dac988b965881be178ce6079",
         "d29c8d617e14f3f024df7360ed7b8c87"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-16ae2ff5dac988b965881be178ce6079"
     },
     {
       "rule_id": "SS-014",
@@ -4488,7 +4915,8 @@
         "2af3668a68b8b8fff15113220e75af66",
         "85a2b2f1a89e41ebe961cf8e0ddc7d59"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2af3668a68b8b8fff15113220e75af66"
     },
     {
       "rule_id": "SS-044",
@@ -4517,7 +4945,8 @@
         "2af3668a68b8b8fff15113220e75af66",
         "3dfc41148c088ed584c759e633059253"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2af3668a68b8b8fff15113220e75af66"
     },
     {
       "rule_id": "SS-003",
@@ -4636,7 +5065,8 @@
       "related": [
         "dff5e13c70dad06c64575ed63be1a882"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-7c0a072ae229f1da9b8a06b467ba7b47"
     },
     {
       "rule_id": "SS-008",
@@ -4757,7 +5187,8 @@
       },
       "related": [
         "48607b3e663c4369781f250384a35ee8"
-      ]
+      ],
+      "group_id": "group-48607b3e663c4369781f250384a35ee8"
     },
     {
       "rule_id": "SS-008",
@@ -4784,7 +5215,8 @@
       },
       "related": [
         "6acf5039c42a288a1498a4df9486d09a"
-      ]
+      ],
+      "group_id": "group-48607b3e663c4369781f250384a35ee8"
     },
     {
       "rule_id": "SS-039",
@@ -4811,6 +5243,32 @@
       "related": [
         "7e9a6ccdbf1e26365ef4b3c29b17b212"
       ],
+      "correlation_ambiguous": true,
+      "group_id": "group-41ed9d12c0503c96aef8d8dd7752f0f9"
+    },
+    {
+      "rule_id": "SS-047",
+      "title": "Unchecked ledger timestamp usage",
+      "description": "A contract entry point compares the ledger timestamp with a deadline or another timestamp without a visible tolerance or bounded window. Ledger time is chosen within protocol bounds and can move slightly between submission and execution, so an exact or zero-slack comparison can flip for transactions near the boundary. The detector reports ordered comparisons of a timestamp or a local timestamp alias when no tolerance arithmetic is visible, with low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "arithmetic",
+      "location": {
+        "file": "SS-009/negative.rs",
+        "line": 11,
+        "column": 12
+      },
+      "evidence": "ledger timestamp comparison without a bounded tolerance window in entry point `close`: env . ledger () . timestamp () > deadline",
+      "remediation": "Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/learn/encyclopedia/contract-development"
+      ],
+      "fingerprint": "f836784e475f206d8721e5d970b3c2ea",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Auction::close"
+      },
       "correlation_ambiguous": true
     },
     {
@@ -4838,6 +5296,32 @@
       "related": [
         "9d121bdfd459606ded2db6ea4db1ec51"
       ],
+      "correlation_ambiguous": true,
+      "group_id": "group-31a63e495cc4a167de984fc61b412787"
+    },
+    {
+      "rule_id": "SS-047",
+      "title": "Unchecked ledger timestamp usage",
+      "description": "A contract entry point compares the ledger timestamp with a deadline or another timestamp without a visible tolerance or bounded window. Ledger time is chosen within protocol bounds and can move slightly between submission and execution, so an exact or zero-slack comparison can flip for transactions near the boundary. The detector reports ordered comparisons of a timestamp or a local timestamp alias when no tolerance arithmetic is visible, with low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "arithmetic",
+      "location": {
+        "file": "SS-009/negative3.rs",
+        "line": 11,
+        "column": 12
+      },
+      "evidence": "ledger timestamp comparison without a bounded tolerance window in entry point `close`: env . ledger () . timestamp () > deadline",
+      "remediation": "Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/learn/encyclopedia/contract-development"
+      ],
+      "fingerprint": "093328f2c0a6e32d6125f55265971cce",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Auction::close"
+      },
       "correlation_ambiguous": true
     },
     {
@@ -5011,7 +5495,8 @@
         "60dcd6e6d8870acb998437dcc30148bb",
         "8b86f2b60e6a444b286971c481179811"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-60dcd6e6d8870acb998437dcc30148bb"
     },
     {
       "rule_id": "SS-044",
@@ -5040,7 +5525,8 @@
         "7868cde3c25c6fe4ad03ed928848d963",
         "8b86f2b60e6a444b286971c481179811"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-60dcd6e6d8870acb998437dcc30148bb"
     },
     {
       "rule_id": "SS-014",
@@ -5069,7 +5555,8 @@
         "81e7b60122b5fd2c76f651276d06768a",
         "fd7ae9e1a00f6c952bc4f11d3045a6ca"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-81e7b60122b5fd2c76f651276d06768a"
     },
     {
       "rule_id": "SS-044",
@@ -5098,7 +5585,8 @@
         "cf8a4241f25d646a75abbf4a8ebb523e",
         "fd7ae9e1a00f6c952bc4f11d3045a6ca"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-81e7b60122b5fd2c76f651276d06768a"
     },
     {
       "rule_id": "SS-014",
@@ -5129,7 +5617,8 @@
         "96471f7dd91c176605db04047f9b0508",
         "d53729124e927bdf3c7454cc7eb67305"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64"
     },
     {
       "rule_id": "SS-044",
@@ -5160,7 +5649,8 @@
         "a540d0552854c83a2e514ebe3addb904",
         "d53729124e927bdf3c7454cc7eb67305"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64"
     },
     {
       "rule_id": "SS-044",
@@ -5188,7 +5678,8 @@
       "related": [
         "5cdc6740236002705c69fda6050c99dc"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-5cdc6740236002705c69fda6050c99dc"
     },
     {
       "rule_id": "SS-044",
@@ -5216,7 +5707,8 @@
       "related": [
         "d830436e31c7dae6ebcb77b6726f0a02"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-ab3aa1676a7dc29ade3bb462a73fe0b8"
     },
     {
       "rule_id": "SS-044",
@@ -5244,7 +5736,8 @@
       "related": [
         "f768e05ab79654785b73117762ee1540"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-8ac6744f5fb6451bd7069bc548dbed20"
     },
     {
       "rule_id": "SS-014",
@@ -5273,7 +5766,8 @@
         "2b5bf3f8376bf0f80ab8ac9f00da94dc",
         "34ec8ca36a47b0434c16fa976a058c3b"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-1a0210bc82d9870ef2668c400ed7b078"
     },
     {
       "rule_id": "SS-044",
@@ -5302,7 +5796,8 @@
         "1a0210bc82d9870ef2668c400ed7b078",
         "34ec8ca36a47b0434c16fa976a058c3b"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-1a0210bc82d9870ef2668c400ed7b078"
     },
     {
       "rule_id": "SS-016",
@@ -5330,7 +5825,8 @@
         "5555426d372f99e3d602cf38d65acf4c",
         "64511a6c4862f557012e7a274614dbdf"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0cb1efb1a006f0e476a1be0487adfab4"
     },
     {
       "rule_id": "SS-016",
@@ -5358,7 +5854,8 @@
         "04637f34a8290f5734c2f0436359c2bc",
         "40b18bea271c88c2b221edb11b7ea58b"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-04637f34a8290f5734c2f0436359c2bc"
     },
     {
       "rule_id": "SS-016",
@@ -5569,7 +6066,8 @@
       },
       "related": [
         "d3c34df38b542b7b7ba0b07015bd9c56"
-      ]
+      ],
+      "group_id": "group-59dfee0175a75e4aef1c46583640189e"
     },
     {
       "rule_id": "SS-020",
@@ -5622,7 +6120,8 @@
         "aa9c9ef26230bfef934d82ca38df7b15",
         "e0649fc59d351d8af0c99fbb38dc4663"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-852b64bc1ec2a632158cd1bb5757b199"
     },
     {
       "rule_id": "SS-023",
@@ -5646,7 +6145,11 @@
       "exploitability": {
         "reachability": "reachable",
         "entry_point": "Commitments::commit"
-      }
+      },
+      "related": [
+        "8ba0420bd4ea3e853d9d23c5cba2fd97"
+      ],
+      "group_id": "group-4c7bb8c7dcd42d55faab7be992707e40"
     },
     {
       "rule_id": "SS-039",
@@ -5699,7 +6202,8 @@
         "c1094608dc3ee75c4c8599a06d25a9b8",
         "de6b286d5c77a9568c549f49d54db1b7"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-b246a6af181e82c822350ad4e63a1c99"
     },
     {
       "rule_id": "SS-044",
@@ -5728,7 +6232,8 @@
         "b246a6af181e82c822350ad4e63a1c99",
         "de6b286d5c77a9568c549f49d54db1b7"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-b246a6af181e82c822350ad4e63a1c99"
     },
     {
       "rule_id": "SS-014",
@@ -5757,7 +6262,8 @@
         "1b98a6a5f598c533eb1b25bd5b8fe250",
         "f37d556c2d707f25f61c7b3db5cc3413"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-1b98a6a5f598c533eb1b25bd5b8fe250"
     },
     {
       "rule_id": "SS-044",
@@ -5786,7 +6292,8 @@
         "1b98a6a5f598c533eb1b25bd5b8fe250",
         "3b059e2094045bb07bd10904f219b6cb"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-1b98a6a5f598c533eb1b25bd5b8fe250"
     },
     {
       "rule_id": "SS-014",
@@ -5817,7 +6324,8 @@
         "abf517d48bfba243b2c0554830570edf",
         "dabd871e475d6d115bb8025943652d89"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-38596df81ee5f515b07be4226e5f9724"
     },
     {
       "rule_id": "SS-044",
@@ -5848,7 +6356,8 @@
         "dabd871e475d6d115bb8025943652d89",
         "ee16d4000bb6d884c3d94aa068300561"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-38596df81ee5f515b07be4226e5f9724"
     },
     {
       "rule_id": "SS-039",
@@ -5875,7 +6384,8 @@
       "related": [
         "e71091ffde52f91a460ccdedbbbfd0bd"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-d63f03e317b755dbdf91ec0e375c7d4d"
     },
     {
       "rule_id": "SS-014",
@@ -5904,7 +6414,8 @@
         "830264a95828084109f5e7b0edffe357",
         "dd7d962c7fe2636603c07cea1b7d90b6"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-830264a95828084109f5e7b0edffe357"
     },
     {
       "rule_id": "SS-044",
@@ -5933,7 +6444,8 @@
         "c24246d25d23e1c883acfad3de5e9585",
         "dd7d962c7fe2636603c07cea1b7d90b6"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-830264a95828084109f5e7b0edffe357"
     },
     {
       "rule_id": "SS-039",
@@ -5960,7 +6472,8 @@
       "related": [
         "a7f66e471208cdd28bbd07198e4ceb34"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-39cc74f8ad0f12d0bfff6607024b9726"
     },
     {
       "rule_id": "SS-014",
@@ -5989,7 +6502,8 @@
         "100da6fb77795c318413a10871dc8322",
         "763b03471d0c48d8cff72c2ca1a66ec8"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-100da6fb77795c318413a10871dc8322"
     },
     {
       "rule_id": "SS-044",
@@ -6018,7 +6532,8 @@
         "763b03471d0c48d8cff72c2ca1a66ec8",
         "e935aa3e1867c9fce22f03b037bf4e26"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-100da6fb77795c318413a10871dc8322"
     },
     {
       "rule_id": "SS-014",
@@ -6047,7 +6562,8 @@
         "280073fd0c392575b928a4eec05ee5d9",
         "e1f40c9883b82b58e7e8c067bc28c021"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-280073fd0c392575b928a4eec05ee5d9"
     },
     {
       "rule_id": "SS-044",
@@ -6076,7 +6592,8 @@
         "e1f40c9883b82b58e7e8c067bc28c021",
         "e4d1d7c7329ff42ad1330aa88e145a75"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-280073fd0c392575b928a4eec05ee5d9"
     },
     {
       "rule_id": "SS-031",
@@ -6128,7 +6645,8 @@
       "related": [
         "e958de6eb749dfb68c30d9e853bf64e4"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-e346c1fe2a11ac05f6c6d4b4690d64a6"
     },
     {
       "rule_id": "SS-037",
@@ -6178,7 +6696,8 @@
       },
       "related": [
         "e70fefead6d303fbacbadf442907a99a"
-      ]
+      ],
+      "group_id": "group-e70fefead6d303fbacbadf442907a99a"
     },
     {
       "rule_id": "SS-014",
@@ -6206,7 +6725,8 @@
       "related": [
         "6b812ca2363af13c411c3fc45863afde"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-6b812ca2363af13c411c3fc45863afde"
     },
     {
       "rule_id": "SS-014",
@@ -6234,7 +6754,8 @@
       "related": [
         "421f9eade5a4334f041cbba2bea4137c"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-421f9eade5a4334f041cbba2bea4137c"
     },
     {
       "rule_id": "SS-014",
@@ -6262,7 +6783,8 @@
       "related": [
         "f6ff0e4aa9c36db5393825361baf5717"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-41801c7c97f3cf0aeed49a383e167725"
     },
     {
       "rule_id": "SS-014",
@@ -6291,7 +6813,8 @@
         "a8f84b11be78a859620a1e96419831d2",
         "af85bf440d0340bcb30935ebaf8504cc"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-a8f84b11be78a859620a1e96419831d2"
     },
     {
       "rule_id": "SS-044",
@@ -6320,7 +6843,344 @@
         "a8f84b11be78a859620a1e96419831d2",
         "bdf3b0c31758e632a82f8f89d0082eb8"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-a8f84b11be78a859620a1e96419831d2"
+    },
+    {
+      "rule_id": "SS-021",
+      "title": "Durable data written to temporary storage",
+      "description": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-046/negative.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "durable-looking key written to temporary storage in `set_a`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 1 })",
+      "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+      ],
+      "fingerprint": "42992b97b49b9bb41df21b528f7ab48d",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_a"
+      }
+    },
+    {
+      "rule_id": "SS-021",
+      "title": "Durable data written to temporary storage",
+      "description": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-046/negative.rs",
+        "line": 20,
+        "column": 9
+      },
+      "evidence": "durable-looking key written to temporary storage in `set_b`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 2 })",
+      "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+      ],
+      "fingerprint": "f5032995867ae1afa7398494bc31ed13",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_b"
+      }
+    },
+    {
+      "rule_id": "SS-021",
+      "title": "Durable data written to temporary storage",
+      "description": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-046/negative2.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "durable-looking key written to temporary storage in `set_a`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 1 })",
+      "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+      ],
+      "fingerprint": "c427e6c93832e50a4660d2aa048ace61",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_a"
+      }
+    },
+    {
+      "rule_id": "SS-021",
+      "title": "Durable data written to temporary storage",
+      "description": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-046/negative3.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "durable-looking key written to temporary storage in `set_a`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & amount)",
+      "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+      ],
+      "fingerprint": "a6998f61d3cceca6c564584357230a5b",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_a"
+      }
+    },
+    {
+      "rule_id": "SS-021",
+      "title": "Durable data written to temporary storage",
+      "description": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-046/negative3.rs",
+        "line": 19,
+        "column": 9
+      },
+      "evidence": "durable-looking key written to temporary storage in `set_b`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & locked)",
+      "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+      ],
+      "fingerprint": "6da0258d9c362d50c8f2e8854ce831d2",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_b"
+      }
+    },
+    {
+      "rule_id": "SS-021",
+      "title": "Durable data written to temporary storage",
+      "description": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-046/negative4.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "durable-looking key written to temporary storage in `set_a`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 1 , .. current } ,)",
+      "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+      ],
+      "fingerprint": "2e59678d5fb08d7ffba3b38015caa6c5",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_a"
+      }
+    },
+    {
+      "rule_id": "SS-021",
+      "title": "Durable data written to temporary storage",
+      "description": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-046/negative4.rs",
+        "line": 25,
+        "column": 9
+      },
+      "evidence": "durable-looking key written to temporary storage in `set_b`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 1 , unlock : 2 , .. current } ,)",
+      "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+      ],
+      "fingerprint": "4f8f5a9124a5f5c86b871549d184868e",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_b"
+      }
+    },
+    {
+      "rule_id": "SS-021",
+      "title": "Durable data written to temporary storage",
+      "description": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-046/negative5.rs",
+        "line": 21,
+        "column": 9
+      },
+      "evidence": "durable-looking key written to temporary storage in `set_b`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 1 , unlock : 2 , } ,)",
+      "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+      ],
+      "fingerprint": "abed234d09229e114b213ca4775daa50",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_b"
+      }
+    },
+    {
+      "rule_id": "SS-021",
+      "title": "Durable data written to temporary storage",
+      "description": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-046/positive.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "durable-looking key written to temporary storage in `set_balance`: env . storage () . temporary () . set (& DataKey :: Balance (user . clone ()) , & Balance { amount : 1 })",
+      "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+      ],
+      "fingerprint": "80ba6a6e97133a8f5165c2a8d9f67f8c",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_balance"
+      }
+    },
+    {
+      "rule_id": "SS-021",
+      "title": "Durable data written to temporary storage",
+      "description": "Temporary storage entries are removed when their TTL lapses, so data written there can silently disappear. Keys that look like configuration, balances, or ownership are strong hints that the value is meant to persist. This is a key-name heuristic and reports low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-046/positive.rs",
+        "line": 21,
+        "column": 9
+      },
+      "evidence": "durable-looking key written to temporary storage in `set_balance_locked`: env . storage () . temporary () . set (& DataKey :: Balance (user . clone ()) , & Balance { amount : 1 , unlock : 2 , } ,)",
+      "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/state-archival"
+      ],
+      "fingerprint": "e4159ac990f2928014f158df3965d45e",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_balance_locked"
+      }
+    },
+    {
+      "rule_id": "SS-046",
+      "title": "Duplicate storage key construction",
+      "description": "A contract writes different logical records through the same storage key construction. When the key is a literal or a constructor whose arguments do not fully separate the records, one write can overwrite or be mistaken for another record with a different field set. The detector compares the field sets of struct literals written to the same key in the same storage class and reports only when they differ, with low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-046/positive.rs",
+        "line": 22,
+        "column": 13
+      },
+      "evidence": "storage key `& DataKey :: Balance (user . clone ())` in temporary storage is used for values with different field sets ({amount} and {amount, unlock})",
+      "remediation": "Give each logical record its own namespaced key, for example `DataKey::Balance(user)` and `DataKey::BalanceMeta(user)`, or store a single versioned value type per key. Do not rely on the value's field set to tell two records apart; the key must identify exactly one record shape.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "6a0341a981ddf7902c6977b4671eadaf",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_balance_locked"
+      }
+    },
+    {
+      "rule_id": "SS-008",
+      "title": "Unchecked arithmetic in a contract entry point",
+      "description": "A public contract entry point performs binary arithmetic (`+`, `-`, or `*`) on values without a checked, saturating, overflowing, or wrapping operation. In release builds Rust arithmetic wraps on overflow and underflow instead of panicking, so a decrement below zero (or an overflow) can silently produce an incorrect result — a common cause of balance and accounting bugs in token, escrow and vault contracts. This is a heuristic: it cannot prove that the operands are attacker-influenced or that their range is constrained, so it reports low confidence and should be reviewed in context.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "arithmetic",
+      "location": {
+        "file": "SS-047/negative.rs",
+        "line": 16,
+        "column": 12
+      },
+      "evidence": "unchecked `+` arithmetic in entry point `close`: now + TOLERANCE (use `checked_add` and handle `None`)",
+      "remediation": "Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.",
+      "references": [
+        "https://doc.rust-lang.org/reference/expressions/operator-expr.html#overflow",
+        "https://developers.stellar.org/docs"
+      ],
+      "fingerprint": "3a1098e79de3ed56ae5f98123494ad45",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::close"
+      }
+    },
+    {
+      "rule_id": "SS-008",
+      "title": "Unchecked arithmetic in a contract entry point",
+      "description": "A public contract entry point performs binary arithmetic (`+`, `-`, or `*`) on values without a checked, saturating, overflowing, or wrapping operation. In release builds Rust arithmetic wraps on overflow and underflow instead of panicking, so a decrement below zero (or an overflow) can silently produce an incorrect result — a common cause of balance and accounting bugs in token, escrow and vault contracts. This is a heuristic: it cannot prove that the operands are attacker-influenced or that their range is constrained, so it reports low confidence and should be reviewed in context.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "arithmetic",
+      "location": {
+        "file": "SS-047/negative3.rs",
+        "line": 14,
+        "column": 19
+      },
+      "evidence": "unchecked `-` arithmetic in entry point `close`: deadline - window (use `checked_sub` and handle `None`)",
+      "remediation": "Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.",
+      "references": [
+        "https://doc.rust-lang.org/reference/expressions/operator-expr.html#overflow",
+        "https://developers.stellar.org/docs"
+      ],
+      "fingerprint": "09a249c0d71c68fc1ad0d6af75285f74",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::close"
+      }
+    },
+    {
+      "rule_id": "SS-047",
+      "title": "Unchecked ledger timestamp usage",
+      "description": "A contract entry point compares the ledger timestamp with a deadline or another timestamp without a visible tolerance or bounded window. Ledger time is chosen within protocol bounds and can move slightly between submission and execution, so an exact or zero-slack comparison can flip for transactions near the boundary. The detector reports ordered comparisons of a timestamp or a local timestamp alias when no tolerance arithmetic is visible, with low confidence.",
+      "severity": "medium",
+      "confidence": "low",
+      "category": "arithmetic",
+      "location": {
+        "file": "SS-047/positive.rs",
+        "line": 15,
+        "column": 12
+      },
+      "evidence": "ledger timestamp comparison without a bounded tolerance window in entry point `close`: now >= deadline",
+      "remediation": "Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/learn/encyclopedia/contract-development"
+      ],
+      "fingerprint": "b37e253ca8e223d08de3523d10c29b13",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::close"
+      }
     },
     {
       "rule_id": "SS-033",
@@ -6388,7 +7248,8 @@
       "related": [
         "d36faccdef13745686d3373736ded237"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-38e4d47246474277fb41cce1a73725a7"
     },
     {
       "rule_id": "SS-004",
@@ -6416,7 +7277,8 @@
       "related": [
         "7c0a072ae229f1da9b8a06b467ba7b47"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-7c0a072ae229f1da9b8a06b467ba7b47"
     },
     {
       "rule_id": "SS-004",
@@ -6469,7 +7331,8 @@
       "related": [
         "41ed9d12c0503c96aef8d8dd7752f0f9"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-41ed9d12c0503c96aef8d8dd7752f0f9"
     },
     {
       "rule_id": "SS-004",
@@ -6497,7 +7360,8 @@
       "related": [
         "31a63e495cc4a167de984fc61b412787"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-31a63e495cc4a167de984fc61b412787"
     },
     {
       "rule_id": "SS-004",
@@ -6773,7 +7637,8 @@
       "related": [
         "d63f03e317b755dbdf91ec0e375c7d4d"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-d63f03e317b755dbdf91ec0e375c7d4d"
     },
     {
       "rule_id": "SS-004",
@@ -6826,7 +7691,8 @@
       "related": [
         "39cc74f8ad0f12d0bfff6607024b9726"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-39cc74f8ad0f12d0bfff6607024b9726"
     },
     {
       "rule_id": "SS-032",
@@ -6854,7 +7720,8 @@
       "related": [
         "e346c1fe2a11ac05f6c6d4b4690d64a6"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-e346c1fe2a11ac05f6c6d4b4690d64a6"
     },
     {
       "rule_id": "SS-032",
@@ -6929,7 +7796,8 @@
       },
       "related": [
         "26f40bd11c8b96b541374822f06fa692"
-      ]
+      ],
+      "group_id": "group-26f40bd11c8b96b541374822f06fa692"
     },
     {
       "rule_id": "SS-004",
@@ -7004,7 +7872,8 @@
       },
       "related": [
         "cce83633f0bb46623afc178954a61223"
-      ]
+      ],
+      "group_id": "group-4c1b130b1c40c0851bcc360e2ee36abe"
     },
     {
       "rule_id": "SS-004",
@@ -7031,7 +7900,8 @@
       },
       "related": [
         "ffa781c50c7f543dc5a5935acb3fdaa8"
-      ]
+      ],
+      "group_id": "group-e70fefead6d303fbacbadf442907a99a"
     },
     {
       "rule_id": "SS-032",
@@ -7058,7 +7928,8 @@
       },
       "related": [
         "2f4160b3f2cb9cfdc09e0c45ac4e36ed"
-      ]
+      ],
+      "group_id": "group-06399ceb1ec0000b5a42f1651c8a15d6"
     },
     {
       "rule_id": "SS-032",
@@ -7086,7 +7957,8 @@
       "related": [
         "08233f12c8d4d043bb78f7fc8f06cbaa"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-08233f12c8d4d043bb78f7fc8f06cbaa"
     },
     {
       "rule_id": "SS-032",
@@ -7114,7 +7986,8 @@
       "related": [
         "97095df6a92c90808cb51a3985f5c3dc"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-97095df6a92c90808cb51a3985f5c3dc"
     },
     {
       "rule_id": "SS-004",
@@ -7140,6 +8013,112 @@
         "entry_point": "Contract::payout"
       },
       "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-047/negative2.rs",
+        "line": 14,
+        "column": 12
+      },
+      "evidence": "`unwrap` in `close` can panic: now . checked_add (5) . unwrap ()",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "103a86e1c79fcfe3e3b0b4f1de184318",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::close"
+      }
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-048/negative.rs",
+        "line": 14,
+        "column": 13
+      },
+      "evidence": "`panic` in `record` can panic: panic ! (\"too many items\")",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "50b36a6b3fde2c3bacc7282f1ddd203c",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::record"
+      }
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-049/positive.rs",
+        "line": 12,
+        "column": 20
+      },
+      "evidence": "`unwrap` in `set_name` can panic: String :: from_utf8 (bytes) . unwrap ()",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "6a600484c97d70aa5197db339a805466",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_name"
+      },
+      "related": [
+        "15ad3d38e97fb6dadcb0c4a8b73d392c"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-15ad3d38e97fb6dadcb0c4a8b73d392c"
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-049/positive.rs",
+        "line": 17,
+        "column": 20
+      },
+      "evidence": "`expect` in `set_description` can panic: std :: str :: from_utf8 (& bytes) . expect (\"valid utf-8\")",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "2ab86cffaba4ec1209dce3d7d15d1726",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_description"
+      },
+      "related": [
+        "c1336fd5d5741a3e5487e4fd959501f0"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-2ab86cffaba4ec1209dce3d7d15d1726"
     },
     {
       "rule_id": "SS-042",
@@ -7240,7 +8219,8 @@
       },
       "related": [
         "23f90f900c6921c553ab52a53e297168"
-      ]
+      ],
+      "group_id": "group-23f90f900c6921c553ab52a53e297168"
     },
     {
       "rule_id": "SS-010",
@@ -7266,7 +8246,8 @@
       },
       "related": [
         "b8dcb181ecf494d8e030e2dca900c3d2"
-      ]
+      ],
+      "group_id": "group-23f90f900c6921c553ab52a53e297168"
     },
     {
       "rule_id": "SS-006",
@@ -7338,7 +8319,8 @@
       },
       "related": [
         "b982a2ba60e8c8f253068dba014abca0"
-      ]
+      ],
+      "group_id": "group-37fe40fc78731d20edf55db9a5029ee0"
     },
     {
       "rule_id": "SS-010",
@@ -7364,7 +8346,8 @@
       },
       "related": [
         "37fe40fc78731d20edf55db9a5029ee0"
-      ]
+      ],
+      "group_id": "group-37fe40fc78731d20edf55db9a5029ee0"
     },
     {
       "rule_id": "SS-006",
@@ -7436,7 +8419,8 @@
       },
       "related": [
         "8c0e85c2b992ad8024de3fb9914a448f"
-      ]
+      ],
+      "group_id": "group-8c0e85c2b992ad8024de3fb9914a448f"
     },
     {
       "rule_id": "SS-010",
@@ -7462,7 +8446,8 @@
       },
       "related": [
         "9442c62d879817c31bf6857f993e5c47"
-      ]
+      ],
+      "group_id": "group-8c0e85c2b992ad8024de3fb9914a448f"
     },
     {
       "rule_id": "SS-006",
@@ -7536,7 +8521,8 @@
         "661329002094a11864b18361688ec9d6",
         "c3e233e2b9601a95c29d47ed756e21b9"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-661329002094a11864b18361688ec9d6"
     },
     {
       "rule_id": "SS-010",
@@ -7564,7 +8550,8 @@
         "c3e233e2b9601a95c29d47ed756e21b9",
         "e110395ff3f6329d1b4e10dcc87ef51f"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-661329002094a11864b18361688ec9d6"
     },
     {
       "rule_id": "SS-006",
@@ -7591,7 +8578,8 @@
       "related": [
         "34c6e80ed102dd08157ec8d820e5cd01"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-081e0141f5201a517f311d3ea111a6c4"
     },
     {
       "rule_id": "SS-010",
@@ -7686,7 +8674,8 @@
       },
       "related": [
         "2a6346c2270dab2c59ed044705715246"
-      ]
+      ],
+      "group_id": "group-2a6346c2270dab2c59ed044705715246"
     },
     {
       "rule_id": "SS-010",
@@ -7712,7 +8701,8 @@
       },
       "related": [
         "34bcd75b26a59f32ed27bc3d6af7ada2"
-      ]
+      ],
+      "group_id": "group-2a6346c2270dab2c59ed044705715246"
     },
     {
       "rule_id": "SS-006",
@@ -7739,7 +8729,8 @@
       "related": [
         "dfee15a21d1e3f058f92ca19828df74f"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-95cd5eeb72a9efc15496a8c1d7916d67"
     },
     {
       "rule_id": "SS-006",
@@ -7766,7 +8757,8 @@
       "related": [
         "a6da6843f263dcad78406e521ecdebf8"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-8e915611cfb7d11a563968c7b7bd2af4"
     },
     {
       "rule_id": "SS-006",
@@ -7792,7 +8784,8 @@
       },
       "related": [
         "2693cc4c84faf22776dd204da8c1f8c4"
-      ]
+      ],
+      "group_id": "group-2693cc4c84faf22776dd204da8c1f8c4"
     },
     {
       "rule_id": "SS-006",
@@ -7818,7 +8811,8 @@
       },
       "related": [
         "193e358f4a82348ecf21de0a35ec158d"
-      ]
+      ],
+      "group_id": "group-193e358f4a82348ecf21de0a35ec158d"
     },
     {
       "rule_id": "SS-006",
@@ -7844,7 +8838,8 @@
       },
       "related": [
         "90b372bac3f6a7d01fb6adddd5822924"
-      ]
+      ],
+      "group_id": "group-56712e7374e1b71b081e1b2acd1a0708"
     },
     {
       "rule_id": "SS-006",
@@ -7872,7 +8867,8 @@
         "bd762510cb052a4b83765d5ac6db8744",
         "dc609f3069ca74e4358813dadce5d9e4"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-b1e4cf218a5ed9689787bebd39412d3e"
     },
     {
       "rule_id": "SS-010",
@@ -7900,7 +8896,8 @@
         "b1e4cf218a5ed9689787bebd39412d3e",
         "bd762510cb052a4b83765d5ac6db8744"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-b1e4cf218a5ed9689787bebd39412d3e"
     },
     {
       "rule_id": "SS-006",
@@ -7928,7 +8925,8 @@
         "2ac2897090d1ecd72453fd5af19f6387",
         "df2367f567c56c4a988a964302f179ca"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2ac2897090d1ecd72453fd5af19f6387"
     },
     {
       "rule_id": "SS-010",
@@ -7956,7 +8954,8 @@
         "a26955621a43cd95b5ff53606111d3ec",
         "df2367f567c56c4a988a964302f179ca"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2ac2897090d1ecd72453fd5af19f6387"
     },
     {
       "rule_id": "SS-006",
@@ -7984,7 +8983,8 @@
         "0297bd333ae8bd85e622642073e257d8",
         "ccee50206e3f5ad36dc0b82be4da9d72"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0297bd333ae8bd85e622642073e257d8"
     },
     {
       "rule_id": "SS-010",
@@ -8012,7 +9012,8 @@
         "0297bd333ae8bd85e622642073e257d8",
         "0d11170fbdae7d05de08d58d3faad85e"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0297bd333ae8bd85e622642073e257d8"
     },
     {
       "rule_id": "SS-006",
@@ -8040,7 +9041,8 @@
         "46ff535f980da7e6d80328e1a2a641d8",
         "e56bd39024ffdeab4625b1e981795ef2"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-46ff535f980da7e6d80328e1a2a641d8"
     },
     {
       "rule_id": "SS-010",
@@ -8068,7 +9070,8 @@
         "a294c57f05be0627bbf48fd92932e071",
         "e56bd39024ffdeab4625b1e981795ef2"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-46ff535f980da7e6d80328e1a2a641d8"
     },
     {
       "rule_id": "SS-006",
@@ -8097,7 +9100,8 @@
         "6e620bd49a33ed5dd9e693eb21d2ee7b",
         "75019a8663138f87811480b25147c5ce"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-039db96b21a90887b7223acbae663ab9"
     },
     {
       "rule_id": "SS-010",
@@ -8126,7 +9130,8 @@
         "53b3aca264cd5312ab7cb35db92a0f26",
         "6e620bd49a33ed5dd9e693eb21d2ee7b"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-039db96b21a90887b7223acbae663ab9"
     },
     {
       "rule_id": "SS-006",
@@ -8153,7 +9158,8 @@
       "related": [
         "4266573d71d97557c0a370ba11282c46"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-4266573d71d97557c0a370ba11282c46"
     },
     {
       "rule_id": "SS-006",
@@ -8180,7 +9186,8 @@
       "related": [
         "13479d49c4d00c19c7009826a649b57c"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-13479d49c4d00c19c7009826a649b57c"
     },
     {
       "rule_id": "SS-006",
@@ -8207,7 +9214,8 @@
       "related": [
         "c20aea01156b4621ff5ee989e0afc91d"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-7c0187710f5a7946468cee8f6eed300a"
     },
     {
       "rule_id": "SS-006",
@@ -8234,7 +9242,8 @@
       "related": [
         "a39c12d558fc7b44310207ba8108ecab"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-1b817a9cf8e8c6fcce93cb968585a84d"
     },
     {
       "rule_id": "SS-006",
@@ -8261,7 +9270,8 @@
       "related": [
         "5c3fa64e6e570324688bed66d18ca426"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-5c3fa64e6e570324688bed66d18ca426"
     },
     {
       "rule_id": "SS-006",
@@ -8288,7 +9298,8 @@
       "related": [
         "31d2414fbf129f918912feebd87917fb"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-2528c0d9d700e7d35b6af55e5c455d0d"
     },
     {
       "rule_id": "SS-006",
@@ -8315,7 +9326,8 @@
       "related": [
         "e5a0a9fb95f553d4c1abcff9bb163fcd"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-6a579809f30b4ea6f2b470881ba456be"
     },
     {
       "rule_id": "SS-006",
@@ -8343,7 +9355,8 @@
         "bd967ce4f944e1ce41143b19ccf48d7e",
         "f2d02bc6d17e9f687515f2857255cb8e"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0e31c94f8f3fbfef435c4005f47e71d4"
     },
     {
       "rule_id": "SS-006",
@@ -8371,7 +9384,8 @@
         "3dfb5aae09dd9b505a0996b41cfc753c",
         "70433fc9d2d6b994e3b89ef11b97f9d2"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-3dfb5aae09dd9b505a0996b41cfc753c"
     },
     {
       "rule_id": "SS-006",
@@ -8399,7 +9413,8 @@
         "17e1f27c6f5cc90d25493e1875811b98",
         "f2be6e36496eb1c0e4effc18e7da8838"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-17e1f27c6f5cc90d25493e1875811b98"
     },
     {
       "rule_id": "SS-006",
@@ -8494,7 +9509,8 @@
       },
       "related": [
         "fbf6d16b047d6733f4408c670b9ca2ee"
-      ]
+      ],
+      "group_id": "group-509268ab4a288383acf40b26c7d4f0cb"
     },
     {
       "rule_id": "SS-006",
@@ -8522,7 +9538,8 @@
         "9f645cbf384d9657ac5bbcdadeeb9144",
         "d30a4b1e82ff740a5dc33d6af6a6fc3c"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-7322879d377122e5338cb715ae0c4186"
     },
     {
       "rule_id": "SS-010",
@@ -8550,7 +9567,8 @@
         "7322879d377122e5338cb715ae0c4186",
         "d30a4b1e82ff740a5dc33d6af6a6fc3c"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-7322879d377122e5338cb715ae0c4186"
     },
     {
       "rule_id": "SS-010",
@@ -8578,7 +9596,8 @@
         "852b64bc1ec2a632158cd1bb5757b199",
         "e0649fc59d351d8af0c99fbb38dc4663"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-852b64bc1ec2a632158cd1bb5757b199"
     },
     {
       "rule_id": "SS-006",
@@ -8605,7 +9624,8 @@
       "related": [
         "ea12d748478dea8b32f212d3b2255611"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-896f4cd2636fb46c5dc433890edbed13"
     },
     {
       "rule_id": "SS-006",
@@ -8631,7 +9651,8 @@
       },
       "related": [
         "de237e99f4ef0c7e6a885edc04d2e57b"
-      ]
+      ],
+      "group_id": "group-6fc60f6ec5780151995fae2f56cdc771"
     },
     {
       "rule_id": "SS-006",
@@ -8659,7 +9680,8 @@
         "11d86bada61e82188159d467e30aab12",
         "431c0acb156f003e5e1979a7221ee718"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-11d86bada61e82188159d467e30aab12"
     },
     {
       "rule_id": "SS-026",
@@ -8710,7 +9732,8 @@
       "related": [
         "cfe0afbc3ca2c5f32e7bd65fae6e9294"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-1d1db31d573676e9ed1bf9f0b4df12da"
     },
     {
       "rule_id": "SS-006",
@@ -8737,7 +9760,8 @@
       "related": [
         "0a689d578d918651ed75f62df2df4563"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0a689d578d918651ed75f62df2df4563"
     },
     {
       "rule_id": "SS-006",
@@ -8764,7 +9788,8 @@
       "related": [
         "196cae8847f246987eea0907886b2346"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-196cae8847f246987eea0907886b2346"
     },
     {
       "rule_id": "SS-006",
@@ -8791,7 +9816,8 @@
       "related": [
         "757ee1e079580fab11d10dcb83ded1a8"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-3860def458a71ab0ee0e2e0899610264"
     },
     {
       "rule_id": "SS-006",
@@ -8817,7 +9843,8 @@
       },
       "related": [
         "06399ceb1ec0000b5a42f1651c8a15d6"
-      ]
+      ],
+      "group_id": "group-06399ceb1ec0000b5a42f1651c8a15d6"
     },
     {
       "rule_id": "SS-006",
@@ -8866,7 +9893,8 @@
       },
       "related": [
         "3d1713dded003cdfe150fb7b71eacfae"
-      ]
+      ],
+      "group_id": "group-3d1713dded003cdfe150fb7b71eacfae"
     },
     {
       "rule_id": "SS-010",
@@ -8892,7 +9920,8 @@
       },
       "related": [
         "b156a84476d6d0f6988436db73bac1fd"
-      ]
+      ],
+      "group_id": "group-3d1713dded003cdfe150fb7b71eacfae"
     },
     {
       "rule_id": "SS-006",
@@ -8943,7 +9972,8 @@
       "related": [
         "9f2c4935ab37dd019c335356cd993ec4"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-5e9e1aa866e0cc01c89f8120bf293ab7"
     },
     {
       "rule_id": "SS-006",
@@ -8969,7 +9999,8 @@
       },
       "related": [
         "06f3cfcbbbe36ef777b9db70a4f6eaf3"
-      ]
+      ],
+      "group_id": "group-06f3cfcbbbe36ef777b9db70a4f6eaf3"
     },
     {
       "rule_id": "SS-010",
@@ -8995,7 +10026,8 @@
       },
       "related": [
         "ac26d900020ae4fa9c31cdf498c59e16"
-      ]
+      ],
+      "group_id": "group-06f3cfcbbbe36ef777b9db70a4f6eaf3"
     },
     {
       "rule_id": "SS-006",
@@ -9021,7 +10053,8 @@
       },
       "related": [
         "238fd6bb22dfb45282da13e034fb94b5"
-      ]
+      ],
+      "group_id": "group-238fd6bb22dfb45282da13e034fb94b5"
     },
     {
       "rule_id": "SS-010",
@@ -9047,7 +10080,8 @@
       },
       "related": [
         "904cf8b5be71a9484fd6e82bd40192c4"
-      ]
+      ],
+      "group_id": "group-238fd6bb22dfb45282da13e034fb94b5"
     },
     {
       "rule_id": "SS-006",
@@ -9073,7 +10107,8 @@
       },
       "related": [
         "dff5c5fcf4f211dae939515a0a1f0e37"
-      ]
+      ],
+      "group_id": "group-de3d4a612257c047ceb526aaa83d3d44"
     },
     {
       "rule_id": "SS-010",
@@ -9099,7 +10134,8 @@
       },
       "related": [
         "de3d4a612257c047ceb526aaa83d3d44"
-      ]
+      ],
+      "group_id": "group-de3d4a612257c047ceb526aaa83d3d44"
     },
     {
       "rule_id": "SS-006",
@@ -9126,7 +10162,8 @@
       "related": [
         "d54bae544db9a5f54f2f14127e3c7e22"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-609fa930812061c84a9387e8e72f861e"
     },
     {
       "rule_id": "SS-010",
@@ -9153,7 +10190,245 @@
       "related": [
         "609fa930812061c84a9387e8e72f861e"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-609fa930812061c84a9387e8e72f861e"
+    },
+    {
+      "rule_id": "SS-010",
+      "title": "Privileged state change without an event",
+      "description": "A contract entry point mutates a storage key that looks like privileged configuration (for example admin, owner, pause, params, fees, or oracle) without publishing an event. Off-chain indexers and users rely on events to observe critical changes; without one, the change is invisible to monitoring and incident response.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "events",
+      "location": {
+        "file": "SS-046/negative2.rs",
+        "line": 21,
+        "column": 9
+      },
+      "evidence": "privileged storage change without an event in `set_b`: env . storage () . temporary () . set (& DataKey :: Meta (user) , & Meta { owner : 2 })",
+      "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events"
+      ],
+      "fingerprint": "991c775750cb4b44e4e2dbe85bf76e78",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_b"
+      }
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-046/negative5.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set_a`: env . storage () . persistent () . set (& DataKey :: Balance (user) , & Balance { amount : 1 })",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "ebaded02d25b24da6d1b46119acd0e13",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_a"
+      }
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-049/negative.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "b9328a393e90b88b1e97bc67b51b5fdb",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_name"
+      },
+      "related": [
+        "b38aa4df2b382dc74164b6760f42ecb6"
+      ],
+      "group_id": "group-b38aa4df2b382dc74164b6760f42ecb6"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-049/negative2.rs",
+        "line": 13,
+        "column": 17
+      },
+      "evidence": "persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "07f40caa91ced79a2fef0aaca14753d6",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_name"
+      },
+      "related": [
+        "c8235eaace7e49bbf5183f5deb5a6c92"
+      ],
+      "group_id": "group-07f40caa91ced79a2fef0aaca14753d6"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-049/negative3.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "2bc8b98f658c7c959e3fc260fe9e8ec2",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_name"
+      },
+      "related": [
+        "f585cde2091c1a7b0f574e6ac645f38e"
+      ],
+      "group_id": "group-2bc8b98f658c7c959e3fc260fe9e8ec2"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-049/negative4.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "83f477e711a53c4edb2a436eb145b1c4",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_name"
+      },
+      "related": [
+        "0d647291cc7330b5b0207a5dae07136f"
+      ],
+      "group_id": "group-0d647291cc7330b5b0207a5dae07136f"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-049/negative5.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "c45831d99040d8c2bf8998b3beb7b4f8",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_name"
+      },
+      "related": [
+        "bcbc4bf8f3846a25b53e32edf6b0731b"
+      ],
+      "group_id": "group-bcbc4bf8f3846a25b53e32edf6b0731b"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-049/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "01c42f8d3f92a4dff264aa66598d8bc5",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_name"
+      },
+      "related": [
+        "055b293f33f9de442bd89e94c7aac95a"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-01c42f8d3f92a4dff264aa66598d8bc5"
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "storage",
+      "location": {
+        "file": "SS-049/positive.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "persistent storage write without TTL extension in `set_description`: env . storage () . persistent () . set (& Key :: Description , & text)",
+      "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data"
+      ],
+      "fingerprint": "ee7bf8daf95d73015c44378c9db2b27e",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::set_description"
+      },
+      "related": [
+        "b96662552bfb718088584f4870316f78"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-b96662552bfb718088584f4870316f78"
     },
     {
       "rule_id": "SS-006",
@@ -9180,7 +10455,8 @@
       "related": [
         "a90bb695fbab024bd583ead7034a0990"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0e30207a5d2e79a79968079556b556e7"
     },
     {
       "rule_id": "SS-010",
@@ -9207,7 +10483,1440 @@
       "related": [
         "0e30207a5d2e79a79968079556b556e7"
       ],
-      "correlation_ambiguous": true
+      "correlation_ambiguous": true,
+      "group_id": "group-0e30207a5d2e79a79968079556b556e7"
+    }
+  ],
+  "finding_groups": [
+    {
+      "id": "group-01c42f8d3f92a4dff264aa66598d8bc5",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "01c42f8d3f92a4dff264aa66598d8bc5",
+        "055b293f33f9de442bd89e94c7aac95a"
+      ]
+    },
+    {
+      "id": "group-0297bd333ae8bd85e622642073e257d8",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006, SS-010)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "0297bd333ae8bd85e622642073e257d8",
+        "0d11170fbdae7d05de08d58d3faad85e",
+        "ccee50206e3f5ad36dc0b82be4da9d72"
+      ]
+    },
+    {
+      "id": "group-039db96b21a90887b7223acbae663ab9",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006, SS-010, SS-011)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006",
+        "SS-010",
+        "SS-011"
+      ],
+      "fingerprints": [
+        "039db96b21a90887b7223acbae663ab9",
+        "53b3aca264cd5312ab7cb35db92a0f26",
+        "6e620bd49a33ed5dd9e693eb21d2ee7b",
+        "75019a8663138f87811480b25147c5ce"
+      ]
+    },
+    {
+      "id": "group-04637f34a8290f5734c2f0436359c2bc",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-011, SS-016)",
+      "rule_ids": [
+        "SS-001",
+        "SS-011",
+        "SS-016"
+      ],
+      "fingerprints": [
+        "04637f34a8290f5734c2f0436359c2bc",
+        "28e8764093d6d631285f4c302b420684",
+        "40b18bea271c88c2b221edb11b7ea58b"
+      ]
+    },
+    {
+      "id": "group-06399ceb1ec0000b5a42f1651c8a15d6",
+      "explanation": "findings share a symbol: `batch` (rules: SS-006, SS-032)",
+      "rule_ids": [
+        "SS-006",
+        "SS-032"
+      ],
+      "fingerprints": [
+        "06399ceb1ec0000b5a42f1651c8a15d6",
+        "2f4160b3f2cb9cfdc09e0c45ac4e36ed"
+      ]
+    },
+    {
+      "id": "group-06f3cfcbbbe36ef777b9db70a4f6eaf3",
+      "explanation": "findings share overlapping spans and symbols: `set` (rules: SS-006, SS-010)",
+      "rule_ids": [
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "06f3cfcbbbe36ef777b9db70a4f6eaf3",
+        "ac26d900020ae4fa9c31cdf498c59e16"
+      ]
+    },
+    {
+      "id": "group-07f40caa91ced79a2fef0aaca14753d6",
+      "explanation": "findings share overlapping spans and symbols: `set_name` (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "07f40caa91ced79a2fef0aaca14753d6",
+        "c8235eaace7e49bbf5183f5deb5a6c92"
+      ]
+    },
+    {
+      "id": "group-081e0141f5201a517f311d3ea111a6c4",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "081e0141f5201a517f311d3ea111a6c4",
+        "34c6e80ed102dd08157ec8d820e5cd01"
+      ]
+    },
+    {
+      "id": "group-08233f12c8d4d043bb78f7fc8f06cbaa",
+      "explanation": "findings share an overlapping source span (rules: SS-032, SS-041)",
+      "rule_ids": [
+        "SS-032",
+        "SS-041"
+      ],
+      "fingerprints": [
+        "08233f12c8d4d043bb78f7fc8f06cbaa",
+        "c91230c765f00d51d0a61cafccfb855e"
+      ]
+    },
+    {
+      "id": "group-0a689d578d918651ed75f62df2df4563",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "0a689d578d918651ed75f62df2df4563",
+        "b83c4a6cd821a6c273aef3c46054e728"
+      ]
+    },
+    {
+      "id": "group-0be9f5344f226568677ab5e99abfc6f4",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "0be9f5344f226568677ab5e99abfc6f4",
+        "7b9c2285cafe0c7695c46f22694bbda5",
+        "d5475c0cbf4d93267f0783dbf8255c86"
+      ]
+    },
+    {
+      "id": "group-0cb1efb1a006f0e476a1be0487adfab4",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-011, SS-016)",
+      "rule_ids": [
+        "SS-001",
+        "SS-011",
+        "SS-016"
+      ],
+      "fingerprints": [
+        "0cb1efb1a006f0e476a1be0487adfab4",
+        "5555426d372f99e3d602cf38d65acf4c",
+        "64511a6c4862f557012e7a274614dbdf"
+      ]
+    },
+    {
+      "id": "group-0d647291cc7330b5b0207a5dae07136f",
+      "explanation": "findings share overlapping spans and symbols: `set_name` (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "0d647291cc7330b5b0207a5dae07136f",
+        "83f477e711a53c4edb2a436eb145b1c4"
+      ]
+    },
+    {
+      "id": "group-0e30207a5d2e79a79968079556b556e7",
+      "explanation": "findings share an overlapping source span (rules: SS-006, SS-010)",
+      "rule_ids": [
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "0e30207a5d2e79a79968079556b556e7",
+        "a90bb695fbab024bd583ead7034a0990"
+      ]
+    },
+    {
+      "id": "group-0e31c94f8f3fbfef435c4005f47e71d4",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006, SS-011)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006",
+        "SS-011"
+      ],
+      "fingerprints": [
+        "0e31c94f8f3fbfef435c4005f47e71d4",
+        "bd967ce4f944e1ce41143b19ccf48d7e",
+        "f2d02bc6d17e9f687515f2857255cb8e"
+      ]
+    },
+    {
+      "id": "group-0f62769aa68303799bfc41e2a79f8861",
+      "explanation": "findings share a symbol: `store` (rules: SS-001, SS-022)",
+      "rule_ids": [
+        "SS-001",
+        "SS-022"
+      ],
+      "fingerprints": [
+        "0f62769aa68303799bfc41e2a79f8861",
+        "1c44dedf7609d76135e1e2acc13067ac"
+      ]
+    },
+    {
+      "id": "group-100da6fb77795c318413a10871dc8322",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "100da6fb77795c318413a10871dc8322",
+        "763b03471d0c48d8cff72c2ca1a66ec8",
+        "e935aa3e1867c9fce22f03b037bf4e26"
+      ]
+    },
+    {
+      "id": "group-11d86bada61e82188159d467e30aab12",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006, SS-025)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006",
+        "SS-025"
+      ],
+      "fingerprints": [
+        "11d86bada61e82188159d467e30aab12",
+        "431c0acb156f003e5e1979a7221ee718",
+        "ade9c6081a006f620a73a3e72655568d"
+      ]
+    },
+    {
+      "id": "group-13479d49c4d00c19c7009826a649b57c",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "13479d49c4d00c19c7009826a649b57c",
+        "9e6235e6af26cd33cd3d0c4df78cb9ff"
+      ]
+    },
+    {
+      "id": "group-15ad3d38e97fb6dadcb0c4a8b73d392c",
+      "explanation": "findings share an overlapping source span (rules: SS-004, SS-049)",
+      "rule_ids": [
+        "SS-004",
+        "SS-049"
+      ],
+      "fingerprints": [
+        "15ad3d38e97fb6dadcb0c4a8b73d392c",
+        "6a600484c97d70aa5197db339a805466"
+      ]
+    },
+    {
+      "id": "group-1670ea29badda93d45f1893af80f9d1f",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-011)",
+      "rule_ids": [
+        "SS-001",
+        "SS-011"
+      ],
+      "fingerprints": [
+        "1670ea29badda93d45f1893af80f9d1f",
+        "8cbf9c0252485933744e05bd6bafcf1c"
+      ]
+    },
+    {
+      "id": "group-16ae2ff5dac988b965881be178ce6079",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "16ae2ff5dac988b965881be178ce6079",
+        "bb133c7cb974e38979862568c7ae8504",
+        "d29c8d617e14f3f024df7360ed7b8c87"
+      ]
+    },
+    {
+      "id": "group-16ecc88fdd2bf218c7db9e6a3fd04f37",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-011)",
+      "rule_ids": [
+        "SS-001",
+        "SS-011"
+      ],
+      "fingerprints": [
+        "16ecc88fdd2bf218c7db9e6a3fd04f37",
+        "4818ed69d217652b629399ebefc4899f"
+      ]
+    },
+    {
+      "id": "group-17e1f27c6f5cc90d25493e1875811b98",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006, SS-011)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006",
+        "SS-011"
+      ],
+      "fingerprints": [
+        "17e1f27c6f5cc90d25493e1875811b98",
+        "977717cb945ed2b2f37d818963cceba3",
+        "f2be6e36496eb1c0e4effc18e7da8838"
+      ]
+    },
+    {
+      "id": "group-193e358f4a82348ecf21de0a35ec158d",
+      "explanation": "findings share overlapping spans and symbols: `set_admin` (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "193e358f4a82348ecf21de0a35ec158d",
+        "bb1abfaecd4b8442a9ea052e06cf9ccb"
+      ]
+    },
+    {
+      "id": "group-196cae8847f246987eea0907886b2346",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "196cae8847f246987eea0907886b2346",
+        "d2cc256db0361c3c0abd6cc3133ceca3"
+      ]
+    },
+    {
+      "id": "group-1a0210bc82d9870ef2668c400ed7b078",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "1a0210bc82d9870ef2668c400ed7b078",
+        "2b5bf3f8376bf0f80ab8ac9f00da94dc",
+        "34ec8ca36a47b0434c16fa976a058c3b"
+      ]
+    },
+    {
+      "id": "group-1b817a9cf8e8c6fcce93cb968585a84d",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "1b817a9cf8e8c6fcce93cb968585a84d",
+        "a39c12d558fc7b44310207ba8108ecab"
+      ]
+    },
+    {
+      "id": "group-1b98a6a5f598c533eb1b25bd5b8fe250",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "1b98a6a5f598c533eb1b25bd5b8fe250",
+        "3b059e2094045bb07bd10904f219b6cb",
+        "f37d556c2d707f25f61c7b3db5cc3413"
+      ]
+    },
+    {
+      "id": "group-1d1db31d573676e9ed1bf9f0b4df12da",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "1d1db31d573676e9ed1bf9f0b4df12da",
+        "cfe0afbc3ca2c5f32e7bd65fae6e9294"
+      ]
+    },
+    {
+      "id": "group-2020f41b706098cbe1d7748dadd463cc",
+      "explanation": "findings share an overlapping source span (rules: SS-002, SS-030)",
+      "rule_ids": [
+        "SS-002",
+        "SS-030"
+      ],
+      "fingerprints": [
+        "2020f41b706098cbe1d7748dadd463cc",
+        "b343b1171b31c9a5b9a58a8a01dd08ac"
+      ]
+    },
+    {
+      "id": "group-238fd6bb22dfb45282da13e034fb94b5",
+      "explanation": "findings share overlapping spans and symbols: `set` (rules: SS-006, SS-010)",
+      "rule_ids": [
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "238fd6bb22dfb45282da13e034fb94b5",
+        "904cf8b5be71a9484fd6e82bd40192c4"
+      ]
+    },
+    {
+      "id": "group-23f90f900c6921c553ab52a53e297168",
+      "explanation": "findings share overlapping spans and symbols: `set_admin` (rules: SS-006, SS-010)",
+      "rule_ids": [
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "23f90f900c6921c553ab52a53e297168",
+        "b8dcb181ecf494d8e030e2dca900c3d2"
+      ]
+    },
+    {
+      "id": "group-2528c0d9d700e7d35b6af55e5c455d0d",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "2528c0d9d700e7d35b6af55e5c455d0d",
+        "31d2414fbf129f918912feebd87917fb"
+      ]
+    },
+    {
+      "id": "group-256239d6165e9a6f5b11ea7beca1009e",
+      "explanation": "findings share an overlapping source span (rules: SS-002, SS-030)",
+      "rule_ids": [
+        "SS-002",
+        "SS-030"
+      ],
+      "fingerprints": [
+        "256239d6165e9a6f5b11ea7beca1009e",
+        "bc7f8d6006ab176203f70ac24ed3c3c8"
+      ]
+    },
+    {
+      "id": "group-25d152fd88ac81caa0bd0275b2ab4fba",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-011)",
+      "rule_ids": [
+        "SS-001",
+        "SS-011"
+      ],
+      "fingerprints": [
+        "25d152fd88ac81caa0bd0275b2ab4fba",
+        "fbeae4f63d1aeb884688ea3281d84736"
+      ]
+    },
+    {
+      "id": "group-2693cc4c84faf22776dd204da8c1f8c4",
+      "explanation": "findings share overlapping spans and symbols: `set_admin` (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "2693cc4c84faf22776dd204da8c1f8c4",
+        "95b2ae1df09dff1b1d86d07c95b964b5"
+      ]
+    },
+    {
+      "id": "group-26f40bd11c8b96b541374822f06fa692",
+      "explanation": "findings share a symbol: `load` (rules: SS-001, SS-004)",
+      "rule_ids": [
+        "SS-001",
+        "SS-004"
+      ],
+      "fingerprints": [
+        "26f40bd11c8b96b541374822f06fa692",
+        "5324ac98037688f608f5ccdcf92f3929"
+      ]
+    },
+    {
+      "id": "group-280073fd0c392575b928a4eec05ee5d9",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "280073fd0c392575b928a4eec05ee5d9",
+        "e1f40c9883b82b58e7e8c067bc28c021",
+        "e4d1d7c7329ff42ad1330aa88e145a75"
+      ]
+    },
+    {
+      "id": "group-28fd1b7c89283ed13d151e50de739072",
+      "explanation": "findings share an overlapping source span (rules: SS-002, SS-030)",
+      "rule_ids": [
+        "SS-002",
+        "SS-030"
+      ],
+      "fingerprints": [
+        "28fd1b7c89283ed13d151e50de739072",
+        "3ad6e609e43b4242f70de844c8b072fa"
+      ]
+    },
+    {
+      "id": "group-2a6346c2270dab2c59ed044705715246",
+      "explanation": "findings share overlapping spans and symbols: `set_admin` (rules: SS-006, SS-010)",
+      "rule_ids": [
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "2a6346c2270dab2c59ed044705715246",
+        "34bcd75b26a59f32ed27bc3d6af7ada2"
+      ]
+    },
+    {
+      "id": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64",
+      "explanation": "findings share an overlapping source span (rules: SS-013, SS-014, SS-019, SS-028, SS-044)",
+      "rule_ids": [
+        "SS-013",
+        "SS-014",
+        "SS-019",
+        "SS-028",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+        "788438c0f7a3313ffbd14856426b11ed",
+        "96471f7dd91c176605db04047f9b0508",
+        "a540d0552854c83a2e514ebe3addb904",
+        "d53729124e927bdf3c7454cc7eb67305"
+      ]
+    },
+    {
+      "id": "group-2ab86cffaba4ec1209dce3d7d15d1726",
+      "explanation": "findings share an overlapping source span (rules: SS-004, SS-049)",
+      "rule_ids": [
+        "SS-004",
+        "SS-049"
+      ],
+      "fingerprints": [
+        "2ab86cffaba4ec1209dce3d7d15d1726",
+        "c1336fd5d5741a3e5487e4fd959501f0"
+      ]
+    },
+    {
+      "id": "group-2ac2897090d1ecd72453fd5af19f6387",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006, SS-010)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "2ac2897090d1ecd72453fd5af19f6387",
+        "a26955621a43cd95b5ff53606111d3ec",
+        "df2367f567c56c4a988a964302f179ca"
+      ]
+    },
+    {
+      "id": "group-2af3668a68b8b8fff15113220e75af66",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "2af3668a68b8b8fff15113220e75af66",
+        "3dfc41148c088ed584c759e633059253",
+        "85a2b2f1a89e41ebe961cf8e0ddc7d59"
+      ]
+    },
+    {
+      "id": "group-2bc8b98f658c7c959e3fc260fe9e8ec2",
+      "explanation": "findings share overlapping spans and symbols: `set_name` (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "2bc8b98f658c7c959e3fc260fe9e8ec2",
+        "f585cde2091c1a7b0f574e6ac645f38e"
+      ]
+    },
+    {
+      "id": "group-2c0ad5f35847c792f4f0c2601a5310f3",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "2c0ad5f35847c792f4f0c2601a5310f3",
+        "51b60ca5ffa9f7c9d2b54307b1954fc8",
+        "e8bbd271b173fc302e7875bd7557d93b"
+      ]
+    },
+    {
+      "id": "group-2e99ae2564152f54c6c0fb3db933002f",
+      "explanation": "findings share an overlapping source span (rules: SS-002, SS-030)",
+      "rule_ids": [
+        "SS-002",
+        "SS-030"
+      ],
+      "fingerprints": [
+        "2e99ae2564152f54c6c0fb3db933002f",
+        "cd14e6d032c2b9149a1616ac374a4148"
+      ]
+    },
+    {
+      "id": "group-31a63e495cc4a167de984fc61b412787",
+      "explanation": "findings share an overlapping source span (rules: SS-004, SS-039)",
+      "rule_ids": [
+        "SS-004",
+        "SS-039"
+      ],
+      "fingerprints": [
+        "31a63e495cc4a167de984fc61b412787",
+        "9d121bdfd459606ded2db6ea4db1ec51"
+      ]
+    },
+    {
+      "id": "group-328b650bdb827caae9d740968006f0dc",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "328b650bdb827caae9d740968006f0dc",
+        "40814c10be9dce76435571e9ad3c9eab",
+        "547dea37a4cd38f87a0e74848ce1949d"
+      ]
+    },
+    {
+      "id": "group-37fe40fc78731d20edf55db9a5029ee0",
+      "explanation": "findings share overlapping spans and symbols: `set_admin` (rules: SS-006, SS-010)",
+      "rule_ids": [
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "37fe40fc78731d20edf55db9a5029ee0",
+        "b982a2ba60e8c8f253068dba014abca0"
+      ]
+    },
+    {
+      "id": "group-38596df81ee5f515b07be4226e5f9724",
+      "explanation": "findings share an overlapping source span (rules: SS-013, SS-014, SS-019, SS-028, SS-044)",
+      "rule_ids": [
+        "SS-013",
+        "SS-014",
+        "SS-019",
+        "SS-028",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "38596df81ee5f515b07be4226e5f9724",
+        "91372358a70638073c121aa93fb854ad",
+        "abf517d48bfba243b2c0554830570edf",
+        "dabd871e475d6d115bb8025943652d89",
+        "ee16d4000bb6d884c3d94aa068300561"
+      ]
+    },
+    {
+      "id": "group-3860def458a71ab0ee0e2e0899610264",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "3860def458a71ab0ee0e2e0899610264",
+        "757ee1e079580fab11d10dcb83ded1a8"
+      ]
+    },
+    {
+      "id": "group-38e4d47246474277fb41cce1a73725a7",
+      "explanation": "findings share an overlapping source span (rules: SS-004, SS-039)",
+      "rule_ids": [
+        "SS-004",
+        "SS-039"
+      ],
+      "fingerprints": [
+        "38e4d47246474277fb41cce1a73725a7",
+        "d36faccdef13745686d3373736ded237"
+      ]
+    },
+    {
+      "id": "group-39cc74f8ad0f12d0bfff6607024b9726",
+      "explanation": "findings share an overlapping source span (rules: SS-004, SS-039)",
+      "rule_ids": [
+        "SS-004",
+        "SS-039"
+      ],
+      "fingerprints": [
+        "39cc74f8ad0f12d0bfff6607024b9726",
+        "a7f66e471208cdd28bbd07198e4ceb34"
+      ]
+    },
+    {
+      "id": "group-3d1713dded003cdfe150fb7b71eacfae",
+      "explanation": "findings share overlapping spans and symbols: `set` (rules: SS-006, SS-010)",
+      "rule_ids": [
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "3d1713dded003cdfe150fb7b71eacfae",
+        "b156a84476d6d0f6988436db73bac1fd"
+      ]
+    },
+    {
+      "id": "group-3dfb5aae09dd9b505a0996b41cfc753c",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006, SS-011)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006",
+        "SS-011"
+      ],
+      "fingerprints": [
+        "3dfb5aae09dd9b505a0996b41cfc753c",
+        "70433fc9d2d6b994e3b89ef11b97f9d2",
+        "a7cc2c88fccb0642bd7037ca3f6d21f2"
+      ]
+    },
+    {
+      "id": "group-41801c7c97f3cf0aeed49a383e167725",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019"
+      ],
+      "fingerprints": [
+        "41801c7c97f3cf0aeed49a383e167725",
+        "f6ff0e4aa9c36db5393825361baf5717"
+      ]
+    },
+    {
+      "id": "group-41ed9d12c0503c96aef8d8dd7752f0f9",
+      "explanation": "findings share an overlapping source span (rules: SS-004, SS-039)",
+      "rule_ids": [
+        "SS-004",
+        "SS-039"
+      ],
+      "fingerprints": [
+        "41ed9d12c0503c96aef8d8dd7752f0f9",
+        "7e9a6ccdbf1e26365ef4b3c29b17b212"
+      ]
+    },
+    {
+      "id": "group-421f9eade5a4334f041cbba2bea4137c",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019"
+      ],
+      "fingerprints": [
+        "421f9eade5a4334f041cbba2bea4137c",
+        "b3333a41a4e39a39c7286d55ee8c13bd"
+      ]
+    },
+    {
+      "id": "group-4266573d71d97557c0a370ba11282c46",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "4266573d71d97557c0a370ba11282c46",
+        "4c717380a94b9599f33894136ee7573e"
+      ]
+    },
+    {
+      "id": "group-469ced2b262aa986c5c7ad98822b5dd8",
+      "explanation": "findings share an overlapping source span (rules: SS-002, SS-030)",
+      "rule_ids": [
+        "SS-002",
+        "SS-030"
+      ],
+      "fingerprints": [
+        "469ced2b262aa986c5c7ad98822b5dd8",
+        "c87f9f55c61c007cfebbe82a8ef54571"
+      ]
+    },
+    {
+      "id": "group-46ff535f980da7e6d80328e1a2a641d8",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006, SS-010)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "46ff535f980da7e6d80328e1a2a641d8",
+        "a294c57f05be0627bbf48fd92932e071",
+        "e56bd39024ffdeab4625b1e981795ef2"
+      ]
+    },
+    {
+      "id": "group-48607b3e663c4369781f250384a35ee8",
+      "explanation": "findings share a symbol: `withdraw` (rules: SS-008, SS-039)",
+      "rule_ids": [
+        "SS-008",
+        "SS-039"
+      ],
+      "fingerprints": [
+        "48607b3e663c4369781f250384a35ee8",
+        "6acf5039c42a288a1498a4df9486d09a"
+      ]
+    },
+    {
+      "id": "group-4c1b130b1c40c0851bcc360e2ee36abe",
+      "explanation": "findings share a symbol: `load` (rules: SS-001, SS-004)",
+      "rule_ids": [
+        "SS-001",
+        "SS-004"
+      ],
+      "fingerprints": [
+        "4c1b130b1c40c0851bcc360e2ee36abe",
+        "cce83633f0bb46623afc178954a61223"
+      ]
+    },
+    {
+      "id": "group-4c7bb8c7dcd42d55faab7be992707e40",
+      "explanation": "findings share overlapping spans and symbols: `commit` (rules: SS-023, SS-048)",
+      "rule_ids": [
+        "SS-023",
+        "SS-048"
+      ],
+      "fingerprints": [
+        "4c7bb8c7dcd42d55faab7be992707e40",
+        "8ba0420bd4ea3e853d9d23c5cba2fd97"
+      ]
+    },
+    {
+      "id": "group-509268ab4a288383acf40b26c7d4f0cb",
+      "explanation": "findings share overlapping spans and symbols: `set` (rules: SS-006, SS-017)",
+      "rule_ids": [
+        "SS-006",
+        "SS-017"
+      ],
+      "fingerprints": [
+        "509268ab4a288383acf40b26c7d4f0cb",
+        "fbf6d16b047d6733f4408c670b9ca2ee"
+      ]
+    },
+    {
+      "id": "group-5337a1e054dca861298f2ab74368a3e7",
+      "explanation": "findings share overlapping spans and symbols: `balance` (rules: SS-002, SS-030)",
+      "rule_ids": [
+        "SS-002",
+        "SS-030"
+      ],
+      "fingerprints": [
+        "5337a1e054dca861298f2ab74368a3e7",
+        "ac4a8287883c3f86ea90e00079c47064"
+      ]
+    },
+    {
+      "id": "group-56712e7374e1b71b081e1b2acd1a0708",
+      "explanation": "findings share overlapping spans and symbols: `set_admin` (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "56712e7374e1b71b081e1b2acd1a0708",
+        "90b372bac3f6a7d01fb6adddd5822924"
+      ]
+    },
+    {
+      "id": "group-59dfee0175a75e4aef1c46583640189e",
+      "explanation": "findings share a symbol: `probe` (rules: SS-019, SS-039)",
+      "rule_ids": [
+        "SS-019",
+        "SS-039"
+      ],
+      "fingerprints": [
+        "59dfee0175a75e4aef1c46583640189e",
+        "d3c34df38b542b7b7ba0b07015bd9c56"
+      ]
+    },
+    {
+      "id": "group-5a1d0f25a4704d97bd42371d0570ef80",
+      "explanation": "findings share an overlapping source span (rules: SS-002, SS-030)",
+      "rule_ids": [
+        "SS-002",
+        "SS-030"
+      ],
+      "fingerprints": [
+        "5a1d0f25a4704d97bd42371d0570ef80",
+        "cb9154a32d7840fdc8322b83051c9757"
+      ]
+    },
+    {
+      "id": "group-5c3fa64e6e570324688bed66d18ca426",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "5c3fa64e6e570324688bed66d18ca426",
+        "87a76d3c698134ccf4a8389e7718285d"
+      ]
+    },
+    {
+      "id": "group-5cdc6740236002705c69fda6050c99dc",
+      "explanation": "findings share an overlapping source span (rules: SS-019, SS-044)",
+      "rule_ids": [
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "5cdc6740236002705c69fda6050c99dc",
+        "eaf81a87f58710688ca1496570ccedee"
+      ]
+    },
+    {
+      "id": "group-5e9e1aa866e0cc01c89f8120bf293ab7",
+      "explanation": "findings share an overlapping source span (rules: SS-006, SS-017)",
+      "rule_ids": [
+        "SS-006",
+        "SS-017"
+      ],
+      "fingerprints": [
+        "5e9e1aa866e0cc01c89f8120bf293ab7",
+        "9f2c4935ab37dd019c335356cd993ec4"
+      ]
+    },
+    {
+      "id": "group-5fdcc5ba111ac7bed47f4d170941ec83",
+      "explanation": "findings share overlapping spans and symbols: `balance` (rules: SS-002, SS-030)",
+      "rule_ids": [
+        "SS-002",
+        "SS-030"
+      ],
+      "fingerprints": [
+        "5fdcc5ba111ac7bed47f4d170941ec83",
+        "898dec5e2d22a423180cfe2bdb77234d"
+      ]
+    },
+    {
+      "id": "group-609fa930812061c84a9387e8e72f861e",
+      "explanation": "findings share an overlapping source span (rules: SS-006, SS-010)",
+      "rule_ids": [
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "609fa930812061c84a9387e8e72f861e",
+        "d54bae544db9a5f54f2f14127e3c7e22"
+      ]
+    },
+    {
+      "id": "group-60dcd6e6d8870acb998437dcc30148bb",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "60dcd6e6d8870acb998437dcc30148bb",
+        "7868cde3c25c6fe4ad03ed928848d963",
+        "8b86f2b60e6a444b286971c481179811"
+      ]
+    },
+    {
+      "id": "group-627c340067eaeb267b1fd346c78dda42",
+      "explanation": "findings share an overlapping source span (rules: SS-002, SS-030)",
+      "rule_ids": [
+        "SS-002",
+        "SS-030"
+      ],
+      "fingerprints": [
+        "627c340067eaeb267b1fd346c78dda42",
+        "c3a8b4bbe274a02826b05c8a7eb26bdc"
+      ]
+    },
+    {
+      "id": "group-661329002094a11864b18361688ec9d6",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006, SS-010)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "661329002094a11864b18361688ec9d6",
+        "c3e233e2b9601a95c29d47ed756e21b9",
+        "e110395ff3f6329d1b4e10dcc87ef51f"
+      ]
+    },
+    {
+      "id": "group-6a579809f30b4ea6f2b470881ba456be",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "6a579809f30b4ea6f2b470881ba456be",
+        "e5a0a9fb95f553d4c1abcff9bb163fcd"
+      ]
+    },
+    {
+      "id": "group-6b812ca2363af13c411c3fc45863afde",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019"
+      ],
+      "fingerprints": [
+        "6b812ca2363af13c411c3fc45863afde",
+        "b688629950a0d3b3e7227182ada171f8"
+      ]
+    },
+    {
+      "id": "group-6fc60f6ec5780151995fae2f56cdc771",
+      "explanation": "findings share overlapping spans and symbols: `set_amount` (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "6fc60f6ec5780151995fae2f56cdc771",
+        "de237e99f4ef0c7e6a885edc04d2e57b"
+      ]
+    },
+    {
+      "id": "group-73041493412dc2e5c7f7f7bfe515c335",
+      "explanation": "findings share a symbol: `store_dynamic` (rules: SS-001, SS-022)",
+      "rule_ids": [
+        "SS-001",
+        "SS-022"
+      ],
+      "fingerprints": [
+        "73041493412dc2e5c7f7f7bfe515c335",
+        "d678ee90fd3bd753a68752cfbca298f7"
+      ]
+    },
+    {
+      "id": "group-7322879d377122e5338cb715ae0c4186",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006, SS-010)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "7322879d377122e5338cb715ae0c4186",
+        "9f645cbf384d9657ac5bbcdadeeb9144",
+        "d30a4b1e82ff740a5dc33d6af6a6fc3c"
+      ]
+    },
+    {
+      "id": "group-74cf86ad21eed79956679865289208da",
+      "explanation": "findings share an overlapping source span (rules: SS-002, SS-030)",
+      "rule_ids": [
+        "SS-002",
+        "SS-030"
+      ],
+      "fingerprints": [
+        "74cf86ad21eed79956679865289208da",
+        "c399badb33485c8496d429125c15e476"
+      ]
+    },
+    {
+      "id": "group-7c0187710f5a7946468cee8f6eed300a",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "7c0187710f5a7946468cee8f6eed300a",
+        "c20aea01156b4621ff5ee989e0afc91d"
+      ]
+    },
+    {
+      "id": "group-7c0a072ae229f1da9b8a06b467ba7b47",
+      "explanation": "findings share an overlapping source span (rules: SS-004, SS-039)",
+      "rule_ids": [
+        "SS-004",
+        "SS-039"
+      ],
+      "fingerprints": [
+        "7c0a072ae229f1da9b8a06b467ba7b47",
+        "dff5e13c70dad06c64575ed63be1a882"
+      ]
+    },
+    {
+      "id": "group-7d4a08e424b4e0ffc20ef938ea5e2000",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "7d4a08e424b4e0ffc20ef938ea5e2000",
+        "e5053eb8c254a77c84f95f7ecbd5026c",
+        "eef1aae7728ff3da31ba5b3bb1fc3ca2"
+      ]
+    },
+    {
+      "id": "group-7f12d0173ea697e9a985a03d3aef0497",
+      "explanation": "findings share an overlapping source span (rules: SS-002, SS-030)",
+      "rule_ids": [
+        "SS-002",
+        "SS-030"
+      ],
+      "fingerprints": [
+        "7f12d0173ea697e9a985a03d3aef0497",
+        "fd3cf84445f4f4050a2de83a28f896d4"
+      ]
+    },
+    {
+      "id": "group-81e7b60122b5fd2c76f651276d06768a",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "81e7b60122b5fd2c76f651276d06768a",
+        "cf8a4241f25d646a75abbf4a8ebb523e",
+        "fd7ae9e1a00f6c952bc4f11d3045a6ca"
+      ]
+    },
+    {
+      "id": "group-830264a95828084109f5e7b0edffe357",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "830264a95828084109f5e7b0edffe357",
+        "c24246d25d23e1c883acfad3de5e9585",
+        "dd7d962c7fe2636603c07cea1b7d90b6"
+      ]
+    },
+    {
+      "id": "group-852b64bc1ec2a632158cd1bb5757b199",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-010, SS-021)",
+      "rule_ids": [
+        "SS-001",
+        "SS-010",
+        "SS-021"
+      ],
+      "fingerprints": [
+        "852b64bc1ec2a632158cd1bb5757b199",
+        "aa9c9ef26230bfef934d82ca38df7b15",
+        "e0649fc59d351d8af0c99fbb38dc4663"
+      ]
+    },
+    {
+      "id": "group-896f4cd2636fb46c5dc433890edbed13",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "896f4cd2636fb46c5dc433890edbed13",
+        "ea12d748478dea8b32f212d3b2255611"
+      ]
+    },
+    {
+      "id": "group-8a5f043f6501f9d291b36d7d1b4565e1",
+      "explanation": "findings share an overlapping source span (rules: SS-002, SS-030)",
+      "rule_ids": [
+        "SS-002",
+        "SS-030"
+      ],
+      "fingerprints": [
+        "8a5f043f6501f9d291b36d7d1b4565e1",
+        "a6833cca85cdefc6c3c3d976037c98b2"
+      ]
+    },
+    {
+      "id": "group-8ac6744f5fb6451bd7069bc548dbed20",
+      "explanation": "findings share an overlapping source span (rules: SS-019, SS-044)",
+      "rule_ids": [
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "8ac6744f5fb6451bd7069bc548dbed20",
+        "f768e05ab79654785b73117762ee1540"
+      ]
+    },
+    {
+      "id": "group-8adc97c9ebea073ca91b1be726aadb3c",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "8adc97c9ebea073ca91b1be726aadb3c",
+        "a362fd34490f0f54cfdbbb67ce42d6ee",
+        "acede228d48f4693b023d19b85fdff01"
+      ]
+    },
+    {
+      "id": "group-8c0e85c2b992ad8024de3fb9914a448f",
+      "explanation": "findings share overlapping spans and symbols: `set_admin` (rules: SS-006, SS-010)",
+      "rule_ids": [
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "8c0e85c2b992ad8024de3fb9914a448f",
+        "9442c62d879817c31bf6857f993e5c47"
+      ]
+    },
+    {
+      "id": "group-8e915611cfb7d11a563968c7b7bd2af4",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "8e915611cfb7d11a563968c7b7bd2af4",
+        "a6da6843f263dcad78406e521ecdebf8"
+      ]
+    },
+    {
+      "id": "group-95cd5eeb72a9efc15496a8c1d7916d67",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "95cd5eeb72a9efc15496a8c1d7916d67",
+        "dfee15a21d1e3f058f92ca19828df74f"
+      ]
+    },
+    {
+      "id": "group-97095df6a92c90808cb51a3985f5c3dc",
+      "explanation": "findings share an overlapping source span (rules: SS-032, SS-041)",
+      "rule_ids": [
+        "SS-032",
+        "SS-041"
+      ],
+      "fingerprints": [
+        "97095df6a92c90808cb51a3985f5c3dc",
+        "f4561253eafb06f8a5fbde545cad9bd8"
+      ]
+    },
+    {
+      "id": "group-a8f84b11be78a859620a1e96419831d2",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "a8f84b11be78a859620a1e96419831d2",
+        "af85bf440d0340bcb30935ebaf8504cc",
+        "bdf3b0c31758e632a82f8f89d0082eb8"
+      ]
+    },
+    {
+      "id": "group-ab3aa1676a7dc29ade3bb462a73fe0b8",
+      "explanation": "findings share an overlapping source span (rules: SS-019, SS-044)",
+      "rule_ids": [
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "ab3aa1676a7dc29ade3bb462a73fe0b8",
+        "d830436e31c7dae6ebcb77b6726f0a02"
+      ]
+    },
+    {
+      "id": "group-ae5cada40640045fc5e6d4bc771de9c3",
+      "explanation": "findings share an overlapping source span (rules: SS-002, SS-030)",
+      "rule_ids": [
+        "SS-002",
+        "SS-030"
+      ],
+      "fingerprints": [
+        "ae5cada40640045fc5e6d4bc771de9c3",
+        "f026ae544ab95fd865ea98b161a9c77e"
+      ]
+    },
+    {
+      "id": "group-b1e4cf218a5ed9689787bebd39412d3e",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006, SS-010)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "b1e4cf218a5ed9689787bebd39412d3e",
+        "bd762510cb052a4b83765d5ac6db8744",
+        "dc609f3069ca74e4358813dadce5d9e4"
+      ]
+    },
+    {
+      "id": "group-b246a6af181e82c822350ad4e63a1c99",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044"
+      ],
+      "fingerprints": [
+        "b246a6af181e82c822350ad4e63a1c99",
+        "c1094608dc3ee75c4c8599a06d25a9b8",
+        "de6b286d5c77a9568c549f49d54db1b7"
+      ]
+    },
+    {
+      "id": "group-b38aa4df2b382dc74164b6760f42ecb6",
+      "explanation": "findings share overlapping spans and symbols: `set_name` (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "b38aa4df2b382dc74164b6760f42ecb6",
+        "b9328a393e90b88b1e97bc67b51b5fdb"
+      ]
+    },
+    {
+      "id": "group-b96662552bfb718088584f4870316f78",
+      "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "b96662552bfb718088584f4870316f78",
+        "ee7bf8daf95d73015c44378c9db2b27e"
+      ]
+    },
+    {
+      "id": "group-ba27766e93f440e49c92c70b74da3f6c",
+      "explanation": "findings share an overlapping source span (rules: SS-002, SS-030)",
+      "rule_ids": [
+        "SS-002",
+        "SS-030"
+      ],
+      "fingerprints": [
+        "ba27766e93f440e49c92c70b74da3f6c",
+        "f76644376aad7f3084b884153534e79e"
+      ]
+    },
+    {
+      "id": "group-bcbc4bf8f3846a25b53e32edf6b0731b",
+      "explanation": "findings share overlapping spans and symbols: `set_name` (rules: SS-001, SS-006)",
+      "rule_ids": [
+        "SS-001",
+        "SS-006"
+      ],
+      "fingerprints": [
+        "bcbc4bf8f3846a25b53e32edf6b0731b",
+        "c45831d99040d8c2bf8998b3beb7b4f8"
+      ]
+    },
+    {
+      "id": "group-d63f03e317b755dbdf91ec0e375c7d4d",
+      "explanation": "findings share an overlapping source span (rules: SS-004, SS-039)",
+      "rule_ids": [
+        "SS-004",
+        "SS-039"
+      ],
+      "fingerprints": [
+        "d63f03e317b755dbdf91ec0e375c7d4d",
+        "e71091ffde52f91a460ccdedbbbfd0bd"
+      ]
+    },
+    {
+      "id": "group-de3d4a612257c047ceb526aaa83d3d44",
+      "explanation": "findings share overlapping spans and symbols: `set` (rules: SS-006, SS-010)",
+      "rule_ids": [
+        "SS-006",
+        "SS-010"
+      ],
+      "fingerprints": [
+        "de3d4a612257c047ceb526aaa83d3d44",
+        "dff5c5fcf4f211dae939515a0a1f0e37"
+      ]
+    },
+    {
+      "id": "group-e346c1fe2a11ac05f6c6d4b4690d64a6",
+      "explanation": "findings share an overlapping source span (rules: SS-032, SS-037)",
+      "rule_ids": [
+        "SS-032",
+        "SS-037"
+      ],
+      "fingerprints": [
+        "e346c1fe2a11ac05f6c6d4b4690d64a6",
+        "e958de6eb749dfb68c30d9e853bf64e4"
+      ]
+    },
+    {
+      "id": "group-e70fefead6d303fbacbadf442907a99a",
+      "explanation": "findings share overlapping spans and symbols: `load` (rules: SS-004, SS-039)",
+      "rule_ids": [
+        "SS-004",
+        "SS-039"
+      ],
+      "fingerprints": [
+        "e70fefead6d303fbacbadf442907a99a",
+        "ffa781c50c7f543dc5a5935acb3fdaa8"
+      ]
     }
   ],
   "suppressed": [],
@@ -9473,6 +12182,56 @@
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: unknown_macro",
       "path": "SS-042/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "TYPE-001",
+      "level": "warning",
+      "message": "unresolved type `Balance` in parameter type (2 occurrences); type-aware rules may not apply",
+      "path": "SS-046/negative4.rs",
+      "line": 12,
+      "column": 59
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "2 macro invocation(s) were not expanded: panic, symbol_short",
+      "path": "SS-048/negative.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-048/negative2.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-048/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-048/negative4.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-048/negative5.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-048/positive.rs",
       "line": null
     }
   ]

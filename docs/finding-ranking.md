@@ -65,6 +65,21 @@ function contains the line, or the line has no CFG coverage, the entire field
 is omitted instead of guessed. It is additive and optional, so older reports
 and consumers remain valid, and it never changes severity or confidence.
 
+## Root-cause groups
+
+`correlation::group` adds a conservative grouping layer on top of the same
+evidence used for related findings. Two findings join a group only when they
+come from different rules and either share the same file with an overlapping
+span or share a backticked symbol between exactly two findings. Groups are
+bounded to `MAX_GROUP_SIZE`; a larger connected component is left ungrouped
+rather than split or truncated, and ambiguous symbols never create an edge.
+
+Each group keeps an explanation that names the evidence and the rule ids, so a
+different-rule merge is always explicit. Findings from the same rule are never
+merged, and a finding without a group stays ungrouped. JSON reports carry the
+groups under `finding_groups` and a `group_id` on each member; SARIF adds a
+`groupId` property. Grouping never removes, changes, or re-ranks a finding.
+
 ## Stability and formats
 
 The scanner sorts after configuration overrides, validation, and

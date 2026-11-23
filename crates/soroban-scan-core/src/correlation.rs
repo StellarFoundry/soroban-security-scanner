@@ -19,6 +19,11 @@ use crate::finding::Finding;
 
 /// Maximum number of related ids attached to one finding.
 pub const MAX_RELATED: usize = 8;
+/// Maximum findings in one root-cause group.
+///
+/// Larger connected components are left ungrouped instead of being split or
+/// truncated, because either would misrepresent the shared cause.
+pub const MAX_GROUP_SIZE: usize = 8;
 
 /// Identifier-shaped backtick content shorter than this is ignored.
 const MIN_SYMBOL_LEN: usize = 3;
@@ -107,6 +112,197 @@ pub fn correlate(findings: &[Finding]) -> CorrelationIndex {
     CorrelationIndex {
         related: bounded,
         ambiguous,
+    }
+}
+
+/// One conservative root-cause group.
+///
+/// A group only exists when at least two findings from different rules share a
+/// concrete piece of evidence. The explanation names the evidence and the rule
+/// ids, so a consumer can always tell why findings were grouped.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct FindingGroup {
+    /// Deterministic id derived from the smallest member fingerprint.
+    pub id: String,
+    /// Human-readable reason, including the rule ids.
+    pub explanation: String,
+    /// Distinct rule ids in the group, sorted.
+    pub rule_ids: Vec<String>,
+    /// Member fingerprints, sorted.
+    pub fingerprints: Vec<String>,
+}
+
+/// Root-cause groups for a set of findings.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct GroupingIndex {
+    groups: Vec<FindingGroup>,
+    by_fingerprint: BTreeMap<String, usize>,
+}
+
+impl GroupingIndex {
+    /// Groups in deterministic order.
+    pub fn groups(&self) -> &[FindingGroup] {
+        &self.groups
+    }
+
+    /// The group a finding belongs to, if any.
+    pub fn group_of(&self, id: &str) -> Option<&FindingGroup> {
+        self.by_fingerprint
+            .get(id)
+            .and_then(|index| self.groups.get(*index))
+    }
+}
+
+/// Groups findings by shared concrete evidence.
+///
+/// Edges use the same conservative rules as [`correlate`]: the same file and an
+/// overlapping span, or a shared backticked symbol between exactly two findings.
+/// Findings from the same rule are never merged, components larger than
+/// [`MAX_GROUP_SIZE`] are left ungrouped, and single findings stay ungrouped.
+pub fn group(findings: &[Finding]) -> GroupingIndex {
+    let mut adjacency: Vec<BTreeSet<usize>> = vec![BTreeSet::new(); findings.len()];
+    let mut span_pairs: BTreeSet<(usize, usize)> = BTreeSet::new();
+    let mut symbol_pairs: BTreeMap<(usize, usize), BTreeSet<String>> = BTreeMap::new();
+
+    let mut by_file: BTreeMap<String, Vec<usize>> = BTreeMap::new();
+    for (index, finding) in findings.iter().enumerate() {
+        by_file
+            .entry(normalized_file(finding))
+            .or_default()
+            .push(index);
+    }
+    for indices in by_file.values() {
+        for (position, &left) in indices.iter().enumerate() {
+            for &right in &indices[position + 1..] {
+                if findings[left].rule_id == findings[right].rule_id {
+                    continue;
+                }
+                if spans_overlap(&findings[left], &findings[right]) {
+                    adjacency[left].insert(right);
+                    adjacency[right].insert(left);
+                    span_pairs.insert(pair(left, right));
+                }
+            }
+        }
+    }
+
+    let mut by_symbol: BTreeMap<(String, String), Vec<usize>> = BTreeMap::new();
+    for (index, finding) in findings.iter().enumerate() {
+        if let Some(symbol) = symbol_of(&finding.evidence) {
+            by_symbol
+                .entry((normalized_file(finding), symbol))
+                .or_default()
+                .push(index);
+        }
+    }
+    for indices in by_symbol.values() {
+        if indices.len() != 2 {
+            // An ambiguous symbol cannot say which findings form a pair.
+            continue;
+        }
+        let (left, right) = (indices[0], indices[1]);
+        if findings[left].rule_id == findings[right].rule_id {
+            continue;
+        }
+        adjacency[left].insert(right);
+        adjacency[right].insert(left);
+        if let Some(symbol) = symbol_of(&findings[left].evidence) {
+            symbol_pairs
+                .entry(pair(left, right))
+                .or_default()
+                .insert(symbol);
+        }
+    }
+
+    let mut seen = BTreeSet::new();
+    let mut groups: Vec<FindingGroup> = Vec::new();
+    for start in 0..findings.len() {
+        if seen.contains(&start) || adjacency[start].is_empty() {
+            continue;
+        }
+        let mut component = BTreeSet::new();
+        let mut frontier = vec![start];
+        while let Some(index) = frontier.pop() {
+            if !component.insert(index) {
+                continue;
+            }
+            frontier.extend(adjacency[index].iter().copied());
+        }
+        seen.extend(component.iter().copied());
+        if component.len() < 2 || component.len() > MAX_GROUP_SIZE {
+            continue;
+        }
+
+        let members: Vec<usize> = component.iter().copied().collect();
+        let mut rule_ids: Vec<String> = members
+            .iter()
+            .map(|&index| findings[index].rule_id.clone())
+            .collect();
+        rule_ids.sort();
+        rule_ids.dedup();
+        if rule_ids.len() < 2 {
+            continue;
+        }
+        let mut fingerprints: Vec<String> = members
+            .iter()
+            .map(|&index| findings[index].fingerprint.clone())
+            .collect();
+        fingerprints.sort();
+        fingerprints.dedup();
+
+        let has_span = span_pairs
+            .iter()
+            .any(|&(left, right)| component.contains(&left) && component.contains(&right));
+        let mut symbols: Vec<String> = symbol_pairs
+            .iter()
+            .filter(|((left, right), _)| component.contains(left) && component.contains(right))
+            .flat_map(|(_, values)| values.iter().cloned())
+            .collect();
+        symbols.sort();
+        symbols.dedup();
+
+        let mut explanation = match (has_span, symbols.is_empty()) {
+            (true, true) => "findings share an overlapping source span".to_string(),
+            (false, false) => "findings share a symbol".to_string(),
+            (true, false) => "findings share overlapping spans and symbols".to_string(),
+            (false, true) => "findings share a source relation".to_string(),
+        };
+        if !symbols.is_empty() {
+            let names: Vec<String> = symbols
+                .iter()
+                .take(3)
+                .map(|symbol| format!("`{symbol}`"))
+                .collect();
+            explanation.push_str(&format!(": {}", names.join(", ")));
+        }
+        explanation.push_str(&format!(" (rules: {})", rule_ids.join(", ")));
+
+        groups.push(FindingGroup {
+            id: format!("group-{}", fingerprints[0]),
+            explanation,
+            rule_ids,
+            fingerprints,
+        });
+    }
+
+    groups.sort_by(|a, b| a.id.cmp(&b.id));
+    let mut by_fingerprint = BTreeMap::new();
+    for (index, group) in groups.iter().enumerate() {
+        for fingerprint in &group.fingerprints {
+            by_fingerprint.insert(fingerprint.clone(), index);
+        }
+    }
+    GroupingIndex {
+        groups,
+        by_fingerprint,
+    }
+}
+
+fn pair(left: usize, right: usize) -> (usize, usize) {
+    if left <= right {
+        (left, right)
+    } else {
+        (right, left)
     }
 }
 
@@ -291,5 +487,73 @@ mod tests {
         ];
         let index = correlate(&findings);
         assert!(index.related_ids(&findings[0].fingerprint).is_empty());
+    }
+
+    #[test]
+    fn overlapping_findings_form_one_explained_group() {
+        let findings = vec![
+            finding("SS-001", "src/lib.rs", 10, "mutation in `transfer`"),
+            finding("SS-008", "src/lib.rs", 10, "arithmetic in `transfer`"),
+        ];
+        let index = group(&findings);
+        assert_eq!(index.groups().len(), 1);
+        let group = &index.groups()[0];
+        assert_eq!(group.rule_ids, vec!["SS-001", "SS-008"]);
+        assert_eq!(group.fingerprints.len(), 2);
+        assert!(group.explanation.contains("overlapping"));
+        assert!(group.explanation.contains("SS-001, SS-008"));
+        assert_eq!(index.group_of(&findings[0].fingerprint), Some(group));
+    }
+
+    #[test]
+    fn shared_symbol_findings_form_one_group() {
+        let findings = vec![
+            finding("SS-001", "src/lib.rs", 10, "mutation in `transfer`"),
+            finding("SS-008", "src/lib.rs", 30, "arithmetic in `transfer`"),
+        ];
+        let index = group(&findings);
+        assert_eq!(index.groups().len(), 1);
+        assert!(index.groups()[0].explanation.contains("`transfer`"));
+    }
+
+    #[test]
+    fn singletons_and_same_rule_findings_stay_ungrouped() {
+        let findings = vec![
+            finding("SS-001", "src/lib.rs", 10, "mutation in `store`"),
+            finding("SS-008", "src/lib.rs", 30, "arithmetic in `add`"),
+            finding("SS-001", "src/lib.rs", 50, "mutation in `store`"),
+        ];
+        let index = group(&findings);
+        assert!(index.groups().is_empty());
+        for finding in &findings {
+            assert!(index.group_of(&finding.fingerprint).is_none());
+        }
+    }
+
+    #[test]
+    fn ambiguous_symbols_are_not_grouped() {
+        let findings = vec![
+            finding("SS-001", "src/lib.rs", 10, "mutation in `transfer`"),
+            finding("SS-008", "src/lib.rs", 20, "arithmetic in `transfer`"),
+            finding("SS-009", "src/lib.rs", 30, "cast in `transfer`"),
+        ];
+        let index = group(&findings);
+        assert!(index.groups().is_empty());
+    }
+
+    #[test]
+    fn oversized_components_stay_ungrouped() {
+        let findings: Vec<Finding> = (0..MAX_GROUP_SIZE + 1)
+            .map(|index| {
+                finding(
+                    &format!("SS-{:03}", index + 1),
+                    "src/lib.rs",
+                    10,
+                    "same construct",
+                )
+            })
+            .collect();
+        let index = group(&findings);
+        assert!(index.groups().is_empty());
     }
 }

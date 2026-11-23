@@ -232,10 +232,40 @@
             "type": "boolean",
             "description": "Present and true when a relation was deliberately not chosen because the shared evidence was ambiguous or the bounded list was truncated."
           },
+          "group_id": {
+            "type": "string",
+            "description": "Present only when the finding belongs to a root-cause group. Matches an id in the top-level `finding_groups` array, which carries the explanation and rule ids."
+          },
           "baseline_status": {
             "type": "string",
             "enum": ["new", "existing"],
             "description": "Present only when the scan was compared against a baseline via `--baseline`."
+          }
+        },
+        "additionalProperties": true
+      }
+    },
+    "finding_groups": {
+      "description": "Conservative root-cause groups. Omitted when no finding is grouped. A group is only formed from different rules sharing a concrete span or symbol, is bounded, and always carries an explanation naming the evidence and rule ids.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "explanation", "rule_ids", "fingerprints"],
+        "properties": {
+          "id": { "type": "string" },
+          "explanation": { "type": "string" },
+          "rule_ids": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 2,
+            "uniqueItems": true
+          },
+          "fingerprints": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 2,
+            "maxItems": 8,
+            "uniqueItems": true
           }
         },
         "additionalProperties": true

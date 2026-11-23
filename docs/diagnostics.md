@@ -48,13 +48,15 @@ can classify or suppress them without parsing the human-readable message.
 | `SYNTAX-001` | warning | Source files in a language the Rust frontend cannot analyze were skipped. Emitted only with `--unsupported-syntax`, aggregated by language, and bounded to 8 kinds plus an omitted-count notice. Only file extensions are inspected; no source text is read or reported. |
 | `TYPE-001` | warning | A type name used by an entry point could not be resolved unambiguously. Emitted for parameter types, local type annotations, and cast targets, aggregated by construct and type name with the first span. Type-aware rules may not apply. Bounded to 8 diagnostics per scan plus an omitted-count notice. |
 | `SDK-001` | warning | The declared `soroban-sdk` version is outside the supported matrix (`>=20.5.0, <30.0.0`). The scan continues, but rule coverage may be inaccurate. The message lists the verified versions. |
+| `CFG-001` | warning | A function's control-flow graph hit a node, edge, or depth cap and was truncated. Rules that require a complete graph skip that function instead of making a partial claim. Bounded to 8 diagnostics per scan plus an omitted-count notice. |
+| `TAINT-001` | warning | A taint flow may be missing or incomplete because a helper was undefined, a construct is outside the taint model, or an analysis bound was reached. Aggregated by reason and sink with the first span, and bounded to 8 diagnostics per scan plus an omitted-count notice. Messages contain counts and fixed labels only, never source text. |
 | `SCAN-001` | warning | The overall scan deadline expired. Remaining rules were skipped and the report is **partial**; do not treat it as a complete result. |
 
 Codes are grouped by area: `PARSE-*`, `MANIFEST-*`, `SOURCE-*`, `CRATE-*`,
 `RULE-*`, `CONFIG-*`, `BASELINE-*`, `MODE-*`, `TARGET-*`, `SYNTAX-*`,
-`TYPE-*`, and `SDK-*`. `config validate` prints `CONFIG-*` warnings to
-stderr while still exiting successfully, because they do not prevent a scan from
-running.
+`TYPE-*`, `SDK-*`, `CFG-*`, and `TAINT-*`. `config validate` prints `CONFIG-*`
+warnings to stderr while still exiting successfully, because they do not prevent
+a scan from running.
 
 ## JSON output
 
