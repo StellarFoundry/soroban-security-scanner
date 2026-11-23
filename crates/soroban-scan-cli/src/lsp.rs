@@ -162,13 +162,7 @@ impl ServerState {
         let due: Vec<String> = self
             .pending
             .iter()
-            .filter(|(uri, pending)| {
-                pending.due <= now
-                    && !self
-                        .inflight
-                        .get(*uri)
-                        .is_some_and(|active| !active.timed_out)
-            })
+            .filter(|(uri, pending)| pending.due <= now && !self.inflight.contains_key(*uri))
             .map(|(uri, _)| uri.clone())
             .collect();
 
@@ -262,7 +256,8 @@ impl ServerState {
         for (uri, pending) in &self.pending {
             let deadline = match self.inflight.get(uri) {
                 Some(active) if !active.timed_out => active.started + self.limits.analysis_timeout,
-                _ => pending.due,
+                Some(_) => continue,
+                None => pending.due,
             };
             next = Some(next.map_or(deadline, |current| current.min(deadline)));
         }
@@ -336,8 +331,7 @@ impl ServerState {
             Some("exit") => return Ok(false),
             Some("textDocument/didOpen") => {
                 if let Some((uri, text)) = opened_document(&params) {
-                    self.documents.insert(uri.clone(), text);
-                    self.schedule(uri, Duration::ZERO);
+                    self.update_document(writer, uri, text, Duration::ZERO)?;
                 }
             }
             Some("textDocument/didChange") => {
@@ -347,8 +341,7 @@ impl ServerState {
                     .unwrap_or_default()
                     .to_string();
                 if let Some(text) = changed_text(&params) {
-                    self.documents.insert(uri.clone(), text);
-                    self.schedule(uri, self.limits.debounce);
+                    self.update_document(writer, uri, text, self.limits.debounce)?;
                 }
             }
             Some("textDocument/didSave") => {
@@ -362,7 +355,9 @@ impl ServerState {
                 if let Some(uri) = params.pointer("/textDocument/uri").and_then(Value::as_str) {
                     self.documents.remove(uri);
                     self.pending.remove(uri);
-                    self.inflight.remove(uri);
+                    if let Some(active) = self.inflight.get_mut(uri) {
+                        active.timed_out = true;
+                    }
                     publish_diagnostics(writer, uri, Vec::new())?;
                 }
             }
@@ -403,6 +398,39 @@ impl ServerState {
             None => {}
         }
         Ok(true)
+    }
+
+    fn update_document<W: Write>(
+        &mut self,
+        writer: &mut W,
+        uri: String,
+        text: String,
+        debounce: Duration,
+    ) -> Result<(), String> {
+        self.pending.remove(&uri);
+        if text.len() > self.limits.max_document_bytes {
+            self.documents.remove(&uri);
+            if let Some(active) = self.inflight.get_mut(&uri) {
+                active.timed_out = true;
+            }
+            return publish_diagnostics(
+                writer,
+                &uri,
+                vec![server_diagnostic(
+                    "LSP-DOCUMENT-LIMIT",
+                    2,
+                    format!(
+                        "document is {} bytes; the {} byte per-document limit is exceeded, so its contents are not retained or analyzed",
+                        text.len(),
+                        self.limits.max_document_bytes
+                    ),
+                )],
+            );
+        }
+
+        self.documents.insert(uri.clone(), text);
+        self.schedule(uri, debounce);
+        Ok(())
     }
 }
 
@@ -1226,6 +1254,20 @@ mod tests {
                 "{severity:?}/{confidence:?}"
             );
         }
+    }
+
+    #[test]
+    fn diagnostic_limit_adds_a_truncation_notice() {
+        let registry = RuleRegistry::with_default_rules();
+        let diagnostics = diagnostics_with_limit(
+            &registry,
+            &ScanConfig::default(),
+            "document.rs",
+            "#[contractimpl]\nimpl Vault { pub fn set(env: Env, value: u32) { env.storage().persistent().set(&1u32, &value); } }\n",
+            0,
+        );
+        assert_eq!(diagnostics.len(), 1);
+        assert_eq!(diagnostics[0]["code"], "LSP-DIAGNOSTICS-TRUNCATED");
     }
 
     #[test]

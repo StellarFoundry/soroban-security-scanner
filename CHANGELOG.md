@@ -24,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The language server loads `soroban-scan.toml` from the workspace root,
   applies it to diagnostics, reloads on configuration/watched-file changes, and
   publishes a `LSP-CONFIG-001` error on invalid configuration (`#333`).
+- Add the opt-in `soroban-scan-lsp` stdio binary. Retain at most 1 MiB of source
+  per document, discard oversized buffers, and serialize in-flight analysis per
+  document so timed-out work cannot accumulate (`#330`).
 - `docs/api-deployment.md` documents API adapter configuration, reverse-proxy
   TLS termination, in-memory durability, transport-supplied health checks, a
   minimal local example, and an explicit public-edge warning (`#358`).
