@@ -28,6 +28,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-25b58acab18e8c25be7d846c7b336d5b",
             "policyReason": "severity high meets the policy threshold high",
             "policyStatus": "fail",
             "relatedIds": [
@@ -64,6 +65,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-2409db0240752ada2e699033b37c550e",
             "policyReason": "severity high meets the policy threshold high",
             "policyStatus": "fail",
             "relatedIds": [
@@ -163,6 +165,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-25b58acab18e8c25be7d846c7b336d5b",
             "policyReason": "severity low is below the policy threshold high",
             "policyStatus": "pass",
             "relatedIds": [
@@ -199,6 +202,7 @@
             "category": "events",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-25b58acab18e8c25be7d846c7b336d5b",
             "policyReason": "severity low is below the policy threshold high",
             "policyStatus": "pass",
             "relatedIds": [
@@ -235,6 +239,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2409db0240752ada2e699033b37c550e",
             "policyReason": "severity low is below the policy threshold high",
             "policyStatus": "pass",
             "relatedIds": [

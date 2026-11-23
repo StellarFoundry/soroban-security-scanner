@@ -487,6 +487,9 @@ struct JsonReport<'a> {
     #[serde(skip_serializing_if = "Option::is_none")]
     baseline: Option<&'a BaselineReport>,
     findings: Vec<FindingJson<'a>>,
+    /// Conservative root-cause groups; omitted when no finding is grouped.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    finding_groups: Vec<FindingGroupJson>,
     suppressed: &'a [SuppressedFinding],
     suppressions: Vec<SuppressionJson>,
     config_suppressions: &'a [ConfigSuppressionReport],
@@ -511,6 +514,18 @@ struct FindingJson<'a> {
     /// True when a relation was deliberately not chosen for this finding.
     #[serde(skip_serializing_if = "is_false")]
     correlation_ambiguous: bool,
+    /// Present only when the finding belongs to a root-cause group.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    group_id: Option<String>,
+}
+
+/// A root-cause group in the JSON report.
+#[derive(Debug, Serialize)]
+struct FindingGroupJson {
+    id: String,
+    explanation: String,
+    rule_ids: Vec<String>,
+    fingerprints: Vec<String>,
 }
 
 fn is_false(value: &bool) -> bool {
@@ -614,6 +629,7 @@ pub fn render_json_with_baseline(
     baseline: Option<&BaselineReport>,
 ) -> Result<String, serde_json::Error> {
     let correlation = correlation::correlate(&outcome.findings);
+    let grouping = correlation::group(&outcome.findings);
     let findings = outcome
         .findings
         .iter()
@@ -622,6 +638,19 @@ pub fn render_json_with_baseline(
             baseline_status: baseline.and_then(|report| report.status(&finding.fingerprint)),
             related: correlation.related_ids(&finding.fingerprint).to_vec(),
             correlation_ambiguous: correlation.is_ambiguous(&finding.fingerprint),
+            group_id: grouping
+                .group_of(&finding.fingerprint)
+                .map(|group| group.id.clone()),
+        })
+        .collect();
+    let finding_groups = grouping
+        .groups()
+        .iter()
+        .map(|group| FindingGroupJson {
+            id: group.id.clone(),
+            explanation: group.explanation.clone(),
+            rule_ids: group.rule_ids.clone(),
+            fingerprints: group.fingerprints.clone(),
         })
         .collect();
     let report = JsonReport {
@@ -662,6 +691,7 @@ pub fn render_json_with_baseline(
         effective_config: &outcome.config,
         baseline,
         findings,
+        finding_groups,
         suppressed: &outcome.suppressed,
         suppressions: suppression_reports(outcome),
         config_suppressions: &outcome.config_suppressions,
@@ -974,6 +1004,7 @@ pub fn render_sarif_with_policy(
         .collect();
 
     let correlation = correlation::correlate(&outcome.findings);
+    let grouping = correlation::group(&outcome.findings);
     let mut results: Vec<Value> = outcome
         .findings
         .iter()
@@ -990,6 +1021,9 @@ pub fn render_sarif_with_policy(
             }
             if correlation.is_ambiguous(&finding.fingerprint) {
                 result["properties"]["correlationAmbiguous"] = json!(true);
+            }
+            if let Some(group) = grouping.group_of(&finding.fingerprint) {
+                result["properties"]["groupId"] = json!(group.id);
             }
             result
         })

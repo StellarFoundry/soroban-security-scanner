@@ -28,6 +28,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-661329002094a11864b18361688ec9d6",
             "relatedIds": [
               "661329002094a11864b18361688ec9d6",
               "e110395ff3f6329d1b4e10dcc87ef51f"
@@ -62,6 +63,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-081e0141f5201a517f311d3ea111a6c4",
             "relatedIds": [
               "081e0141f5201a517f311d3ea111a6c4"
             ],
@@ -95,6 +97,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-95cd5eeb72a9efc15496a8c1d7916d67",
             "relatedIds": [
               "95cd5eeb72a9efc15496a8c1d7916d67"
             ],
@@ -128,6 +131,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-8e915611cfb7d11a563968c7b7bd2af4",
             "relatedIds": [
               "8e915611cfb7d11a563968c7b7bd2af4"
             ],
@@ -160,6 +164,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "groupId": "group-2693cc4c84faf22776dd204da8c1f8c4",
             "relatedIds": [
               "95b2ae1df09dff1b1d86d07c95b964b5"
             ],
@@ -192,6 +197,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "groupId": "group-193e358f4a82348ecf21de0a35ec158d",
             "relatedIds": [
               "bb1abfaecd4b8442a9ea052e06cf9ccb"
             ],
@@ -224,6 +230,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "groupId": "group-56712e7374e1b71b081e1b2acd1a0708",
             "relatedIds": [
               "56712e7374e1b71b081e1b2acd1a0708"
             ],
@@ -257,6 +264,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-b1e4cf218a5ed9689787bebd39412d3e",
             "relatedIds": [
               "b1e4cf218a5ed9689787bebd39412d3e",
               "dc609f3069ca74e4358813dadce5d9e4"
@@ -291,6 +299,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-2ac2897090d1ecd72453fd5af19f6387",
             "relatedIds": [
               "2ac2897090d1ecd72453fd5af19f6387",
               "a26955621a43cd95b5ff53606111d3ec"
@@ -325,6 +334,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-0297bd333ae8bd85e622642073e257d8",
             "relatedIds": [
               "0d11170fbdae7d05de08d58d3faad85e",
               "ccee50206e3f5ad36dc0b82be4da9d72"
@@ -359,6 +369,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-46ff535f980da7e6d80328e1a2a641d8",
             "relatedIds": [
               "46ff535f980da7e6d80328e1a2a641d8",
               "a294c57f05be0627bbf48fd92932e071"
@@ -393,6 +404,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-039db96b21a90887b7223acbae663ab9",
             "relatedIds": [
               "039db96b21a90887b7223acbae663ab9",
               "53b3aca264cd5312ab7cb35db92a0f26",
@@ -428,6 +440,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-4266573d71d97557c0a370ba11282c46",
             "relatedIds": [
               "4c717380a94b9599f33894136ee7573e"
             ],
@@ -461,6 +474,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-13479d49c4d00c19c7009826a649b57c",
             "relatedIds": [
               "9e6235e6af26cd33cd3d0c4df78cb9ff"
             ],
@@ -494,6 +508,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-7c0187710f5a7946468cee8f6eed300a",
             "relatedIds": [
               "7c0187710f5a7946468cee8f6eed300a"
             ],
@@ -527,6 +542,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-1b817a9cf8e8c6fcce93cb968585a84d",
             "relatedIds": [
               "1b817a9cf8e8c6fcce93cb968585a84d"
             ],
@@ -560,6 +576,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-5c3fa64e6e570324688bed66d18ca426",
             "relatedIds": [
               "87a76d3c698134ccf4a8389e7718285d"
             ],
@@ -593,6 +610,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-2528c0d9d700e7d35b6af55e5c455d0d",
             "relatedIds": [
               "2528c0d9d700e7d35b6af55e5c455d0d"
             ],
@@ -626,6 +644,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-6a579809f30b4ea6f2b470881ba456be",
             "relatedIds": [
               "6a579809f30b4ea6f2b470881ba456be"
             ],
@@ -659,6 +678,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-16ecc88fdd2bf218c7db9e6a3fd04f37",
             "relatedIds": [
               "16ecc88fdd2bf218c7db9e6a3fd04f37"
             ],
@@ -692,6 +712,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-0e31c94f8f3fbfef435c4005f47e71d4",
             "relatedIds": [
               "0e31c94f8f3fbfef435c4005f47e71d4",
               "f2d02bc6d17e9f687515f2857255cb8e"
@@ -726,6 +747,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-1670ea29badda93d45f1893af80f9d1f",
             "relatedIds": [
               "8cbf9c0252485933744e05bd6bafcf1c"
             ],
@@ -759,6 +781,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-3dfb5aae09dd9b505a0996b41cfc753c",
             "relatedIds": [
               "3dfb5aae09dd9b505a0996b41cfc753c",
               "a7cc2c88fccb0642bd7037ca3f6d21f2"
@@ -793,6 +816,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-25d152fd88ac81caa0bd0275b2ab4fba",
             "relatedIds": [
               "25d152fd88ac81caa0bd0275b2ab4fba"
             ],
@@ -826,6 +850,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-17e1f27c6f5cc90d25493e1875811b98",
             "relatedIds": [
               "17e1f27c6f5cc90d25493e1875811b98",
               "977717cb945ed2b2f37d818963cceba3"
@@ -860,6 +885,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-0cb1efb1a006f0e476a1be0487adfab4",
             "relatedIds": [
               "0cb1efb1a006f0e476a1be0487adfab4",
               "5555426d372f99e3d602cf38d65acf4c"
@@ -894,6 +920,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-04637f34a8290f5734c2f0436359c2bc",
             "relatedIds": [
               "04637f34a8290f5734c2f0436359c2bc",
               "28e8764093d6d631285f4c302b420684"
@@ -928,6 +955,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-7322879d377122e5338cb715ae0c4186",
             "relatedIds": [
               "7322879d377122e5338cb715ae0c4186",
               "9f645cbf384d9657ac5bbcdadeeb9144"
@@ -991,6 +1019,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-852b64bc1ec2a632158cd1bb5757b199",
             "relatedIds": [
               "852b64bc1ec2a632158cd1bb5757b199",
               "aa9c9ef26230bfef934d82ca38df7b15"
@@ -1111,6 +1140,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "groupId": "group-0f62769aa68303799bfc41e2a79f8861",
             "relatedIds": [
               "0f62769aa68303799bfc41e2a79f8861"
             ],
@@ -1143,6 +1173,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "groupId": "group-73041493412dc2e5c7f7f7bfe515c335",
             "relatedIds": [
               "73041493412dc2e5c7f7f7bfe515c335"
             ],
@@ -1176,6 +1207,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-896f4cd2636fb46c5dc433890edbed13",
             "relatedIds": [
               "896f4cd2636fb46c5dc433890edbed13"
             ],
@@ -1208,6 +1240,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "groupId": "group-6fc60f6ec5780151995fae2f56cdc771",
             "relatedIds": [
               "6fc60f6ec5780151995fae2f56cdc771"
             ],
@@ -1241,6 +1274,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-11d86bada61e82188159d467e30aab12",
             "relatedIds": [
               "431c0acb156f003e5e1979a7221ee718",
               "ade9c6081a006f620a73a3e72655568d"
@@ -1304,6 +1338,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-1d1db31d573676e9ed1bf9f0b4df12da",
             "relatedIds": [
               "1d1db31d573676e9ed1bf9f0b4df12da"
             ],
@@ -1337,6 +1372,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-0a689d578d918651ed75f62df2df4563",
             "relatedIds": [
               "b83c4a6cd821a6c273aef3c46054e728"
             ],
@@ -1370,6 +1406,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-196cae8847f246987eea0907886b2346",
             "relatedIds": [
               "d2cc256db0361c3c0abd6cc3133ceca3"
             ],
@@ -1403,6 +1440,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-3860def458a71ab0ee0e2e0899610264",
             "relatedIds": [
               "3860def458a71ab0ee0e2e0899610264"
             ],
@@ -1464,6 +1502,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "groupId": "group-26f40bd11c8b96b541374822f06fa692",
             "relatedIds": [
               "5324ac98037688f608f5ccdcf92f3929"
             ],
@@ -1496,6 +1535,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "groupId": "group-4c1b130b1c40c0851bcc360e2ee36abe",
             "relatedIds": [
               "4c1b130b1c40c0851bcc360e2ee36abe"
             ],
@@ -1528,6 +1568,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "groupId": "group-b38aa4df2b382dc74164b6760f42ecb6",
             "relatedIds": [
               "b9328a393e90b88b1e97bc67b51b5fdb"
             ],
@@ -1560,6 +1601,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "groupId": "group-07f40caa91ced79a2fef0aaca14753d6",
             "relatedIds": [
               "07f40caa91ced79a2fef0aaca14753d6"
             ],
@@ -1592,6 +1634,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "groupId": "group-2bc8b98f658c7c959e3fc260fe9e8ec2",
             "relatedIds": [
               "2bc8b98f658c7c959e3fc260fe9e8ec2"
             ],
@@ -1624,6 +1667,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "groupId": "group-0d647291cc7330b5b0207a5dae07136f",
             "relatedIds": [
               "83f477e711a53c4edb2a436eb145b1c4"
             ],
@@ -1656,6 +1700,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "groupId": "group-bcbc4bf8f3846a25b53e32edf6b0731b",
             "relatedIds": [
               "c45831d99040d8c2bf8998b3beb7b4f8"
             ],
@@ -1689,6 +1734,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-01c42f8d3f92a4dff264aa66598d8bc5",
             "relatedIds": [
               "01c42f8d3f92a4dff264aa66598d8bc5"
             ],
@@ -1722,6 +1768,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-b96662552bfb718088584f4870316f78",
             "relatedIds": [
               "ee7bf8daf95d73015c44378c9db2b27e"
             ],
@@ -1875,6 +1922,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-74cf86ad21eed79956679865289208da",
             "relatedIds": [
               "74cf86ad21eed79956679865289208da"
             ],
@@ -1908,6 +1956,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-74cf86ad21eed79956679865289208da",
             "relatedIds": [
               "c399badb33485c8496d429125c15e476"
             ],
@@ -1941,6 +1990,7 @@
             "category": "access-control",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-039db96b21a90887b7223acbae663ab9",
             "relatedIds": [
               "039db96b21a90887b7223acbae663ab9",
               "6e620bd49a33ed5dd9e693eb21d2ee7b",
@@ -1976,6 +2026,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-28fd1b7c89283ed13d151e50de739072",
             "relatedIds": [
               "3ad6e609e43b4242f70de844c8b072fa"
             ],
@@ -2009,6 +2060,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-28fd1b7c89283ed13d151e50de739072",
             "relatedIds": [
               "28fd1b7c89283ed13d151e50de739072"
             ],
@@ -2041,6 +2093,7 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "groupId": "group-5fdcc5ba111ac7bed47f4d170941ec83",
             "relatedIds": [
               "898dec5e2d22a423180cfe2bdb77234d"
             ],
@@ -2073,6 +2126,7 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "groupId": "group-5fdcc5ba111ac7bed47f4d170941ec83",
             "relatedIds": [
               "5fdcc5ba111ac7bed47f4d170941ec83"
             ],
@@ -2106,6 +2160,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-627c340067eaeb267b1fd346c78dda42",
             "relatedIds": [
               "c3a8b4bbe274a02826b05c8a7eb26bdc"
             ],
@@ -2139,6 +2194,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-627c340067eaeb267b1fd346c78dda42",
             "relatedIds": [
               "627c340067eaeb267b1fd346c78dda42"
             ],
@@ -2172,6 +2228,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-ba27766e93f440e49c92c70b74da3f6c",
             "relatedIds": [
               "ba27766e93f440e49c92c70b74da3f6c"
             ],
@@ -2205,6 +2262,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-ba27766e93f440e49c92c70b74da3f6c",
             "relatedIds": [
               "f76644376aad7f3084b884153534e79e"
             ],
@@ -2238,6 +2296,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64",
             "relatedIds": [
               "2a86e785ad5ffa58b7b6fe74a5c7ee64",
               "788438c0f7a3313ffbd14856426b11ed",
@@ -2274,6 +2333,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64",
             "relatedIds": [
               "788438c0f7a3313ffbd14856426b11ed",
               "96471f7dd91c176605db04047f9b0508",
@@ -2430,6 +2490,7 @@
             "category": "access-control",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-16ecc88fdd2bf218c7db9e6a3fd04f37",
             "relatedIds": [
               "4818ed69d217652b629399ebefc4899f"
             ],
@@ -2463,6 +2524,7 @@
             "category": "access-control",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-0e31c94f8f3fbfef435c4005f47e71d4",
             "relatedIds": [
               "0e31c94f8f3fbfef435c4005f47e71d4",
               "bd967ce4f944e1ce41143b19ccf48d7e"
@@ -2497,6 +2559,7 @@
             "category": "access-control",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-1670ea29badda93d45f1893af80f9d1f",
             "relatedIds": [
               "1670ea29badda93d45f1893af80f9d1f"
             ],
@@ -2530,6 +2593,7 @@
             "category": "access-control",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-3dfb5aae09dd9b505a0996b41cfc753c",
             "relatedIds": [
               "70433fc9d2d6b994e3b89ef11b97f9d2",
               "a7cc2c88fccb0642bd7037ca3f6d21f2"
@@ -2564,6 +2628,7 @@
             "category": "access-control",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-25d152fd88ac81caa0bd0275b2ab4fba",
             "relatedIds": [
               "fbeae4f63d1aeb884688ea3281d84736"
             ],
@@ -2597,6 +2662,7 @@
             "category": "access-control",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-17e1f27c6f5cc90d25493e1875811b98",
             "relatedIds": [
               "977717cb945ed2b2f37d818963cceba3",
               "f2be6e36496eb1c0e4effc18e7da8838"
@@ -2631,6 +2697,7 @@
             "category": "access-control",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-0cb1efb1a006f0e476a1be0487adfab4",
             "relatedIds": [
               "0cb1efb1a006f0e476a1be0487adfab4",
               "64511a6c4862f557012e7a274614dbdf"
@@ -2665,6 +2732,7 @@
             "category": "access-control",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-04637f34a8290f5734c2f0436359c2bc",
             "relatedIds": [
               "28e8764093d6d631285f4c302b420684",
               "40b18bea271c88c2b221edb11b7ea58b"
@@ -2699,6 +2767,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-8a5f043f6501f9d291b36d7d1b4565e1",
             "relatedIds": [
               "a6833cca85cdefc6c3c3d976037c98b2"
             ],
@@ -2732,6 +2801,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-8a5f043f6501f9d291b36d7d1b4565e1",
             "relatedIds": [
               "8a5f043f6501f9d291b36d7d1b4565e1"
             ],
@@ -2765,6 +2835,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-256239d6165e9a6f5b11ea7beca1009e",
             "relatedIds": [
               "bc7f8d6006ab176203f70ac24ed3c3c8"
             ],
@@ -2798,6 +2869,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-256239d6165e9a6f5b11ea7beca1009e",
             "relatedIds": [
               "256239d6165e9a6f5b11ea7beca1009e"
             ],
@@ -2831,6 +2903,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-469ced2b262aa986c5c7ad98822b5dd8",
             "relatedIds": [
               "469ced2b262aa986c5c7ad98822b5dd8"
             ],
@@ -2864,6 +2937,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-469ced2b262aa986c5c7ad98822b5dd8",
             "relatedIds": [
               "c87f9f55c61c007cfebbe82a8ef54571"
             ],
@@ -2897,6 +2971,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-38596df81ee5f515b07be4226e5f9724",
             "relatedIds": [
               "38596df81ee5f515b07be4226e5f9724",
               "abf517d48bfba243b2c0554830570edf",
@@ -2933,6 +3008,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-38596df81ee5f515b07be4226e5f9724",
             "relatedIds": [
               "38596df81ee5f515b07be4226e5f9724",
               "91372358a70638073c121aa93fb854ad",
@@ -3029,6 +3105,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2020f41b706098cbe1d7748dadd463cc",
             "relatedIds": [
               "b343b1171b31c9a5b9a58a8a01dd08ac"
             ],
@@ -3062,6 +3139,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2020f41b706098cbe1d7748dadd463cc",
             "relatedIds": [
               "2020f41b706098cbe1d7748dadd463cc"
             ],
@@ -3153,6 +3231,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2e99ae2564152f54c6c0fb3db933002f",
             "relatedIds": [
               "cd14e6d032c2b9149a1616ac374a4148"
             ],
@@ -3186,6 +3265,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2e99ae2564152f54c6c0fb3db933002f",
             "relatedIds": [
               "2e99ae2564152f54c6c0fb3db933002f"
             ],
@@ -3219,6 +3299,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-7f12d0173ea697e9a985a03d3aef0497",
             "relatedIds": [
               "fd3cf84445f4f4050a2de83a28f896d4"
             ],
@@ -3252,6 +3333,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-7f12d0173ea697e9a985a03d3aef0497",
             "relatedIds": [
               "7f12d0173ea697e9a985a03d3aef0497"
             ],
@@ -3285,6 +3367,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-ae5cada40640045fc5e6d4bc771de9c3",
             "relatedIds": [
               "f026ae544ab95fd865ea98b161a9c77e"
             ],
@@ -3318,6 +3401,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-ae5cada40640045fc5e6d4bc771de9c3",
             "relatedIds": [
               "ae5cada40640045fc5e6d4bc771de9c3"
             ],
@@ -3350,6 +3434,7 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "low",
+            "groupId": "group-5337a1e054dca861298f2ab74368a3e7",
             "relatedIds": [
               "ac4a8287883c3f86ea90e00079c47064"
             ],
@@ -3382,6 +3467,7 @@
           "properties": {
             "category": "token",
             "confidence": "low",
+            "groupId": "group-5337a1e054dca861298f2ab74368a3e7",
             "relatedIds": [
               "5337a1e054dca861298f2ab74368a3e7"
             ],
@@ -3415,6 +3501,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-5a1d0f25a4704d97bd42371d0570ef80",
             "relatedIds": [
               "5a1d0f25a4704d97bd42371d0570ef80"
             ],
@@ -3448,6 +3535,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-5a1d0f25a4704d97bd42371d0570ef80",
             "relatedIds": [
               "cb9154a32d7840fdc8322b83051c9757"
             ],
@@ -3510,6 +3598,7 @@
             "category": "error-handling",
             "confidence": "high",
             "correlationAmbiguous": true,
+            "groupId": "group-15ad3d38e97fb6dadcb0c4a8b73d392c",
             "relatedIds": [
               "6a600484c97d70aa5197db339a805466"
             ],
@@ -3543,6 +3632,7 @@
             "category": "error-handling",
             "confidence": "high",
             "correlationAmbiguous": true,
+            "groupId": "group-2ab86cffaba4ec1209dce3d7d15d1726",
             "relatedIds": [
               "2ab86cffaba4ec1209dce3d7d15d1726"
             ],
@@ -3576,6 +3666,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-0be9f5344f226568677ab5e99abfc6f4",
             "relatedIds": [
               "0be9f5344f226568677ab5e99abfc6f4",
               "d5475c0cbf4d93267f0783dbf8255c86"
@@ -3610,6 +3701,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-8adc97c9ebea073ca91b1be726aadb3c",
             "relatedIds": [
               "8adc97c9ebea073ca91b1be726aadb3c",
               "a362fd34490f0f54cfdbbb67ce42d6ee"
@@ -3644,6 +3736,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-7d4a08e424b4e0ffc20ef938ea5e2000",
             "relatedIds": [
               "7d4a08e424b4e0ffc20ef938ea5e2000",
               "eef1aae7728ff3da31ba5b3bb1fc3ca2"
@@ -3678,6 +3771,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-328b650bdb827caae9d740968006f0dc",
             "relatedIds": [
               "328b650bdb827caae9d740968006f0dc",
               "547dea37a4cd38f87a0e74848ce1949d"
@@ -3712,6 +3806,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-2c0ad5f35847c792f4f0c2601a5310f3",
             "relatedIds": [
               "2c0ad5f35847c792f4f0c2601a5310f3",
               "e8bbd271b173fc302e7875bd7557d93b"
@@ -3746,6 +3841,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-16ae2ff5dac988b965881be178ce6079",
             "relatedIds": [
               "16ae2ff5dac988b965881be178ce6079",
               "bb133c7cb974e38979862568c7ae8504"
@@ -3780,6 +3876,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-2af3668a68b8b8fff15113220e75af66",
             "relatedIds": [
               "3dfc41148c088ed584c759e633059253",
               "85a2b2f1a89e41ebe961cf8e0ddc7d59"
@@ -3814,6 +3911,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-60dcd6e6d8870acb998437dcc30148bb",
             "relatedIds": [
               "60dcd6e6d8870acb998437dcc30148bb",
               "7868cde3c25c6fe4ad03ed928848d963"
@@ -3848,6 +3946,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-81e7b60122b5fd2c76f651276d06768a",
             "relatedIds": [
               "81e7b60122b5fd2c76f651276d06768a",
               "cf8a4241f25d646a75abbf4a8ebb523e"
@@ -3882,6 +3981,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64",
             "relatedIds": [
               "2a86e785ad5ffa58b7b6fe74a5c7ee64",
               "788438c0f7a3313ffbd14856426b11ed",
@@ -3918,6 +4018,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-5cdc6740236002705c69fda6050c99dc",
             "relatedIds": [
               "eaf81a87f58710688ca1496570ccedee"
             ],
@@ -3951,6 +4052,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-ab3aa1676a7dc29ade3bb462a73fe0b8",
             "relatedIds": [
               "ab3aa1676a7dc29ade3bb462a73fe0b8"
             ],
@@ -3984,6 +4086,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-8ac6744f5fb6451bd7069bc548dbed20",
             "relatedIds": [
               "8ac6744f5fb6451bd7069bc548dbed20"
             ],
@@ -4017,6 +4120,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-1a0210bc82d9870ef2668c400ed7b078",
             "relatedIds": [
               "1a0210bc82d9870ef2668c400ed7b078",
               "2b5bf3f8376bf0f80ab8ac9f00da94dc"
@@ -4050,6 +4154,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "groupId": "group-509268ab4a288383acf40b26c7d4f0cb",
             "relatedIds": [
               "509268ab4a288383acf40b26c7d4f0cb"
             ],
@@ -4082,6 +4187,7 @@
           "properties": {
             "category": "cross-contract",
             "confidence": "medium",
+            "groupId": "group-59dfee0175a75e4aef1c46583640189e",
             "relatedIds": [
               "59dfee0175a75e4aef1c46583640189e"
             ],
@@ -4114,6 +4220,7 @@
           "properties": {
             "category": "storage",
             "confidence": "medium",
+            "groupId": "group-0f62769aa68303799bfc41e2a79f8861",
             "relatedIds": [
               "1c44dedf7609d76135e1e2acc13067ac"
             ],
@@ -4146,6 +4253,7 @@
           "properties": {
             "category": "storage",
             "confidence": "medium",
+            "groupId": "group-73041493412dc2e5c7f7f7bfe515c335",
             "relatedIds": [
               "d678ee90fd3bd753a68752cfbca298f7"
             ],
@@ -4178,6 +4286,7 @@
           "properties": {
             "category": "events",
             "confidence": "medium",
+            "groupId": "group-4c7bb8c7dcd42d55faab7be992707e40",
             "relatedIds": [
               "4c7bb8c7dcd42d55faab7be992707e40"
             ],
@@ -4211,6 +4320,7 @@
             "category": "storage",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-11d86bada61e82188159d467e30aab12",
             "relatedIds": [
               "11d86bada61e82188159d467e30aab12",
               "ade9c6081a006f620a73a3e72655568d"
@@ -4245,6 +4355,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-b246a6af181e82c822350ad4e63a1c99",
             "relatedIds": [
               "b246a6af181e82c822350ad4e63a1c99",
               "c1094608dc3ee75c4c8599a06d25a9b8"
@@ -4279,6 +4390,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-1b98a6a5f598c533eb1b25bd5b8fe250",
             "relatedIds": [
               "3b059e2094045bb07bd10904f219b6cb",
               "f37d556c2d707f25f61c7b3db5cc3413"
@@ -4342,6 +4454,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-38596df81ee5f515b07be4226e5f9724",
             "relatedIds": [
               "38596df81ee5f515b07be4226e5f9724",
               "91372358a70638073c121aa93fb854ad",
@@ -4407,6 +4520,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-830264a95828084109f5e7b0edffe357",
             "relatedIds": [
               "830264a95828084109f5e7b0edffe357",
               "c24246d25d23e1c883acfad3de5e9585"
@@ -4441,6 +4555,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-100da6fb77795c318413a10871dc8322",
             "relatedIds": [
               "100da6fb77795c318413a10871dc8322",
               "e935aa3e1867c9fce22f03b037bf4e26"
@@ -4504,6 +4619,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-280073fd0c392575b928a4eec05ee5d9",
             "relatedIds": [
               "280073fd0c392575b928a4eec05ee5d9",
               "e4d1d7c7329ff42ad1330aa88e145a75"
@@ -4538,6 +4654,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-08233f12c8d4d043bb78f7fc8f06cbaa",
             "relatedIds": [
               "c91230c765f00d51d0a61cafccfb855e"
             ],
@@ -4571,6 +4688,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-5e9e1aa866e0cc01c89f8120bf293ab7",
             "relatedIds": [
               "5e9e1aa866e0cc01c89f8120bf293ab7"
             ],
@@ -4604,6 +4722,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-97095df6a92c90808cb51a3985f5c3dc",
             "relatedIds": [
               "f4561253eafb06f8a5fbde545cad9bd8"
             ],
@@ -4637,6 +4756,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-6b812ca2363af13c411c3fc45863afde",
             "relatedIds": [
               "b688629950a0d3b3e7227182ada171f8"
             ],
@@ -4670,6 +4790,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-421f9eade5a4334f041cbba2bea4137c",
             "relatedIds": [
               "b3333a41a4e39a39c7286d55ee8c13bd"
             ],
@@ -4703,6 +4824,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-41801c7c97f3cf0aeed49a383e167725",
             "relatedIds": [
               "41801c7c97f3cf0aeed49a383e167725"
             ],
@@ -4736,6 +4858,7 @@
             "category": "cross-contract",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-a8f84b11be78a859620a1e96419831d2",
             "relatedIds": [
               "af85bf440d0340bcb30935ebaf8504cc",
               "bdf3b0c31758e632a82f8f89d0082eb8"
@@ -4946,6 +5069,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-0be9f5344f226568677ab5e99abfc6f4",
             "relatedIds": [
               "0be9f5344f226568677ab5e99abfc6f4",
               "7b9c2285cafe0c7695c46f22694bbda5"
@@ -4980,6 +5104,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-0be9f5344f226568677ab5e99abfc6f4",
             "relatedIds": [
               "7b9c2285cafe0c7695c46f22694bbda5",
               "d5475c0cbf4d93267f0783dbf8255c86"
@@ -5014,6 +5139,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-8adc97c9ebea073ca91b1be726aadb3c",
             "relatedIds": [
               "8adc97c9ebea073ca91b1be726aadb3c",
               "acede228d48f4693b023d19b85fdff01"
@@ -5048,6 +5174,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-8adc97c9ebea073ca91b1be726aadb3c",
             "relatedIds": [
               "a362fd34490f0f54cfdbbb67ce42d6ee",
               "acede228d48f4693b023d19b85fdff01"
@@ -5111,6 +5238,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-7d4a08e424b4e0ffc20ef938ea5e2000",
             "relatedIds": [
               "e5053eb8c254a77c84f95f7ecbd5026c",
               "eef1aae7728ff3da31ba5b3bb1fc3ca2"
@@ -5145,6 +5273,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-7d4a08e424b4e0ffc20ef938ea5e2000",
             "relatedIds": [
               "7d4a08e424b4e0ffc20ef938ea5e2000",
               "e5053eb8c254a77c84f95f7ecbd5026c"
@@ -5179,6 +5308,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-38e4d47246474277fb41cce1a73725a7",
             "relatedIds": [
               "38e4d47246474277fb41cce1a73725a7"
             ],
@@ -5212,6 +5342,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-328b650bdb827caae9d740968006f0dc",
             "relatedIds": [
               "328b650bdb827caae9d740968006f0dc",
               "40814c10be9dce76435571e9ad3c9eab"
@@ -5246,6 +5377,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-328b650bdb827caae9d740968006f0dc",
             "relatedIds": [
               "40814c10be9dce76435571e9ad3c9eab",
               "547dea37a4cd38f87a0e74848ce1949d"
@@ -5280,6 +5412,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2c0ad5f35847c792f4f0c2601a5310f3",
             "relatedIds": [
               "2c0ad5f35847c792f4f0c2601a5310f3",
               "51b60ca5ffa9f7c9d2b54307b1954fc8"
@@ -5314,6 +5447,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2c0ad5f35847c792f4f0c2601a5310f3",
             "relatedIds": [
               "51b60ca5ffa9f7c9d2b54307b1954fc8",
               "e8bbd271b173fc302e7875bd7557d93b"
@@ -5348,6 +5482,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-16ae2ff5dac988b965881be178ce6079",
             "relatedIds": [
               "bb133c7cb974e38979862568c7ae8504",
               "d29c8d617e14f3f024df7360ed7b8c87"
@@ -5382,6 +5517,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-16ae2ff5dac988b965881be178ce6079",
             "relatedIds": [
               "16ae2ff5dac988b965881be178ce6079",
               "d29c8d617e14f3f024df7360ed7b8c87"
@@ -5416,6 +5552,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2af3668a68b8b8fff15113220e75af66",
             "relatedIds": [
               "2af3668a68b8b8fff15113220e75af66",
               "85a2b2f1a89e41ebe961cf8e0ddc7d59"
@@ -5450,6 +5587,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2af3668a68b8b8fff15113220e75af66",
             "relatedIds": [
               "2af3668a68b8b8fff15113220e75af66",
               "3dfc41148c088ed584c759e633059253"
@@ -5600,6 +5738,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-7c0a072ae229f1da9b8a06b467ba7b47",
             "relatedIds": [
               "dff5e13c70dad06c64575ed63be1a882"
             ],
@@ -5748,6 +5887,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-48607b3e663c4369781f250384a35ee8",
             "relatedIds": [
               "48607b3e663c4369781f250384a35ee8"
             ],
@@ -5780,6 +5920,7 @@
           "properties": {
             "category": "arithmetic",
             "confidence": "low",
+            "groupId": "group-48607b3e663c4369781f250384a35ee8",
             "relatedIds": [
               "6acf5039c42a288a1498a4df9486d09a"
             ],
@@ -5813,6 +5954,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-41ed9d12c0503c96aef8d8dd7752f0f9",
             "relatedIds": [
               "7e9a6ccdbf1e26365ef4b3c29b17b212"
             ],
@@ -5876,6 +6018,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-31a63e495cc4a167de984fc61b412787",
             "relatedIds": [
               "9d121bdfd459606ded2db6ea4db1ec51"
             ],
@@ -6118,6 +6261,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-60dcd6e6d8870acb998437dcc30148bb",
             "relatedIds": [
               "60dcd6e6d8870acb998437dcc30148bb",
               "8b86f2b60e6a444b286971c481179811"
@@ -6152,6 +6296,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-60dcd6e6d8870acb998437dcc30148bb",
             "relatedIds": [
               "7868cde3c25c6fe4ad03ed928848d963",
               "8b86f2b60e6a444b286971c481179811"
@@ -6186,6 +6331,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-81e7b60122b5fd2c76f651276d06768a",
             "relatedIds": [
               "81e7b60122b5fd2c76f651276d06768a",
               "fd7ae9e1a00f6c952bc4f11d3045a6ca"
@@ -6220,6 +6366,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-81e7b60122b5fd2c76f651276d06768a",
             "relatedIds": [
               "cf8a4241f25d646a75abbf4a8ebb523e",
               "fd7ae9e1a00f6c952bc4f11d3045a6ca"
@@ -6254,6 +6401,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64",
             "relatedIds": [
               "2a86e785ad5ffa58b7b6fe74a5c7ee64",
               "788438c0f7a3313ffbd14856426b11ed",
@@ -6290,6 +6438,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64",
             "relatedIds": [
               "2a86e785ad5ffa58b7b6fe74a5c7ee64",
               "96471f7dd91c176605db04047f9b0508",
@@ -6326,6 +6475,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-5cdc6740236002705c69fda6050c99dc",
             "relatedIds": [
               "5cdc6740236002705c69fda6050c99dc"
             ],
@@ -6359,6 +6509,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-ab3aa1676a7dc29ade3bb462a73fe0b8",
             "relatedIds": [
               "d830436e31c7dae6ebcb77b6726f0a02"
             ],
@@ -6392,6 +6543,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-8ac6744f5fb6451bd7069bc548dbed20",
             "relatedIds": [
               "f768e05ab79654785b73117762ee1540"
             ],
@@ -6425,6 +6577,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-1a0210bc82d9870ef2668c400ed7b078",
             "relatedIds": [
               "2b5bf3f8376bf0f80ab8ac9f00da94dc",
               "34ec8ca36a47b0434c16fa976a058c3b"
@@ -6459,6 +6612,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-1a0210bc82d9870ef2668c400ed7b078",
             "relatedIds": [
               "1a0210bc82d9870ef2668c400ed7b078",
               "34ec8ca36a47b0434c16fa976a058c3b"
@@ -6493,6 +6647,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-0cb1efb1a006f0e476a1be0487adfab4",
             "relatedIds": [
               "5555426d372f99e3d602cf38d65acf4c",
               "64511a6c4862f557012e7a274614dbdf"
@@ -6527,6 +6682,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-04637f34a8290f5734c2f0436359c2bc",
             "relatedIds": [
               "04637f34a8290f5734c2f0436359c2bc",
               "40b18bea271c88c2b221edb11b7ea58b"
@@ -6792,6 +6948,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-59dfee0175a75e4aef1c46583640189e",
             "relatedIds": [
               "d3c34df38b542b7b7ba0b07015bd9c56"
             ],
@@ -6854,6 +7011,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-852b64bc1ec2a632158cd1bb5757b199",
             "relatedIds": [
               "aa9c9ef26230bfef934d82ca38df7b15",
               "e0649fc59d351d8af0c99fbb38dc4663"
@@ -6887,6 +7045,7 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "groupId": "group-4c7bb8c7dcd42d55faab7be992707e40",
             "relatedIds": [
               "8ba0420bd4ea3e853d9d23c5cba2fd97"
             ],
@@ -6950,6 +7109,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-b246a6af181e82c822350ad4e63a1c99",
             "relatedIds": [
               "c1094608dc3ee75c4c8599a06d25a9b8",
               "de6b286d5c77a9568c549f49d54db1b7"
@@ -6984,6 +7144,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-b246a6af181e82c822350ad4e63a1c99",
             "relatedIds": [
               "b246a6af181e82c822350ad4e63a1c99",
               "de6b286d5c77a9568c549f49d54db1b7"
@@ -7018,6 +7179,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-1b98a6a5f598c533eb1b25bd5b8fe250",
             "relatedIds": [
               "1b98a6a5f598c533eb1b25bd5b8fe250",
               "f37d556c2d707f25f61c7b3db5cc3413"
@@ -7052,6 +7214,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-1b98a6a5f598c533eb1b25bd5b8fe250",
             "relatedIds": [
               "1b98a6a5f598c533eb1b25bd5b8fe250",
               "3b059e2094045bb07bd10904f219b6cb"
@@ -7086,6 +7249,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-38596df81ee5f515b07be4226e5f9724",
             "relatedIds": [
               "38596df81ee5f515b07be4226e5f9724",
               "91372358a70638073c121aa93fb854ad",
@@ -7122,6 +7286,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-38596df81ee5f515b07be4226e5f9724",
             "relatedIds": [
               "91372358a70638073c121aa93fb854ad",
               "abf517d48bfba243b2c0554830570edf",
@@ -7158,6 +7323,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-d63f03e317b755dbdf91ec0e375c7d4d",
             "relatedIds": [
               "e71091ffde52f91a460ccdedbbbfd0bd"
             ],
@@ -7191,6 +7357,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-830264a95828084109f5e7b0edffe357",
             "relatedIds": [
               "830264a95828084109f5e7b0edffe357",
               "dd7d962c7fe2636603c07cea1b7d90b6"
@@ -7225,6 +7392,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-830264a95828084109f5e7b0edffe357",
             "relatedIds": [
               "c24246d25d23e1c883acfad3de5e9585",
               "dd7d962c7fe2636603c07cea1b7d90b6"
@@ -7259,6 +7427,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-39cc74f8ad0f12d0bfff6607024b9726",
             "relatedIds": [
               "a7f66e471208cdd28bbd07198e4ceb34"
             ],
@@ -7292,6 +7461,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-100da6fb77795c318413a10871dc8322",
             "relatedIds": [
               "100da6fb77795c318413a10871dc8322",
               "763b03471d0c48d8cff72c2ca1a66ec8"
@@ -7326,6 +7496,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-100da6fb77795c318413a10871dc8322",
             "relatedIds": [
               "763b03471d0c48d8cff72c2ca1a66ec8",
               "e935aa3e1867c9fce22f03b037bf4e26"
@@ -7360,6 +7531,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-280073fd0c392575b928a4eec05ee5d9",
             "relatedIds": [
               "280073fd0c392575b928a4eec05ee5d9",
               "e1f40c9883b82b58e7e8c067bc28c021"
@@ -7394,6 +7566,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-280073fd0c392575b928a4eec05ee5d9",
             "relatedIds": [
               "e1f40c9883b82b58e7e8c067bc28c021",
               "e4d1d7c7329ff42ad1330aa88e145a75"
@@ -7457,6 +7630,7 @@
             "category": "authorization",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-e346c1fe2a11ac05f6c6d4b4690d64a6",
             "relatedIds": [
               "e958de6eb749dfb68c30d9e853bf64e4"
             ],
@@ -7518,6 +7692,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-e70fefead6d303fbacbadf442907a99a",
             "relatedIds": [
               "e70fefead6d303fbacbadf442907a99a"
             ],
@@ -7551,6 +7726,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-6b812ca2363af13c411c3fc45863afde",
             "relatedIds": [
               "6b812ca2363af13c411c3fc45863afde"
             ],
@@ -7584,6 +7760,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-421f9eade5a4334f041cbba2bea4137c",
             "relatedIds": [
               "421f9eade5a4334f041cbba2bea4137c"
             ],
@@ -7617,6 +7794,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-41801c7c97f3cf0aeed49a383e167725",
             "relatedIds": [
               "f6ff0e4aa9c36db5393825361baf5717"
             ],
@@ -7650,6 +7828,7 @@
             "category": "token",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-a8f84b11be78a859620a1e96419831d2",
             "relatedIds": [
               "a8f84b11be78a859620a1e96419831d2",
               "af85bf440d0340bcb30935ebaf8504cc"
@@ -7684,6 +7863,7 @@
             "category": "cross-contract",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-a8f84b11be78a859620a1e96419831d2",
             "relatedIds": [
               "a8f84b11be78a859620a1e96419831d2",
               "bdf3b0c31758e632a82f8f89d0082eb8"
@@ -8182,6 +8362,7 @@
             "category": "error-handling",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-38e4d47246474277fb41cce1a73725a7",
             "relatedIds": [
               "d36faccdef13745686d3373736ded237"
             ],
@@ -8215,6 +8396,7 @@
             "category": "error-handling",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-7c0a072ae229f1da9b8a06b467ba7b47",
             "relatedIds": [
               "7c0a072ae229f1da9b8a06b467ba7b47"
             ],
@@ -8278,6 +8460,7 @@
             "category": "error-handling",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-41ed9d12c0503c96aef8d8dd7752f0f9",
             "relatedIds": [
               "41ed9d12c0503c96aef8d8dd7752f0f9"
             ],
@@ -8311,6 +8494,7 @@
             "category": "error-handling",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-31a63e495cc4a167de984fc61b412787",
             "relatedIds": [
               "31a63e495cc4a167de984fc61b412787"
             ],
@@ -8642,6 +8826,7 @@
             "category": "error-handling",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-d63f03e317b755dbdf91ec0e375c7d4d",
             "relatedIds": [
               "d63f03e317b755dbdf91ec0e375c7d4d"
             ],
@@ -8705,6 +8890,7 @@
             "category": "error-handling",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-39cc74f8ad0f12d0bfff6607024b9726",
             "relatedIds": [
               "39cc74f8ad0f12d0bfff6607024b9726"
             ],
@@ -8738,6 +8924,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-e346c1fe2a11ac05f6c6d4b4690d64a6",
             "relatedIds": [
               "e346c1fe2a11ac05f6c6d4b4690d64a6"
             ],
@@ -8800,6 +8987,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "groupId": "group-26f40bd11c8b96b541374822f06fa692",
             "relatedIds": [
               "26f40bd11c8b96b541374822f06fa692"
             ],
@@ -8890,6 +9078,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "groupId": "group-4c1b130b1c40c0851bcc360e2ee36abe",
             "relatedIds": [
               "cce83633f0bb46623afc178954a61223"
             ],
@@ -8922,6 +9111,7 @@
           "properties": {
             "category": "error-handling",
             "confidence": "medium",
+            "groupId": "group-e70fefead6d303fbacbadf442907a99a",
             "relatedIds": [
               "ffa781c50c7f543dc5a5935acb3fdaa8"
             ],
@@ -8954,6 +9144,7 @@
           "properties": {
             "category": "authorization",
             "confidence": "medium",
+            "groupId": "group-06399ceb1ec0000b5a42f1651c8a15d6",
             "relatedIds": [
               "2f4160b3f2cb9cfdc09e0c45ac4e36ed"
             ],
@@ -8987,6 +9178,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-08233f12c8d4d043bb78f7fc8f06cbaa",
             "relatedIds": [
               "08233f12c8d4d043bb78f7fc8f06cbaa"
             ],
@@ -9020,6 +9212,7 @@
             "category": "authorization",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-97095df6a92c90808cb51a3985f5c3dc",
             "relatedIds": [
               "97095df6a92c90808cb51a3985f5c3dc"
             ],
@@ -9141,6 +9334,7 @@
             "category": "error-handling",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-15ad3d38e97fb6dadcb0c4a8b73d392c",
             "relatedIds": [
               "15ad3d38e97fb6dadcb0c4a8b73d392c"
             ],
@@ -9174,6 +9368,7 @@
             "category": "error-handling",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "groupId": "group-2ab86cffaba4ec1209dce3d7d15d1726",
             "relatedIds": [
               "c1336fd5d5741a3e5487e4fd959501f0"
             ],
@@ -9296,6 +9491,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-23f90f900c6921c553ab52a53e297168",
             "relatedIds": [
               "23f90f900c6921c553ab52a53e297168"
             ],
@@ -9328,6 +9524,7 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "groupId": "group-23f90f900c6921c553ab52a53e297168",
             "relatedIds": [
               "b8dcb181ecf494d8e030e2dca900c3d2"
             ],
@@ -9418,6 +9615,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-37fe40fc78731d20edf55db9a5029ee0",
             "relatedIds": [
               "b982a2ba60e8c8f253068dba014abca0"
             ],
@@ -9450,6 +9648,7 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "groupId": "group-37fe40fc78731d20edf55db9a5029ee0",
             "relatedIds": [
               "37fe40fc78731d20edf55db9a5029ee0"
             ],
@@ -9540,6 +9739,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-8c0e85c2b992ad8024de3fb9914a448f",
             "relatedIds": [
               "8c0e85c2b992ad8024de3fb9914a448f"
             ],
@@ -9572,6 +9772,7 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "groupId": "group-8c0e85c2b992ad8024de3fb9914a448f",
             "relatedIds": [
               "9442c62d879817c31bf6857f993e5c47"
             ],
@@ -9663,6 +9864,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-661329002094a11864b18361688ec9d6",
             "relatedIds": [
               "661329002094a11864b18361688ec9d6",
               "c3e233e2b9601a95c29d47ed756e21b9"
@@ -9697,6 +9899,7 @@
             "category": "events",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-661329002094a11864b18361688ec9d6",
             "relatedIds": [
               "c3e233e2b9601a95c29d47ed756e21b9",
               "e110395ff3f6329d1b4e10dcc87ef51f"
@@ -9731,6 +9934,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-081e0141f5201a517f311d3ea111a6c4",
             "relatedIds": [
               "34c6e80ed102dd08157ec8d820e5cd01"
             ],
@@ -9850,6 +10054,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-2a6346c2270dab2c59ed044705715246",
             "relatedIds": [
               "2a6346c2270dab2c59ed044705715246"
             ],
@@ -9882,6 +10087,7 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "groupId": "group-2a6346c2270dab2c59ed044705715246",
             "relatedIds": [
               "34bcd75b26a59f32ed27bc3d6af7ada2"
             ],
@@ -9915,6 +10121,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-95cd5eeb72a9efc15496a8c1d7916d67",
             "relatedIds": [
               "dfee15a21d1e3f058f92ca19828df74f"
             ],
@@ -9948,6 +10155,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-8e915611cfb7d11a563968c7b7bd2af4",
             "relatedIds": [
               "a6da6843f263dcad78406e521ecdebf8"
             ],
@@ -9980,6 +10188,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-2693cc4c84faf22776dd204da8c1f8c4",
             "relatedIds": [
               "2693cc4c84faf22776dd204da8c1f8c4"
             ],
@@ -10012,6 +10221,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-193e358f4a82348ecf21de0a35ec158d",
             "relatedIds": [
               "193e358f4a82348ecf21de0a35ec158d"
             ],
@@ -10044,6 +10254,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-56712e7374e1b71b081e1b2acd1a0708",
             "relatedIds": [
               "90b372bac3f6a7d01fb6adddd5822924"
             ],
@@ -10077,6 +10288,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-b1e4cf218a5ed9689787bebd39412d3e",
             "relatedIds": [
               "bd762510cb052a4b83765d5ac6db8744",
               "dc609f3069ca74e4358813dadce5d9e4"
@@ -10111,6 +10323,7 @@
             "category": "events",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-b1e4cf218a5ed9689787bebd39412d3e",
             "relatedIds": [
               "b1e4cf218a5ed9689787bebd39412d3e",
               "bd762510cb052a4b83765d5ac6db8744"
@@ -10145,6 +10358,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2ac2897090d1ecd72453fd5af19f6387",
             "relatedIds": [
               "2ac2897090d1ecd72453fd5af19f6387",
               "df2367f567c56c4a988a964302f179ca"
@@ -10179,6 +10393,7 @@
             "category": "events",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2ac2897090d1ecd72453fd5af19f6387",
             "relatedIds": [
               "a26955621a43cd95b5ff53606111d3ec",
               "df2367f567c56c4a988a964302f179ca"
@@ -10213,6 +10428,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-0297bd333ae8bd85e622642073e257d8",
             "relatedIds": [
               "0297bd333ae8bd85e622642073e257d8",
               "ccee50206e3f5ad36dc0b82be4da9d72"
@@ -10247,6 +10463,7 @@
             "category": "events",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-0297bd333ae8bd85e622642073e257d8",
             "relatedIds": [
               "0297bd333ae8bd85e622642073e257d8",
               "0d11170fbdae7d05de08d58d3faad85e"
@@ -10281,6 +10498,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-46ff535f980da7e6d80328e1a2a641d8",
             "relatedIds": [
               "46ff535f980da7e6d80328e1a2a641d8",
               "e56bd39024ffdeab4625b1e981795ef2"
@@ -10315,6 +10533,7 @@
             "category": "events",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-46ff535f980da7e6d80328e1a2a641d8",
             "relatedIds": [
               "a294c57f05be0627bbf48fd92932e071",
               "e56bd39024ffdeab4625b1e981795ef2"
@@ -10349,6 +10568,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-039db96b21a90887b7223acbae663ab9",
             "relatedIds": [
               "53b3aca264cd5312ab7cb35db92a0f26",
               "6e620bd49a33ed5dd9e693eb21d2ee7b",
@@ -10384,6 +10604,7 @@
             "category": "events",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-039db96b21a90887b7223acbae663ab9",
             "relatedIds": [
               "039db96b21a90887b7223acbae663ab9",
               "53b3aca264cd5312ab7cb35db92a0f26",
@@ -10419,6 +10640,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-4266573d71d97557c0a370ba11282c46",
             "relatedIds": [
               "4266573d71d97557c0a370ba11282c46"
             ],
@@ -10452,6 +10674,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-13479d49c4d00c19c7009826a649b57c",
             "relatedIds": [
               "13479d49c4d00c19c7009826a649b57c"
             ],
@@ -10485,6 +10708,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-7c0187710f5a7946468cee8f6eed300a",
             "relatedIds": [
               "c20aea01156b4621ff5ee989e0afc91d"
             ],
@@ -10518,6 +10742,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-1b817a9cf8e8c6fcce93cb968585a84d",
             "relatedIds": [
               "a39c12d558fc7b44310207ba8108ecab"
             ],
@@ -10551,6 +10776,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-5c3fa64e6e570324688bed66d18ca426",
             "relatedIds": [
               "5c3fa64e6e570324688bed66d18ca426"
             ],
@@ -10584,6 +10810,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-2528c0d9d700e7d35b6af55e5c455d0d",
             "relatedIds": [
               "31d2414fbf129f918912feebd87917fb"
             ],
@@ -10617,6 +10844,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-6a579809f30b4ea6f2b470881ba456be",
             "relatedIds": [
               "e5a0a9fb95f553d4c1abcff9bb163fcd"
             ],
@@ -10650,6 +10878,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-0e31c94f8f3fbfef435c4005f47e71d4",
             "relatedIds": [
               "bd967ce4f944e1ce41143b19ccf48d7e",
               "f2d02bc6d17e9f687515f2857255cb8e"
@@ -10684,6 +10913,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-3dfb5aae09dd9b505a0996b41cfc753c",
             "relatedIds": [
               "3dfb5aae09dd9b505a0996b41cfc753c",
               "70433fc9d2d6b994e3b89ef11b97f9d2"
@@ -10718,6 +10948,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-17e1f27c6f5cc90d25493e1875811b98",
             "relatedIds": [
               "17e1f27c6f5cc90d25493e1875811b98",
               "f2be6e36496eb1c0e4effc18e7da8838"
@@ -10838,6 +11069,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-509268ab4a288383acf40b26c7d4f0cb",
             "relatedIds": [
               "fbf6d16b047d6733f4408c670b9ca2ee"
             ],
@@ -10871,6 +11103,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-7322879d377122e5338cb715ae0c4186",
             "relatedIds": [
               "9f645cbf384d9657ac5bbcdadeeb9144",
               "d30a4b1e82ff740a5dc33d6af6a6fc3c"
@@ -10905,6 +11138,7 @@
             "category": "events",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-7322879d377122e5338cb715ae0c4186",
             "relatedIds": [
               "7322879d377122e5338cb715ae0c4186",
               "d30a4b1e82ff740a5dc33d6af6a6fc3c"
@@ -10939,6 +11173,7 @@
             "category": "events",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-852b64bc1ec2a632158cd1bb5757b199",
             "relatedIds": [
               "852b64bc1ec2a632158cd1bb5757b199",
               "e0649fc59d351d8af0c99fbb38dc4663"
@@ -10973,6 +11208,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-896f4cd2636fb46c5dc433890edbed13",
             "relatedIds": [
               "ea12d748478dea8b32f212d3b2255611"
             ],
@@ -11005,6 +11241,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-6fc60f6ec5780151995fae2f56cdc771",
             "relatedIds": [
               "de237e99f4ef0c7e6a885edc04d2e57b"
             ],
@@ -11038,6 +11275,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-11d86bada61e82188159d467e30aab12",
             "relatedIds": [
               "11d86bada61e82188159d467e30aab12",
               "431c0acb156f003e5e1979a7221ee718"
@@ -11101,6 +11339,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-1d1db31d573676e9ed1bf9f0b4df12da",
             "relatedIds": [
               "cfe0afbc3ca2c5f32e7bd65fae6e9294"
             ],
@@ -11134,6 +11373,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-0a689d578d918651ed75f62df2df4563",
             "relatedIds": [
               "0a689d578d918651ed75f62df2df4563"
             ],
@@ -11167,6 +11407,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-196cae8847f246987eea0907886b2346",
             "relatedIds": [
               "196cae8847f246987eea0907886b2346"
             ],
@@ -11200,6 +11441,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-3860def458a71ab0ee0e2e0899610264",
             "relatedIds": [
               "757ee1e079580fab11d10dcb83ded1a8"
             ],
@@ -11232,6 +11474,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-06399ceb1ec0000b5a42f1651c8a15d6",
             "relatedIds": [
               "06399ceb1ec0000b5a42f1651c8a15d6"
             ],
@@ -11293,6 +11536,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-3d1713dded003cdfe150fb7b71eacfae",
             "relatedIds": [
               "3d1713dded003cdfe150fb7b71eacfae"
             ],
@@ -11325,6 +11569,7 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "groupId": "group-3d1713dded003cdfe150fb7b71eacfae",
             "relatedIds": [
               "b156a84476d6d0f6988436db73bac1fd"
             ],
@@ -11388,6 +11633,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-5e9e1aa866e0cc01c89f8120bf293ab7",
             "relatedIds": [
               "9f2c4935ab37dd019c335356cd993ec4"
             ],
@@ -11420,6 +11666,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-06f3cfcbbbe36ef777b9db70a4f6eaf3",
             "relatedIds": [
               "06f3cfcbbbe36ef777b9db70a4f6eaf3"
             ],
@@ -11452,6 +11699,7 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "groupId": "group-06f3cfcbbbe36ef777b9db70a4f6eaf3",
             "relatedIds": [
               "ac26d900020ae4fa9c31cdf498c59e16"
             ],
@@ -11484,6 +11732,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-238fd6bb22dfb45282da13e034fb94b5",
             "relatedIds": [
               "238fd6bb22dfb45282da13e034fb94b5"
             ],
@@ -11516,6 +11765,7 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "groupId": "group-238fd6bb22dfb45282da13e034fb94b5",
             "relatedIds": [
               "904cf8b5be71a9484fd6e82bd40192c4"
             ],
@@ -11548,6 +11798,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-de3d4a612257c047ceb526aaa83d3d44",
             "relatedIds": [
               "dff5c5fcf4f211dae939515a0a1f0e37"
             ],
@@ -11580,6 +11831,7 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "groupId": "group-de3d4a612257c047ceb526aaa83d3d44",
             "relatedIds": [
               "de3d4a612257c047ceb526aaa83d3d44"
             ],
@@ -11613,6 +11865,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-609fa930812061c84a9387e8e72f861e",
             "relatedIds": [
               "d54bae544db9a5f54f2f14127e3c7e22"
             ],
@@ -11646,6 +11899,7 @@
             "category": "events",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-609fa930812061c84a9387e8e72f861e",
             "relatedIds": [
               "609fa930812061c84a9387e8e72f861e"
             ],
@@ -11736,6 +11990,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-b38aa4df2b382dc74164b6760f42ecb6",
             "relatedIds": [
               "b38aa4df2b382dc74164b6760f42ecb6"
             ],
@@ -11768,6 +12023,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-07f40caa91ced79a2fef0aaca14753d6",
             "relatedIds": [
               "c8235eaace7e49bbf5183f5deb5a6c92"
             ],
@@ -11800,6 +12056,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-2bc8b98f658c7c959e3fc260fe9e8ec2",
             "relatedIds": [
               "f585cde2091c1a7b0f574e6ac645f38e"
             ],
@@ -11832,6 +12089,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-0d647291cc7330b5b0207a5dae07136f",
             "relatedIds": [
               "0d647291cc7330b5b0207a5dae07136f"
             ],
@@ -11864,6 +12122,7 @@
           "properties": {
             "category": "storage",
             "confidence": "low",
+            "groupId": "group-bcbc4bf8f3846a25b53e32edf6b0731b",
             "relatedIds": [
               "bcbc4bf8f3846a25b53e32edf6b0731b"
             ],
@@ -11897,6 +12156,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-01c42f8d3f92a4dff264aa66598d8bc5",
             "relatedIds": [
               "055b293f33f9de442bd89e94c7aac95a"
             ],
@@ -11930,6 +12190,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-b96662552bfb718088584f4870316f78",
             "relatedIds": [
               "b96662552bfb718088584f4870316f78"
             ],
@@ -11963,6 +12224,7 @@
             "category": "storage",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-0e30207a5d2e79a79968079556b556e7",
             "relatedIds": [
               "a90bb695fbab024bd583ead7034a0990"
             ],
@@ -11996,6 +12258,7 @@
             "category": "events",
             "confidence": "low",
             "correlationAmbiguous": true,
+            "groupId": "group-0e30207a5d2e79a79968079556b556e7",
             "relatedIds": [
               "0e30207a5d2e79a79968079556b556e7"
             ],
