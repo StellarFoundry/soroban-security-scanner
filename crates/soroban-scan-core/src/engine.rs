@@ -836,6 +836,73 @@ pub fn scan(loaded: &LoadedProject, registry: &RuleRegistry, config: &ScanConfig
     scan_with_hooks(loaded, registry, config, &PipelineHooks::default())
 }
 
+/// Reports control-flow graphs that hit a builder cap.
+///
+/// A truncated graph cannot prove reachability, so consumers skip the function.
+/// The diagnostic makes that skip observable instead of leaving a silent gap.
+/// The list is sorted and capped so a pathological file cannot flood the report.
+fn cfg_truncation_diagnostics(
+    ctx: &AnalysisContext<'_>,
+    sources: &[ParsedSource],
+) -> Vec<Diagnostic> {
+    let mut found = Vec::new();
+    for source in sources {
+        let Some(file) = &source.syntax else {
+            continue;
+        };
+        for func in crate::rules::util::contract_entry_functions(file) {
+            if !func.is_public {
+                continue;
+            }
+            let graph = ctx.cfg_for_function(source, &func);
+            if !graph.truncated {
+                continue;
+            }
+            let mut diagnostic = Diagnostic::warning(
+                DiagnosticCode::CfgTruncated,
+                format!(
+                    "control-flow graph for `{}` was truncated at {} node(s) and {} \
+                     edge(s) (caps: {} nodes, {} edges, depth {}); rules that need a \
+                     complete graph skipped this function",
+                    func.name,
+                    graph.nodes.len(),
+                    graph.edges.len(),
+                    cfg::MAX_CFG_NODES,
+                    cfg::MAX_CFG_EDGES,
+                    cfg::MAX_CFG_DEPTH
+                ),
+                Some(ctx.relative_path(&source.path)),
+            );
+            diagnostic.line = Some(func.line);
+            found.push(diagnostic);
+        }
+    }
+    found.sort_by(|a, b| {
+        (
+            a.path
+                .as_ref()
+                .map(|path| path.to_string_lossy().replace('\\', "/")),
+            a.line.unwrap_or(0),
+        )
+            .cmp(&(
+                b.path
+                    .as_ref()
+                    .map(|path| path.to_string_lossy().replace('\\', "/")),
+                b.line.unwrap_or(0),
+            ))
+    });
+    if found.len() > cfg::MAX_CFG_DIAGNOSTICS {
+        let omitted = found.len() - cfg::MAX_CFG_DIAGNOSTICS;
+        found.truncate(cfg::MAX_CFG_DIAGNOSTICS);
+        found.push(Diagnostic::info(
+            DiagnosticCode::CfgTruncated,
+            format!("{omitted} additional control-flow graph truncation diagnostic(s) omitted"),
+            None,
+        ));
+    }
+    found
+}
+
 /// Runs the scanner over a loaded project with optional pipeline hooks.
 ///
 /// This is an additive variant of [`scan`]. Discovery and parsing already
@@ -931,6 +998,10 @@ pub fn scan_with_hooks(
             ));
         }
         diagnostics.extend(type_diagnostics);
+    }
+
+    if analysis_mode == AnalysisMode::Soroban {
+        diagnostics.extend(cfg_truncation_diagnostics(&ctx, &loaded.sources));
     }
 
     let mut stats = ScanStats {

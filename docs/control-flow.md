@@ -54,7 +54,10 @@ fabricates an edge to make the graph look complete.
 - `MAX_CFG_DEPTH` (32) caps control-flow nesting.
 
 Hitting a cap sets `truncated = true` and stops adding nodes or edges. The
-graph remains deterministic and readable.
+graph remains deterministic and readable. The engine emits a bounded `CFG-001`
+diagnostic for each truncated public entry point (at most 8 per scan plus an
+omitted-count notice), and rules that need complete reachability skip the
+function instead of making a partial claim.
 
 ## Reachability
 
@@ -64,8 +67,8 @@ when every covering node is unreachable, and `Unknown` when the graph does not
 cover the line. Spans are line-granular, so a construct sharing a line with a
 reachable node is considered reachable.
 
-The CFG is used only to rank findings; it never adds, removes, or changes a
-finding. See [Finding ranking](finding-ranking.md).
+The CFG ranks findings and lets rules that require complete reachability decide
+whether to report. See [Finding ranking](finding-ranking.md).
 
 The same pass also derives optional exploitability context. When the graph
 covers a finding line, the finding records the reachability label and, if the
@@ -83,4 +86,5 @@ confidence.
 - Line-granular spans cannot distinguish two constructs on the same line.
 
 Tests in `crates/soroban-scan-core/src/analysis/cfg.rs` cover branches, loops,
-matches, returns, unknown constructs, caps, determinism, and line lookup.
+matches, returns, unknown constructs, caps, determinism, and line lookup;
+`tests/cfg_limits.rs` covers the diagnostic and the consumer skip behaviour.
