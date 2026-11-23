@@ -5,12 +5,12 @@
 # and justify the count change in the pull request.
 
 [counts]
-SS-001 = 44
+SS-001 = 51
 SS-002 = 16
 SS-003 = 1
-SS-004 = 25
+SS-004 = 28
 SS-005 = 1
-SS-006 = 55
+SS-006 = 62
 SS-007 = 2
 SS-008 = 7
 SS-009 = 1
@@ -46,3 +46,5 @@ SS-042 = 3
 SS-044 = 21
 SS-046 = 1
 SS-047 = 3
+SS-048 = 2
+SS-049 = 2

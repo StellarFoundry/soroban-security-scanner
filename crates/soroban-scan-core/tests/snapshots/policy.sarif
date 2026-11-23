@@ -1386,6 +1386,62 @@
               "shortDescription": {
                 "text": "Unchecked ledger timestamp usage"
               }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Publishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable."
+              },
+              "help": {
+                "markdown": "## Unbounded event payload\n\nPublishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable.\n\n### Remediation\n\nBound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/events\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Publishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable.\n\nRemediation: Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/events",
+              "id": "SS-048",
+              "name": "Unbounded event payload",
+              "properties": {
+                "category": "events",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/events",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unbounded event payload"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A public entry point converts caller-supplied bytes to a `String` with `from_utf8(...).unwrap()`/`.expect(...)` or `from_utf8_unchecked`. Invalid UTF-8 makes the first two panic and the last one produce an unsound `String`, so a crafted argument can abort or corrupt the call."
+              },
+              "help": {
+                "markdown": "## Unchecked bytes-to-string conversion\n\nA public entry point converts caller-supplied bytes to a `String` with `from_utf8(...).unwrap()`/`.expect(...)` or `from_utf8_unchecked`. Invalid UTF-8 makes the first two panic and the last one produce an unsound `String`, so a crafted argument can abort or corrupt the call.\n\n### Remediation\n\nHandle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes.\n\n### References\n\n- https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8\n- https://doc.rust-lang.org/std/str/fn.from_utf8.html",
+                "text": "A public entry point converts caller-supplied bytes to a `String` with `from_utf8(...).unwrap()`/`.expect(...)` or `from_utf8_unchecked`. Invalid UTF-8 makes the first two panic and the last one produce an unsound `String`, so a crafted argument can abort or corrupt the call.\n\nRemediation: Handle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes."
+              },
+              "helpUri": "https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8",
+              "id": "SS-049",
+              "name": "Unchecked bytes-to-string conversion",
+              "properties": {
+                "category": "error-handling",
+                "confidence": "high",
+                "references": [
+                  "https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8",
+                  "https://doc.rust-lang.org/std/str/fn.from_utf8.html"
+                ],
+                "remediation": "Handle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unchecked bytes-to-string conversion"
+              }
             }
           ],
           "version": "0.2.0"

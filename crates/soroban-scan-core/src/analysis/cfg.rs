@@ -21,6 +21,12 @@ pub const MAX_CFG_NODES: usize = 256;
 pub const MAX_CFG_EDGES: usize = 512;
 /// Maximum nesting depth of control-flow constructs the builder follows.
 pub const MAX_CFG_DEPTH: usize = 32;
+/// Maximum number of truncation diagnostics a scan reports before summarizing.
+///
+/// Truncated graphs are also skipped by consumers, so one diagnostic per
+/// truncated function is enough to explain the gap; the cap keeps a pathological
+/// file from flooding the report.
+pub const MAX_CFG_DIAGNOSTICS: usize = 8;
 
 /// What a node represents.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
