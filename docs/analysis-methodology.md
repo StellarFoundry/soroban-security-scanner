@@ -144,6 +144,19 @@ fixtures are under
 useful because the pattern is cheap to check and the consequences of expired
 persistent data can be severe.
 
+## Cast type tracking
+
+`rules::util::cast_facts` records every `expr as Type` in an entry point and
+reduces both sides to an `IntegerType` (signedness and bit width) when the
+source makes them visible: a parameter type, a local annotation, an integer
+literal suffix, or a storage `get::<_, T>` turbofish. `CastFact::integer_cast`
+returns `None` when either side is not a visible integer, and the cast is never
+guessed. `IntegerCast::is_lossy` marks truncating casts and signedness changes;
+`i32 as u64`, for example, is lossy because negative values do not round-trip.
+Fixtures for widening, narrowing, and signed/unsigned casts live under
+[`fixtures/casts/`](../fixtures/casts/). SS-018 continues to report only
+narrowing casts of parameters and storage reads, so the API is additive.
+
 ## Manifest inheritance and module paths
 
 Workspace members often use `soroban-sdk = { workspace = true }`. The scanner
