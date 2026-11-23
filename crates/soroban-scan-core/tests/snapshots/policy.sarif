@@ -1386,6 +1386,34 @@
               "shortDescription": {
                 "text": "Unchecked ledger timestamp usage"
               }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Publishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable."
+              },
+              "help": {
+                "markdown": "## Unbounded event payload\n\nPublishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable.\n\n### Remediation\n\nBound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/events\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Publishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable.\n\nRemediation: Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/events",
+              "id": "SS-048",
+              "name": "Unbounded event payload",
+              "properties": {
+                "category": "events",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/events",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unbounded event payload"
+              }
             }
           ],
           "version": "0.2.0"

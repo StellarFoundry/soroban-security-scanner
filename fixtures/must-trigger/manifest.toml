@@ -170,3 +170,8 @@ why = "One key construction stores two different record shapes, so SS-046 must a
 file = "SS-047.rs"
 why = "A ledger timestamp alias is compared with a deadline without a tolerance window, so SS-047 must always trigger."
 
+[SS-048]
+file = "SS-048.rs"
+why = "An entry point publishes a caller-supplied Vec with no length bound, so SS-048 must always trigger."
+
+

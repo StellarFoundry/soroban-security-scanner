@@ -8,7 +8,7 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 170,
+    "source_files": 176,
     "soroban_sdk_versions": []
   },
   "stats": {
@@ -179,13 +179,13 @@
         }
       ]
     },
-    "files_analyzed": 170,
-    "files_parsed": 170,
+    "files_analyzed": 176,
+    "files_parsed": 176,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 41,
+    "rules_run": 42,
     "rules_skipped": 0,
-    "findings_raw": 353,
+    "findings_raw": 356,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -202,8 +202,8 @@
       "configuration": 2,
       "cross-contract": 68,
       "dependencies": 2,
-      "error-handling": 26,
-      "events": 24,
+      "error-handling": 27,
+      "events": 26,
       "resource-usage": 3,
       "storage": 100,
       "token": 44,
@@ -3452,6 +3452,33 @@
       ]
     },
     {
+      "rule_id": "SS-048",
+      "title": "Unbounded event payload",
+      "description": "Publishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "events",
+      "location": {
+        "file": "SS-023/positive.rs",
+        "line": 12,
+        "column": 9
+      },
+      "evidence": "event publish in `commit` includes user-controlled `Bytes` parameter `secret` with no visible length bound: env . events () . publish (symbol_short ! (\"commit\") , secret)",
+      "remediation": "Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "8ba0420bd4ea3e853d9d23c5cba2fd97",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Commitments::commit"
+      },
+      "related": [
+        "4c7bb8c7dcd42d55faab7be992707e40"
+      ]
+    },
+    {
       "rule_id": "SS-025",
       "title": "Unbounded string/bytes persisted from caller input",
       "description": "Persisting a caller-controlled `String` or `Bytes` value without a length check lets an attacker grow ledger entries without bound, raising rent and potentially exceeding limits. The detector looks for a visible `.len()` comparison guarding the write.",
@@ -3920,6 +3947,30 @@
         "bdf3b0c31758e632a82f8f89d0082eb8"
       ],
       "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-048",
+      "title": "Unbounded event payload",
+      "description": "Publishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "events",
+      "location": {
+        "file": "SS-048/positive.rs",
+        "line": 11,
+        "column": 9
+      },
+      "evidence": "event publish in `record` includes user-controlled `Vec` parameter `items` with no visible length bound: env . events () . publish ((symbol_short ! (\"record\") ,) , items)",
+      "remediation": "Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/events",
+        "https://developers.stellar.org/docs/learn/encyclopedia/security"
+      ],
+      "fingerprint": "1b2d255b5c4ce4f4dc671a6c5a6b6812",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::record"
+      }
     },
     {
       "rule_id": "SS-039",
@@ -5672,7 +5723,10 @@
       "exploitability": {
         "reachability": "reachable",
         "entry_point": "Commitments::commit"
-      }
+      },
+      "related": [
+        "8ba0420bd4ea3e853d9d23c5cba2fd97"
+      ]
     },
     {
       "rule_id": "SS-039",
@@ -7502,6 +7556,30 @@
       "exploitability": {
         "reachability": "reachable",
         "entry_point": "Contract::close"
+      }
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "description": "A contract entry point calls `unwrap`, `expect`, `panic!`, `todo!`, `unimplemented!`, or `unreachable!`. In Soroban these abort the invocation and roll back state. When reachable from normal input, this turns a recoverable error condition into a failed transaction (a denial of service). This is a code-quality signal rather than proof of a vulnerability.",
+      "severity": "low",
+      "confidence": "medium",
+      "category": "error-handling",
+      "location": {
+        "file": "SS-048/negative.rs",
+        "line": 14,
+        "column": 13
+      },
+      "evidence": "`panic` in `record` can panic: panic ! (\"too many items\")",
+      "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/errors-and-fees",
+        "https://developers.stellar.org/docs/tools/cli/stellar-cli"
+      ],
+      "fingerprint": "50b36a6b3fde2c3bacc7282f1ddd203c",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::record"
       }
     },
     {
@@ -9884,6 +9962,48 @@
       "path": "SS-046/negative4.rs",
       "line": 12,
       "column": 59
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "2 macro invocation(s) were not expanded: panic, symbol_short",
+      "path": "SS-048/negative.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-048/negative2.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-048/negative3.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-048/negative4.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-048/negative5.rs",
+      "line": null
+    },
+    {
+      "code": "MACRO-001",
+      "level": "info",
+      "message": "1 macro invocation(s) were not expanded: symbol_short",
+      "path": "SS-048/positive.rs",
+      "line": null
     }
   ]
 }

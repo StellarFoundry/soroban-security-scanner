@@ -22,6 +22,12 @@
           "count": 1,
           "severity": "medium",
           "confidence": null
+        },
+        {
+          "rule_id": "SS-048",
+          "count": 1,
+          "severity": "medium",
+          "confidence": null
         }
       ]
     }

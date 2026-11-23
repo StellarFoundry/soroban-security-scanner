@@ -92,6 +92,7 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-044](detectors/SS-044.md) | Cross-contract call with an unvalidated address argument | medium | low | cross-contract |
 | [SS-046](detectors/SS-046.md) | Duplicate storage key construction | medium | low | storage |
 | [SS-047](detectors/SS-047.md) | Unchecked ledger timestamp usage | medium | low | arithmetic |
+| [SS-048](detectors/SS-048.md) | Unbounded event payload | medium | medium | events |
 
 Each detector has a positive and negative fixture under
 `fixtures/corpus/<RULE-ID>/`, plus an adversarial sample and recorded expected

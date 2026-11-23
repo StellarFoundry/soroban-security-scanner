@@ -36,6 +36,7 @@ mod temporary_storage_durable_state;
 mod token_transfer_amount;
 mod ttl_management;
 mod unbounded_bytes_persistence;
+mod unbounded_event_payload;
 mod unbounded_iteration;
 mod unbounded_vec_growth;
 mod unchecked_arithmetic;
@@ -135,6 +136,7 @@ pub fn register_all(registry: &mut RuleRegistry) -> Result<(), RegistryError> {
     registry.register(Box::new(
         unchecked_ledger_timestamp_usage::UncheckedLedgerTimestampUsage,
     ))?;
+    registry.register(Box::new(unbounded_event_payload::UnboundedEventPayload))?;
     Ok(())
 }
 
@@ -154,7 +156,7 @@ mod tests {
                 "SS-017", "SS-018", "SS-019", "SS-020", "SS-021", "SS-022", "SS-023", "SS-025",
                 "SS-026", "SS-027", "SS-028", "SS-029", "SS-030", "SS-031", "SS-032", "SS-033",
                 "SS-034", "SS-035", "SS-037", "SS-039", "SS-041", "SS-042", "SS-044", "SS-046",
-                "SS-047"
+                "SS-047", "SS-048"
             ]
         );
     }

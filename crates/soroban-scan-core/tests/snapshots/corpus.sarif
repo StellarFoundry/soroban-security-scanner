@@ -3868,6 +3868,38 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-023/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unbounded event payload — event publish in `commit` includes user-controlled `Bytes` parameter `secret` with no visible length bound: env . events () . publish (symbol_short ! (\"commit\") , secret)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "8ba0420bd4ea3e853d9d23c5cba2fd97"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "medium",
+            "relatedIds": [
+              "4c7bb8c7dcd42d55faab7be992707e40"
+            ],
+            "remediation": "Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-048"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-025/positive.rs"
                 },
                 "region": {
@@ -4420,6 +4452,35 @@
             "severity": "medium"
           },
           "ruleId": "SS-019"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-048/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unbounded event payload — event publish in `record` includes user-controlled `Vec` parameter `items` with no visible length bound: env . events () . publish ((symbol_short ! (\"record\") ,) , items)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "1b2d255b5c4ce4f4dc671a6c5a6b6812"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "medium",
+            "remediation": "Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-048"
         },
         {
           "level": "warning",
@@ -6534,6 +6595,9 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "relatedIds": [
+              "8ba0420bd4ea3e853d9d23c5cba2fd97"
+            ],
             "remediation": "Do not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain.",
             "severity": "medium"
           },
@@ -8722,6 +8786,35 @@
           },
           "partialFingerprints": {
             "sorobanScanFingerprint": "103a86e1c79fcfe3e3b0b4f1de184318"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-048/negative.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `panic` in `record` can panic: panic ! (\"too many items\")"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "50b36a6b3fde2c3bacc7282f1ddd203c"
           },
           "properties": {
             "category": "error-handling",
@@ -12467,6 +12560,34 @@
               },
               "shortDescription": {
                 "text": "Unchecked ledger timestamp usage"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Publishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable."
+              },
+              "help": {
+                "markdown": "## Unbounded event payload\n\nPublishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable.\n\n### Remediation\n\nBound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/events\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Publishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable.\n\nRemediation: Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/events",
+              "id": "SS-048",
+              "name": "Unbounded event payload",
+              "properties": {
+                "category": "events",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/events",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unbounded event payload"
               }
             }
           ],

@@ -214,3 +214,9 @@ why = "A storage chain and key construction split across lines still use one key
 file = "SS-047/sample.rs"
 expect = "trigger"
 why = "An alias of an alias still reaches the ledger timestamp, and the split comparison has no tolerance window."
+
+[SS-048]
+file = "SS-048/sample.rs"
+expect = "trigger"
+why = "A publish chain split across lines still carries an unbounded Vec parameter as the event payload."
+
