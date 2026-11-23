@@ -164,10 +164,10 @@ impl ServerState {
             .iter()
             .filter(|(uri, pending)| {
                 pending.due <= now
-                    && !self
+                    && self
                         .inflight
                         .get(*uri)
-                        .is_some_and(|active| !active.timed_out)
+                        .is_none_or(|active| active.timed_out)
             })
             .map(|(uri, _)| uri.clone())
             .collect();

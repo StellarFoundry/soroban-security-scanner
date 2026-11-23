@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Rule pack authoring guide (`docs/pack-authoring.md`) and ready-to-copy starter
+  template (`examples/rule-pack-template`) covering directory layout, manifest
+  schema v1 reference, canonical checksum calculation, versioning, Ed25519
+  signing/keyrings, offline verification, and positive/negative fixtures (`#367`).
+
 - Findings carry an optional, additive `exploitability` context (`reachability`,
   `entry_point`, and reserved `taint`) when the control-flow graph covers the
   finding line. It is omitted when evidence is incomplete and never changes

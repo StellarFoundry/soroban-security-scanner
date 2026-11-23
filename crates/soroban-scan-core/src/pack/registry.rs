@@ -234,8 +234,7 @@ fn valid_version(version: &str) -> bool {
     let mut parts = version.split('.');
     (0..3).all(|_| {
         parts.next().is_some_and(|part| {
-            !part.is_empty()
-                && !(part.len() > 1 && part.starts_with('0'))
+            !(part.is_empty() || (part.len() > 1 && part.starts_with('0')))
                 && part.bytes().all(|byte| byte.is_ascii_digit())
         })
     }) && parts.next().is_none()

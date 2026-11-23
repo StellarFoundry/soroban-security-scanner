@@ -45,6 +45,9 @@ checksum = "sha256:41b4971ca5a0aa656406c4e86985de006119bac6a9aa36410eb2038f016c1
 A complete two-rule pack with per-rule fixtures, a validation script, and
 signing instructions lives in
 [`examples/external-rule-pack`](../examples/external-rule-pack/README.md).
+For a step-by-step authoring guide and ready-to-copy starter template, see
+[Rule Pack Authoring](pack-authoring.md) and
+[`examples/rule-pack-template`](../examples/rule-pack-template/README.md).
 
 The sample manifest is `fixtures/rule-packs/sample/pack.toml` and is
 loaded and validated by:
