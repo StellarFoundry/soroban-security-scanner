@@ -157,6 +157,16 @@ Fixtures for widening, narrowing, and signed/unsigned casts live under
 [`fixtures/casts/`](../fixtures/casts/). SS-018 continues to report only
 narrowing casts of parameters and storage reads, so the API is additive.
 
+## Map storage keys
+
+`analysis::storage::map_storage_accesses` resolves the key and value types of a
+stored `Map` from a storage turbofish (`get::<_, Map<K, V>>`) or a typed local
+initialized from storage. Keys are classified as `Symbol`, `Address`, a tuple of
+those, or `Unknown`. An unrecognized or generic key type is `Unknown`; it is
+never assumed bounded. SS-016 uses the resolved key type to state when a stored
+map's key type could not be determined. Fixtures are under
+[`fixtures/storage-maps/`](../fixtures/storage-maps/).
+
 ## Manifest inheritance and module paths
 
 Workspace members often use `soroban-sdk = { workspace = true }`. The scanner
