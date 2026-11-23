@@ -96,6 +96,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `redaction` | Opt-in hashing of selected report fields at render time; fingerprints stay intact. | `baseline`, `engine`, `finding`. |
 | `pack` | Rule pack manifest parsing, detached signature verification, keyrings, and rotation/revocation. | `config`, `error`. |
 | `policy` | Policy document parsing, validation, and deterministic evaluation. | `config`, `error`, `model`. |
+| `monorepo` | Bounded, symlink-safe Cargo project discovery and include/exclude/changed-file path filtering for monorepo scans. | `discovery`, `error`. |
 | `ai` | Optional, advisory assistance; deterministic engine remains authoritative. | `category`, `finding`, `rule`, `severity`. |
 | `api_auth` | Framework-independent bearer token parsing and verification for API integrations. | Nothing in the crate. |
 | `corpus` | Read-only detector fixture, documentation, and must-trigger coverage reporting. | `registry`. |
