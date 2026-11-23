@@ -74,6 +74,7 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-021](detectors/SS-021.md) | Durable data written to temporary storage | medium | low | storage |
 | [SS-022](detectors/SS-022.md) | Unsafe symbol_short key | medium | medium | storage |
 | [SS-023](detectors/SS-023.md) | Sensitive-looking data published in events | medium | low | events |
+| [SS-024](detectors/SS-024.md) | Missing contracttype on boundary types | medium | medium | configuration |
 | [SS-025](detectors/SS-025.md) | Unbounded string/bytes persisted from caller input | medium | medium | storage |
 | [SS-026](detectors/SS-026.md) | TTL constant outside the expected range | low | low | resource-usage |
 | [SS-027](detectors/SS-027.md) | Contract's own address used as an authorization subject | high | medium | authorization |
@@ -85,6 +86,7 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-033](detectors/SS-033.md) | Wildcard import from the Soroban SDK | low | high | dependencies |
 | [SS-034](detectors/SS-034.md) | Unvalidated deployer usage | high | low | access-control |
 | [SS-035](detectors/SS-035.md) | Ignored checked-arithmetic result | high | medium | arithmetic |
+| [SS-036](detectors/SS-036.md) | Deprecated SDK API usage | low | medium | dependencies |
 | [SS-037](detectors/SS-037.md) | Competing authorization calls | medium | low | authorization |
 | [SS-039](detectors/SS-039.md) | Persistent storage read without TTL management | medium | low | storage |
 | [SS-041](detectors/SS-041.md) | Authorization check inside a loop | medium | low | authorization |

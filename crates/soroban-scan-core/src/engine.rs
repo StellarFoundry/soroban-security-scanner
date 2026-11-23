@@ -1075,7 +1075,22 @@ pub fn scan_with_hooks(
         registry.rules().iter().map(|rule| rule.as_ref()).collect();
     rules.sort_by_key(|rule| rule.metadata().id);
 
+    let deadline = config
+        .deadline_ms
+        .map(|millis| Instant::now() + Duration::from_millis(millis));
+
     for rule in rules {
+        if deadline.is_some_and(|deadline| Instant::now() >= deadline) {
+            diagnostics.push(Diagnostic::warning(
+                DiagnosticCode::ScanDeadlineExceeded,
+                format!(
+                    "scan deadline of {} ms exceeded; the report is partial and remaining rules were skipped",
+                    config.deadline_ms.unwrap_or(0)
+                ),
+                None,
+            ));
+            break;
+        }
         let meta = rule.metadata();
         if !rule.enabled_by_default() || !config.rules.is_rule_enabled(meta.id, meta.category) {
             stats.rules_skipped += 1;
@@ -3178,5 +3193,23 @@ mod path_normalization_tests {
         assert!(!is_safe_relative(Path::new("src/../../secret.rs")));
         assert!(!is_safe_relative(Path::new("/etc/passwd")));
         assert!(!is_safe_relative(Path::new("")));
+    }
+
+    #[test]
+    fn a_tiny_deadline_marks_the_report_partial() {
+        let config = crate::config::ScanConfig {
+            deadline_ms: Some(0),
+            ..crate::config::ScanConfig::default()
+        };
+        let outcome = crate::engine::scan_source_str(
+            "fn a() {}",
+            "lib.rs",
+            &config,
+            &crate::registry::RuleRegistry::with_default_rules(),
+        );
+        assert_eq!(outcome.stats.rules_run, 0);
+        assert!(outcome.diagnostics.iter().any(|diagnostic| {
+            diagnostic.code == crate::model::DiagnosticCode::ScanDeadlineExceeded
+        }));
     }
 }

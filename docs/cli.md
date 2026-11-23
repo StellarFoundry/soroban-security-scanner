@@ -754,3 +754,13 @@ medium/low/info findings do not fail a scan unless configured.
 - Reports never include environment variables or secrets.
 - Paths are relativized to the scan root; traversal outside the root is
   rejected.
+
+## Incremental scanning and deadlines
+
+- `--changed-since <REF>` runs a read-only `git diff --name-only --diff-filter=ACMR <REF> -- '*.rs'`
+  and scans only those files. Paths are validated and must stay inside the scan
+  root. If git is unavailable, pass `--changed-from-file <FILE>` (newline-separated
+  relative paths, `#` comments allowed).
+- `--deadline-ms <MS>` sets an overall cooperative deadline. If it expires, the
+  scan stops between rules, emits `SCAN-001`, and the report is explicitly
+  labelled partial; do not treat a partial report as complete.

@@ -283,6 +283,9 @@ pub enum DiagnosticCode {
     /// The declared `soroban-sdk` version is outside the supported matrix.
     #[serde(rename = "SDK-001")]
     UnsupportedSdkVersion,
+    /// The overall scan deadline expired, so the report is partial.
+    #[serde(rename = "SCAN-001")]
+    ScanDeadlineExceeded,
     /// A control-flow graph hit a size cap and was truncated.
     #[serde(rename = "CFG-001")]
     CfgTruncated,
@@ -324,6 +327,7 @@ impl DiagnosticCode {
             DiagnosticCode::UnsupportedSyntax => "SYNTAX-001",
             DiagnosticCode::UnresolvedType => "TYPE-001",
             DiagnosticCode::UnsupportedSdkVersion => "SDK-001",
+            DiagnosticCode::ScanDeadlineExceeded => "SCAN-001",
             DiagnosticCode::CfgTruncated => "CFG-001",
             DiagnosticCode::TaintIncomplete => "TAINT-001",
         }

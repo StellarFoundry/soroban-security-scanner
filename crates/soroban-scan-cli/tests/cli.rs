@@ -359,7 +359,7 @@ fn generic_mode_is_opt_in_and_visible_in_output() {
     ]);
     let value: serde_json::Value = serde_json::from_str(&default.stdout).unwrap();
     assert_eq!(value["stats"]["mode"], "soroban");
-    assert_eq!(value["stats"]["rules_run"], 43);
+    assert_eq!(value["stats"]["rules_run"], 45);
 }
 
 #[test]
@@ -3000,4 +3000,54 @@ fn policy_file_applies_thresholds_and_reports_effective_policy() {
 
     std::fs::remove_file(policy).ok();
     std::fs::remove_file(invalid).ok();
+}
+
+#[test]
+fn changed_since_scans_only_changed_rust_files() {
+    let dir = std::env::temp_dir().join(format!("soroban-scan-changed-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(dir.join("src")).expect("src");
+    let root = dir.as_path();
+    std::fs::write(root.join("src/unchanged.rs"), "pub fn unchanged() {}\n").expect("write");
+    std::fs::write(root.join("src/changed.rs"), "pub fn changed() {}\n").expect("write");
+
+    let run_git = |args: &[&str]| {
+        let status = std::process::Command::new("git")
+            .arg("-C")
+            .arg(root)
+            .args(args)
+            .env("GIT_AUTHOR_NAME", "t")
+            .env("GIT_AUTHOR_EMAIL", "t@example.com")
+            .env("GIT_COMMITTER_NAME", "t")
+            .env("GIT_COMMITTER_EMAIL", "t@example.com")
+            .status()
+            .expect("git is available");
+        assert!(status.success());
+    };
+    run_git(&["init", "-q"]);
+    run_git(&["add", "."]);
+    run_git(&["commit", "-qm", "base"]);
+    std::fs::write(
+        root.join("src/changed.rs"),
+        "pub fn changed() { let _ = 1; }\n",
+    )
+    .expect("modify");
+
+    let list = root.join("changed.txt");
+    std::fs::write(&list, "src/changed.rs\n").expect("write list");
+    let output = run(&[
+        "scan",
+        root.to_str().unwrap(),
+        "--changed-since",
+        "HEAD",
+        "--changed-from-file",
+        list.to_str().unwrap(),
+        "--format",
+        "json",
+        "--fail-on",
+        "none",
+    ]);
+    assert_eq!(output.code, 0, "stderr: {}", output.stderr);
+    let value: ::serde_json::Value = ::serde_json::from_str(&output.stdout).expect("json report");
+    assert_eq!(value["stats"]["files_analyzed"], 1);
 }
