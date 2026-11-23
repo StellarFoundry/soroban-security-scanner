@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "rule_id": "SS-043",
+  "fixtures": [
+    {
+      "file": "negative.rs",
+      "findings": []
+    },
+    {
+      "file": "negative2.rs",
+      "findings": []
+    },
+    {
+      "file": "negative3.rs",
+      "findings": []
+    },
+    {
+      "file": "positive.rs",
+      "findings": [
+        {
+          "rule_id": "SS-043",
+          "count": 2,
+          "severity": "medium",
+          "confidence": null
+        }
+      ]
+    }
+  ]
+}
