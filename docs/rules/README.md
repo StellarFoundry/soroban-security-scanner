@@ -90,6 +90,10 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-041](detectors/SS-041.md) | Authorization check inside a loop | medium | low | authorization |
 | [SS-042](detectors/SS-042.md) | Security check unreachable on every path | low | medium | authorization |
 | [SS-044](detectors/SS-044.md) | Cross-contract call with an unvalidated address argument | medium | low | cross-contract |
+| [SS-046](detectors/SS-046.md) | Duplicate storage key construction | medium | low | storage |
+| [SS-047](detectors/SS-047.md) | Unchecked ledger timestamp usage | medium | low | arithmetic |
+| [SS-048](detectors/SS-048.md) | Unbounded event payload | medium | medium | events |
+| [SS-049](detectors/SS-049.md) | Unchecked bytes-to-string conversion | medium | high | error-handling |
 
 Each detector has a positive and negative fixture under
 `fixtures/corpus/<RULE-ID>/`, plus an adversarial sample and recorded expected
@@ -133,6 +137,9 @@ The API is read-only by design; registration and mutation stay on
 
 ## Adding a new rule
 
+The proposal, assignment, review, release, and deprecation stages are described
+in the [rule review workflow](../contributors/rule-review-workflow.md).
+
 Before implementing a detector, answer all of the following:
 
 1. **Problem** — what security problem does it address?
@@ -153,7 +160,8 @@ Rules must never fabricate evidence or source locations. When evidence is
 insufficient, prefer `confidence: low` or do not report at all.
 
 See [`../contributors/writing-rules.md`](../contributors/writing-rules.md) for a
-step-by-step guide, [`cookbook.md`](cookbook.md) for three annotated end-to-end
+step-by-step guide, [`../contributors/rule-review-workflow.md`](../contributors/rule-review-workflow.md)
+for the proposal-to-release process and who approves each stage, [`cookbook.md`](cookbook.md) for three annotated end-to-end
 examples, [`TEMPLATE.md`](TEMPLATE.md) for the rule document template,
 [`../development/testing.md`](../development/testing.md) for the fixture
 layout, and [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md) for the definition

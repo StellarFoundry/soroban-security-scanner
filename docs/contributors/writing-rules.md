@@ -6,7 +6,9 @@ semantics, then use the shared analysis primitives rather than re-deriving them:
 [the type model](../type-model.md) for type names and cast source types,
 [taint analysis](../taint-analysis.md) for caller-controlled data, and
 [control-flow graphs](../control-flow.md) for reachability. Finding order is
-defined in [finding ranking](../finding-ranking.md).
+defined in [finding ranking](../finding-ranking.md). The full proposal-to-release
+path, including who approves each stage, is in the
+[rule review workflow](rule-review-workflow.md).
 
 ## 0. Define the problem before writing code
 
@@ -139,7 +141,8 @@ cargo test --all
 ```
 
 `RuleRegistry::with_default_rules()` validation will fail if metadata or docs
-are missing.
+are missing. The review, approval, and release stages are documented in the
+[rule review workflow](rule-review-workflow.md).
 
 ## Rules of the road
 

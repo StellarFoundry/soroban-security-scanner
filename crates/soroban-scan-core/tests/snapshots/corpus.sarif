@@ -1510,6 +1510,232 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-049/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b38aa4df2b382dc74164b6760f42ecb6"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "relatedIds": [
+              "b9328a393e90b88b1e97bc67b51b5fdb"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 17,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c8235eaace7e49bbf5183f5deb5a6c92"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "relatedIds": [
+              "07f40caa91ced79a2fef0aaca14753d6"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "f585cde2091c1a7b0f574e6ac645f38e"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "relatedIds": [
+              "2bc8b98f658c7c959e3fc260fe9e8ec2"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative4.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "0d647291cc7330b5b0207a5dae07136f"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "relatedIds": [
+              "83f477e711a53c4edb2a436eb145b1c4"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative5.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "bcbc4bf8f3846a25b53e32edf6b0731b"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "relatedIds": [
+              "c45831d99040d8c2bf8998b3beb7b4f8"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "055b293f33f9de442bd89e94c7aac95a"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "01c42f8d3f92a4dff264aa66598d8bc5"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_description`: env . storage () . persistent () . set (& Key :: Description , & text)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b96662552bfb718088584f4870316f78"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "ee7bf8daf95d73015c44378c9db2b27e"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-002/negative.rs"
                 },
                 "region": {
@@ -3265,6 +3491,72 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 20,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked bytes-to-string conversion — `from_utf8` result is unwrapped with `unwrap` in entry point `set_name`, so invalid UTF-8 panics: String :: from_utf8 (bytes) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "15ad3d38e97fb6dadcb0c4a8b73d392c"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "high",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "6a600484c97d70aa5197db339a805466"
+            ],
+            "remediation": "Handle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-049"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 20,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked bytes-to-string conversion — `from_utf8` result is unwrapped with `expect` in entry point `set_description`, so invalid UTF-8 panics: std :: str :: from_utf8 (& bytes) . expect (\"valid utf-8\")"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c1336fd5d5741a3e5487e4fd959501f0"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "high",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "2ab86cffaba4ec1209dce3d7d15d1726"
+            ],
+            "remediation": "Handle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-049"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-002/negative.rs"
                 },
                 "region": {
@@ -3868,6 +4160,38 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-023/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unbounded event payload — event publish in `commit` includes user-controlled `Bytes` parameter `secret` with no visible length bound: env . events () . publish (symbol_short ! (\"commit\") , secret)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "8ba0420bd4ea3e853d9d23c5cba2fd97"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "medium",
+            "relatedIds": [
+              "4c7bb8c7dcd42d55faab7be992707e40"
+            ],
+            "remediation": "Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-048"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-025/positive.rs"
                 },
                 "region": {
@@ -4420,6 +4744,35 @@
             "severity": "medium"
           },
           "ruleId": "SS-019"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-048/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unbounded event payload — event publish in `record` includes user-controlled `Vec` parameter `items` with no visible length bound: env . events () . publish ((symbol_short ! (\"record\") ,) , items)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "1b2d255b5c4ce4f4dc671a6c5a6b6812"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "medium",
+            "remediation": "Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-048"
         },
         {
           "level": "warning",
@@ -5474,6 +5827,36 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-009/negative.rs"
+                },
+                "region": {
+                  "startColumn": 12,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked ledger timestamp usage — ledger timestamp comparison without a bounded tolerance window in entry point `close`: env . ledger () . timestamp () > deadline"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "f836784e475f206d8721e5d970b3c2ea"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "remediation": "Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-047"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-009/negative3.rs"
                 },
                 "region": {
@@ -5500,6 +5883,36 @@
             "severity": "medium"
           },
           "ruleId": "SS-039"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-009/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 12,
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked ledger timestamp usage — ledger timestamp comparison without a bounded tolerance window in entry point `close`: env . ledger () . timestamp () > deadline"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "093328f2c0a6e32d6125f55265971cce"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "remediation": "Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-047"
         },
         {
           "level": "warning",
@@ -6474,6 +6887,9 @@
           "properties": {
             "category": "events",
             "confidence": "low",
+            "relatedIds": [
+              "8ba0420bd4ea3e853d9d23c5cba2fd97"
+            ],
             "remediation": "Do not publish secrets or secret-derived values in events. Commit to a hash if you must prove knowledge, and keep key material, seeds, and preimages off-chain.",
             "severity": "medium"
           },
@@ -7276,6 +7692,412 @@
             "severity": "medium"
           },
           "ruleId": "SS-044"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_a`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 1 })"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "42992b97b49b9bb41df21b528f7ab48d"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 20
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_b`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 2 })"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "f5032995867ae1afa7398494bc31ed13"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_a`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 1 })"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c427e6c93832e50a4660d2aa048ace61"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_a`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & amount)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "a6998f61d3cceca6c564584357230a5b"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_b`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & locked)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6da0258d9c362d50c8f2e8854ce831d2"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative4.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_a`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 1 , .. current } ,)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2e59678d5fb08d7ffba3b38015caa6c5"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative4.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 25
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_b`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 1 , unlock : 2 , .. current } ,)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "4f8f5a9124a5f5c86b871549d184868e"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative5.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_b`: env . storage () . temporary () . set (& DataKey :: Balance (user) , & Balance { amount : 1 , unlock : 2 , } ,)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "abed234d09229e114b213ca4775daa50"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_balance`: env . storage () . temporary () . set (& DataKey :: Balance (user . clone ()) , & Balance { amount : 1 })"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "80ba6a6e97133a8f5165c2a8d9f67f8c"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Durable data written to temporary storage — durable-looking key written to temporary storage in `set_balance_locked`: env . storage () . temporary () . set (& DataKey :: Balance (user . clone ()) , & Balance { amount : 1 , unlock : 2 , } ,)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "e4159ac990f2928014f158df3965d45e"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Write durable state to persistent (or instance) storage. Use temporary storage only for data that may safely be discarded, and extend its TTL when it is still needed.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-021"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/positive.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 22
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Duplicate storage key construction — storage key `& DataKey :: Balance (user . clone ())` in temporary storage is used for values with different field sets ({amount} and {amount, unlock})"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6a0341a981ddf7902c6977b4671eadaf"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "Give each logical record its own namespaced key, for example `DataKey::Balance(user)` and `DataKey::BalanceMeta(user)`, or store a single versioned value type per key. Do not rely on the value's field set to tell two records apart; the key must identify exactly one record shape.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-046"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-047/negative.rs"
+                },
+                "region": {
+                  "startColumn": 12,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked arithmetic in a contract entry point — unchecked `+` arithmetic in entry point `close`: now + TOLERANCE (use `checked_add` and handle `None`)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "3a1098e79de3ed56ae5f98123494ad45"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "remediation": "Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-008"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-047/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 19,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked arithmetic in a contract entry point — unchecked `-` arithmetic in entry point `close`: deadline - window (use `checked_sub` and handle `None`)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "09a249c0d71c68fc1ad0d6af75285f74"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "remediation": "Use explicit checked arithmetic (`checked_add`, `checked_sub`, `checked_mul`) and handle the `None` case with a typed contract error, or use saturating/overflowing variants when that semantics is intended. Prefer checked operations for balances, amounts, and counters derived from user input.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-008"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-047/positive.rs"
+                },
+                "region": {
+                  "startColumn": 12,
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked ledger timestamp usage — ledger timestamp comparison without a bounded tolerance window in entry point `close`: now >= deadline"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b37e253ca8e223d08de3523d10c29b13"
+          },
+          "properties": {
+            "category": "arithmetic",
+            "confidence": "low",
+            "remediation": "Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-047"
         },
         {
           "level": "note",
@@ -8231,6 +9053,130 @@
             "category": "error-handling",
             "confidence": "medium",
             "correlationAmbiguous": true,
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-047/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 12,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `close` can panic: now . checked_add (5) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "103a86e1c79fcfe3e3b0b4f1de184318"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-048/negative.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `panic` in `record` can panic: panic ! (\"too many items\")"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "50b36a6b3fde2c3bacc7282f1ddd203c"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 20,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `set_name` can panic: String :: from_utf8 (bytes) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6a600484c97d70aa5197db339a805466"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "15ad3d38e97fb6dadcb0c4a8b73d392c"
+            ],
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 20,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `expect` in `set_description` can panic: std :: str :: from_utf8 (& bytes) . expect (\"valid utf-8\")"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2ab86cffaba4ec1209dce3d7d15d1726"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "c1336fd5d5741a3e5487e4fd959501f0"
+            ],
             "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
             "severity": "low"
           },
@@ -10714,6 +11660,290 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-046/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Privileged state change without an event — privileged storage change without an event in `set_b`: env . storage () . temporary () . set (& DataKey :: Meta (user) , & Meta { owner : 2 })"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "991c775750cb4b44e4e2dbe85bf76e78"
+          },
+          "properties": {
+            "category": "events",
+            "confidence": "low",
+            "remediation": "Publish an event with `env.events().publish(...)` for every privileged state change, including the old and new values where practical. Keep the event schema stable so indexers can rely on it.",
+            "severity": "low"
+          },
+          "ruleId": "SS-010"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-046/negative5.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_a`: env . storage () . persistent () . set (& DataKey :: Balance (user) , & Balance { amount : 1 })"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ebaded02d25b24da6d1b46119acd0e13"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b9328a393e90b88b1e97bc67b51b5fdb"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "b38aa4df2b382dc74164b6760f42ecb6"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 17,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "07f40caa91ced79a2fef0aaca14753d6"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "c8235eaace7e49bbf5183f5deb5a6c92"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2bc8b98f658c7c959e3fc260fe9e8ec2"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "f585cde2091c1a7b0f574e6ac645f38e"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative4.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "83f477e711a53c4edb2a436eb145b1c4"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "0d647291cc7330b5b0207a5dae07136f"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative5.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c45831d99040d8c2bf8998b3beb7b4f8"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "bcbc4bf8f3846a25b53e32edf6b0731b"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "01c42f8d3f92a4dff264aa66598d8bc5"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "055b293f33f9de442bd89e94c7aac95a"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_description`: env . storage () . persistent () . set (& Key :: Description , & text)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ee7bf8daf95d73015c44378c9db2b27e"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "b96662552bfb718088584f4870316f78"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-042/positive.rs"
                 },
                 "region": {
@@ -11858,6 +13088,118 @@
               },
               "shortDescription": {
                 "text": "Cross-contract call with an unvalidated address argument"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract writes different logical records through the same storage key construction. When the key is a literal or a constructor whose arguments do not fully separate the records, one write can overwrite or be mistaken for another record with a different field set. The detector compares the field sets of struct literals written to the same key in the same storage class and reports only when they differ, with low confidence."
+              },
+              "help": {
+                "markdown": "## Duplicate storage key construction\n\nA contract writes different logical records through the same storage key construction. When the key is a literal or a constructor whose arguments do not fully separate the records, one write can overwrite or be mistaken for another record with a different field set. The detector compares the field sets of struct literals written to the same key in the same storage class and reports only when they differ, with low confidence.\n\n### Remediation\n\nGive each logical record its own namespaced key, for example `DataKey::Balance(user)` and `DataKey::BalanceMeta(user)`, or store a single versioned value type per key. Do not rely on the value's field set to tell two records apart; the key must identify exactly one record shape.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "A contract writes different logical records through the same storage key construction. When the key is a literal or a constructor whose arguments do not fully separate the records, one write can overwrite or be mistaken for another record with a different field set. The detector compares the field sets of struct literals written to the same key in the same storage class and reports only when they differ, with low confidence.\n\nRemediation: Give each logical record its own namespaced key, for example `DataKey::Balance(user)` and `DataKey::BalanceMeta(user)`, or store a single versioned value type per key. Do not rely on the value's field set to tell two records apart; the key must identify exactly one record shape."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+              "id": "SS-046",
+              "name": "Duplicate storage key construction",
+              "properties": {
+                "category": "storage",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/storage/persisting-data",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Give each logical record its own namespaced key, for example `DataKey::Balance(user)` and `DataKey::BalanceMeta(user)`, or store a single versioned value type per key. Do not rely on the value's field set to tell two records apart; the key must identify exactly one record shape.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Duplicate storage key construction"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A contract entry point compares the ledger timestamp with a deadline or another timestamp without a visible tolerance or bounded window. Ledger time is chosen within protocol bounds and can move slightly between submission and execution, so an exact or zero-slack comparison can flip for transactions near the boundary. The detector reports ordered comparisons of a timestamp or a local timestamp alias when no tolerance arithmetic is visible, with low confidence."
+              },
+              "help": {
+                "markdown": "## Unchecked ledger timestamp usage\n\nA contract entry point compares the ledger timestamp with a deadline or another timestamp without a visible tolerance or bounded window. Ledger time is chosen within protocol bounds and can move slightly between submission and execution, so an exact or zero-slack comparison can flip for transactions near the boundary. The detector reports ordered comparisons of a timestamp or a local timestamp alias when no tolerance arithmetic is visible, with low confidence.\n\n### Remediation\n\nCompare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security\n- https://developers.stellar.org/docs/learn/encyclopedia/contract-development",
+                "text": "A contract entry point compares the ledger timestamp with a deadline or another timestamp without a visible tolerance or bounded window. Ledger time is chosen within protocol bounds and can move slightly between submission and execution, so an exact or zero-slack comparison can flip for transactions near the boundary. The detector reports ordered comparisons of a timestamp or a local timestamp alias when no tolerance arithmetic is visible, with low confidence.\n\nRemediation: Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-047",
+              "name": "Unchecked ledger timestamp usage",
+              "properties": {
+                "category": "arithmetic",
+                "confidence": "low",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/contract-development"
+                ],
+                "remediation": "Compare against a bounded window instead of an exact boundary, for example `now + TOLERANCE >= deadline` or `now.saturating_sub(deadline) <= WINDOW`, with a named tolerance constant justified by the contract's timing model. Keep the window small and documented.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unchecked ledger timestamp usage"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Publishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable."
+              },
+              "help": {
+                "markdown": "## Unbounded event payload\n\nPublishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable.\n\n### Remediation\n\nBound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/events\n- https://developers.stellar.org/docs/learn/encyclopedia/security",
+                "text": "Publishing an unbounded `Vec`, `Map`, `Bytes`, or `String` in an event lets a caller choose the payload size. Events are written to the ledger, so an oversized payload raises fees and can exceed transaction or ledger limits, making the emission fail or the transaction unaffordable.\n\nRemediation: Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/events",
+              "id": "SS-048",
+              "name": "Unbounded event payload",
+              "properties": {
+                "category": "events",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/events",
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security"
+                ],
+                "remediation": "Bound the payload before publishing: reject values above a documented maximum with `if value.len() > MAX { return Err(...) }`, publish only a fixed-size summary such as a count or a hash, and keep unbounded collections and strings in storage rather than in events.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unbounded event payload"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A public entry point converts caller-supplied bytes to a `String` with `from_utf8(...).unwrap()`/`.expect(...)` or `from_utf8_unchecked`. Invalid UTF-8 makes the first two panic and the last one produce an unsound `String`, so a crafted argument can abort or corrupt the call."
+              },
+              "help": {
+                "markdown": "## Unchecked bytes-to-string conversion\n\nA public entry point converts caller-supplied bytes to a `String` with `from_utf8(...).unwrap()`/`.expect(...)` or `from_utf8_unchecked`. Invalid UTF-8 makes the first two panic and the last one produce an unsound `String`, so a crafted argument can abort or corrupt the call.\n\n### Remediation\n\nHandle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes.\n\n### References\n\n- https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8\n- https://doc.rust-lang.org/std/str/fn.from_utf8.html",
+                "text": "A public entry point converts caller-supplied bytes to a `String` with `from_utf8(...).unwrap()`/`.expect(...)` or `from_utf8_unchecked`. Invalid UTF-8 makes the first two panic and the last one produce an unsound `String`, so a crafted argument can abort or corrupt the call.\n\nRemediation: Handle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes."
+              },
+              "helpUri": "https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8",
+              "id": "SS-049",
+              "name": "Unchecked bytes-to-string conversion",
+              "properties": {
+                "category": "error-handling",
+                "confidence": "high",
+                "references": [
+                  "https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8",
+                  "https://doc.rust-lang.org/std/str/fn.from_utf8.html"
+                ],
+                "remediation": "Handle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unchecked bytes-to-string conversion"
               }
             }
           ],
