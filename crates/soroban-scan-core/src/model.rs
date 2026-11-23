@@ -286,6 +286,9 @@ pub enum DiagnosticCode {
     /// A control-flow graph hit a size cap and was truncated.
     #[serde(rename = "CFG-001")]
     CfgTruncated,
+    /// A taint flow could not be established or may be incomplete.
+    #[serde(rename = "TAINT-001")]
+    TaintIncomplete,
 }
 
 impl DiagnosticCode {
@@ -322,6 +325,7 @@ impl DiagnosticCode {
             DiagnosticCode::UnresolvedType => "TYPE-001",
             DiagnosticCode::UnsupportedSdkVersion => "SDK-001",
             DiagnosticCode::CfgTruncated => "CFG-001",
+            DiagnosticCode::TaintIncomplete => "TAINT-001",
         }
     }
 }

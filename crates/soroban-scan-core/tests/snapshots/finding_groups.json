@@ -1,0 +1,53 @@
+{
+  "related": {
+    "groups": [
+      {
+        "id": "group-d31fdd56102b4359c9c88ea6d8dbac20",
+        "explanation": "findings share a symbol: `bump` (rules: SS-001, SS-008)",
+        "rule_ids": [
+          "SS-001",
+          "SS-008"
+        ],
+        "fingerprints": [
+          "d31fdd56102b4359c9c88ea6d8dbac20",
+          "eedcc10f266eb24ddd7d7d16e24bc165"
+        ]
+      }
+    ],
+    "singletons": []
+  },
+  "unrelated": {
+    "groups": [
+      {
+        "id": "group-0886d015b7ed42f95d8b63e791be025b",
+        "explanation": "findings share overlapping spans and symbols: `store` (rules: SS-001, SS-006)",
+        "rule_ids": [
+          "SS-001",
+          "SS-006"
+        ],
+        "fingerprints": [
+          "0886d015b7ed42f95d8b63e791be025b",
+          "789d3266a9215089df406a70f10ad4ec"
+        ]
+      },
+      {
+        "id": "group-5b97550862f2cc104871740b747f6ac4",
+        "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
+        "rule_ids": [
+          "SS-001",
+          "SS-006"
+        ],
+        "fingerprints": [
+          "5b97550862f2cc104871740b747f6ac4",
+          "8d204f06c2861d1e5b09e810cc5c4c61"
+        ]
+      }
+    ],
+    "singletons": [
+      {
+        "rule_id": "SS-008",
+        "fingerprint": "7de63f7dc1246004b981dfb75f8003b4"
+      }
+    ]
+  }
+}

@@ -10,6 +10,7 @@ use crate::rule::{Rule, RuleMetadata};
 use crate::severity::Severity;
 
 use super::util::{contract_entry_functions, location_for, CallFact};
+use crate::analysis::storage::map_storage_accesses;
 use crate::source::ParsedSource;
 
 /// Rule metadata.
@@ -49,6 +50,7 @@ impl Rule for InstanceStorageForUnboundedData {
                     continue;
                 }
                 let facts = ctx.facts_for_function(source, &func);
+                let map_accesses = map_storage_accesses(func.block);
                 let mut instance_sets: Vec<(&CallFact, Option<&str>)> = Vec::new();
                 for call in &facts.method_calls {
                     if call.name == "set" && is_instance(source, &call.context) {
@@ -96,10 +98,21 @@ impl Rule for InstanceStorageForUnboundedData {
                     matches!(call.name.as_str(), "push" | "push_back" | "push_front")
                 }) {
                     let location = location_for(ctx, source, growth.line, growth.column);
-                    let evidence = format!(
+                    let mut evidence = format!(
                         "unbounded collection growth in instance storage in `{}`: {}",
                         func.name, growth.text
                     );
+                    // Key types are data from the map analysis. An unknown key
+                    // is stated as unknown, never assumed bounded.
+                    if let Some(map) = map_accesses
+                        .iter()
+                        .find(|access| access.key_type.is_unknown())
+                    {
+                        evidence.push_str(&format!(
+                            "; stored map key type is unknown (map access at line {})",
+                            map.line
+                        ));
+                    }
                     out.push(Finding::new(&METADATA, location, evidence));
                 }
             }
@@ -234,5 +247,26 @@ mod tests {
             Box::new(InstanceStorageForUnboundedData),
         );
         assert!(findings.is_empty());
+    }
+
+    #[test]
+    fn reports_unknown_map_key_type_in_evidence() {
+        let findings = scan_rule(
+            r#"
+            use soroban_sdk::{contractimpl, Env, Map};
+
+            #[contractimpl]
+            impl C {
+                pub fn add(env: Env, value: u64) {
+                    let map: Map<_, u64> = env.storage().instance().get(&Key::Items).unwrap();
+                    map.push_back(value);
+                    let _ = map;
+                }
+            }
+            "#,
+            Box::new(InstanceStorageForUnboundedData),
+        );
+        assert_eq!(findings.len(), 1);
+        assert!(findings[0].evidence.contains("map key type is unknown"));
     }
 }
