@@ -93,6 +93,10 @@ cargo build --release -p soroban-scan-cli
 python tools/benchmark.py --target examples/vulnerable-contract --runs 10 --json-out target/benchmark-stats.json
 ```
 
+Each run also writes the static dashboard described in
+[`Benchmarks`](development/benchmarks.md): `benchmark.json` and a
+self-contained `index.html` under `target/benchmark-dashboard/`.
+
 The script builds the release binary automatically if it is missing. It prints
 the measured statistics and baseline threshold; it exits nonzero if the median
 exceeds the configured limit. To reproduce the baseline comparison benchmark
