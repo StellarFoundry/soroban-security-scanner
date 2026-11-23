@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, MutexGuard};
 
 use crate::analysis::cfg::{build_function_cfg, ControlFlowGraph};
+use crate::analysis::type_env::TypeEnvironment;
 use crate::model::Project;
 use crate::rules::util::{
     cast_facts, facts_from_block_with_imports, facts_from_file_with_imports,
@@ -25,6 +26,7 @@ struct FactsCache {
     helper_facts: BTreeMap<(PathBuf, usize, usize), Arc<Facts>>,
     cast_facts: BTreeMap<(PathBuf, usize, usize), Arc<Vec<CastFact>>>,
     cfg_facts: BTreeMap<(PathBuf, usize, usize), Arc<ControlFlowGraph>>,
+    type_envs: BTreeMap<PathBuf, Arc<TypeEnvironment>>,
 }
 
 /// Lock a cache mutex, recovering the data if a previous holder panicked.
@@ -252,6 +254,28 @@ impl<'a> AnalysisContext<'a> {
             .insert(key, Arc::clone(&computed));
         computed
     }
+
+    /// The type environment for a source file, computed once and cached.
+    ///
+    /// The environment is immutable for the duration of rule execution: callers
+    /// receive a shared [`Arc`] and lookups always return
+    /// [`crate::analysis::type_env::TypeInfo::Unknown`] for missing or
+    /// out-of-scope items rather than panicking.
+    pub fn type_environment(&self, source: &ParsedSource) -> Arc<TypeEnvironment> {
+        if let Some(cached) = lock_cache(&self.cache).type_envs.get(&source.path).cloned() {
+            return cached;
+        }
+        let computed = Arc::new(TypeEnvironment::from_source(source));
+        lock_cache(&self.cache)
+            .type_envs
+            .insert(source.path.clone(), Arc::clone(&computed));
+        computed
+    }
+
+    /// Alias for [`AnalysisContext::type_environment`].
+    pub fn type_env_for_source(&self, source: &ParsedSource) -> Arc<TypeEnvironment> {
+        self.type_environment(source)
+    }
 }
 
 #[cfg(test)]
@@ -323,6 +347,24 @@ mod tests {
         let second = ctx.facts_for_function(&sources[0], &entry);
         assert!(Arc::ptr_eq(&first, &second));
         assert_eq!(*first, *second);
+    }
+
+    #[test]
+    fn type_environment_is_exposed_and_cached() {
+        let project = project();
+        let sources = vec![parsed(
+            "src/lib.rs",
+            "fn f(amount: u32) {\n    let limit: u64 = 1;\n    let _ = (amount, limit);\n}",
+        )];
+        let ctx = AnalysisContext::new(&project, &sources, "20.0.0");
+        let first = ctx.type_environment(&sources[0]);
+        let second = ctx.type_env_for_source(&sources[0]);
+        assert!(Arc::ptr_eq(&first, &second), "type envs must be memoized");
+        assert_eq!(first.lookup_at("amount", 1, 6).name(), Some("u32"));
+        assert_eq!(
+            first.lookup_at("missing", 1, 1),
+            crate::analysis::type_env::TypeInfo::Unknown
+        );
     }
 
     #[test]

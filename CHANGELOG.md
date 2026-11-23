@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- An immutable, span-aware type environment is available to rules through the
+  analysis context. It records syntactically visible item, parameter, and local
+  types, resolves shadowing, and returns `unknown` for missing or out-of-scope
+  lookups instead of panicking (`#276`).
+- A per-rule evaluation metrics report covers every shipped rule with findings,
+  fixture-level false positives and false negatives, and runtime, rendered as
+  deterministic JSON and Markdown. Ambiguous fixture labels are recorded rather
+  than guessed, and the report contains no source text or user data (`#309`).
 - Findings carry an optional, additive `exploitability` context (`reachability`,
   `entry_point`, and reserved `taint`) when the control-flow graph covers the
   finding line. It is omitted when evidence is incomplete and never changes

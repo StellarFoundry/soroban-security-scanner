@@ -7,4 +7,5 @@
 
 pub mod cfg;
 pub mod taint;
+pub mod type_env;
 pub mod types;

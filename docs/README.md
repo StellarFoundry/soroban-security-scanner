@@ -16,6 +16,7 @@ Start here.
 
 - [Rules](rules/README.md) — severity, confidence, and the built-in detectors.
 - [Analysis Methodology](analysis-methodology.md) — what static analysis can and cannot prove.
+- [Type Model](type-model.md) — which type names and cast source types are modeled, and their limits.
 - [Taint Analysis](taint-analysis.md) — source/sink descriptors, propagation, sanitizers, and limits.
 - [Control-flow graphs](control-flow.md) — per-function nodes, edges, spans, and reachability.
 - [Finding ranking](finding-ranking.md) — how severity, confidence, reachability, and span order output.
@@ -40,6 +41,7 @@ Start here.
 - [Troubleshooting](troubleshooting.md) — common problems.
 
 - [Evaluation Methodology](evaluation-methodology.md) - fixture labels, metric definitions, benchmark commands, and limits.
+- [Rule Evaluation Metrics](rule-metrics.md) - per-rule findings, false positives, false negatives, runtime, and JSON/Markdown formats.
 
 ## Contributing
 

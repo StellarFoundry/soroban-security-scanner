@@ -20,6 +20,7 @@ use crate::registry::RuleRegistry;
 use crate::rule::RuleMetadata;
 use crate::severity::Severity;
 
+pub mod metrics;
 pub mod naming;
 pub mod trend;
 
