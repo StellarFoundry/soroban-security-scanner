@@ -1004,6 +1004,45 @@ pub fn scan_with_hooks(
         diagnostics.extend(cfg_truncation_diagnostics(&ctx, &loaded.sources));
     }
 
+    // Taint rules can decline to fire when a helper is undefined, a construct is
+    // outside the model, or a bound is reached. Surface that as bounded,
+    // aggregated, source-text-free diagnostics.
+    if analysis_mode == AnalysisMode::Soroban {
+        let mut taint_diagnostics = Vec::new();
+        for source in &loaded.sources {
+            let relative = ctx.relative_path(&source.path);
+            taint_diagnostics.extend(crate::analysis::taint::unresolved_flow_diagnostics(
+                source, &relative,
+            ));
+        }
+        taint_diagnostics.sort_by(|a, b| {
+            (
+                a.path
+                    .as_ref()
+                    .map(|path| path.to_string_lossy().replace('\\', "/")),
+                a.line.unwrap_or(0),
+                a.column.unwrap_or(0),
+            )
+                .cmp(&(
+                    b.path
+                        .as_ref()
+                        .map(|path| path.to_string_lossy().replace('\\', "/")),
+                    b.line.unwrap_or(0),
+                    b.column.unwrap_or(0),
+                ))
+        });
+        if taint_diagnostics.len() > crate::analysis::taint::MAX_TAINT_DIAGNOSTICS {
+            let omitted = taint_diagnostics.len() - crate::analysis::taint::MAX_TAINT_DIAGNOSTICS;
+            taint_diagnostics.truncate(crate::analysis::taint::MAX_TAINT_DIAGNOSTICS);
+            taint_diagnostics.push(Diagnostic::info(
+                DiagnosticCode::TaintIncomplete,
+                format!("{omitted} additional taint diagnostic(s) omitted"),
+                None,
+            ));
+        }
+        diagnostics.extend(taint_diagnostics);
+    }
+
     let mut stats = ScanStats {
         analysis_mode,
         files_analyzed: loaded.sources.len(),

@@ -15,12 +15,15 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
+use std::path::Path;
 
 use quote::ToTokens;
 use syn::spanned::Spanned;
 use syn::visit::{self, Visit};
 
-use crate::rules::util::ContractFn;
+use crate::model::{Diagnostic, DiagnosticCode};
+use crate::rules::util::{contract_entry_functions, ContractFn};
+use crate::source::ParsedSource;
 
 /// Maximum number of source descriptors one registration accepts.
 pub const MAX_SOURCES: usize = 64;
@@ -40,6 +43,47 @@ pub const MAX_HELPER_DEPTH: usize = 3;
 pub const MAX_ITERATIONS: usize = 32;
 /// Maximum number of flows returned for one entry point.
 pub const MAX_FLOWS: usize = 64;
+/// Maximum number of aggregated taint diagnostics emitted per source file.
+pub const MAX_TAINT_DIAGNOSTICS: usize = 8;
+
+/// Why a taint flow could not be established or may be incomplete.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum TaintLimitKind {
+    /// A call with tainted arguments targets a function the file does not define.
+    UnresolvedCall,
+    /// A tainted value reached a construct the propagation pass does not model.
+    UnsupportedSyntax,
+    /// A configured bound was reached, so some flows were not explored.
+    Truncated,
+}
+
+impl TaintLimitKind {
+    /// Stable lowercase label used in documentation and tests.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            TaintLimitKind::UnresolvedCall => "unresolved_call",
+            TaintLimitKind::UnsupportedSyntax => "unsupported_syntax",
+            TaintLimitKind::Truncated => "truncated",
+        }
+    }
+}
+
+/// One recorded limit encountered while analyzing taint flows.
+///
+/// The record deliberately carries only the sink kind and a fixed construct
+/// label. It never stores a rendered expression, argument, or literal, so a
+/// diagnostic built from it cannot leak source text.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TaintLimit {
+    /// What limit was hit.
+    pub kind: TaintLimitKind,
+    /// Which sink analysis recorded it.
+    pub sink: SinkKind,
+    /// Fixed label such as `match expression` or `undefined helper`.
+    pub construct: &'static str,
+    /// Where the limit was observed.
+    pub span: Span,
+}
 
 /// Kinds of user-controlled source.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -841,6 +885,7 @@ struct SinkVisitor<'a> {
     sanitizers: &'a [&'a str],
     kind: SinkKind,
     flows: Vec<(SinkDescriptor, TaintPath)>,
+    limits: Vec<TaintLimit>,
 }
 
 impl SinkVisitor<'_> {
@@ -858,6 +903,21 @@ impl SinkVisitor<'_> {
             path,
         ));
     }
+
+    /// Resolves a sink argument, recording unsupported syntax when a tainted
+    /// value is visible but cannot be followed.
+    fn flow_or_limit(&mut self, expr: &syn::Expr) -> Option<TaintPath> {
+        let path = taint_of_expr(expr, self.tainted, self.sanitizers);
+        if path.is_none() && mentions_tainted(expr, self.tainted) {
+            self.limits.push(TaintLimit {
+                kind: TaintLimitKind::UnsupportedSyntax,
+                sink: self.kind,
+                construct: unsupported_construct(expr),
+                span: span_of(expr),
+            });
+        }
+        path
+    }
 }
 
 impl<'ast> Visit<'ast> for SinkVisitor<'_> {
@@ -865,13 +925,13 @@ impl<'ast> Visit<'ast> for SinkVisitor<'_> {
         let name = node.method.to_string();
         match self.kind {
             SinkKind::AuthSubject if name == "require_auth" || name == "require_auth_for_args" => {
-                if let Some(path) = taint_of_expr(&node.receiver, self.tainted, self.sanitizers) {
+                if let Some(path) = self.flow_or_limit(&node.receiver) {
                     self.push(&name, None, &node.receiver, path);
                 }
             }
             SinkKind::TransferAmount if name == "transfer" || name == "transfer_from" => {
                 if let Some(amount) = node.args.last() {
-                    if let Some(path) = taint_of_expr(amount, self.tainted, self.sanitizers) {
+                    if let Some(path) = self.flow_or_limit(amount) {
                         let index = node.args.len().saturating_sub(1);
                         self.push(&name, Some(index), amount, path);
                     }
@@ -881,9 +941,7 @@ impl<'ast> Visit<'ast> for SinkVisitor<'_> {
                 if let Some(indices) = address_argument_indices(&name) {
                     for &index in indices {
                         if let Some(argument) = node.args.get(index) {
-                            if let Some(path) =
-                                taint_of_expr(argument, self.tainted, self.sanitizers)
-                            {
+                            if let Some(path) = self.flow_or_limit(argument) {
                                 self.push(&name, Some(index), argument, path);
                             }
                         }
@@ -902,14 +960,14 @@ impl<'ast> Visit<'ast> for SinkVisitor<'_> {
                     if name == "require_auth" || name == "require_auth_for_args" =>
                 {
                     if let Some(subject) = node.args.first() {
-                        if let Some(path) = taint_of_expr(subject, self.tainted, self.sanitizers) {
+                        if let Some(path) = self.flow_or_limit(subject) {
                             self.push(&name, Some(0), subject, path);
                         }
                     }
                 }
                 SinkKind::TransferAmount if name == "transfer" => {
                     if let Some(amount) = node.args.last() {
-                        if let Some(path) = taint_of_expr(amount, self.tainted, self.sanitizers) {
+                        if let Some(path) = self.flow_or_limit(amount) {
                             let index = node.args.len().saturating_sub(1);
                             self.push(&name, Some(index), amount, path);
                         }
@@ -919,9 +977,7 @@ impl<'ast> Visit<'ast> for SinkVisitor<'_> {
                     if let Some(indices) = address_argument_indices(&name) {
                         for &index in indices {
                             if let Some(argument) = node.args.get(index) {
-                                if let Some(path) =
-                                    taint_of_expr(argument, self.tainted, self.sanitizers)
-                                {
+                                if let Some(path) = self.flow_or_limit(argument) {
                                     self.push(&name, Some(index), argument, path);
                                 }
                             }
@@ -935,25 +991,77 @@ impl<'ast> Visit<'ast> for SinkVisitor<'_> {
     }
 }
 
+/// Returns true when `expr` mentions a local currently carrying taint.
+fn mentions_tainted(expr: &syn::Expr, tainted: &BTreeMap<String, TaintPath>) -> bool {
+    struct Mentions<'a> {
+        tainted: &'a BTreeMap<String, TaintPath>,
+        found: bool,
+    }
+
+    impl<'ast> Visit<'ast> for Mentions<'_> {
+        fn visit_expr_path(&mut self, node: &'ast syn::ExprPath) {
+            if !self.found {
+                if let Some(ident) = node.path.get_ident() {
+                    if self.tainted.contains_key(&ident.to_string()) {
+                        self.found = true;
+                    }
+                }
+            }
+            visit::visit_expr_path(self, node);
+        }
+    }
+
+    let mut visitor = Mentions {
+        tainted,
+        found: false,
+    };
+    visitor.visit_expr(expr);
+    visitor.found
+}
+
+/// Fixed, source-text-free label for an expression outside the propagation model.
+fn unsupported_construct(expr: &syn::Expr) -> &'static str {
+    match expr {
+        syn::Expr::Reference(inner) => unsupported_construct(&inner.expr),
+        syn::Expr::Paren(inner) => unsupported_construct(&inner.expr),
+        syn::Expr::Group(inner) => unsupported_construct(&inner.expr),
+        syn::Expr::Match(_) => "match expression",
+        syn::Expr::Closure(_) => "closure",
+        syn::Expr::Async(_) => "async block",
+        syn::Expr::Block(_) => "block expression",
+        syn::Expr::If(_) => "if expression",
+        syn::Expr::Macro(_) => "macro invocation",
+        syn::Expr::Struct(_) => "struct expression",
+        syn::Expr::Array(_) => "array expression",
+        syn::Expr::Tuple(_) => "tuple expression",
+        syn::Expr::Let(_) => "let expression",
+        _ => "expression",
+    }
+}
+
 fn sinks_in_body(
     block: &syn::Block,
     tainted: &BTreeMap<String, TaintPath>,
     kind: SinkKind,
     sanitizers: &[&str],
-) -> Vec<(SinkDescriptor, TaintPath)> {
+) -> (Vec<(SinkDescriptor, TaintPath)>, Vec<TaintLimit>) {
     let mut visitor = SinkVisitor {
         tainted,
         sanitizers,
         kind,
         flows: Vec::new(),
+        limits: Vec::new(),
     };
     visitor.visit_block(block);
-    visitor.flows
+    (visitor.flows, visitor.limits)
 }
 
 struct CallSite<'a> {
     name: String,
     args: Vec<&'a syn::Expr>,
+    span: Span,
+    /// Methods are handled by the sink/sanitizer vocabulary, not as helpers.
+    is_method: bool,
 }
 
 fn calls_in_body<'a>(block: &'a syn::Block) -> Vec<CallSite<'a>> {
@@ -967,6 +1075,8 @@ fn calls_in_body<'a>(block: &'a syn::Block) -> Vec<CallSite<'a>> {
                 self.calls.push(CallSite {
                     name,
                     args: node.args.iter().collect(),
+                    span: span_of(node),
+                    is_method: false,
                 });
             }
             visit::visit_expr_call(self, node);
@@ -976,6 +1086,8 @@ fn calls_in_body<'a>(block: &'a syn::Block) -> Vec<CallSite<'a>> {
             self.calls.push(CallSite {
                 name: node.method.to_string(),
                 args: node.args.iter().collect(),
+                span: span_of(node),
+                is_method: true,
             });
             visit::visit_expr_method_call(self, node);
         }
@@ -1017,19 +1129,28 @@ struct Analyzer<'a, 'b> {
     sanitizers: &'a [&'a str],
     visited: BTreeSet<String>,
     flows: Vec<(SinkDescriptor, TaintPath)>,
+    limits: Vec<TaintLimit>,
 }
 
 impl<'a, 'b> Analyzer<'a, 'b> {
     fn run(&mut self, body: &Body<'_>, seeds: &BTreeMap<String, TaintPath>, depth: usize) {
         let tainted = propagate(body.block, seeds, self.sanitizers);
-        self.flows.extend(sinks_in_body(
-            body.block,
-            &tainted,
-            self.kind,
-            self.sanitizers,
-        ));
+        let (flows, limits) = sinks_in_body(body.block, &tainted, self.kind, self.sanitizers);
+        self.flows.extend(flows);
+        self.limits.extend(limits);
 
         if depth >= MAX_HELPER_DEPTH || self.visited.len() >= MAX_HELPERS {
+            if calls_in_body(body.block)
+                .iter()
+                .any(|call| self.bodies.contains_key(&call.name))
+            {
+                self.limits.push(TaintLimit {
+                    kind: TaintLimitKind::Truncated,
+                    sink: self.kind,
+                    construct: "helper depth or count bound",
+                    span: span_of(body.block),
+                });
+            }
             return;
         }
         for call in calls_in_body(body.block) {
@@ -1037,6 +1158,22 @@ impl<'a, 'b> Analyzer<'a, 'b> {
                 continue;
             }
             let Some(helper) = self.bodies.get(&call.name).cloned() else {
+                if !call.is_method
+                    && call.name != "new"
+                    && call
+                        .name
+                        .chars()
+                        .next()
+                        .is_some_and(|first| first.is_ascii_lowercase() || first == '_')
+                    && call.args.iter().any(|arg| mentions_tainted(arg, &tainted))
+                {
+                    self.limits.push(TaintLimit {
+                        kind: TaintLimitKind::UnresolvedCall,
+                        sink: self.kind,
+                        construct: "undefined helper",
+                        span: call.span,
+                    });
+                }
                 continue;
             };
             if !self.visited.insert(helper.name.clone()) {
@@ -1069,12 +1206,66 @@ fn entry_body<'a>(bodies: &BTreeMap<String, Body<'a>>, entry: &ContractFn<'a>) -
     }
 }
 
-fn analyze(
+/// Cheap pre-check: the file mentions a call that this sink kind can use.
+///
+/// Without a matching call anywhere in the file the full propagation pass cannot
+/// produce a flow, so skipping it keeps file-wide diagnostics linear instead of
+/// quadratic.
+fn file_contains_sink(file: &syn::File, kind: SinkKind) -> bool {
+    struct SinkPresence {
+        kind: SinkKind,
+        found: bool,
+    }
+
+    impl<'ast> Visit<'ast> for SinkPresence {
+        fn visit_expr_method_call(&mut self, node: &'ast syn::ExprMethodCall) {
+            let name = node.method.to_string();
+            if matches!(
+                self.kind,
+                SinkKind::AuthSubject
+                    if name == "require_auth" || name == "require_auth_for_args"
+            ) || matches!(self.kind, SinkKind::TransferAmount if name == "transfer" || name == "transfer_from")
+                || matches!(self.kind, SinkKind::PrivilegedAddress if is_privileged_address_call(&name))
+            {
+                self.found = true;
+            }
+            if !self.found {
+                visit::visit_expr_method_call(self, node);
+            }
+        }
+
+        fn visit_expr_call(&mut self, node: &'ast syn::ExprCall) {
+            if let Some(name) = callee_name(&node.func) {
+                if matches!(
+                    self.kind,
+                    SinkKind::AuthSubject
+                        if name == "require_auth" || name == "require_auth_for_args"
+                ) || matches!(self.kind, SinkKind::TransferAmount if name == "transfer")
+                    || matches!(self.kind, SinkKind::PrivilegedAddress if is_privileged_address_call(&name))
+                {
+                    self.found = true;
+                }
+            }
+            if !self.found {
+                visit::visit_expr_call(self, node);
+            }
+        }
+    }
+
+    let mut visitor = SinkPresence { kind, found: false };
+    visitor.visit_file(file);
+    visitor.found
+}
+
+fn analyze_with_limits(
     file: &syn::File,
     entry: &ContractFn<'_>,
     kind: SinkKind,
     sanitizers: &[&str],
-) -> Vec<(SinkDescriptor, TaintPath)> {
+) -> (Vec<(SinkDescriptor, TaintPath)>, Vec<TaintLimit>) {
+    if !file_contains_sink(file, kind) {
+        return (Vec::new(), Vec::new());
+    }
     let bodies = collect_bodies(file);
     let body = entry_body(&bodies, entry);
     let seeds = seeds_for(&body.params);
@@ -1084,6 +1275,7 @@ fn analyze(
         sanitizers,
         visited: BTreeSet::from([entry.name.clone()]),
         flows: Vec::new(),
+        limits: Vec::new(),
     };
     analyzer.run(&body, &seeds, 0);
     let mut flows = analyzer.flows;
@@ -1096,8 +1288,44 @@ fn analyze(
         ))
     });
     flows.dedup_by(|(a, _), (b, _)| a == b);
-    flows.truncate(MAX_FLOWS);
-    flows
+    let mut limits = analyzer.limits;
+    if flows.len() > MAX_FLOWS {
+        flows.truncate(MAX_FLOWS);
+        limits.push(TaintLimit {
+            kind: TaintLimitKind::Truncated,
+            sink: kind,
+            construct: "flow count bound",
+            span: span_of(body.block),
+        });
+    }
+    limits.sort_by(|a, b| {
+        (a.span, a.kind, a.sink, a.construct).cmp(&(b.span, b.kind, b.sink, b.construct))
+    });
+    limits.dedup();
+    limits.truncate(MAX_FLOWS);
+    (flows, limits)
+}
+
+fn analyze(
+    file: &syn::File,
+    entry: &ContractFn<'_>,
+    kind: SinkKind,
+    sanitizers: &[&str],
+) -> Vec<(SinkDescriptor, TaintPath)> {
+    analyze_with_limits(file, entry, kind, sanitizers).0
+}
+
+/// Limits that explain why a taint flow may be missing or incomplete.
+///
+/// Bounded by [`MAX_FLOWS`], deterministic, and source-text-free: each record
+/// carries a fixed reason label and a span, never a rendered expression.
+pub fn taint_limits(
+    file: &syn::File,
+    entry: &ContractFn<'_>,
+    kind: SinkKind,
+    sanitizers: &[&str],
+) -> Vec<TaintLimit> {
+    analyze_with_limits(file, entry, kind, sanitizers).1
 }
 
 /// Authorization subjects derived from caller-controlled data in `entry`.
@@ -1165,6 +1393,106 @@ pub fn source_descriptors(file: &syn::File, entry: &ContractFn<'_>) -> Vec<Sourc
     sources.dedup_by(|a, b| a == b);
     sources.truncate(MAX_SOURCES);
     sources
+}
+
+/// Reports why a taint flow may be missing or incomplete for one source file.
+///
+/// Aggregated by `(reason, sink)` with the first span, bounded to
+/// [`MAX_TAINT_DIAGNOSTICS`] diagnostics plus an omitted-count notice. Messages
+/// contain counts and fixed labels only: no expression, argument, literal, or
+/// other source text can reach the report.
+pub fn unresolved_flow_diagnostics(source: &ParsedSource, relative_path: &Path) -> Vec<Diagnostic> {
+    let Some(file) = &source.syntax else {
+        return Vec::new();
+    };
+    let mut groups: BTreeMap<(TaintLimitKind, SinkKind, &'static str), (usize, Span)> =
+        BTreeMap::new();
+    // Presence is a file-level property. Checking it once avoids re-walking the
+    // whole file for every entry point.
+    let active: Vec<(SinkKind, &[&str])> = [
+        (SinkKind::AuthSubject, AUTH_SANITIZERS),
+        (SinkKind::TransferAmount, AMOUNT_SANITIZERS),
+        (SinkKind::PrivilegedAddress, ADDRESS_SANITIZERS),
+    ]
+    .into_iter()
+    .filter(|(kind, _)| file_contains_sink(file, *kind))
+    .collect();
+    if active.is_empty() {
+        return Vec::new();
+    }
+    for entry in contract_entry_functions(file) {
+        if !entry.is_public {
+            continue;
+        }
+        for (kind, sanitizers) in &active {
+            for limit in taint_limits(file, &entry, *kind, sanitizers) {
+                let group = groups
+                    .entry((limit.kind, limit.sink, limit.construct))
+                    .or_insert((0, limit.span));
+                group.0 += 1;
+                if limit.span < group.1 {
+                    group.1 = limit.span;
+                }
+            }
+        }
+    }
+
+    if groups.is_empty() {
+        return Vec::new();
+    }
+
+    let total = groups.len();
+    let limit = if total > MAX_TAINT_DIAGNOSTICS {
+        MAX_TAINT_DIAGNOSTICS - 1
+    } else {
+        MAX_TAINT_DIAGNOSTICS
+    };
+    let mut entries: Vec<_> = groups.into_iter().collect();
+    entries.sort_by(|(a_key, a), (b_key, b)| {
+        (a.1, a_key.0, a_key.1, a_key.2).cmp(&(b.1, b_key.0, b_key.1, b_key.2))
+    });
+
+    let mut diagnostics = Vec::new();
+    for ((kind, sink, construct), (count, span)) in entries.into_iter().take(limit) {
+        let message = match kind {
+            TaintLimitKind::UnresolvedCall => format!(
+                "{count} tainted call(s) to an undefined helper ({construct}) for \
+                 `{}` sinks; flows may be incomplete",
+                sink.as_str()
+            ),
+            TaintLimitKind::UnsupportedSyntax => format!(
+                "{count} tainted {construct}(s) at `{}` sinks are outside the taint \
+                 model; flows may be incomplete",
+                sink.as_str()
+            ),
+            TaintLimitKind::Truncated => format!(
+                "taint analysis for `{}` sinks hit {construct}; flows may be truncated",
+                sink.as_str()
+            ),
+        };
+        diagnostics.push(
+            Diagnostic::warning(
+                DiagnosticCode::TaintIncomplete,
+                message,
+                Some(relative_path.to_path_buf()),
+            )
+            .with_span(span.line.max(1), span.column.max(1)),
+        );
+    }
+    if total > limit {
+        diagnostics.push(
+            Diagnostic::info(
+                DiagnosticCode::TaintIncomplete,
+                format!(
+                    "{} additional taint diagnostic group(s) omitted",
+                    total - limit
+                ),
+                Some(relative_path.to_path_buf()),
+            )
+            .with_span(1, 1),
+        );
+    }
+    diagnostics
 }
 
 fn decoded_locals(block: &syn::Block) -> Vec<(String, Span)> {
@@ -1571,5 +1899,80 @@ mod tests {
             .iter()
             .any(|source| source.name == "decoded" && source.kind == SourceKind::DecodedInput));
         assert!(!sources.iter().any(|source| source.name == "env"));
+    }
+
+    fn diagnostics_of(source: &str) -> Vec<Diagnostic> {
+        let parsed = crate::source::parse_source(
+            std::path::Path::new("src/lib.rs"),
+            std::path::Path::new("."),
+            source,
+        );
+        unresolved_flow_diagnostics(&parsed, std::path::Path::new("src/lib.rs"))
+    }
+
+    #[test]
+    fn aggregates_unsupported_taint_syntax() {
+        let diagnostics = diagnostics_of(
+            r#"
+            use soroban_sdk::{contractimpl, token, Address, Env};
+
+            #[contractimpl]
+            impl C {
+                pub fn pay(env: Env, token_id: Address, amount: i128) {
+                    let client = token::Client::new(&env, &token_id);
+                    client.transfer(
+                        &env.current_contract_address(),
+                        &token_id,
+                        &(match amount { value => value }),
+                    );
+                    client.transfer(
+                        &env.current_contract_address(),
+                        &token_id,
+                        &(match amount { value => value }),
+                    );
+                }
+            }
+            "#,
+        );
+        let matching: Vec<_> = diagnostics
+            .iter()
+            .filter(|diagnostic| {
+                diagnostic.code == DiagnosticCode::TaintIncomplete
+                    && diagnostic.message.contains("match expression")
+            })
+            .collect();
+        assert_eq!(matching.len(), 1, "got: {diagnostics:#?}");
+        assert!(matching[0].message.contains("2 tainted match expression"));
+        assert_eq!(matching[0].line, Some(11));
+    }
+
+    #[test]
+    fn taint_diagnostics_never_include_source_text() {
+        let diagnostics = diagnostics_of(
+            r#"
+            use soroban_sdk::{contractimpl, token, Address, Env};
+
+            #[contractimpl]
+            impl C {
+                pub fn pay(env: Env, token_id: Address, amount: i128) {
+                    let secret_token_abc123 = amount;
+                    let client = token::Client::new(&env, &token_id);
+                    client.transfer(
+                        &env.current_contract_address(),
+                        &token_id,
+                        &(match secret_token_abc123 { value => value }),
+                    );
+                }
+            }
+            "#,
+        );
+        assert!(!diagnostics.is_empty(), "expected a taint diagnostic");
+        for diagnostic in &diagnostics {
+            assert!(
+                !diagnostic.message.contains("secret_token_abc123"),
+                "diagnostic leaked source text: {}",
+                diagnostic.message
+            );
+        }
     }
 }
