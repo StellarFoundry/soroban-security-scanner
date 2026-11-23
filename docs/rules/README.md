@@ -93,6 +93,7 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-046](detectors/SS-046.md) | Duplicate storage key construction | medium | low | storage |
 | [SS-047](detectors/SS-047.md) | Unchecked ledger timestamp usage | medium | low | arithmetic |
 | [SS-048](detectors/SS-048.md) | Unbounded event payload | medium | medium | events |
+| [SS-049](detectors/SS-049.md) | Unchecked bytes-to-string conversion | medium | high | error-handling |
 
 Each detector has a positive and negative fixture under
 `fixtures/corpus/<RULE-ID>/`, plus an adversarial sample and recorded expected

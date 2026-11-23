@@ -174,4 +174,8 @@ why = "A ledger timestamp alias is compared with a deadline without a tolerance 
 file = "SS-048.rs"
 why = "An entry point publishes a caller-supplied Vec with no length bound, so SS-048 must always trigger."
 
+[SS-049]
+file = "SS-049.rs"
+why = "A public entry point unwraps a bytes-to-string conversion, so invalid UTF-8 panics; SS-049 must always trigger."
+
 

@@ -1510,6 +1510,232 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-049/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b38aa4df2b382dc74164b6760f42ecb6"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "relatedIds": [
+              "b9328a393e90b88b1e97bc67b51b5fdb"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 17,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c8235eaace7e49bbf5183f5deb5a6c92"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "relatedIds": [
+              "07f40caa91ced79a2fef0aaca14753d6"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "f585cde2091c1a7b0f574e6ac645f38e"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "relatedIds": [
+              "2bc8b98f658c7c959e3fc260fe9e8ec2"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative4.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "0d647291cc7330b5b0207a5dae07136f"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "relatedIds": [
+              "83f477e711a53c4edb2a436eb145b1c4"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative5.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "bcbc4bf8f3846a25b53e32edf6b0731b"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "relatedIds": [
+              "c45831d99040d8c2bf8998b3beb7b4f8"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "055b293f33f9de442bd89e94c7aac95a"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "01c42f8d3f92a4dff264aa66598d8bc5"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "State-changing entry point without caller authorization — `set` storage mutation with no authorization in `set_description`: env . storage () . persistent () . set (& Key :: Description , & text)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b96662552bfb718088584f4870316f78"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "ee7bf8daf95d73015c44378c9db2b27e"
+            ],
+            "remediation": "Call `address.require_auth()` (or `require_auth_for_args`) for the account that must approve the operation before mutating state. Prefer authorizing a specific argument that binds the approval to the operation rather than authorizing a stored admin address unconditionally. If the function is intentionally permissionless, document that and suppress this rule for the function.",
+            "severity": "high"
+          },
+          "ruleId": "SS-001"
+        },
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-002/negative.rs"
                 },
                 "region": {
@@ -3258,6 +3484,72 @@
             "severity": "medium"
           },
           "ruleId": "SS-005"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 20,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked bytes-to-string conversion — `from_utf8` result is unwrapped with `unwrap` in entry point `set_name`, so invalid UTF-8 panics: String :: from_utf8 (bytes) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "15ad3d38e97fb6dadcb0c4a8b73d392c"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "high",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "6a600484c97d70aa5197db339a805466"
+            ],
+            "remediation": "Handle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-049"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 20,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Unchecked bytes-to-string conversion — `from_utf8` result is unwrapped with `expect` in entry point `set_description`, so invalid UTF-8 panics: std :: str :: from_utf8 (& bytes) . expect (\"valid utf-8\")"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c1336fd5d5741a3e5487e4fd959501f0"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "high",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "2ab86cffaba4ec1209dce3d7d15d1726"
+            ],
+            "remediation": "Handle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-049"
         },
         {
           "level": "warning",
@@ -8830,6 +9122,72 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 20,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `unwrap` in `set_name` can panic: String :: from_utf8 (bytes) . unwrap ()"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "6a600484c97d70aa5197db339a805466"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "15ad3d38e97fb6dadcb0c4a8b73d392c"
+            ],
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 20,
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Panic-prone construct in a contract entry point — `expect` in `set_description` can panic: std :: str :: from_utf8 (& bytes) . expect (\"valid utf-8\")"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2ab86cffaba4ec1209dce3d7d15d1726"
+          },
+          "properties": {
+            "category": "error-handling",
+            "confidence": "medium",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "c1336fd5d5741a3e5487e4fd959501f0"
+            ],
+            "remediation": "Return a `Result` with a typed contract error instead of panicking, so callers can handle failure. Replace `unwrap`/`expect` on fallible operations with `?`, `unwrap_or`, `unwrap_or_default`, or explicit matching.",
+            "severity": "low"
+          },
+          "ruleId": "SS-004"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-042/positive.rs"
                 },
                 "region": {
@@ -11360,6 +11718,232 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-049/negative.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "b9328a393e90b88b1e97bc67b51b5fdb"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "b38aa4df2b382dc74164b6760f42ecb6"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative2.rs"
+                },
+                "region": {
+                  "startColumn": 17,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "07f40caa91ced79a2fef0aaca14753d6"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "c8235eaace7e49bbf5183f5deb5a6c92"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative3.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "2bc8b98f658c7c959e3fc260fe9e8ec2"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "f585cde2091c1a7b0f574e6ac645f38e"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative4.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "83f477e711a53c4edb2a436eb145b1c4"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "0d647291cc7330b5b0207a5dae07136f"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/negative5.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "c45831d99040d8c2bf8998b3beb7b4f8"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "relatedIds": [
+              "bcbc4bf8f3846a25b53e32edf6b0731b"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_name`: env . storage () . persistent () . set (& Key :: Name , & name)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "01c42f8d3f92a4dff264aa66598d8bc5"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "055b293f33f9de442bd89e94c7aac95a"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-049/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Persistent storage write without TTL management — persistent storage write without TTL extension in `set_description`: env . storage () . persistent () . set (& Key :: Description , & text)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "ee7bf8daf95d73015c44378c9db2b27e"
+          },
+          "properties": {
+            "category": "storage",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "relatedIds": [
+              "b96662552bfb718088584f4870316f78"
+            ],
+            "remediation": "When writing persistent data that must survive, extend its time-to-live with `storage().persistent().extend_ttl(...)` after the write. Prefer a single, well-documented TTL policy for the contract. If TTL is managed centrally, suppress this rule for the function.",
+            "severity": "low"
+          },
+          "ruleId": "SS-006"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-042/positive.rs"
                 },
                 "region": {
@@ -12588,6 +13172,34 @@
               },
               "shortDescription": {
                 "text": "Unbounded event payload"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A public entry point converts caller-supplied bytes to a `String` with `from_utf8(...).unwrap()`/`.expect(...)` or `from_utf8_unchecked`. Invalid UTF-8 makes the first two panic and the last one produce an unsound `String`, so a crafted argument can abort or corrupt the call."
+              },
+              "help": {
+                "markdown": "## Unchecked bytes-to-string conversion\n\nA public entry point converts caller-supplied bytes to a `String` with `from_utf8(...).unwrap()`/`.expect(...)` or `from_utf8_unchecked`. Invalid UTF-8 makes the first two panic and the last one produce an unsound `String`, so a crafted argument can abort or corrupt the call.\n\n### Remediation\n\nHandle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes.\n\n### References\n\n- https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8\n- https://doc.rust-lang.org/std/str/fn.from_utf8.html",
+                "text": "A public entry point converts caller-supplied bytes to a `String` with `from_utf8(...).unwrap()`/`.expect(...)` or `from_utf8_unchecked`. Invalid UTF-8 makes the first two panic and the last one produce an unsound `String`, so a crafted argument can abort or corrupt the call.\n\nRemediation: Handle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes."
+              },
+              "helpUri": "https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8",
+              "id": "SS-049",
+              "name": "Unchecked bytes-to-string conversion",
+              "properties": {
+                "category": "error-handling",
+                "confidence": "high",
+                "references": [
+                  "https://doc.rust-lang.org/std/string/struct.String.html#method.from_utf8",
+                  "https://doc.rust-lang.org/std/str/fn.from_utf8.html"
+                ],
+                "remediation": "Handle the conversion error instead of unwrapping it: return a contract error with `String::from_utf8(bytes).map_err(|_| Error::InvalidUtf8)?`, match on the `Result`, or use `unwrap_or_default` when a fallback is acceptable. Never use `from_utf8_unchecked` on caller-controlled bytes.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Unchecked bytes-to-string conversion"
               }
             }
           ],
