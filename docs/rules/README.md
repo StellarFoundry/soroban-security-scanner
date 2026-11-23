@@ -137,6 +137,9 @@ The API is read-only by design; registration and mutation stay on
 
 ## Adding a new rule
 
+The proposal, assignment, review, release, and deprecation stages are described
+in the [rule review workflow](../contributors/rule-review-workflow.md).
+
 Before implementing a detector, answer all of the following:
 
 1. **Problem** — what security problem does it address?
@@ -157,7 +160,8 @@ Rules must never fabricate evidence or source locations. When evidence is
 insufficient, prefer `confidence: low` or do not report at all.
 
 See [`../contributors/writing-rules.md`](../contributors/writing-rules.md) for a
-step-by-step guide, [`cookbook.md`](cookbook.md) for three annotated end-to-end
+step-by-step guide, [`../contributors/rule-review-workflow.md`](../contributors/rule-review-workflow.md)
+for the proposal-to-release process and who approves each stage, [`cookbook.md`](cookbook.md) for three annotated end-to-end
 examples, [`TEMPLATE.md`](TEMPLATE.md) for the rule document template,
 [`../development/testing.md`](../development/testing.md) for the fixture
 layout, and [`../../CONTRIBUTING.md`](../../CONTRIBUTING.md) for the definition
