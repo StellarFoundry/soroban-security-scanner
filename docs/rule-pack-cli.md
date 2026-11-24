@@ -2,7 +2,8 @@
 
 `soroban-scan pack` installs, lists, updates, and removes community rule packs
 from a local directory. The commands are opt-in, offline, and bounded. They never
-download content, execute pack code, or read signing keys.
+download content, execute pack code, or read signing keys. For authoring guidance
+and manifest specifications, see [Rule Pack Authoring](pack-authoring.md).
 
 ## Store layout
 

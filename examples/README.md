@@ -14,9 +14,14 @@ workspace) and is built in CI.
 | [`stellar-classic`](stellar-classic/) | Classic Stellar address tooling | none (not a Soroban project) |
 | [`contracts`](contracts/) | 50 documented, source-only contract examples | not scanned automatically |
 
+[`rule-pack-template`](rule-pack-template/) is a ready-to-copy starter template
+for authoring new rule packs, including positive/negative fixtures, an offline
+verification script, and authoring documentation.
+
 [`external-rule-pack`](external-rule-pack/) is a data-only external rule pack,
 not a compilable crate. It demonstrates the manifest schema, per-rule fixtures,
-checksum validation, and signing instructions.
+checksum validation, and signing instructions. For an authoring guide, see
+[Rule Pack Authoring](../docs/pack-authoring.md).
 
 ## Build an example
 

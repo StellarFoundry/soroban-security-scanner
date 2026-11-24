@@ -22,6 +22,7 @@ Start here.
 - [Finding ranking](finding-ranking.md) — how severity, confidence, reachability, and span order output.
 - [Baselines](baselines.md) - track new vs. known findings.
 - [Policy and Reporting](policy.md) - policy schema, precedence, waivers, and report formats.
+- [Rule Pack Authoring](pack-authoring.md) - author, test, sign, and distribute community rule packs.
 - [Rule Pack Signing and Verification](rule-pack-signing.md) - detached Ed25519 signatures, keyrings, and verification.
 - [Rule Pack CLI](rule-pack-cli.md) - install, list, update, and remove local packs with a deterministic lockfile.
 - [Rule Pack Sandboxing](pack-sandboxing.md) - wall-clock, output, and rule-count limits for community packs.

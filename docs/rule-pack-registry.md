@@ -30,3 +30,5 @@ cargo test -p soroban-scan-core --test pack_registry
 
 `soroban-scan pack install|list|update|uninstall` writes and validates this index
 as a deterministic lockfile. See [Rule pack CLI](rule-pack-cli.md).
+For authoring custom rule packs that integrate with the registry, see
+[Rule Pack Authoring](pack-authoring.md).

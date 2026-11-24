@@ -1,0 +1,29 @@
+schema_version = 1
+
+[pack]
+name = "soroban-starter-pack"
+version = "0.1.0"
+description = "Starter template for authoring Soroban rule packs"
+authors = ["Soroban Security Scanner contributors"]
+min_scanner_version = "0.2.0"
+capabilities = ["rust_source_analysis"]
+
+[[rules]]
+id = "TMPL-001"
+title = "Unchecked admin authorization"
+category = "authorization"
+default_severity = "high"
+default_confidence = "medium"
+description = "Flags administrative state modifications that lack caller authorization."
+remediation = "Invoke `admin.require_auth()` before modifying protected contract state."
+checksum = "sha256:e64c8dc08d6b613ce9a65e467d75726f5bef2126944ad608767cb343a1b49be4"
+
+[[rules]]
+id = "TMPL-002"
+title = "Missing return value check on token transfer"
+category = "defi"
+default_severity = "medium"
+default_confidence = "medium"
+description = "Flags cross-contract token transfer calls where the return value is discarded."
+remediation = "Check the returned boolean or result from the token transfer call."
+checksum = "sha256:d99408f37b7b365af82020f2e09ae11237b45f8e1b9aa119b726133f1a5bfce6"
