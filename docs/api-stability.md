@@ -33,6 +33,7 @@ is enforced by the `api_stability` integration test.
   `compare`, `context`, `error`, and `redaction` support modules.
   `compare`, `context`, `error`, `openapi`, and `redaction` support modules.
 - `status_gate` (the policy-driven pull request status-gate record).
+- `monorepo` (project discovery and path filtering for monorepo scans).
 - The `analysis`/pipeline implementation details and any `pub(crate)` item.
 - Internal utility modules (`rules::util`, `test_support`).
 

@@ -39,6 +39,7 @@ pub mod imports;
 pub mod lsp_severity;
 pub mod manifest;
 pub mod model;
+pub mod monorepo;
 pub mod pack;
 pub mod policy;
 pub mod openapi;

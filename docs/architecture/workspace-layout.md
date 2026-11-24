@@ -100,6 +100,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `policy` | Policy document parsing, validation, and deterministic evaluation. | `config`, `error`, `model`. |
 | `openapi` | Deterministic OpenAPI 3.1.0 contract generation and route/schema validation; excludes internal endpoints. | `error`. |
 | `status_gate` | Policy-driven pull request status gate: `success`/`failure`/`neutral` conclusion, title, and summary from the exit gate's inputs. | `severity`. |
+| `monorepo` | Bounded, symlink-safe Cargo project discovery and include/exclude/changed-file path filtering for monorepo scans. | `discovery`, `error`. |
 | `ai` | Optional, advisory assistance; deterministic engine remains authoritative. | `category`, `finding`, `rule`, `severity`. |
 | `api_auth` | Framework-independent bearer token parsing and verification for API integrations. | Nothing in the crate. |
 | `corpus` | Read-only detector fixture, documentation, and must-trigger coverage reporting. | `registry`. |

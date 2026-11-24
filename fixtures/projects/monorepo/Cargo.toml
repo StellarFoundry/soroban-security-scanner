@@ -1,0 +1,6 @@
+# Monorepo fixture for path filtering (#343): a root workspace, a nested
+# `contracts` workspace with a member that holds its own crate, and a tool.
+[workspace]
+resolver = "2"
+members = ["tools/gen"]
+exclude = ["contracts"]
