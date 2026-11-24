@@ -59,6 +59,7 @@ Start here.
 - [Benchmarks](development/benchmarks.md)
 - [Writing Rules](contributors/writing-rules.md)
 - [Corpus Licensing and Provenance](corpus-provenance.md) - requirements for third-party fixtures.
+- [Rule Lifecycle](contributors/rule-lifecycle.md)
 - [Adding a Language Frontend](contributors/adding-a-frontend.md) - experimental until reviewed.
 - [Rule Template](rules/TEMPLATE.md)
 - [Rule Quality Checklist](rules/quality-checklist.md)

@@ -9,6 +9,8 @@ semantics, then use the shared analysis primitives rather than re-deriving them:
 defined in [finding ranking](../finding-ranking.md). The full proposal-to-release
 path, including who approves each stage, is in the
 [rule review workflow](rule-review-workflow.md).
+semantics. For how a rule moves from proposal to release, including who
+approves each stage, see the [rule lifecycle](rule-lifecycle.md).
 
 ## 0. Define the problem before writing code
 
