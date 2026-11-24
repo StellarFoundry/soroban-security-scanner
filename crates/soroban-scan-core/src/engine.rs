@@ -170,6 +170,12 @@ pub struct ScanStats {
     pub generated_files_excluded: usize,
     /// Gate findings grouped by stable category name, sorted deterministically.
     pub findings_by_category: BTreeMap<String, usize>,
+    /// Per-rule execution statistics, in rule id order.
+    ///
+    /// Bounded to [`MAX_RULE_STATS`]. Rules that did not run have no entry.
+    pub rule_stats: Vec<RuleStat>,
+    /// Per-rule statistics omitted because [`MAX_RULE_STATS`] was reached.
+    pub rule_stats_omitted: usize,
 }
 
 /// Outcome of one rule execution for the opt-in timing breakdown.
@@ -214,6 +220,86 @@ impl RuleTiming {
     pub fn elapsed_ms(&self) -> f64 {
         self.elapsed_micros as f64 / 1_000.0
     }
+}
+
+/// Upper bound on per-rule statistics carried by one scan outcome.
+pub const MAX_RULE_STATS: usize = 256;
+
+/// Coarse, deterministic duration bucket for per-rule statistics.
+///
+/// Raw elapsed nanoseconds are deliberately not recorded: they differ between
+/// runs and machines and would make reports non-reproducible. Buckets are
+/// deliberately wide so first-call compilation and scheduler noise cannot move
+/// an ordinary rule across a boundary. They are observational, never used for
+/// ordering or the gate.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum RuleDurationBucket {
+    /// Under one second.
+    Under1s,
+    /// Under ten seconds.
+    Under10s,
+    /// Under one minute.
+    Under60s,
+    /// One minute or more.
+    AtLeast60s,
+}
+
+impl RuleDurationBucket {
+    /// Classifies an elapsed duration into its bucket.
+    pub fn from_duration(elapsed: Duration) -> Self {
+        match elapsed.as_secs() {
+            0 => RuleDurationBucket::Under1s,
+            1..=9 => RuleDurationBucket::Under10s,
+            10..=59 => RuleDurationBucket::Under60s,
+            _ => RuleDurationBucket::AtLeast60s,
+        }
+    }
+
+    /// Stable lowercase label used in JSON.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            RuleDurationBucket::Under1s => "under_1s",
+            RuleDurationBucket::Under10s => "under_10s",
+            RuleDurationBucket::Under60s => "under_60s",
+            RuleDurationBucket::AtLeast60s => "at_least_60s",
+        }
+    }
+}
+
+/// Why a rule that ran produced no usable findings.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum RuleSkipReason {
+    /// The rule exceeded its configured time budget.
+    TimedOut,
+    /// The rule panicked and was isolated.
+    Panicked,
+}
+
+impl RuleSkipReason {
+    /// Stable lowercase label used in JSON.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            RuleSkipReason::TimedOut => "time_budget_exceeded",
+            RuleSkipReason::Panicked => "panicked",
+        }
+    }
+}
+
+/// Deterministic execution statistics for one rule invocation.
+///
+/// An entry exists only when the rule actually ran. Rules skipped by
+/// configuration or analysis mode, and rules left unrun by the scan deadline,
+/// have no entry.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct RuleStat {
+    /// Rule id (for example `SS-001`).
+    pub rule_id: String,
+    /// Coarse duration bucket.
+    pub duration: RuleDurationBucket,
+    /// Findings the rule produced, before validation and filtering.
+    pub findings: usize,
+    /// Set when the produced findings were discarded.
+    pub skip_reason: Option<RuleSkipReason>,
 }
 
 /// How many findings were shown after an explicit report limit.
@@ -950,6 +1036,15 @@ fn cfg_unmodelled_diagnostics(
     diagnostics
 }
 
+/// Records one rule statistic, or counts it as omitted at the hard cap.
+fn record_rule_stat(stats: &mut ScanStats, stat: RuleStat) {
+    if stats.rule_stats.len() >= MAX_RULE_STATS {
+        stats.rule_stats_omitted += 1;
+        return;
+    }
+    stats.rule_stats.push(stat);
+}
+
 /// Runs the scanner over a loaded project with optional pipeline hooks.
 ///
 /// This is an additive variant of [`scan`]. Discovery and parsing already
@@ -1154,6 +1249,8 @@ pub fn scan_with_hooks(
         let mut rule_findings = Vec::new();
         let result = catch_unwind(AssertUnwindSafe(|| rule.analyze(&ctx, &mut rule_findings)));
         let elapsed = started.elapsed();
+        let produced = rule_findings.len();
+        let duration = RuleDurationBucket::from_duration(elapsed);
         match result {
             Ok(()) => {
                 if let Some(limit) = budget {
@@ -1168,6 +1265,15 @@ pub fn scan_with_hooks(
                             elapsed_micros: elapsed.as_micros(),
                             status: RuleTimingStatus::TimedOut,
                         });
+                        record_rule_stat(
+                            &mut stats,
+                            RuleStat {
+                                rule_id: meta.id.to_string(),
+                                duration,
+                                findings: produced,
+                                skip_reason: Some(RuleSkipReason::TimedOut),
+                            },
+                        );
                         diagnostics.push(Diagnostic::warning(
                             DiagnosticCode::RuleTimeBudgetExceeded,
                             format!(
@@ -1186,6 +1292,15 @@ pub fn scan_with_hooks(
                     elapsed_micros: elapsed.as_micros(),
                     status: RuleTimingStatus::Completed,
                 });
+                record_rule_stat(
+                    &mut stats,
+                    RuleStat {
+                        rule_id: meta.id.to_string(),
+                        duration,
+                        findings: produced,
+                        skip_reason: None,
+                    },
+                );
                 findings.extend(rule_findings);
             }
             Err(_) => {
@@ -1195,6 +1310,15 @@ pub fn scan_with_hooks(
                     elapsed_micros: elapsed.as_micros(),
                     status: RuleTimingStatus::Panicked,
                 });
+                record_rule_stat(
+                    &mut stats,
+                    RuleStat {
+                        rule_id: meta.id.to_string(),
+                        duration,
+                        findings: produced,
+                        skip_reason: Some(RuleSkipReason::Panicked),
+                    },
+                );
                 diagnostics.push(Diagnostic::error(
                     DiagnosticCode::RulePanicked,
                     format!("rule {} panicked; its findings were discarded", meta.id),
@@ -1520,6 +1644,7 @@ pub fn merge(outcomes: Vec<ScanOutcome>, labels: &[String]) -> ScanOutcome {
     let mut stats = ScanStats::default();
     let mut projects: Vec<Project> = Vec::new();
     let mut timings: BTreeMap<String, (u128, RuleTimingStatus)> = BTreeMap::new();
+    let mut rule_stats: BTreeMap<String, RuleStat> = BTreeMap::new();
 
     for (mut outcome, label) in outcomes.into_iter().zip(labels.iter()) {
         if let Some(prefix) = prefix_for(label) {
@@ -1561,6 +1686,17 @@ pub fn merge(outcomes: Vec<ScanOutcome>, labels: &[String]) -> ScanOutcome {
             entry.0 += timing.elapsed_micros;
             entry.1 = merge_timing_status(entry.1, timing.status);
         }
+        for stat in &outcome.stats.rule_stats {
+            let entry = rule_stats.entry(stat.rule_id.clone()).or_insert(RuleStat {
+                rule_id: stat.rule_id.clone(),
+                duration: stat.duration,
+                findings: 0,
+                skip_reason: None,
+            });
+            entry.findings += stat.findings;
+            entry.duration = entry.duration.max(stat.duration);
+            entry.skip_reason = entry.skip_reason.max(stat.skip_reason);
+        }
         projects.push(outcome.project);
     }
 
@@ -1587,6 +1723,13 @@ pub fn merge(outcomes: Vec<ScanOutcome>, labels: &[String]) -> ScanOutcome {
             status,
         })
         .collect();
+
+    let mut merged_rule_stats: Vec<RuleStat> = rule_stats.into_values().collect();
+    if merged_rule_stats.len() > MAX_RULE_STATS {
+        stats.rule_stats_omitted += merged_rule_stats.len() - MAX_RULE_STATS;
+        merged_rule_stats.truncate(MAX_RULE_STATS);
+    }
+    stats.rule_stats = merged_rule_stats;
 
     findings.sort_by_key(|finding| finding.sort_key());
     findings.dedup_by(|a, b| a.fingerprint == b.fingerprint);
@@ -1745,6 +1888,7 @@ fn merge_stats(stats: &mut ScanStats, other: &ScanStats) {
     stats.config_suppressions_applied += other.config_suppressions_applied;
     stats.generated_files_marked += other.generated_files_marked;
     stats.generated_files_excluded += other.generated_files_excluded;
+    stats.rule_stats_omitted += other.rule_stats_omitted;
     for (category, count) in &other.findings_by_category {
         *stats
             .findings_by_category

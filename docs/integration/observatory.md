@@ -199,6 +199,9 @@ scanner without a coordinated release, and vice versa.
 - `schema_version` `1` gained the optional top-level `baseline` object and the
   per-finding `baseline_status` field, present only when the scan is compared
   against a baseline (additive, baseline comparison).
+- `schema_version` `1` gained `stats.rule_stats` and `stats.rule_stats_omitted`,
+  carrying bounded, deterministic per-rule execution statistics. Rules that did
+  not run have no entry (additive, rule execution statistics).
 
 When the contract changes, update this table and
 [`report.schema.json`](report.schema.json) together.

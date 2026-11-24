@@ -578,6 +578,24 @@ struct StatsSummary {
     generated_files_excluded: usize,
     /// Gate findings grouped by stable category name.
     findings_by_category: BTreeMap<String, usize>,
+    /// Per-rule execution statistics, in rule id order.
+    rule_stats: Vec<RuleStatSummary>,
+    /// Per-rule statistics omitted at the hard cap.
+    rule_stats_omitted: usize,
+}
+
+/// One rule's execution statistics in JSON reports.
+#[derive(Debug, Serialize)]
+struct RuleStatSummary {
+    rule_id: String,
+    /// Coarse, deterministic duration bucket (`under_1s`, `under_10s`,
+    /// `under_60s`, or `at_least_60s`). Raw timings are never recorded.
+    duration: &'static str,
+    /// Findings the rule produced before validation and filtering.
+    findings: usize,
+    /// Why the produced findings were discarded, when they were.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    skip_reason: Option<&'static str>,
 }
 
 /// A detected suppression directive in JSON reports.
@@ -688,6 +706,18 @@ pub fn render_json_with_baseline(
             generated_files_marked: outcome.stats.generated_files_marked,
             generated_files_excluded: outcome.stats.generated_files_excluded,
             findings_by_category: outcome.stats.findings_by_category.clone(),
+            rule_stats: outcome
+                .stats
+                .rule_stats
+                .iter()
+                .map(|stat| RuleStatSummary {
+                    rule_id: stat.rule_id.clone(),
+                    duration: stat.duration.as_str(),
+                    findings: stat.findings,
+                    skip_reason: stat.skip_reason.map(|reason| reason.as_str()),
+                })
+                .collect(),
+            rule_stats_omitted: outcome.stats.rule_stats_omitted,
         },
         effective_config: &outcome.config,
         baseline,

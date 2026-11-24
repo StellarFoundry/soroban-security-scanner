@@ -3579,6 +3579,35 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
+                  "uri": "SS-043/positive.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 4
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Hardcoded Stellar network passphrase — hardcoded Stellar network constant: stellar_sdk::networks::Networks::TESTNET"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "cd7d7fbca8d0558a367722d20f2c8394"
+          },
+          "properties": {
+            "category": "configuration",
+            "confidence": "high",
+            "remediation": "Read the network passphrase from deployment configuration or an environment variable, validate it against the intended network, and keep environment-specific values out of shared source.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-043"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
                   "uri": "SS-049/positive.rs"
                 },
                 "region": {
@@ -3640,6 +3669,35 @@
             "severity": "medium"
           },
           "ruleId": "SS-049"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-043/positive.rs"
+                },
+                "region": {
+                  "startColumn": 34,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Hardcoded Stellar network passphrase — hardcoded Stellar network passphrase: Public Global Stellar Network ; September 2015"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "31aacb08075e112af0e6261ca921f187"
+          },
+          "properties": {
+            "category": "configuration",
+            "confidence": "high",
+            "remediation": "Read the network passphrase from deployment configuration or an environment variable, validate it against the intended network, and keep environment-specific values out of shared source.",
+            "severity": "medium"
+          },
+          "ruleId": "SS-043"
         },
         {
           "level": "warning",
@@ -13435,6 +13493,34 @@
               },
               "shortDescription": {
                 "text": "Security check unreachable on every path"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A source file embeds a canonical Stellar network passphrase or selects a known network constant. Pinning a network in code can cause signing or submission against an unintended network when the same deployment is used in multiple environments."
+              },
+              "help": {
+                "markdown": "## Hardcoded Stellar network passphrase\n\nA source file embeds a canonical Stellar network passphrase or selects a known network constant. Pinning a network in code can cause signing or submission against an unintended network when the same deployment is used in multiple environments.\n\n### Remediation\n\nRead the network passphrase from deployment configuration or an environment variable, validate it against the intended network, and keep environment-specific values out of shared source.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/network\n- https://developers.stellar.org/docs/tools/stellar-cli",
+                "text": "A source file embeds a canonical Stellar network passphrase or selects a known network constant. Pinning a network in code can cause signing or submission against an unintended network when the same deployment is used in multiple environments.\n\nRemediation: Read the network passphrase from deployment configuration or an environment variable, validate it against the intended network, and keep environment-specific values out of shared source."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/network",
+              "id": "SS-043",
+              "name": "Hardcoded Stellar network passphrase",
+              "properties": {
+                "category": "configuration",
+                "confidence": "high",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/network",
+                  "https://developers.stellar.org/docs/tools/stellar-cli"
+                ],
+                "remediation": "Read the network passphrase from deployment configuration or an environment variable, validate it against the intended network, and keep environment-specific values out of shared source.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Hardcoded Stellar network passphrase"
               }
             },
             {
