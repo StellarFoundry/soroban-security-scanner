@@ -34,6 +34,8 @@ Start here.
 - [CI Recipes](ci-recipes.md) — copy-paste snippets for common CI systems and hooks.
 - [Observatory Integration](integration/observatory.md) — the stable, versioned report contract.
 - [TypeScript API client](../clients/typescript/README.md) - typed client for the scan API in [service-api.md](service-api.md): submit, poll, fetch report.
+- [Editor integration (LSP spike)](integration/editor-integration.md) — diagnostics-in-editor scope and plan.
+- [Editor setup (VS Code, Neovim)](integration/editor-setup.md) — LSP configuration, capabilities, and limitations.
 - [Optional AI Assistance](ai.md) — off by default, never authoritative.
 - [AI privacy and data flow](ai-privacy.md) — exactly what can leave the machine.
 - [Opt-in telemetry](telemetry.md) — off by default; bounded event schema and retention.
