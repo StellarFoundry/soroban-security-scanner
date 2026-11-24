@@ -175,8 +175,9 @@ of done.
 
 For reusable analysis primitives, see [Taint Analysis](../taint-analysis.md)
 (sources, sinks, sanitizers, and limits), [Control-flow graphs](../control-flow.md),
-and [Finding ranking](../finding-ranking.md). For the limits of the analysis
-and the meaning of confidence, see
+and [Finding ranking](../finding-ranking.md). For the optional per-finding
+reachability context, see the [Exploitability model](../exploitability-model.md).
+For the limits of the analysis and the meaning of confidence, see
 [Analysis Methodology](../analysis-methodology.md).
 
 ## Rule documentation template

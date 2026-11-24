@@ -65,6 +65,10 @@ function contains the line, or the line has no CFG coverage, the entire field
 is omitted instead of guessed. It is additive and optional, so older reports
 and consumers remain valid, and it never changes severity or confidence.
 
+The full model, including the `unknown` state, the reserved taint field, and the
+fact that control dependence is not exposed, is defined in the
+[exploitability model](exploitability-model.md).
+
 ## Root-cause groups
 
 `correlation::group` adds a conservative grouping layer on top of the same
