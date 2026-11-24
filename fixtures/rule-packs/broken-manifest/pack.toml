@@ -1,0 +1,12 @@
+[pack]
+name = "broken-manifest-pack"
+version = "0.1.0"
+unexpected_unknown_field = true
+
+[[rules]]
+id = "BROKEN-001"
+title = "Invalid manifest fixture"
+category = "testing"
+default_severity = "low"
+default_confidence = "low"
+description = "This pack has an unknown field and must fail clearly."

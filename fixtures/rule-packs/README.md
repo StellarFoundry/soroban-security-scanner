@@ -16,6 +16,18 @@ local index fixture referencing valid-signed.
       unsigned/         pack.toml without a pack.sig
       revoked-key/      pack.toml signed with a revoked key
       untrusted-key/    pack.toml signed with an unknown key
+```
+fixtures/rule-packs/
+  valid-signed/          # Valid pack.toml with valid detached pack.sig signed by active key
+  tampered/              # pack.toml content altered after signing (signature mismatch)
+  unsigned/              # pack.toml without a pack.sig (rejected by default, allowed with opt-in)
+  revoked-key/           # pack.toml signed with a revoked key (fails verification)
+  untrusted-key/         # pack.toml signed with an unknown key not in the keyring
+  conformance-valid/     # Signed conformance fixture pack with contract + conformance.toml known findings
+  broken-manifest/       # Malformed pack.toml with unknown fields (fails manifest validation)
+  incompatible-version/  # Signed pack requiring scanner >= 99.0.0 (fails compatibility check)
+  broken-expectations/   # Signed pack whose conformance.toml expects a non-firing rule (fails clearly)
+```
 
 ## Security
 
