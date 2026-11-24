@@ -13,7 +13,7 @@ import argparse
 import json
 import re
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 SCHEMA_VERSION = 1
 JSON_NAME = "benchmark.json"
@@ -63,7 +63,7 @@ def validate_payload(payload: dict) -> list[str]:
     target = payload.get("target")
     if not isinstance(target, str) or not target:
         problems.append(f"{JSON_NAME}: target must be a non-empty string")
-    elif Path(target).is_absolute():
+    elif Path(target).is_absolute() or PurePosixPath(target).is_absolute():
         problems.append(f"{JSON_NAME}: target must be repository-relative")
 
     runner = payload.get("runner")

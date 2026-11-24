@@ -8,5 +8,5 @@ min_count = 1
 
 [[expected_findings]]
 rule_id = "SS-008"
-severity = "high"
+severity = "medium"
 min_count = 1

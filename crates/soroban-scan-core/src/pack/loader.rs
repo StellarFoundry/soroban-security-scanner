@@ -205,23 +205,22 @@ pub fn validate_manifest(
         ))
     })?;
 
-    if let Some(required) = &manifest.pack.min_scanner_version {
-        let req_ver = parse_semver(required).ok_or_else(|| {
-            PackLoadError::InvalidMetadata(format!(
-                "invalid pack.min_scanner_version '{required}' (expected MAJOR.MINOR.PATCH)"
-            ))
-        })?;
-        let cur_ver = parse_semver(scanner_version).ok_or_else(|| {
-            PackLoadError::InvalidMetadata(format!(
-                "invalid current scanner version '{scanner_version}'"
-            ))
-        })?;
-        if req_ver > cur_ver {
-            return Err(PackLoadError::IncompatibleScannerVersion {
-                required: required.clone(),
-                current: scanner_version.to_string(),
-            });
-        }
+    let required = &manifest.pack.min_scanner_version;
+    let req_ver = parse_semver(required).ok_or_else(|| {
+        PackLoadError::InvalidMetadata(format!(
+            "invalid pack.min_scanner_version '{required}' (expected MAJOR.MINOR.PATCH)"
+        ))
+    })?;
+    let cur_ver = parse_semver(scanner_version).ok_or_else(|| {
+        PackLoadError::InvalidMetadata(format!(
+            "invalid current scanner version '{scanner_version}'"
+        ))
+    })?;
+    if req_ver > cur_ver {
+        return Err(PackLoadError::IncompatibleScannerVersion {
+            required: required.clone(),
+            current: scanner_version.to_string(),
+        });
     }
 
     if manifest.rules.is_empty() {
@@ -270,13 +269,7 @@ pub fn validate_manifest(
                 "rule '{id}' has empty description"
             )));
         }
-        if let Some(checksum) = &rule.checksum {
-            if checksum.len() != 64 || !checksum.bytes().all(|b| b.is_ascii_hexdigit()) {
-                return Err(PackLoadError::InvalidMetadata(format!(
-                    "rule '{id}' has invalid sha256 checksum '{checksum}'"
-                )));
-            }
-        }
+        // `PackManifest::parse_str` already validates the `sha256:` digest.
     }
 
     Ok(())
