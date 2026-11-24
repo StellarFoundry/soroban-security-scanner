@@ -89,6 +89,9 @@ Common types: `feat`, `fix`, `docs`, `test`, `refactor`, `perf`, `build`, `ci`,
 
 ## Adding a security rule
 
+Before opening the pull request, complete the
+[rule quality checklist](docs/rules/quality-checklist.md).
+
 Every rule must include:
 
 1. A clear definition of the security problem.

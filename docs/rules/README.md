@@ -162,6 +162,9 @@ Then:
 Rules must never fabricate evidence or source locations. When evidence is
 insufficient, prefer `confidence: low` or do not report at all.
 
+Every rule pull request must complete the
+[rule quality checklist](quality-checklist.md).
+
 See [`../contributors/writing-rules.md`](../contributors/writing-rules.md) for a
 step-by-step guide, [`../contributors/rule-review-workflow.md`](../contributors/rule-review-workflow.md)
 for the proposal-to-release process and who approves each stage, [`cookbook.md`](cookbook.md) for three annotated end-to-end

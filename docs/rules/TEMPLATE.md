@@ -42,7 +42,8 @@ What a developer should do, with a small concrete example where useful.
 
 ## Review checklist
 
-Before opening a pull request:
+Complete the full [rule quality checklist](quality-checklist.md) in your pull
+request description. At a minimum, before opening a pull request:
 
 - [ ] The id is new, unique, and never reused.
 - [ ] `severity` and `confidence` are honest. High-severity heuristic findings
