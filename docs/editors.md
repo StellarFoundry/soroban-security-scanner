@@ -9,7 +9,8 @@ your editor config.
 
 ```bash
 cargo install --path .
-<BIN> <LSP_ARG>   # starts the server on stdio; press Ctrl+C to exit
+soroban-scan-lsp  # standalone stdio server; press Ctrl+C to exit
+# Alternatively, use the existing CLI subcommand: soroban-scan lsp
 ```
 
 ## Supported LSP capabilities
@@ -69,7 +70,7 @@ server:
 
 | Limit | Value | Behavior when exceeded |
 |---|---|---|
-| Document size | 1 MiB | The buffer is kept for outline and hover, but analysis is skipped and a `LSP-DOCUMENT-LIMIT` warning is published. |
+| Retained source per document | 1 MiB | Oversized content is discarded, analysis and outline/hover are skipped, and a `LSP-DOCUMENT-LIMIT` warning is published. |
 | Analysis time | 2 seconds | The worker result is discarded and an `LSP-ANALYSIS-TIMEOUT` warning is published. |
 | Diagnostics per document | 200 | The remaining diagnostics are dropped and an `LSP-DIAGNOSTICS-TRUNCATED` warning is published with the omitted count. |
 | Change debounce | 150 ms | Analysis starts after the typing pause. |
@@ -104,11 +105,14 @@ file.
 
 ```json
 {
-  "glspc.server.command": "<BIN>",
-  "glspc.server.commandArguments": ["<LSP_ARG>"],
+  "glspc.server.command": "soroban-scan-lsp",
+  "glspc.server.commandArguments": [],
   "glspc.server.languageId": ["rust"]
 }
 ```
+
+If you prefer the main CLI binary, set `glspc.server.command` to
+`soroban-scan` and `glspc.server.commandArguments` to `["lsp"]`.
 
 3. Run "Developer: Reload Window", then open a Soroban `.rs` file.
    Diagnostics appear in the Problems panel.
@@ -119,7 +123,7 @@ Neovim 0.11 or newer, in `init.lua`:
 
 ```lua
 vim.lsp.config['soroban-scanner'] = {
-  cmd = { '<BIN>', '<LSP_ARG>' },
+  cmd = { 'soroban-scan-lsp' },
   filetypes = { 'rust' },
   root_markers = { 'Cargo.toml', '.git' },
 }
@@ -134,7 +138,7 @@ vim.api.nvim_create_autocmd('FileType', {
   callback = function(args)
     vim.lsp.start({
       name = 'soroban-scanner',
-      cmd = { '<BIN>', '<LSP_ARG>' },
+      cmd = { 'soroban-scan-lsp' },
       root_dir = vim.fs.root(args.buf, { 'Cargo.toml', '.git' }),
     })
   end,
@@ -142,6 +146,7 @@ vim.api.nvim_create_autocmd('FileType', {
 ```
 
 Verify with `:checkhealth vim.lsp`. The client should be attached to the buffer.
+To use the main CLI instead, set `cmd = { 'soroban-scan', 'lsp' }`.
 
 ## Known limitations
 
@@ -151,6 +156,8 @@ Verify with `:checkhealth vim.lsp`. The client should be attached to the buffer.
   message body returns nothing.
 - The server uses full-document sync. Diagnostics refresh on open, change, and
   save; a change replaces the whole document buffer.
+- Source buffers over 1 MiB are not retained, so they have no diagnostics,
+  outline, or hover until the document is reduced below the limit.
 - The language server uses no network access. It reads only the workspace
   `soroban-scan.toml` and runs the default rule set when none is configured.
 - Function and event symbol ranges use the parser's signature span, so the end

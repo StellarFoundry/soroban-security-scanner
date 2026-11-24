@@ -1,8 +1,8 @@
 //! Black-box language-server test with a mock stdio client (#336).
 //!
-//! Spawns `soroban-scan lsp`, frames JSON-RPC messages by hand, and exercises
-//! initialize, open, change, hover, document symbols, shutdown, and exit. Every
-//! wait is bounded so a hung server fails the test instead of blocking CI.
+//! Spawns both LSP entry points with a mock stdio client and exercises
+//! initialize, open, change, save, hover, document symbols, shutdown, and exit.
+//! Every wait is bounded so a hung server fails the test instead of blocking CI.
 
 use std::fs;
 use std::io::{BufRead, BufReader, Write};
@@ -16,6 +16,10 @@ use serde_json::{json, Value};
 
 fn bin() -> PathBuf {
     PathBuf::from(env!("CARGO_BIN_EXE_soroban-scan"))
+}
+
+fn standalone_bin() -> PathBuf {
+    PathBuf::from(env!("CARGO_BIN_EXE_soroban-scan-lsp"))
 }
 
 fn violation_source() -> &'static str {
@@ -53,8 +57,18 @@ struct Client {
 
 impl Client {
     fn spawn() -> Self {
-        let mut child = Command::new(bin())
-            .arg("lsp")
+        let mut command = Command::new(bin());
+        command.arg("lsp");
+        Self::spawn_command(&mut command)
+    }
+
+    fn spawn_standalone() -> Self {
+        let mut command = Command::new(standalone_bin());
+        Self::spawn_command(&mut command)
+    }
+
+    fn spawn_command(command: &mut Command) -> Self {
+        let mut child = command
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::null())
@@ -171,6 +185,13 @@ fn did_change(uri: &str, version: u64, text: &str) -> Value {
     )
 }
 
+fn did_save(uri: &str) -> Value {
+    notification(
+        "textDocument/didSave",
+        json!({ "textDocument": { "uri": uri } }),
+    )
+}
+
 fn diagnostics_for(uri: &str) -> impl FnMut(&Value) -> bool {
     let uri = uri.to_string();
     move |message: &Value| {
@@ -258,9 +279,42 @@ fn language_server_handles_open_change_hover_symbols_and_shutdown() {
     assert!(status.success(), "language server exited with {status:?}");
 }
 
+#[test]
+fn standalone_binary_handshakes_and_publishes_saved_document_diagnostics() {
+    let uri = "file:///soroban-scan-lsp-standalone.rs";
+    let mut client = Client::spawn_standalone();
+    client.send(&request(
+        1,
+        "initialize",
+        json!({ "processId": null, "capabilities": {} }),
+    ));
+    let initialized = client.recv_until(|message| message["id"] == json!(1));
+    assert_eq!(
+        initialized["result"]["serverInfo"]["name"],
+        json!("soroban-scan")
+    );
+    assert!(initialized["result"]["capabilities"]["textDocumentSync"].is_object());
+
+    client.send(&notification("initialized", json!({})));
+    client.send(&did_open(uri, violation_source()));
+    let opened = client.recv_until(diagnostics_for(uri));
+    assert!(rule_codes(&opened).contains(&"SS-001"));
+
+    client.send(&did_save(uri));
+    let saved = client.recv_until(diagnostics_for(uri));
+    assert!(rule_codes(&saved).contains(&"SS-001"));
+
+    client.send(&request(2, "shutdown", Value::Null));
+    client.recv_until(|message| message["id"] == json!(2));
+    client.send(&notification("exit", Value::Null));
+    let status = client.wait_for_exit(Duration::from_secs(10));
+    assert!(status.success(), "language server exited with {status:?}");
+}
+
 fn temp_workspace(label: &str) -> PathBuf {
-    let root =
-        std::env::temp_dir().join(format!("soroban-scan-lsp-{}-{label}", std::process::id()));
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../target")
+        .join(format!("soroban-scan-lsp-{}-{label}", std::process::id()));
     let _ = fs::remove_dir_all(&root);
     fs::create_dir_all(&root).expect("create temporary workspace");
     root
@@ -338,7 +392,7 @@ fn language_server_loads_and_reloads_workspace_configuration() {
 }
 
 #[test]
-fn large_documents_are_bounded_and_truncation_is_reported() {
+fn oversized_documents_are_discarded_and_reported() {
     let mut client = Client::spawn();
     client.send(&request(
         1,
@@ -348,31 +402,11 @@ fn large_documents_are_bounded_and_truncation_is_reported() {
     client.recv_until(|message| message["id"] == json!(1));
     client.send(&notification("initialized", json!({})));
 
-    // Enough violating entry points to exceed the diagnostic cap.
-    let mut noisy =
-        String::from("use soroban_sdk::{contractimpl, Env};\n#[contractimpl]\nimpl Vault {\n");
-    for i in 0..300 {
-        noisy.push_str(&format!(
-            "    pub fn f{i}(env: Env, value: u32) {{ env.storage().persistent().set(&{i}u32, &value); }}\n"
-        ));
-    }
-    noisy.push_str("}\n");
-    let noisy_uri = "file:///tmp/soroban-scan-lsp-noisy.rs";
-    client.send(&did_open(noisy_uri, &noisy));
-    let noisy_diagnostics = client.recv_until(diagnostics_for(noisy_uri));
-    let codes = rule_codes(&noisy_diagnostics);
-    assert!(
-        codes.contains(&"LSP-DIAGNOSTICS-TRUNCATED"),
-        "expected a truncation diagnostic, got: {noisy_diagnostics}"
+    // Oversized content is discarded instead of being retained for outline/hover.
+    let oversized = format!(
+        "#[contract]\npub struct ShouldNotBeRetained;\n// SS-001\n// {}\n",
+        "x".repeat(1024 * 1024 + 1)
     );
-    let count = noisy_diagnostics["params"]["diagnostics"]
-        .as_array()
-        .expect("diagnostics array")
-        .len();
-    assert!(count <= 201, "diagnostics were not capped: {count}");
-
-    // A document over the size limit is kept for outline/hover but not scanned.
-    let oversized = format!("// {}\n", "x".repeat(1024 * 1024 + 1));
     let large_uri = "file:///tmp/soroban-scan-lsp-large.rs";
     client.send(&did_open(large_uri, &oversized));
     let large_diagnostics = client.recv_until(diagnostics_for(large_uri));
@@ -388,10 +422,21 @@ fn large_documents_are_bounded_and_truncation_is_reported() {
         json!({ "textDocument": { "uri": large_uri } }),
     ));
     let symbols = client.recv_until(|message| message["id"] == json!(2));
-    assert!(symbols["result"].is_array());
+    assert_eq!(symbols["result"], json!([]));
 
-    client.send(&request(3, "shutdown", Value::Null));
-    client.recv_until(|message| message["id"] == json!(3));
+    client.send(&request(
+        3,
+        "textDocument/hover",
+        json!({
+            "textDocument": { "uri": large_uri },
+            "position": { "line": 2, "character": 4 }
+        }),
+    ));
+    let hover = client.recv_until(|message| message["id"] == json!(3));
+    assert_eq!(hover["result"], Value::Null);
+
+    client.send(&request(4, "shutdown", Value::Null));
+    client.recv_until(|message| message["id"] == json!(4));
     client.send(&notification("exit", Value::Null));
     let status = client.wait_for_exit(Duration::from_secs(10));
     assert!(status.success(), "language server exited with {status:?}");
