@@ -35,6 +35,7 @@ pub mod finding;
 pub mod fingerprint;
 pub mod frontend;
 pub mod imports;
+pub mod lsp_severity;
 pub mod manifest;
 pub mod model;
 pub mod pack;

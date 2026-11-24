@@ -83,6 +83,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `unsupported` | Bounded `SYNTAX-001` diagnostics for source languages the frontend cannot analyze. | `model`. |
 | `source` | `syn` parsing, spans, module paths, crate-root membership, contract evidence, suppressions. | `error`, `imports`, `model`, `soroban`. |
 | `imports` | Best-effort per-file `use` import map and path canonicalization. | Nothing in the crate. |
+| `lsp_severity` | Policy mapping finding severity and confidence to LSP diagnostic severity, with validated overrides. | `confidence`, `error`, `severity`. |
 | `project` | Orchestrates discovery, manifest loading, source parsing, Soroban classification, detection evidence, SDK matrix warnings, and optional target analysis. | `detection`, `discovery`, `error`, `manifest`, `model`, `sdk_matrix`, `soroban`, `source`, `target`, `unsupported`. |
 | `soroban` | Soroban evidence and project classification; never executes contracts. | `model`. |
 | `context` | Read-only `AnalysisContext` passed to rules, with a per-source/per-function memoized fact cache (interior mutability is used only for memoization; results stay deterministic and file-scoped). | `model`, `rules::util`, `source`. |

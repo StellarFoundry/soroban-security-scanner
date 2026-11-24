@@ -146,6 +146,32 @@ Publish `textDocument/publishDiagnostics` with:
 | `message` | title, evidence, remediation, and confidence; never fabricated text |
 | `data` | optional `{rule_id, severity, confidence, category, fingerprint}` for future code actions |
 
+#### Severity mapping policy
+
+The default mapping is stable and implemented by
+`soroban_scan_core::lsp_severity::SeverityPolicy`:
+
+| Finding severity   | LSP `DiagnosticSeverity` |
+| ------------------ | ------------------------ |
+| `critical`, `high` | `Error` (1)              |
+| `medium`           | `Warning` (2)            |
+| `low`, `info`      | `Information` (3)        |
+
+Confidence does **not** affect the default mapping. Two opt-in adjustments are
+available and validated when the policy is built:
+
+- **Override table:** replace the LSP severity for individual finding
+  severities (for example `medium` → `error`). Names are case-insensitive;
+  finding severities accept `info|low|medium|high|critical` (plus `med`/`crit`),
+  LSP severities accept `error|warning|information|hint` (plus `warn`/`info`).
+  Unknown names and duplicate entries are rejected with a configuration error.
+- **Low-confidence demotion:** when enabled, `low`-confidence findings are
+  lowered one LSP level (`Error` → `Warning` → `Information` → `Hint`),
+  saturating at `Hint`. Disabled by default.
+
+The policy is pure data: no I/O, no network, and no secrets. The unit tests in
+`lsp_severity.rs` pin the default table and the override behavior.
+
 Suppressed findings are not published as editor diagnostics by default (they are
 excluded from the gate), but the server may expose them behind a setting later.
 
