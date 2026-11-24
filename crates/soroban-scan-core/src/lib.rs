@@ -40,6 +40,7 @@ pub mod manifest;
 pub mod model;
 pub mod pack;
 pub mod policy;
+pub mod openapi;
 pub mod project;
 pub mod redaction;
 pub mod registry;

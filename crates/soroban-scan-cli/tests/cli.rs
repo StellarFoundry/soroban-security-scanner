@@ -3050,4 +3050,48 @@ fn changed_since_scans_only_changed_rust_files() {
     assert_eq!(output.code, 0, "stderr: {}", output.stderr);
     let value: ::serde_json::Value = ::serde_json::from_str(&output.stdout).expect("json report");
     assert_eq!(value["stats"]["files_analyzed"], 1);
+fn openapi_generates_and_checks_published_contract() {
+    let out = run(&["openapi"]);
+    assert_eq!(out.code, 0, "stderr: {}", out.stderr);
+
+    let doc: serde_json::Value =
+        serde_json::from_str(&out.stdout).expect("openapi output must be valid JSON");
+    assert_eq!(doc["openapi"], "3.1.0");
+    assert!(doc["paths"].get("/v1/health").is_some());
+    assert!(doc["paths"].get("/v1/scan").is_some());
+    assert!(doc["paths"].get("/v1/jobs").is_some());
+    assert!(doc["paths"].get("/internal/metrics").is_none());
+
+    let published = repo_root().join("docs/integration/openapi.json");
+    let check = run(&["openapi", "--check", published.to_str().unwrap()]);
+    assert_eq!(check.code, 0, "stderr: {}", check.stderr);
+
+    let dir = std::env::temp_dir().join(format!("soroban-scan-cli-openapi-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    std::fs::create_dir_all(&dir).unwrap();
+
+    let generated_file = dir.join("openapi.json");
+    let write = run(&["openapi", "--output", generated_file.to_str().unwrap()]);
+    assert_eq!(write.code, 0, "stderr: {}", write.stderr);
+    let check_written = run(&["openapi", "--check", generated_file.to_str().unwrap()]);
+    assert_eq!(check_written.code, 0, "stderr: {}", check_written.stderr);
+
+    // A drifted document or one containing an internal route must fail --check.
+    let mut drifted = doc;
+    drifted["info"]["title"] = serde_json::json!("Drifted Title");
+    let drifted_file = dir.join("drifted.json");
+    std::fs::write(
+        &drifted_file,
+        serde_json::to_string_pretty(&drifted).unwrap(),
+    )
+    .unwrap();
+    let check_drifted = run(&["openapi", "--check", drifted_file.to_str().unwrap()]);
+    assert_eq!(check_drifted.code, 3, "stderr: {}", check_drifted.stderr);
+    assert!(
+        check_drifted.stderr.contains("drifted"),
+        "got: {}",
+        check_drifted.stderr
+    );
+
+    let _ = std::fs::remove_dir_all(&dir);
 }

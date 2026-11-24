@@ -31,6 +31,7 @@ is enforced by the `api_stability` integration test.
 - `imports` (best-effort, per-file `use` resolution), `lsp_severity`
   (LSP diagnostic severity mapping policy), `ai`, `baseline`,
   `compare`, `context`, `error`, and `redaction` support modules.
+  `compare`, `context`, `error`, `openapi`, and `redaction` support modules.
 - The `analysis`/pipeline implementation details and any `pub(crate)` item.
 - Internal utility modules (`rules::util`, `test_support`).
 

@@ -268,6 +268,7 @@ we'll help wire it up.
 - [Report Retention](docs/retention.md) — artifact naming and retention guidance
 - [GitHub Integration](docs/github-integration.md)
 - [Observatory Integration](docs/integration/observatory.md) — the stable, versioned JSON/SARIF contract for downstream consumers such as the Stellar Contract Observatory.
+- [OpenAPI Contract](docs/integration/openapi.md) — route-driven OpenAPI 3.1.0 specification (`docs/integration/openapi.json`) validated and published in CI.
 - [Security Model](docs/security/security-model.md) · [Threat Model](docs/security/threat-model.md)
 - [Architecture](docs/architecture/overview.md) · [Project Status](docs/PROJECT_STATUS.md)
 - [Roadmap](docs/ROADMAP.md) · [Issue Backlog](docs/ISSUE_BACKLOG.md) · [Wave Board](docs/WAVE_BOARD.md)
