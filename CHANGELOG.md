@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   fixture-level false positives and false negatives, and runtime, rendered as
   deterministic JSON and Markdown. Ambiguous fixture labels are recorded rather
   than guessed, and the report contains no source text or user data (`#309`).
+- Every benchmark run now writes a dashboard artifact: `benchmark.json` with the
+  measured statistics, baseline comparison, status, and regressions, plus a
+  self-contained `index.html` summary with inline CSS and no scripts. CI
+  validates the artifact and uploads it with a bounded 14-day retention; neither
+  file contains source text or absolute paths (`#327`).
 - Findings carry an optional, additive `exploitability` context (`reachability`,
   `entry_point`, and reserved `taint`) when the control-flow graph covers the
   finding line. It is omitted when evidence is incomplete and never changes

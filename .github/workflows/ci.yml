@@ -198,14 +198,22 @@ jobs:
           python3 tools/benchmark.py \
             --runs 5 \
             --baseline tools/benchmark_baseline.json \
-            --json-out target/benchmark-stats.json
-      - name: Upload benchmark stats
+            --json-out target/benchmark-stats.json \
+            --artifact-dir target/benchmark-dashboard
+      - name: Check dashboard artifact
+        if: always()
+        run: python3 tools/check_benchmark_artifact.py target/benchmark-dashboard
+      - name: Upload benchmark dashboard
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: benchmark-stats
-          path: target/benchmark-stats.json
-          if-no-files-found: ignore
+          name: benchmark-dashboard
+          path: |
+            target/benchmark-dashboard/benchmark.json
+            target/benchmark-dashboard/index.html
+          if-no-files-found: error
+          # Bounded retention: enough to compare a few runs, not a permanent store.
+          retention-days: 14
 
   python:
     name: Python helper tests

@@ -76,6 +76,33 @@ python tools/benchmark.py --update-baseline
 The measurement and comparison logic is covered by
 `tests/tools/test_benchmark_threshold.py`.
 
+## Dashboard artifact
+
+Every `tools/benchmark.py` run writes a static dashboard to
+`target/benchmark-dashboard/` (override the location with `--artifact-dir`):
+
+- `benchmark.json` records the target label, runner, min/median/mean/max,
+  baseline, threshold factor, failure limit, pass/fail status, and any
+  regression messages. Its `schema_version` is `1`.
+- `index.html` renders that JSON as a summary with inline CSS. It loads no
+  scripts or external resources, so it opens offline and renders in a browser
+  without network access.
+
+The target is stored as a repository-relative path; a target outside the
+repository is reduced to its directory name. Neither file contains source text
+or absolute paths, so the artifact is safe to publish from CI.
+
+```bash
+python tools/benchmark.py --runs 5
+python tools/check_benchmark_artifact.py target/benchmark-dashboard
+```
+
+The `Benchmark regression` CI job runs the validator, so a malformed,
+non-self-contained, or path-leaking artifact fails the job. The job uploads
+`benchmark.json` and `index.html` as the `benchmark-dashboard` artifact with a
+bounded 14-day retention. Dashboard generation and validation are covered by
+`tests/tools/test_benchmark_dashboard.py`.
+
 ## Frontend performance budgets
 
 `crates/soroban-scan-core/tests/frontend_budgets.rs` loads the conformance
