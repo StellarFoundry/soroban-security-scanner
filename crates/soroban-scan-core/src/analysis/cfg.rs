@@ -601,6 +601,112 @@ mod tests {
     }
 
     #[test]
+    fn while_loop_shape_is_exact_and_deterministic() {
+        let body = "{ while ready { step(); } done(); }";
+        let graph = cfg(body);
+        assert_eq!(
+            kinds(&graph),
+            vec![
+                NodeKind::Entry,
+                NodeKind::Exit,
+                NodeKind::Loop,
+                NodeKind::Statement,
+                NodeKind::Statement,
+            ]
+        );
+        assert_eq!(graph.edges.len(), 5, "edges: {:?}", graph.edges);
+        assert!(graph.reachable_nodes().count() == graph.nodes.len());
+        assert_eq!(graph, cfg(body));
+    }
+
+    #[test]
+    fn for_loop_shape_matches_a_while_loop() {
+        let body = "{ for item in items { step(); } done(); }";
+        let graph = cfg(body);
+        assert_eq!(
+            kinds(&graph),
+            vec![
+                NodeKind::Entry,
+                NodeKind::Exit,
+                NodeKind::Loop,
+                NodeKind::Statement,
+                NodeKind::Statement,
+            ]
+        );
+        assert_eq!(graph.edges.len(), 5, "edges: {:?}", graph.edges);
+        let header = graph
+            .nodes
+            .iter()
+            .find(|node| node.kind == NodeKind::Loop)
+            .expect("for-loop header");
+        assert!(graph
+            .edges
+            .iter()
+            .any(|edge| edge.to == header.id && edge.from != graph.entry));
+        assert_eq!(graph, cfg(body));
+    }
+
+    #[test]
+    fn bare_loop_keeps_an_explicit_unknown_exit() {
+        let body = "{ loop { step(); } done(); }";
+        let graph = cfg(body);
+        assert_eq!(
+            kinds(&graph),
+            vec![
+                NodeKind::Entry,
+                NodeKind::Exit,
+                NodeKind::Loop,
+                NodeKind::Statement,
+                NodeKind::Unknown,
+                NodeKind::Statement,
+            ]
+        );
+        assert_eq!(graph.edges.len(), 6, "edges: {:?}", graph.edges);
+
+        let unknown = graph
+            .nodes
+            .iter()
+            .find(|node| node.kind == NodeKind::Unknown)
+            .expect("unresolved loop exit");
+        assert!(graph.is_reachable(unknown.id));
+        assert!(graph.is_reachable(graph.exit));
+        assert_eq!(graph.unmodelled.get(&UnmodelledKind::LoopExit), Some(&1));
+        assert_eq!(graph, cfg(body));
+    }
+
+    #[test]
+    fn match_arms_with_guards_keep_one_edge_per_arm() {
+        let body = "{ match value { n if n > 0 && n < 10 => a(), _ => b(), } done(); }";
+        let graph = cfg(body);
+        assert_eq!(
+            kinds(&graph),
+            vec![
+                NodeKind::Entry,
+                NodeKind::Exit,
+                NodeKind::Match,
+                NodeKind::Statement,
+                NodeKind::Statement,
+                NodeKind::Statement,
+            ],
+            "a guard does not add a node of its own"
+        );
+        let header = graph
+            .nodes
+            .iter()
+            .find(|node| node.kind == NodeKind::Match)
+            .expect("match node");
+        let arms = graph
+            .edges
+            .iter()
+            .filter(|edge| edge.from == header.id)
+            .count();
+        assert_eq!(arms, 2, "one edge per arm, guard or not");
+        assert_eq!(graph.edges.len(), 6, "edges: {:?}", graph.edges);
+        assert!(graph.nodes.iter().all(|node| graph.is_reachable(node.id)));
+        assert_eq!(graph, cfg(body));
+    }
+
+    #[test]
     fn bare_loop_exit_is_explicitly_unknown() {
         let graph = cfg("{\n loop {\n step();\n }\n after();\n}");
         assert!(graph
