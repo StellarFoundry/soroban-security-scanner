@@ -903,6 +903,53 @@ fn cfg_truncation_diagnostics(
     found
 }
 
+/// Reports constructs the control-flow builder does not model.
+///
+/// Constructs are aggregated across the scan by kind, so the report says which
+/// gaps exist and how often they occur without naming a file, function, or any
+/// source text. The list is capped like [`cfg_truncation_diagnostics`].
+fn cfg_unmodelled_diagnostics(
+    ctx: &AnalysisContext<'_>,
+    sources: &[ParsedSource],
+) -> Vec<Diagnostic> {
+    let mut counts: BTreeMap<cfg::UnmodelledKind, usize> = BTreeMap::new();
+    for source in sources {
+        let Some(file) = &source.syntax else {
+            continue;
+        };
+        for func in crate::rules::util::contract_entry_functions(file) {
+            if !func.is_public {
+                continue;
+            }
+            for (kind, count) in &ctx.cfg_for_function(source, &func).unmodelled {
+                *counts.entry(*kind).or_insert(0) += count;
+            }
+        }
+    }
+
+    let mut diagnostics: Vec<Diagnostic> = Vec::new();
+    for (kind, count) in counts.iter().take(cfg::MAX_CFG_DIAGNOSTICS) {
+        diagnostics.push(Diagnostic::warning(
+            DiagnosticCode::CfgUnmodelled,
+            format!(
+                "{count} control-flow construct(s) of kind `{}` are not modelled; \
+                 reachability near them may be incomplete",
+                kind.as_str()
+            ),
+            None,
+        ));
+    }
+    if counts.len() > cfg::MAX_CFG_DIAGNOSTICS {
+        let omitted = counts.len() - cfg::MAX_CFG_DIAGNOSTICS;
+        diagnostics.push(Diagnostic::info(
+            DiagnosticCode::CfgUnmodelled,
+            format!("{omitted} additional unmodelled-construct kind(s) omitted"),
+            None,
+        ));
+    }
+    diagnostics
+}
+
 /// Runs the scanner over a loaded project with optional pipeline hooks.
 ///
 /// This is an additive variant of [`scan`]. Discovery and parsing already
@@ -1002,6 +1049,7 @@ pub fn scan_with_hooks(
 
     if analysis_mode == AnalysisMode::Soroban {
         diagnostics.extend(cfg_truncation_diagnostics(&ctx, &loaded.sources));
+        diagnostics.extend(cfg_unmodelled_diagnostics(&ctx, &loaded.sources));
     }
 
     // Taint rules can decline to fire when a helper is undefined, a construct is
