@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   self-contained `index.html` summary with inline CSS and no scripts. CI
   validates the artifact and uploads it with a bounded 14-day retention; neither
   file contains source text or absolute paths (`#327`).
+- Code-scanning baseline synchronization (`soroban-scan baseline push` and
+  `soroban-scan baseline pull`) with fail-closed envelope verification, rule
+  registry fingerprinting, safe key validation, overwrite protection, and token
+  redaction (`#344`).
 - Findings carry an optional, additive `exploitability` context (`reachability`,
   `entry_point`, and reserved `taint`) when the control-flow graph covers the
   finding line. It is omitted when evidence is incomplete and never changes

@@ -163,6 +163,13 @@ impl ServerState {
             .pending
             .iter()
             .filter(|(uri, pending)| pending.due <= now && !self.inflight.contains_key(*uri))
+            .filter(|(uri, pending)| {
+                pending.due <= now
+                    && self
+                        .inflight
+                        .get(*uri)
+                        .is_none_or(|active| active.timed_out)
+            })
             .map(|(uri, _)| uri.clone())
             .collect();
 

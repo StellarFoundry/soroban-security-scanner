@@ -22,6 +22,7 @@ soroban-scan <COMMAND>
 | `artifact-name` | Print the canonical, deterministic report artifact name. |
 | `pack` | Install, list, update, or remove local community rule packs. |
 | `openapi` | Generate or validate the OpenAPI 3.1.0 contract from the implemented routes. |
+| `baseline` | Synchronize baseline artifacts (push or pull) with envelope verification. |
 | `config show` / `config validate` | Inspect or validate configuration. |
 
 ---
@@ -664,6 +665,45 @@ never included.
 
 See [OpenAPI contract generation](integration/openapi.md) and the published
 contract at [`docs/integration/openapi.json`](integration/openapi.json).
+
+---
+
+## `baseline`
+
+```text
+soroban-scan baseline push --key <KEY> --file <PATH> [--store-dir <DIR>] [--revision <N>] [--force]
+soroban-scan baseline pull --key <KEY> --output <PATH> [--store-dir <DIR>]
+```
+
+Synchronizes scan baselines to and from an artifact store (such as a directory backed by CI artifact upload/download actions or caching) with envelope verification and overwrite protection.
+
+### Subcommands
+
+#### `baseline push`
+
+Wraps a baseline file in a verified envelope and stores it under the given key.
+
+| Option | Default | Description |
+| ------ | ------- | ----------- |
+| `--key <KEY>` | *(required)* | Storage key for the baseline artifact (`[A-Za-z0-9._-]`, max 128 chars). |
+| `--file <FILE>` | *(required)* | Path to the local baseline file to push. |
+| `--store-dir <DIR>` | `.soroban-scan-store` | Path to directory-backed artifact store. |
+| `--revision <N>` | `1` | Monotonically increasing revision counter for overwrite checks. |
+| `--force` | `false` | Overwrite even if remote baseline is newer or has diverged. |
+
+#### `baseline pull`
+
+Fetches and verifies a baseline envelope by key, writing the validated baseline payload to `--output`.
+
+| Option | Default | Description |
+| ------ | ------- | ----------- |
+| `--key <KEY>` | *(required)* | Storage key for the baseline artifact. |
+| `--output <FILE>` | *(required)* | Destination path for the unpacked baseline file. |
+| `--store-dir <DIR>` | `.soroban-scan-store` | Path to directory-backed artifact store. |
+
+If no baseline exists for the key, `baseline pull` prints `notice: no baseline found for key '<KEY>'` and exits `0` without creating a file.
+
+---
 
 ## `completions`
 

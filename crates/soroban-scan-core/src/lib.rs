@@ -20,6 +20,7 @@ pub mod ai;
 pub mod analysis;
 pub mod api_auth;
 pub mod baseline;
+pub mod baseline_sync;
 pub mod category;
 pub mod compare;
 pub mod confidence;

@@ -26,7 +26,7 @@ is enforced by the `api_stability` integration test.
 - `sdk_matrix` (supported Soroban SDK range and `SDK-001` warnings) and
   `unsupported` (bounded `SYNTAX-001` diagnostics for other languages).
 - `imports` (best-effort, per-file `use` resolution), `ai`, `baseline`,
-  `compare`, `correlation`, `context`, `error`, `fingerprint`, `pack`, `policy`,
+  `baseline_sync`, `compare`, `correlation`, `context`, `error`, `fingerprint`, `pack`, `policy`,
   `corpus`, `redaction`, `service`, and `telemetry` support modules.
 - `imports` (best-effort, per-file `use` resolution), `lsp_severity`
   (LSP diagnostic severity mapping policy), `ai`, `baseline`,

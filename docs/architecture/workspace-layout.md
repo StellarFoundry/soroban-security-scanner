@@ -92,6 +92,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `engine` | Runs enabled rules, collects/sorts/deduplicates findings, applies suppressions and baselines, and loads projects through the frontend trait. | `config`, `context`, `error`, `finding`, `frontend`, `model`, `registry`, `suppression`. |
 | `suppression` | Inline `ignore` directives and source ranges. | `finding`-adjacent data only. |
 | `baseline` | Fingerprint baselines, JSON/TOML parsing, merge/prune, unknown-rule diagnostics. | `error`, `finding`, `model`, `registry`, `severity`. |
+| `baseline_sync` | Baseline storage abstraction, envelope verification, overwrite protection, and credential redaction. | `ai`, `baseline`, `registry`. |
 | `report` | Terminal, JSON, SARIF, Markdown, HTML, and GitHub renderers. | `config`, `engine`, `finding`, `model`, `registry`, `rule`, `severity`. |
 | `correlation` | Deterministic, bounded related-finding links shared between JSON and SARIF; ambiguity is recorded, never guessed. | `finding`. |
 | `redaction` | Opt-in hashing of selected report fields at render time; fingerprints stay intact. | `baseline`, `engine`, `finding`. |
