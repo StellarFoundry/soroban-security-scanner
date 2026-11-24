@@ -53,6 +53,7 @@ Start here.
 - [Repository Automation (xtask)](development/xtask.md)
 - [Mutation Testing](development/mutation-testing.md)
 - [Testing](development/testing.md)
+- [Corpus licensing and provenance](corpus-provenance.md)
 - [Benchmarks](development/benchmarks.md)
 - [Writing Rules](contributors/writing-rules.md)
 - [Corpus Licensing and Provenance](corpus-provenance.md) - requirements for third-party fixtures.

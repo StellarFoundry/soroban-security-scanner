@@ -13,6 +13,8 @@ fixtures/
   cross-language/  # valid non-Rust projects that must fail safely
   sdk-matrix/      # SDK version compatibility fixtures
   rule-packs/      # Rule pack fixtures for signing and verification tests
+  third-party/     # third-party contracts; each needs PROVENANCE.toml
+  provenance-checks/ # fixtures for the provenance validator
   reports/         # JSON scan reports used by comparison and dashboard tests
 ```
 

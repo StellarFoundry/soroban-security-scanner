@@ -1,8 +1,7 @@
-//! Corpus licensing and provenance policy enforcement.
+//! Corpus licensing and provenance policy (docs/corpus-provenance.md).
 //!
-//! Every third-party entry under `fixtures/third-party/` must contain a
-//! valid `PROVENANCE.toml` with an approved license, source URL, and an
-//! existing expected-findings manifest.
+//! Every entry under `fixtures/third-party/` must have a `PROVENANCE.toml`
+//! with a compatible license, a source URL, and an expected-findings manifest.
 
 use std::path::{Component, Path, PathBuf};
 
@@ -27,19 +26,15 @@ fn str_field<'a>(table: &'a toml::Table, key: &str) -> Result<&'a str, String> {
     }
 }
 
-/// Validates a single directory; returns all policy errors found.
+/// Validate one entry directory; returns every policy violation found.
 fn check_entry(dir: &Path) -> Vec<String> {
-    let provenance_path = dir.join("PROVENANCE.toml");
-    let text = match std::fs::read_to_string(&provenance_path) {
-        Ok(t) => t,
-        Err(_) => return vec!["missing PROVENANCE.toml".to_string()],
+    let Ok(text) = std::fs::read_to_string(dir.join("PROVENANCE.toml")) else {
+        return vec!["missing PROVENANCE.toml".into()];
     };
-
     let table: toml::Table = match text.parse() {
         Ok(t) => t,
         Err(e) => return vec![format!("invalid PROVENANCE.toml: {e}")],
     };
-
     let mut errors = Vec::new();
 
     match str_field(&table, "license") {
@@ -47,13 +42,11 @@ fn check_entry(dir: &Path) -> Vec<String> {
         Ok(l) => errors.push(format!("incompatible license `{l}`")),
         Err(e) => errors.push(e),
     }
-
     match str_field(&table, "source_url") {
         Ok(u) if u.starts_with("https://") && u.len() > "https://".len() => {}
         Ok(u) => errors.push(format!("`source_url` must be an https URL, got `{u}`")),
         Err(e) => errors.push(e),
     }
-
     match str_field(&table, "expected_findings") {
         Ok(p) => {
             let rel = Path::new(p);
@@ -67,7 +60,6 @@ fn check_entry(dir: &Path) -> Vec<String> {
         }
         Err(e) => errors.push(e),
     }
-
     errors
 }
 
@@ -82,7 +74,6 @@ fn third_party_entries_have_valid_provenance() {
         Ok(entries) => entries,
         Err(e) => panic!("cannot read third-party fixtures dir: {e}"),
     };
-
     for entry in entries.flatten() {
         let path = entry.path();
         if path.is_dir() {
@@ -91,7 +82,6 @@ fn third_party_entries_have_valid_provenance() {
             }
         }
     }
-
     assert!(
         failures.is_empty(),
         "provenance policy violations:\n{}",
@@ -125,7 +115,6 @@ fn invalid_provenance_fixtures_are_rejected() {
         ("missing-manifest", "missing `expected_findings`"),
         ("missing-file", "does not exist"),
     ];
-
     for (name, expected_err) in cases {
         let dir = fixtures_dir().join("provenance-checks").join(name);
         let errors = check_entry(&dir);
@@ -134,4 +123,13 @@ fn invalid_provenance_fixtures_are_rejected() {
             "{name}: expected error containing `{expected_err}`, got {errors:?}"
         );
     }
+}
+
+#[test]
+fn entry_without_provenance_file_is_rejected() {
+    let dir = fixtures_dir().join("provenance-checks");
+    assert_eq!(
+        check_entry(&dir),
+        vec!["missing PROVENANCE.toml".to_string()]
+    );
 }
