@@ -1423,6 +1423,34 @@
                 "level": "warning"
               },
               "fullDescription": {
+                "text": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported."
+              },
+              "help": {
+                "markdown": "## Cross-contract call without error handling\n\nA cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.\n\n### Remediation\n\nPropagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security\n- https://developers.stellar.org/docs/build/guides/contract-errors",
+                "text": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.\n\nRemediation: Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-045",
+              "name": "Cross-contract call without error handling",
+              "properties": {
+                "category": "cross-contract",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security",
+                  "https://developers.stellar.org/docs/build/guides/contract-errors"
+                ],
+                "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Cross-contract call without error handling"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
                 "text": "A contract writes different logical records through the same storage key construction. When the key is a literal or a constructor whose arguments do not fully separate the records, one write can overwrite or be mistaken for another record with a different field set. The detector compares the field sets of struct literals written to the same key in the same storage class and reports only when they differ, with low confidence."
               },
               "help": {

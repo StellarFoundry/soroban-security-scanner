@@ -237,3 +237,8 @@ why = "A publish chain split across lines still carries an unbounded Vec paramet
 file = "SS-049/sample.rs"
 expect = "trigger"
 why = "A from_utf8 result split across lines is still unwrapped, so invalid UTF-8 panics."
+
+[SS-045]
+file = "SS-045/spaced_client_call.rs"
+expect = "trigger"
+why = "Whitespace spread across the constructor and the client method call does not hide that the cross-contract result is discarded."

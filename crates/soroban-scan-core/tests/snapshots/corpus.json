@@ -8,7 +8,7 @@
   "project": {
     "root": "fixtures/corpus",
     "kind": "confirmed_soroban",
-    "source_files": 194,
+    "source_files": 198,
     "soroban_sdk_versions": []
   },
   "stats": {
@@ -179,13 +179,13 @@
         }
       ]
     },
-    "files_analyzed": 194,
-    "files_parsed": 194,
+    "files_analyzed": 198,
+    "files_parsed": 198,
     "files_failed": 0,
     "files_skipped": 0,
-    "rules_run": 46,
+    "rules_run": 47,
     "rules_skipped": 0,
-    "findings_raw": 378,
+    "findings_raw": 405,
     "findings_rejected": 0,
     "suppressions_detected": 0,
     "findings_suppressed": 0,
@@ -200,7 +200,7 @@
       "arithmetic": 13,
       "authorization": 66,
       "configuration": 5,
-      "cross-contract": 68,
+      "cross-contract": 95,
       "dependencies": 3,
       "error-handling": 31,
       "events": 26,
@@ -303,7 +303,7 @@
       {
         "rule_id": "SS-019",
         "duration": "under_1s",
-        "findings": 27
+        "findings": 28
       },
       {
         "rule_id": "SS-020",
@@ -419,6 +419,11 @@
         "rule_id": "SS-044",
         "duration": "under_1s",
         "findings": 21
+      },
+      {
+        "rule_id": "SS-045",
+        "duration": "under_1s",
+        "findings": 26
       },
       {
         "rule_id": "SS-046",
@@ -2381,13 +2386,14 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "027400cffb4ba67caee9f8fab09d9ca8",
         "2a86e785ad5ffa58b7b6fe74a5c7ee64",
         "788438c0f7a3313ffbd14856426b11ed",
         "a540d0552854c83a2e514ebe3addb904",
         "d53729124e927bdf3c7454cc7eb67305"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64"
+      "group_id": "group-027400cffb4ba67caee9f8fab09d9ca8"
     },
     {
       "rule_id": "SS-028",
@@ -2413,13 +2419,14 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "027400cffb4ba67caee9f8fab09d9ca8",
         "788438c0f7a3313ffbd14856426b11ed",
         "96471f7dd91c176605db04047f9b0508",
         "a540d0552854c83a2e514ebe3addb904",
         "d53729124e927bdf3c7454cc7eb67305"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64"
+      "group_id": "group-027400cffb4ba67caee9f8fab09d9ca8"
     },
     {
       "rule_id": "SS-030",
@@ -2945,13 +2952,14 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "1d86656040628adc2fba7df15720aa4f",
         "38596df81ee5f515b07be4226e5f9724",
         "abf517d48bfba243b2c0554830570edf",
         "dabd871e475d6d115bb8025943652d89",
         "ee16d4000bb6d884c3d94aa068300561"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-38596df81ee5f515b07be4226e5f9724"
+      "group_id": "group-1d86656040628adc2fba7df15720aa4f"
     },
     {
       "rule_id": "SS-028",
@@ -2977,13 +2985,14 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "1d86656040628adc2fba7df15720aa4f",
         "38596df81ee5f515b07be4226e5f9724",
         "91372358a70638073c121aa93fb854ad",
         "abf517d48bfba243b2c0554830570edf",
         "ee16d4000bb6d884c3d94aa068300561"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-38596df81ee5f515b07be4226e5f9724"
+      "group_id": "group-1d86656040628adc2fba7df15720aa4f"
     },
     {
       "rule_id": "SS-002",
@@ -3571,6 +3580,38 @@
       },
       "related": [
         "0be9f5344f226568677ab5e99abfc6f4",
+        "d5475c0cbf4d93267f0783dbf8255c86",
+        "f9c9ecc3338f8b60458af0e53ed0279a"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-0be9f5344f226568677ab5e99abfc6f4"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative.rs",
+        "line": 11,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `payout`: client . transfer (& from , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "f9c9ecc3338f8b60458af0e53ed0279a",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
+      },
+      "related": [
+        "0be9f5344f226568677ab5e99abfc6f4",
+        "7b9c2285cafe0c7695c46f22694bbda5",
         "d5475c0cbf4d93267f0783dbf8255c86"
       ],
       "correlation_ambiguous": true,
@@ -3600,11 +3641,43 @@
         "entry_point": "Router::route"
       },
       "related": [
+        "55904d1b35e0443f18361b1440bd97f7",
         "8adc97c9ebea073ca91b1be726aadb3c",
         "a362fd34490f0f54cfdbbb67ce42d6ee"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-8adc97c9ebea073ca91b1be726aadb3c"
+      "group_id": "group-55904d1b35e0443f18361b1440bd97f7"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative.rs",
+        "line": 21,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `route`: client . transfer (& from , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "55904d1b35e0443f18361b1440bd97f7",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Router::route"
+      },
+      "related": [
+        "8adc97c9ebea073ca91b1be726aadb3c",
+        "a362fd34490f0f54cfdbbb67ce42d6ee",
+        "acede228d48f4693b023d19b85fdff01"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-55904d1b35e0443f18361b1440bd97f7"
     },
     {
       "rule_id": "SS-019",
@@ -3631,6 +3704,38 @@
       },
       "related": [
         "7d4a08e424b4e0ffc20ef938ea5e2000",
+        "9e5c95f2359558ad02557940a2113ca4",
+        "eef1aae7728ff3da31ba5b3bb1fc3ca2"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-7d4a08e424b4e0ffc20ef938ea5e2000"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative2.rs",
+        "line": 16,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `pay`: client . transfer (& env . current_contract_address () , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "9e5c95f2359558ad02557940a2113ca4",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Payments::pay"
+      },
+      "related": [
+        "7d4a08e424b4e0ffc20ef938ea5e2000",
+        "e5053eb8c254a77c84f95f7ecbd5026c",
         "eef1aae7728ff3da31ba5b3bb1fc3ca2"
       ],
       "correlation_ambiguous": true,
@@ -3661,6 +3766,38 @@
       },
       "related": [
         "328b650bdb827caae9d740968006f0dc",
+        "547dea37a4cd38f87a0e74848ce1949d",
+        "c7e4ffa61cf7ff8f67e9c651434accef"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-328b650bdb827caae9d740968006f0dc"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative2.rs",
+        "line": 22,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `pay_configured`: client . transfer (& env . current_contract_address () , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "c7e4ffa61cf7ff8f67e9c651434accef",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Payments::pay_configured"
+      },
+      "related": [
+        "328b650bdb827caae9d740968006f0dc",
+        "40814c10be9dce76435571e9ad3c9eab",
         "547dea37a4cd38f87a0e74848ce1949d"
       ],
       "correlation_ambiguous": true,
@@ -3690,11 +3827,43 @@
         "entry_point": "Paymaster::payout"
       },
       "related": [
+        "269e9a7fa83e614b9bd3d17b502175a5",
         "2c0ad5f35847c792f4f0c2601a5310f3",
         "e8bbd271b173fc302e7875bd7557d93b"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-2c0ad5f35847c792f4f0c2601a5310f3"
+      "group_id": "group-269e9a7fa83e614b9bd3d17b502175a5"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative3.rs",
+        "line": 11,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `payout`: client . transfer (& from , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "269e9a7fa83e614b9bd3d17b502175a5",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
+      },
+      "related": [
+        "2c0ad5f35847c792f4f0c2601a5310f3",
+        "51b60ca5ffa9f7c9d2b54307b1954fc8",
+        "e8bbd271b173fc302e7875bd7557d93b"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-269e9a7fa83e614b9bd3d17b502175a5"
     },
     {
       "rule_id": "SS-019",
@@ -3721,7 +3890,39 @@
       },
       "related": [
         "16ae2ff5dac988b965881be178ce6079",
+        "44550e6cb68988201bdd4af55ebf16fc",
         "bb133c7cb974e38979862568c7ae8504"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-16ae2ff5dac988b965881be178ce6079"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/negative3.rs",
+        "line": 21,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `route`: client . transfer (& from , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "44550e6cb68988201bdd4af55ebf16fc",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Router::route"
+      },
+      "related": [
+        "16ae2ff5dac988b965881be178ce6079",
+        "bb133c7cb974e38979862568c7ae8504",
+        "d29c8d617e14f3f024df7360ed7b8c87"
       ],
       "correlation_ambiguous": true,
       "group_id": "group-16ae2ff5dac988b965881be178ce6079"
@@ -3750,6 +3951,38 @@
         "entry_point": "Paymaster::payout"
       },
       "related": [
+        "3dfc41148c088ed584c759e633059253",
+        "85a2b2f1a89e41ebe961cf8e0ddc7d59",
+        "f78fd32b10f19b418bf1fbaf779b567c"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-2af3668a68b8b8fff15113220e75af66"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-002/positive.rs",
+        "line": 10,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "f78fd32b10f19b418bf1fbaf779b567c",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Paymaster::payout"
+      },
+      "related": [
+        "2af3668a68b8b8fff15113220e75af66",
         "3dfc41148c088ed584c759e633059253",
         "85a2b2f1a89e41ebe961cf8e0ddc7d59"
       ],
@@ -3780,11 +4013,43 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "4f18340a06996e753ec0d061626c2e6c",
         "60dcd6e6d8870acb998437dcc30148bb",
         "7868cde3c25c6fe4ad03ed928848d963"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-60dcd6e6d8870acb998437dcc30148bb"
+      "group_id": "group-4f18340a06996e753ec0d061626c2e6c"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-013/negative.rs",
+        "line": 7,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "4f18340a06996e753ec0d061626c2e6c",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
+      },
+      "related": [
+        "60dcd6e6d8870acb998437dcc30148bb",
+        "7868cde3c25c6fe4ad03ed928848d963",
+        "8b86f2b60e6a444b286971c481179811"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-4f18340a06996e753ec0d061626c2e6c"
     },
     {
       "rule_id": "SS-019",
@@ -3811,7 +4076,39 @@
       },
       "related": [
         "81e7b60122b5fd2c76f651276d06768a",
+        "876ccc895a51000a7b3ba76fc5f69a69",
         "cf8a4241f25d646a75abbf4a8ebb523e"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-81e7b60122b5fd2c76f651276d06768a"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-013/negative3.rs",
+        "line": 7,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "876ccc895a51000a7b3ba76fc5f69a69",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
+      },
+      "related": [
+        "81e7b60122b5fd2c76f651276d06768a",
+        "cf8a4241f25d646a75abbf4a8ebb523e",
+        "fd7ae9e1a00f6c952bc4f11d3045a6ca"
       ],
       "correlation_ambiguous": true,
       "group_id": "group-81e7b60122b5fd2c76f651276d06768a"
@@ -3840,13 +4137,47 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "027400cffb4ba67caee9f8fab09d9ca8",
         "2a86e785ad5ffa58b7b6fe74a5c7ee64",
         "788438c0f7a3313ffbd14856426b11ed",
         "96471f7dd91c176605db04047f9b0508",
         "a540d0552854c83a2e514ebe3addb904"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64"
+      "group_id": "group-027400cffb4ba67caee9f8fab09d9ca8"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-013/positive.rs",
+        "line": 6,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "027400cffb4ba67caee9f8fab09d9ca8",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
+      },
+      "related": [
+        "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+        "788438c0f7a3313ffbd14856426b11ed",
+        "96471f7dd91c176605db04047f9b0508",
+        "a540d0552854c83a2e514ebe3addb904",
+        "d53729124e927bdf3c7454cc7eb67305"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-027400cffb4ba67caee9f8fab09d9ca8"
     },
     {
       "rule_id": "SS-019",
@@ -3872,10 +4203,41 @@
         "entry_point": "Vault::payout"
       },
       "related": [
+        "5c3c42cfe1c31e358e62757e90346c55",
         "eaf81a87f58710688ca1496570ccedee"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-5cdc6740236002705c69fda6050c99dc"
+      "group_id": "group-5c3c42cfe1c31e358e62757e90346c55"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-014/negative.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `payout`: client . transfer (& from , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "5c3c42cfe1c31e358e62757e90346c55",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
+      },
+      "related": [
+        "5cdc6740236002705c69fda6050c99dc",
+        "eaf81a87f58710688ca1496570ccedee"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-5c3c42cfe1c31e358e62757e90346c55"
     },
     {
       "rule_id": "SS-019",
@@ -3901,10 +4263,41 @@
         "entry_point": "Vault::payout"
       },
       "related": [
+        "7992578d21c1ebbf70cc32dddd7e007d",
         "ab3aa1676a7dc29ade3bb462a73fe0b8"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-ab3aa1676a7dc29ade3bb462a73fe0b8"
+      "group_id": "group-7992578d21c1ebbf70cc32dddd7e007d"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-014/negative2.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `payout`: client . transfer (& from , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "7992578d21c1ebbf70cc32dddd7e007d",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
+      },
+      "related": [
+        "ab3aa1676a7dc29ade3bb462a73fe0b8",
+        "d830436e31c7dae6ebcb77b6726f0a02"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-7992578d21c1ebbf70cc32dddd7e007d"
     },
     {
       "rule_id": "SS-019",
@@ -3930,10 +4323,41 @@
         "entry_point": "Vault::payout"
       },
       "related": [
+        "44bb5534adf09d6dd322efb89ec57b89",
         "8ac6744f5fb6451bd7069bc548dbed20"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-8ac6744f5fb6451bd7069bc548dbed20"
+      "group_id": "group-44bb5534adf09d6dd322efb89ec57b89"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-014/negative3.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `payout`: client . transfer (& from , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "44bb5534adf09d6dd322efb89ec57b89",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
+      },
+      "related": [
+        "8ac6744f5fb6451bd7069bc548dbed20",
+        "f768e05ab79654785b73117762ee1540"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-44bb5534adf09d6dd322efb89ec57b89"
     },
     {
       "rule_id": "SS-019",
@@ -3960,7 +4384,39 @@
       },
       "related": [
         "1a0210bc82d9870ef2668c400ed7b078",
-        "2b5bf3f8376bf0f80ab8ac9f00da94dc"
+        "2b5bf3f8376bf0f80ab8ac9f00da94dc",
+        "c7b3a7a9a6fe3737591682e226256535"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-1a0210bc82d9870ef2668c400ed7b078"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-014/positive.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `payout`: client . transfer (& from , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "c7b3a7a9a6fe3737591682e226256535",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
+      },
+      "related": [
+        "1a0210bc82d9870ef2668c400ed7b078",
+        "2b5bf3f8376bf0f80ab8ac9f00da94dc",
+        "34ec8ca36a47b0434c16fa976a058c3b"
       ],
       "correlation_ambiguous": true,
       "group_id": "group-1a0210bc82d9870ef2668c400ed7b078"
@@ -4016,9 +4472,39 @@
         "entry_point": "Vault::probe"
       },
       "related": [
-        "59dfee0175a75e4aef1c46583640189e"
+        "9f1ac2f599da78da00f42a578d1b866c"
       ],
-      "group_id": "group-59dfee0175a75e4aef1c46583640189e"
+      "correlation_ambiguous": true,
+      "group_id": "group-9f1ac2f599da78da00f42a578d1b866c"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-019/positive.rs",
+        "line": 19,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `probe`: client . balance (& who)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "9f1ac2f599da78da00f42a578d1b866c",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::probe"
+      },
+      "related": [
+        "d3c34df38b542b7b7ba0b07015bd9c56"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-9f1ac2f599da78da00f42a578d1b866c"
     },
     {
       "rule_id": "SS-022",
@@ -4181,11 +4667,43 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "2a136aafe52fc06c90e5402feaea2d8f",
         "b246a6af181e82c822350ad4e63a1c99",
         "c1094608dc3ee75c4c8599a06d25a9b8"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-b246a6af181e82c822350ad4e63a1c99"
+      "group_id": "group-2a136aafe52fc06c90e5402feaea2d8f"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/negative.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & token , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "2a136aafe52fc06c90e5402feaea2d8f",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
+      },
+      "related": [
+        "b246a6af181e82c822350ad4e63a1c99",
+        "c1094608dc3ee75c4c8599a06d25a9b8",
+        "de6b286d5c77a9568c549f49d54db1b7"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-2a136aafe52fc06c90e5402feaea2d8f"
     },
     {
       "rule_id": "SS-019",
@@ -4211,6 +4729,38 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "3b059e2094045bb07bd10904f219b6cb",
+        "e875a59bfa7d6403272f5677bb5b6c8b",
+        "f37d556c2d707f25f61c7b3db5cc3413"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-1b98a6a5f598c533eb1b25bd5b8fe250"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/negative2.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & token , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "e875a59bfa7d6403272f5677bb5b6c8b",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
+      },
+      "related": [
+        "1b98a6a5f598c533eb1b25bd5b8fe250",
         "3b059e2094045bb07bd10904f219b6cb",
         "f37d556c2d707f25f61c7b3db5cc3413"
       ],
@@ -4264,13 +4814,47 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "1d86656040628adc2fba7df15720aa4f",
         "38596df81ee5f515b07be4226e5f9724",
         "91372358a70638073c121aa93fb854ad",
         "dabd871e475d6d115bb8025943652d89",
         "ee16d4000bb6d884c3d94aa068300561"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-38596df81ee5f515b07be4226e5f9724"
+      "group_id": "group-1d86656040628adc2fba7df15720aa4f"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-028/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `withdraw`: client . transfer (& env . current_contract_address () , & token , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "1d86656040628adc2fba7df15720aa4f",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::withdraw"
+      },
+      "related": [
+        "38596df81ee5f515b07be4226e5f9724",
+        "91372358a70638073c121aa93fb854ad",
+        "abf517d48bfba243b2c0554830570edf",
+        "dabd871e475d6d115bb8025943652d89",
+        "ee16d4000bb6d884c3d94aa068300561"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-1d86656040628adc2fba7df15720aa4f"
     },
     {
       "rule_id": "SS-029",
@@ -4319,11 +4903,43 @@
         "entry_point": "Vault::payout"
       },
       "related": [
+        "1b17686e13c2b2079b143094bd497243",
         "830264a95828084109f5e7b0edffe357",
         "c24246d25d23e1c883acfad3de5e9585"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-830264a95828084109f5e7b0edffe357"
+      "group_id": "group-1b17686e13c2b2079b143094bd497243"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-030/negative.rs",
+        "line": 17,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "1b17686e13c2b2079b143094bd497243",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
+      },
+      "related": [
+        "830264a95828084109f5e7b0edffe357",
+        "c24246d25d23e1c883acfad3de5e9585",
+        "dd7d962c7fe2636603c07cea1b7d90b6"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-1b17686e13c2b2079b143094bd497243"
     },
     {
       "rule_id": "SS-019",
@@ -4350,6 +4966,38 @@
       },
       "related": [
         "100da6fb77795c318413a10871dc8322",
+        "94e956612f2b77b326816c000b77aa26",
+        "e935aa3e1867c9fce22f03b037bf4e26"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-100da6fb77795c318413a10871dc8322"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-030/negative2.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "94e956612f2b77b326816c000b77aa26",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
+      },
+      "related": [
+        "100da6fb77795c318413a10871dc8322",
+        "763b03471d0c48d8cff72c2ca1a66ec8",
         "e935aa3e1867c9fce22f03b037bf4e26"
       ],
       "correlation_ambiguous": true,
@@ -4403,6 +5051,38 @@
       },
       "related": [
         "280073fd0c392575b928a4eec05ee5d9",
+        "d4fd1d5fb0fa4be8ccc29deec9906254",
+        "e4d1d7c7329ff42ad1330aa88e145a75"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-280073fd0c392575b928a4eec05ee5d9"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-030/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "d4fd1d5fb0fa4be8ccc29deec9906254",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::payout"
+      },
+      "related": [
+        "280073fd0c392575b928a4eec05ee5d9",
+        "e1f40c9883b82b58e7e8c067bc28c021",
         "e4d1d7c7329ff42ad1330aa88e145a75"
       ],
       "correlation_ambiguous": true,
@@ -4518,10 +5198,41 @@
         "entry_point": "Contract::payout"
       },
       "related": [
+        "3f85388bc5bf180848068c77ebf66a5f",
         "b688629950a0d3b3e7227182ada171f8"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-6b812ca2363af13c411c3fc45863afde"
+      "group_id": "group-3f85388bc5bf180848068c77ebf66a5f"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-044/negative.rs",
+        "line": 15,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & recipient , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "3f85388bc5bf180848068c77ebf66a5f",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
+      },
+      "related": [
+        "6b812ca2363af13c411c3fc45863afde",
+        "b688629950a0d3b3e7227182ada171f8"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-3f85388bc5bf180848068c77ebf66a5f"
     },
     {
       "rule_id": "SS-019",
@@ -4547,6 +5258,37 @@
         "entry_point": "Contract::payout"
       },
       "related": [
+        "b3333a41a4e39a39c7286d55ee8c13bd",
+        "d4fde64b8b3604ee92ffbdc1ac289239"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-421f9eade5a4334f041cbba2bea4137c"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-044/negative2.rs",
+        "line": 15,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & treasury , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "d4fde64b8b3604ee92ffbdc1ac289239",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
+      },
+      "related": [
+        "421f9eade5a4334f041cbba2bea4137c",
         "b3333a41a4e39a39c7286d55ee8c13bd"
       ],
       "correlation_ambiguous": true,
@@ -4576,10 +5318,41 @@
         "entry_point": "Contract::payout"
       },
       "related": [
+        "389b5aaf67852f71ebcae080ee1c2887",
         "41801c7c97f3cf0aeed49a383e167725"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-41801c7c97f3cf0aeed49a383e167725"
+      "group_id": "group-389b5aaf67852f71ebcae080ee1c2887"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-044/negative3.rs",
+        "line": 18,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & recipient , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "389b5aaf67852f71ebcae080ee1c2887",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
+      },
+      "related": [
+        "41801c7c97f3cf0aeed49a383e167725",
+        "f6ff0e4aa9c36db5393825361baf5717"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-389b5aaf67852f71ebcae080ee1c2887"
     },
     {
       "rule_id": "SS-019",
@@ -4605,11 +5378,99 @@
         "entry_point": "Contract::payout"
       },
       "related": [
+        "469cd6c550dd837e334ddfea70a7b959",
         "af85bf440d0340bcb30935ebaf8504cc",
         "bdf3b0c31758e632a82f8f89d0082eb8"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-a8f84b11be78a859620a1e96419831d2"
+      "group_id": "group-469cd6c550dd837e334ddfea70a7b959"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-044/positive.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "cross-contract call result is discarded in `payout`: client . transfer (& env . current_contract_address () , & to , & amount)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "469cd6c550dd837e334ddfea70a7b959",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Contract::payout"
+      },
+      "related": [
+        "a8f84b11be78a859620a1e96419831d2",
+        "af85bf440d0340bcb30935ebaf8504cc",
+        "bdf3b0c31758e632a82f8f89d0082eb8"
+      ],
+      "correlation_ambiguous": true,
+      "group_id": "group-469cd6c550dd837e334ddfea70a7b959"
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "description": "A cross-contract client call is used as a bare statement, so its `Result` is discarded instead of being propagated with `?`, matched, or checked with `if let`. A failed call then looks successful to the caller, which can leave accounting, balances, or emitted state inconsistent. The detector only reports calls whose result is discarded; calls assigned, returned, or handled are ignored.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-045/positive.rs",
+        "line": 15,
+        "column": 17
+      },
+      "evidence": "cross-contract client call result is discarded in `probe`: client . balance (& who)",
+      "remediation": "Handle the client call result: propagate it with `?`, match on `Ok`/`Err`, use `if let`, or explicitly document and log an intentional ignore. Never leave a fallible cross-contract call as a bare statement or in `let _ =`.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-interactions"
+      ],
+      "fingerprint": "6bdc32ed379f640b223fe0dab4f51ffa",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::probe"
+      },
+      "related": [
+        "78236bb0e6ca73b12e875e42afb81b96"
+      ],
+      "group_id": "group-6bdc32ed379f640b223fe0dab4f51ffa"
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "description": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.",
+      "severity": "medium",
+      "confidence": "medium",
+      "category": "cross-contract",
+      "location": {
+        "file": "SS-045/positive.rs",
+        "line": 15,
+        "column": 17
+      },
+      "evidence": "cross-contract call result is discarded in `probe`: client . balance (& who)",
+      "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security",
+        "https://developers.stellar.org/docs/build/guides/contract-errors"
+      ],
+      "fingerprint": "78236bb0e6ca73b12e875e42afb81b96",
+      "exploitability": {
+        "reachability": "reachable",
+        "entry_point": "Vault::probe"
+      },
+      "related": [
+        "6bdc32ed379f640b223fe0dab4f51ffa"
+      ],
+      "group_id": "group-6bdc32ed379f640b223fe0dab4f51ffa"
     },
     {
       "rule_id": "SS-048",
@@ -4778,7 +5639,8 @@
       },
       "related": [
         "0be9f5344f226568677ab5e99abfc6f4",
-        "7b9c2285cafe0c7695c46f22694bbda5"
+        "7b9c2285cafe0c7695c46f22694bbda5",
+        "f9c9ecc3338f8b60458af0e53ed0279a"
       ],
       "correlation_ambiguous": true,
       "group_id": "group-0be9f5344f226568677ab5e99abfc6f4"
@@ -4808,7 +5670,8 @@
       },
       "related": [
         "7b9c2285cafe0c7695c46f22694bbda5",
-        "d5475c0cbf4d93267f0783dbf8255c86"
+        "d5475c0cbf4d93267f0783dbf8255c86",
+        "f9c9ecc3338f8b60458af0e53ed0279a"
       ],
       "correlation_ambiguous": true,
       "group_id": "group-0be9f5344f226568677ab5e99abfc6f4"
@@ -4837,11 +5700,12 @@
         "entry_point": "Router::route"
       },
       "related": [
+        "55904d1b35e0443f18361b1440bd97f7",
         "8adc97c9ebea073ca91b1be726aadb3c",
         "acede228d48f4693b023d19b85fdff01"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-8adc97c9ebea073ca91b1be726aadb3c"
+      "group_id": "group-55904d1b35e0443f18361b1440bd97f7"
     },
     {
       "rule_id": "SS-044",
@@ -4867,11 +5731,12 @@
         "entry_point": "Router::route"
       },
       "related": [
+        "55904d1b35e0443f18361b1440bd97f7",
         "a362fd34490f0f54cfdbbb67ce42d6ee",
         "acede228d48f4693b023d19b85fdff01"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-8adc97c9ebea073ca91b1be726aadb3c"
+      "group_id": "group-55904d1b35e0443f18361b1440bd97f7"
     },
     {
       "rule_id": "SS-007",
@@ -4920,6 +5785,7 @@
         "entry_point": "Payments::pay"
       },
       "related": [
+        "9e5c95f2359558ad02557940a2113ca4",
         "e5053eb8c254a77c84f95f7ecbd5026c",
         "eef1aae7728ff3da31ba5b3bb1fc3ca2"
       ],
@@ -4951,6 +5817,7 @@
       },
       "related": [
         "7d4a08e424b4e0ffc20ef938ea5e2000",
+        "9e5c95f2359558ad02557940a2113ca4",
         "e5053eb8c254a77c84f95f7ecbd5026c"
       ],
       "correlation_ambiguous": true,
@@ -5009,7 +5876,8 @@
       },
       "related": [
         "328b650bdb827caae9d740968006f0dc",
-        "40814c10be9dce76435571e9ad3c9eab"
+        "40814c10be9dce76435571e9ad3c9eab",
+        "c7e4ffa61cf7ff8f67e9c651434accef"
       ],
       "correlation_ambiguous": true,
       "group_id": "group-328b650bdb827caae9d740968006f0dc"
@@ -5039,7 +5907,8 @@
       },
       "related": [
         "40814c10be9dce76435571e9ad3c9eab",
-        "547dea37a4cd38f87a0e74848ce1949d"
+        "547dea37a4cd38f87a0e74848ce1949d",
+        "c7e4ffa61cf7ff8f67e9c651434accef"
       ],
       "correlation_ambiguous": true,
       "group_id": "group-328b650bdb827caae9d740968006f0dc"
@@ -5068,11 +5937,12 @@
         "entry_point": "Paymaster::payout"
       },
       "related": [
+        "269e9a7fa83e614b9bd3d17b502175a5",
         "2c0ad5f35847c792f4f0c2601a5310f3",
         "51b60ca5ffa9f7c9d2b54307b1954fc8"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-2c0ad5f35847c792f4f0c2601a5310f3"
+      "group_id": "group-269e9a7fa83e614b9bd3d17b502175a5"
     },
     {
       "rule_id": "SS-044",
@@ -5098,11 +5968,12 @@
         "entry_point": "Paymaster::payout"
       },
       "related": [
+        "269e9a7fa83e614b9bd3d17b502175a5",
         "51b60ca5ffa9f7c9d2b54307b1954fc8",
         "e8bbd271b173fc302e7875bd7557d93b"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-2c0ad5f35847c792f4f0c2601a5310f3"
+      "group_id": "group-269e9a7fa83e614b9bd3d17b502175a5"
     },
     {
       "rule_id": "SS-014",
@@ -5128,6 +5999,7 @@
         "entry_point": "Router::route"
       },
       "related": [
+        "44550e6cb68988201bdd4af55ebf16fc",
         "bb133c7cb974e38979862568c7ae8504",
         "d29c8d617e14f3f024df7360ed7b8c87"
       ],
@@ -5159,6 +6031,7 @@
       },
       "related": [
         "16ae2ff5dac988b965881be178ce6079",
+        "44550e6cb68988201bdd4af55ebf16fc",
         "d29c8d617e14f3f024df7360ed7b8c87"
       ],
       "correlation_ambiguous": true,
@@ -5189,7 +6062,8 @@
       },
       "related": [
         "2af3668a68b8b8fff15113220e75af66",
-        "85a2b2f1a89e41ebe961cf8e0ddc7d59"
+        "85a2b2f1a89e41ebe961cf8e0ddc7d59",
+        "f78fd32b10f19b418bf1fbaf779b567c"
       ],
       "correlation_ambiguous": true,
       "group_id": "group-2af3668a68b8b8fff15113220e75af66"
@@ -5219,7 +6093,8 @@
       },
       "related": [
         "2af3668a68b8b8fff15113220e75af66",
-        "3dfc41148c088ed584c759e633059253"
+        "3dfc41148c088ed584c759e633059253",
+        "f78fd32b10f19b418bf1fbaf779b567c"
       ],
       "correlation_ambiguous": true,
       "group_id": "group-2af3668a68b8b8fff15113220e75af66"
@@ -5768,11 +6643,12 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "4f18340a06996e753ec0d061626c2e6c",
         "60dcd6e6d8870acb998437dcc30148bb",
         "8b86f2b60e6a444b286971c481179811"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-60dcd6e6d8870acb998437dcc30148bb"
+      "group_id": "group-4f18340a06996e753ec0d061626c2e6c"
     },
     {
       "rule_id": "SS-044",
@@ -5798,11 +6674,12 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "4f18340a06996e753ec0d061626c2e6c",
         "7868cde3c25c6fe4ad03ed928848d963",
         "8b86f2b60e6a444b286971c481179811"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-60dcd6e6d8870acb998437dcc30148bb"
+      "group_id": "group-4f18340a06996e753ec0d061626c2e6c"
     },
     {
       "rule_id": "SS-014",
@@ -5829,6 +6706,7 @@
       },
       "related": [
         "81e7b60122b5fd2c76f651276d06768a",
+        "876ccc895a51000a7b3ba76fc5f69a69",
         "fd7ae9e1a00f6c952bc4f11d3045a6ca"
       ],
       "correlation_ambiguous": true,
@@ -5858,6 +6736,7 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "876ccc895a51000a7b3ba76fc5f69a69",
         "cf8a4241f25d646a75abbf4a8ebb523e",
         "fd7ae9e1a00f6c952bc4f11d3045a6ca"
       ],
@@ -5888,13 +6767,14 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "027400cffb4ba67caee9f8fab09d9ca8",
         "2a86e785ad5ffa58b7b6fe74a5c7ee64",
         "788438c0f7a3313ffbd14856426b11ed",
         "96471f7dd91c176605db04047f9b0508",
         "d53729124e927bdf3c7454cc7eb67305"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64"
+      "group_id": "group-027400cffb4ba67caee9f8fab09d9ca8"
     },
     {
       "rule_id": "SS-044",
@@ -5920,13 +6800,14 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "027400cffb4ba67caee9f8fab09d9ca8",
         "2a86e785ad5ffa58b7b6fe74a5c7ee64",
         "96471f7dd91c176605db04047f9b0508",
         "a540d0552854c83a2e514ebe3addb904",
         "d53729124e927bdf3c7454cc7eb67305"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64"
+      "group_id": "group-027400cffb4ba67caee9f8fab09d9ca8"
     },
     {
       "rule_id": "SS-044",
@@ -5952,10 +6833,11 @@
         "entry_point": "Vault::payout"
       },
       "related": [
+        "5c3c42cfe1c31e358e62757e90346c55",
         "5cdc6740236002705c69fda6050c99dc"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-5cdc6740236002705c69fda6050c99dc"
+      "group_id": "group-5c3c42cfe1c31e358e62757e90346c55"
     },
     {
       "rule_id": "SS-044",
@@ -5981,10 +6863,11 @@
         "entry_point": "Vault::payout"
       },
       "related": [
+        "7992578d21c1ebbf70cc32dddd7e007d",
         "d830436e31c7dae6ebcb77b6726f0a02"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-ab3aa1676a7dc29ade3bb462a73fe0b8"
+      "group_id": "group-7992578d21c1ebbf70cc32dddd7e007d"
     },
     {
       "rule_id": "SS-044",
@@ -6010,10 +6893,11 @@
         "entry_point": "Vault::payout"
       },
       "related": [
+        "44bb5534adf09d6dd322efb89ec57b89",
         "f768e05ab79654785b73117762ee1540"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-8ac6744f5fb6451bd7069bc548dbed20"
+      "group_id": "group-44bb5534adf09d6dd322efb89ec57b89"
     },
     {
       "rule_id": "SS-014",
@@ -6040,7 +6924,8 @@
       },
       "related": [
         "2b5bf3f8376bf0f80ab8ac9f00da94dc",
-        "34ec8ca36a47b0434c16fa976a058c3b"
+        "34ec8ca36a47b0434c16fa976a058c3b",
+        "c7b3a7a9a6fe3737591682e226256535"
       ],
       "correlation_ambiguous": true,
       "group_id": "group-1a0210bc82d9870ef2668c400ed7b078"
@@ -6070,7 +6955,8 @@
       },
       "related": [
         "1a0210bc82d9870ef2668c400ed7b078",
-        "34ec8ca36a47b0434c16fa976a058c3b"
+        "34ec8ca36a47b0434c16fa976a058c3b",
+        "c7b3a7a9a6fe3737591682e226256535"
       ],
       "correlation_ambiguous": true,
       "group_id": "group-1a0210bc82d9870ef2668c400ed7b078"
@@ -6340,10 +7226,7 @@
         "reachability": "reachable",
         "entry_point": "Vault::probe"
       },
-      "related": [
-        "d3c34df38b542b7b7ba0b07015bd9c56"
-      ],
-      "group_id": "group-59dfee0175a75e4aef1c46583640189e"
+      "correlation_ambiguous": true
     },
     {
       "rule_id": "SS-020",
@@ -6475,11 +7358,12 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "2a136aafe52fc06c90e5402feaea2d8f",
         "c1094608dc3ee75c4c8599a06d25a9b8",
         "de6b286d5c77a9568c549f49d54db1b7"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-b246a6af181e82c822350ad4e63a1c99"
+      "group_id": "group-2a136aafe52fc06c90e5402feaea2d8f"
     },
     {
       "rule_id": "SS-044",
@@ -6505,11 +7389,12 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "2a136aafe52fc06c90e5402feaea2d8f",
         "b246a6af181e82c822350ad4e63a1c99",
         "de6b286d5c77a9568c549f49d54db1b7"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-b246a6af181e82c822350ad4e63a1c99"
+      "group_id": "group-2a136aafe52fc06c90e5402feaea2d8f"
     },
     {
       "rule_id": "SS-014",
@@ -6536,6 +7421,7 @@
       },
       "related": [
         "1b98a6a5f598c533eb1b25bd5b8fe250",
+        "e875a59bfa7d6403272f5677bb5b6c8b",
         "f37d556c2d707f25f61c7b3db5cc3413"
       ],
       "correlation_ambiguous": true,
@@ -6566,7 +7452,8 @@
       },
       "related": [
         "1b98a6a5f598c533eb1b25bd5b8fe250",
-        "3b059e2094045bb07bd10904f219b6cb"
+        "3b059e2094045bb07bd10904f219b6cb",
+        "e875a59bfa7d6403272f5677bb5b6c8b"
       ],
       "correlation_ambiguous": true,
       "group_id": "group-1b98a6a5f598c533eb1b25bd5b8fe250"
@@ -6595,13 +7482,14 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "1d86656040628adc2fba7df15720aa4f",
         "38596df81ee5f515b07be4226e5f9724",
         "91372358a70638073c121aa93fb854ad",
         "abf517d48bfba243b2c0554830570edf",
         "dabd871e475d6d115bb8025943652d89"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-38596df81ee5f515b07be4226e5f9724"
+      "group_id": "group-1d86656040628adc2fba7df15720aa4f"
     },
     {
       "rule_id": "SS-044",
@@ -6627,13 +7515,14 @@
         "entry_point": "Vault::withdraw"
       },
       "related": [
+        "1d86656040628adc2fba7df15720aa4f",
         "91372358a70638073c121aa93fb854ad",
         "abf517d48bfba243b2c0554830570edf",
         "dabd871e475d6d115bb8025943652d89",
         "ee16d4000bb6d884c3d94aa068300561"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-38596df81ee5f515b07be4226e5f9724"
+      "group_id": "group-1d86656040628adc2fba7df15720aa4f"
     },
     {
       "rule_id": "SS-039",
@@ -6687,11 +7576,12 @@
         "entry_point": "Vault::payout"
       },
       "related": [
+        "1b17686e13c2b2079b143094bd497243",
         "830264a95828084109f5e7b0edffe357",
         "dd7d962c7fe2636603c07cea1b7d90b6"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-830264a95828084109f5e7b0edffe357"
+      "group_id": "group-1b17686e13c2b2079b143094bd497243"
     },
     {
       "rule_id": "SS-044",
@@ -6717,11 +7607,12 @@
         "entry_point": "Vault::payout"
       },
       "related": [
+        "1b17686e13c2b2079b143094bd497243",
         "c24246d25d23e1c883acfad3de5e9585",
         "dd7d962c7fe2636603c07cea1b7d90b6"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-830264a95828084109f5e7b0edffe357"
+      "group_id": "group-1b17686e13c2b2079b143094bd497243"
     },
     {
       "rule_id": "SS-039",
@@ -6776,7 +7667,8 @@
       },
       "related": [
         "100da6fb77795c318413a10871dc8322",
-        "763b03471d0c48d8cff72c2ca1a66ec8"
+        "763b03471d0c48d8cff72c2ca1a66ec8",
+        "94e956612f2b77b326816c000b77aa26"
       ],
       "correlation_ambiguous": true,
       "group_id": "group-100da6fb77795c318413a10871dc8322"
@@ -6806,6 +7698,7 @@
       },
       "related": [
         "763b03471d0c48d8cff72c2ca1a66ec8",
+        "94e956612f2b77b326816c000b77aa26",
         "e935aa3e1867c9fce22f03b037bf4e26"
       ],
       "correlation_ambiguous": true,
@@ -6836,6 +7729,7 @@
       },
       "related": [
         "280073fd0c392575b928a4eec05ee5d9",
+        "d4fd1d5fb0fa4be8ccc29deec9906254",
         "e1f40c9883b82b58e7e8c067bc28c021"
       ],
       "correlation_ambiguous": true,
@@ -6865,6 +7759,7 @@
         "entry_point": "Vault::payout"
       },
       "related": [
+        "d4fd1d5fb0fa4be8ccc29deec9906254",
         "e1f40c9883b82b58e7e8c067bc28c021",
         "e4d1d7c7329ff42ad1330aa88e145a75"
       ],
@@ -6999,10 +7894,11 @@
         "entry_point": "Contract::payout"
       },
       "related": [
+        "3f85388bc5bf180848068c77ebf66a5f",
         "6b812ca2363af13c411c3fc45863afde"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-6b812ca2363af13c411c3fc45863afde"
+      "group_id": "group-3f85388bc5bf180848068c77ebf66a5f"
     },
     {
       "rule_id": "SS-014",
@@ -7028,7 +7924,8 @@
         "entry_point": "Contract::payout"
       },
       "related": [
-        "421f9eade5a4334f041cbba2bea4137c"
+        "421f9eade5a4334f041cbba2bea4137c",
+        "d4fde64b8b3604ee92ffbdc1ac289239"
       ],
       "correlation_ambiguous": true,
       "group_id": "group-421f9eade5a4334f041cbba2bea4137c"
@@ -7057,10 +7954,11 @@
         "entry_point": "Contract::payout"
       },
       "related": [
+        "389b5aaf67852f71ebcae080ee1c2887",
         "f6ff0e4aa9c36db5393825361baf5717"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-41801c7c97f3cf0aeed49a383e167725"
+      "group_id": "group-389b5aaf67852f71ebcae080ee1c2887"
     },
     {
       "rule_id": "SS-014",
@@ -7086,11 +7984,12 @@
         "entry_point": "Contract::payout"
       },
       "related": [
+        "469cd6c550dd837e334ddfea70a7b959",
         "a8f84b11be78a859620a1e96419831d2",
         "af85bf440d0340bcb30935ebaf8504cc"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-a8f84b11be78a859620a1e96419831d2"
+      "group_id": "group-469cd6c550dd837e334ddfea70a7b959"
     },
     {
       "rule_id": "SS-044",
@@ -7116,11 +8015,12 @@
         "entry_point": "Contract::payout"
       },
       "related": [
+        "469cd6c550dd837e334ddfea70a7b959",
         "a8f84b11be78a859620a1e96419831d2",
         "bdf3b0c31758e632a82f8f89d0082eb8"
       ],
       "correlation_ambiguous": true,
-      "group_id": "group-a8f84b11be78a859620a1e96419831d2"
+      "group_id": "group-469cd6c550dd837e334ddfea70a7b959"
     },
     {
       "rule_id": "SS-021",
@@ -10777,6 +11677,26 @@
       ]
     },
     {
+      "id": "group-027400cffb4ba67caee9f8fab09d9ca8",
+      "explanation": "findings share an overlapping source span (rules: SS-013, SS-014, SS-019, SS-028, SS-044, SS-045)",
+      "rule_ids": [
+        "SS-013",
+        "SS-014",
+        "SS-019",
+        "SS-028",
+        "SS-044",
+        "SS-045"
+      ],
+      "fingerprints": [
+        "027400cffb4ba67caee9f8fab09d9ca8",
+        "2a86e785ad5ffa58b7b6fe74a5c7ee64",
+        "788438c0f7a3313ffbd14856426b11ed",
+        "96471f7dd91c176605db04047f9b0508",
+        "a540d0552854c83a2e514ebe3addb904",
+        "d53729124e927bdf3c7454cc7eb67305"
+      ]
+    },
+    {
       "id": "group-0297bd333ae8bd85e622642073e257d8",
       "explanation": "findings share an overlapping source span (rules: SS-001, SS-006, SS-010)",
       "rule_ids": [
@@ -10894,16 +11814,18 @@
     },
     {
       "id": "group-0be9f5344f226568677ab5e99abfc6f4",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
       "rule_ids": [
         "SS-014",
         "SS-019",
-        "SS-044"
+        "SS-044",
+        "SS-045"
       ],
       "fingerprints": [
         "0be9f5344f226568677ab5e99abfc6f4",
         "7b9c2285cafe0c7695c46f22694bbda5",
-        "d5475c0cbf4d93267f0783dbf8255c86"
+        "d5475c0cbf4d93267f0783dbf8255c86",
+        "f9c9ecc3338f8b60458af0e53ed0279a"
       ]
     },
     {
@@ -10972,15 +11894,17 @@
     },
     {
       "id": "group-100da6fb77795c318413a10871dc8322",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
       "rule_ids": [
         "SS-014",
         "SS-019",
-        "SS-044"
+        "SS-044",
+        "SS-045"
       ],
       "fingerprints": [
         "100da6fb77795c318413a10871dc8322",
         "763b03471d0c48d8cff72c2ca1a66ec8",
+        "94e956612f2b77b326816c000b77aa26",
         "e935aa3e1867c9fce22f03b037bf4e26"
       ]
     },
@@ -11036,14 +11960,16 @@
     },
     {
       "id": "group-16ae2ff5dac988b965881be178ce6079",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
       "rule_ids": [
         "SS-014",
         "SS-019",
-        "SS-044"
+        "SS-044",
+        "SS-045"
       ],
       "fingerprints": [
         "16ae2ff5dac988b965881be178ce6079",
+        "44550e6cb68988201bdd4af55ebf16fc",
         "bb133c7cb974e38979862568c7ae8504",
         "d29c8d617e14f3f024df7360ed7b8c87"
       ]
@@ -11100,16 +12026,34 @@
     },
     {
       "id": "group-1a0210bc82d9870ef2668c400ed7b078",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
       "rule_ids": [
         "SS-014",
         "SS-019",
-        "SS-044"
+        "SS-044",
+        "SS-045"
       ],
       "fingerprints": [
         "1a0210bc82d9870ef2668c400ed7b078",
         "2b5bf3f8376bf0f80ab8ac9f00da94dc",
-        "34ec8ca36a47b0434c16fa976a058c3b"
+        "34ec8ca36a47b0434c16fa976a058c3b",
+        "c7b3a7a9a6fe3737591682e226256535"
+      ]
+    },
+    {
+      "id": "group-1b17686e13c2b2079b143094bd497243",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044",
+        "SS-045"
+      ],
+      "fingerprints": [
+        "1b17686e13c2b2079b143094bd497243",
+        "830264a95828084109f5e7b0edffe357",
+        "c24246d25d23e1c883acfad3de5e9585",
+        "dd7d962c7fe2636603c07cea1b7d90b6"
       ]
     },
     {
@@ -11126,15 +12070,17 @@
     },
     {
       "id": "group-1b98a6a5f598c533eb1b25bd5b8fe250",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
       "rule_ids": [
         "SS-014",
         "SS-019",
-        "SS-044"
+        "SS-044",
+        "SS-045"
       ],
       "fingerprints": [
         "1b98a6a5f598c533eb1b25bd5b8fe250",
         "3b059e2094045bb07bd10904f219b6cb",
+        "e875a59bfa7d6403272f5677bb5b6c8b",
         "f37d556c2d707f25f61c7b3db5cc3413"
       ]
     },
@@ -11148,6 +12094,26 @@
       "fingerprints": [
         "1d1db31d573676e9ed1bf9f0b4df12da",
         "cfe0afbc3ca2c5f32e7bd65fae6e9294"
+      ]
+    },
+    {
+      "id": "group-1d86656040628adc2fba7df15720aa4f",
+      "explanation": "findings share an overlapping source span (rules: SS-013, SS-014, SS-019, SS-028, SS-044, SS-045)",
+      "rule_ids": [
+        "SS-013",
+        "SS-014",
+        "SS-019",
+        "SS-028",
+        "SS-044",
+        "SS-045"
+      ],
+      "fingerprints": [
+        "1d86656040628adc2fba7df15720aa4f",
+        "38596df81ee5f515b07be4226e5f9724",
+        "91372358a70638073c121aa93fb854ad",
+        "abf517d48bfba243b2c0554830570edf",
+        "dabd871e475d6d115bb8025943652d89",
+        "ee16d4000bb6d884c3d94aa068300561"
       ]
     },
     {
@@ -11235,6 +12201,22 @@
       ]
     },
     {
+      "id": "group-269e9a7fa83e614b9bd3d17b502175a5",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044",
+        "SS-045"
+      ],
+      "fingerprints": [
+        "269e9a7fa83e614b9bd3d17b502175a5",
+        "2c0ad5f35847c792f4f0c2601a5310f3",
+        "51b60ca5ffa9f7c9d2b54307b1954fc8",
+        "e8bbd271b173fc302e7875bd7557d93b"
+      ]
+    },
+    {
       "id": "group-26f40bd11c8b96b541374822f06fa692",
       "explanation": "findings share a symbol: `load` (rules: SS-001, SS-004)",
       "rule_ids": [
@@ -11248,14 +12230,16 @@
     },
     {
       "id": "group-280073fd0c392575b928a4eec05ee5d9",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
       "rule_ids": [
         "SS-014",
         "SS-019",
-        "SS-044"
+        "SS-044",
+        "SS-045"
       ],
       "fingerprints": [
         "280073fd0c392575b928a4eec05ee5d9",
+        "d4fd1d5fb0fa4be8ccc29deec9906254",
         "e1f40c9883b82b58e7e8c067bc28c021",
         "e4d1d7c7329ff42ad1330aa88e145a75"
       ]
@@ -11273,6 +12257,22 @@
       ]
     },
     {
+      "id": "group-2a136aafe52fc06c90e5402feaea2d8f",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044",
+        "SS-045"
+      ],
+      "fingerprints": [
+        "2a136aafe52fc06c90e5402feaea2d8f",
+        "b246a6af181e82c822350ad4e63a1c99",
+        "c1094608dc3ee75c4c8599a06d25a9b8",
+        "de6b286d5c77a9568c549f49d54db1b7"
+      ]
+    },
+    {
       "id": "group-2a6346c2270dab2c59ed044705715246",
       "explanation": "findings share overlapping spans and symbols: `set_admin` (rules: SS-006, SS-010)",
       "rule_ids": [
@@ -11282,24 +12282,6 @@
       "fingerprints": [
         "2a6346c2270dab2c59ed044705715246",
         "34bcd75b26a59f32ed27bc3d6af7ada2"
-      ]
-    },
-    {
-      "id": "group-2a86e785ad5ffa58b7b6fe74a5c7ee64",
-      "explanation": "findings share an overlapping source span (rules: SS-013, SS-014, SS-019, SS-028, SS-044)",
-      "rule_ids": [
-        "SS-013",
-        "SS-014",
-        "SS-019",
-        "SS-028",
-        "SS-044"
-      ],
-      "fingerprints": [
-        "2a86e785ad5ffa58b7b6fe74a5c7ee64",
-        "788438c0f7a3313ffbd14856426b11ed",
-        "96471f7dd91c176605db04047f9b0508",
-        "a540d0552854c83a2e514ebe3addb904",
-        "d53729124e927bdf3c7454cc7eb67305"
       ]
     },
     {
@@ -11330,16 +12312,18 @@
     },
     {
       "id": "group-2af3668a68b8b8fff15113220e75af66",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
       "rule_ids": [
         "SS-014",
         "SS-019",
-        "SS-044"
+        "SS-044",
+        "SS-045"
       ],
       "fingerprints": [
         "2af3668a68b8b8fff15113220e75af66",
         "3dfc41148c088ed584c759e633059253",
-        "85a2b2f1a89e41ebe961cf8e0ddc7d59"
+        "85a2b2f1a89e41ebe961cf8e0ddc7d59",
+        "f78fd32b10f19b418bf1fbaf779b567c"
       ]
     },
     {
@@ -11352,20 +12336,6 @@
       "fingerprints": [
         "2bc8b98f658c7c959e3fc260fe9e8ec2",
         "f585cde2091c1a7b0f574e6ac645f38e"
-      ]
-    },
-    {
-      "id": "group-2c0ad5f35847c792f4f0c2601a5310f3",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
-      "rule_ids": [
-        "SS-014",
-        "SS-019",
-        "SS-044"
-      ],
-      "fingerprints": [
-        "2c0ad5f35847c792f4f0c2601a5310f3",
-        "51b60ca5ffa9f7c9d2b54307b1954fc8",
-        "e8bbd271b173fc302e7875bd7557d93b"
       ]
     },
     {
@@ -11394,16 +12364,18 @@
     },
     {
       "id": "group-328b650bdb827caae9d740968006f0dc",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
       "rule_ids": [
         "SS-014",
         "SS-019",
-        "SS-044"
+        "SS-044",
+        "SS-045"
       ],
       "fingerprints": [
         "328b650bdb827caae9d740968006f0dc",
         "40814c10be9dce76435571e9ad3c9eab",
-        "547dea37a4cd38f87a0e74848ce1949d"
+        "547dea37a4cd38f87a0e74848ce1949d",
+        "c7e4ffa61cf7ff8f67e9c651434accef"
       ]
     },
     {
@@ -11419,24 +12391,6 @@
       ]
     },
     {
-      "id": "group-38596df81ee5f515b07be4226e5f9724",
-      "explanation": "findings share an overlapping source span (rules: SS-013, SS-014, SS-019, SS-028, SS-044)",
-      "rule_ids": [
-        "SS-013",
-        "SS-014",
-        "SS-019",
-        "SS-028",
-        "SS-044"
-      ],
-      "fingerprints": [
-        "38596df81ee5f515b07be4226e5f9724",
-        "91372358a70638073c121aa93fb854ad",
-        "abf517d48bfba243b2c0554830570edf",
-        "dabd871e475d6d115bb8025943652d89",
-        "ee16d4000bb6d884c3d94aa068300561"
-      ]
-    },
-    {
       "id": "group-3860def458a71ab0ee0e2e0899610264",
       "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
       "rule_ids": [
@@ -11446,6 +12400,20 @@
       "fingerprints": [
         "3860def458a71ab0ee0e2e0899610264",
         "757ee1e079580fab11d10dcb83ded1a8"
+      ]
+    },
+    {
+      "id": "group-389b5aaf67852f71ebcae080ee1c2887",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-045)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-045"
+      ],
+      "fingerprints": [
+        "389b5aaf67852f71ebcae080ee1c2887",
+        "41801c7c97f3cf0aeed49a383e167725",
+        "f6ff0e4aa9c36db5393825361baf5717"
       ]
     },
     {
@@ -11499,15 +12467,17 @@
       ]
     },
     {
-      "id": "group-41801c7c97f3cf0aeed49a383e167725",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019)",
+      "id": "group-3f85388bc5bf180848068c77ebf66a5f",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-045)",
       "rule_ids": [
         "SS-014",
-        "SS-019"
+        "SS-019",
+        "SS-045"
       ],
       "fingerprints": [
-        "41801c7c97f3cf0aeed49a383e167725",
-        "f6ff0e4aa9c36db5393825361baf5717"
+        "3f85388bc5bf180848068c77ebf66a5f",
+        "6b812ca2363af13c411c3fc45863afde",
+        "b688629950a0d3b3e7227182ada171f8"
       ]
     },
     {
@@ -11524,14 +12494,16 @@
     },
     {
       "id": "group-421f9eade5a4334f041cbba2bea4137c",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019)",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-045)",
       "rule_ids": [
         "SS-014",
-        "SS-019"
+        "SS-019",
+        "SS-045"
       ],
       "fingerprints": [
         "421f9eade5a4334f041cbba2bea4137c",
-        "b3333a41a4e39a39c7286d55ee8c13bd"
+        "b3333a41a4e39a39c7286d55ee8c13bd",
+        "d4fde64b8b3604ee92ffbdc1ac289239"
       ]
     },
     {
@@ -11544,6 +12516,36 @@
       "fingerprints": [
         "4266573d71d97557c0a370ba11282c46",
         "4c717380a94b9599f33894136ee7573e"
+      ]
+    },
+    {
+      "id": "group-44bb5534adf09d6dd322efb89ec57b89",
+      "explanation": "findings share an overlapping source span (rules: SS-019, SS-044, SS-045)",
+      "rule_ids": [
+        "SS-019",
+        "SS-044",
+        "SS-045"
+      ],
+      "fingerprints": [
+        "44bb5534adf09d6dd322efb89ec57b89",
+        "8ac6744f5fb6451bd7069bc548dbed20",
+        "f768e05ab79654785b73117762ee1540"
+      ]
+    },
+    {
+      "id": "group-469cd6c550dd837e334ddfea70a7b959",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044",
+        "SS-045"
+      ],
+      "fingerprints": [
+        "469cd6c550dd837e334ddfea70a7b959",
+        "a8f84b11be78a859620a1e96419831d2",
+        "af85bf440d0340bcb30935ebaf8504cc",
+        "bdf3b0c31758e632a82f8f89d0082eb8"
       ]
     },
     {
@@ -11609,6 +12611,22 @@
       ]
     },
     {
+      "id": "group-4f18340a06996e753ec0d061626c2e6c",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044",
+        "SS-045"
+      ],
+      "fingerprints": [
+        "4f18340a06996e753ec0d061626c2e6c",
+        "60dcd6e6d8870acb998437dcc30148bb",
+        "7868cde3c25c6fe4ad03ed928848d963",
+        "8b86f2b60e6a444b286971c481179811"
+      ]
+    },
+    {
       "id": "group-509268ab4a288383acf40b26c7d4f0cb",
       "explanation": "findings share overlapping spans and symbols: `set` (rules: SS-006, SS-017)",
       "rule_ids": [
@@ -11633,6 +12651,22 @@
       ]
     },
     {
+      "id": "group-55904d1b35e0443f18361b1440bd97f7",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
+      "rule_ids": [
+        "SS-014",
+        "SS-019",
+        "SS-044",
+        "SS-045"
+      ],
+      "fingerprints": [
+        "55904d1b35e0443f18361b1440bd97f7",
+        "8adc97c9ebea073ca91b1be726aadb3c",
+        "a362fd34490f0f54cfdbbb67ce42d6ee",
+        "acede228d48f4693b023d19b85fdff01"
+      ]
+    },
+    {
       "id": "group-56712e7374e1b71b081e1b2acd1a0708",
       "explanation": "findings share overlapping spans and symbols: `set_admin` (rules: SS-001, SS-006)",
       "rule_ids": [
@@ -11642,18 +12676,6 @@
       "fingerprints": [
         "56712e7374e1b71b081e1b2acd1a0708",
         "90b372bac3f6a7d01fb6adddd5822924"
-      ]
-    },
-    {
-      "id": "group-59dfee0175a75e4aef1c46583640189e",
-      "explanation": "findings share a symbol: `probe` (rules: SS-019, SS-039)",
-      "rule_ids": [
-        "SS-019",
-        "SS-039"
-      ],
-      "fingerprints": [
-        "59dfee0175a75e4aef1c46583640189e",
-        "d3c34df38b542b7b7ba0b07015bd9c56"
       ]
     },
     {
@@ -11669,6 +12691,20 @@
       ]
     },
     {
+      "id": "group-5c3c42cfe1c31e358e62757e90346c55",
+      "explanation": "findings share an overlapping source span (rules: SS-019, SS-044, SS-045)",
+      "rule_ids": [
+        "SS-019",
+        "SS-044",
+        "SS-045"
+      ],
+      "fingerprints": [
+        "5c3c42cfe1c31e358e62757e90346c55",
+        "5cdc6740236002705c69fda6050c99dc",
+        "eaf81a87f58710688ca1496570ccedee"
+      ]
+    },
+    {
       "id": "group-5c3fa64e6e570324688bed66d18ca426",
       "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
       "rule_ids": [
@@ -11678,18 +12714,6 @@
       "fingerprints": [
         "5c3fa64e6e570324688bed66d18ca426",
         "87a76d3c698134ccf4a8389e7718285d"
-      ]
-    },
-    {
-      "id": "group-5cdc6740236002705c69fda6050c99dc",
-      "explanation": "findings share an overlapping source span (rules: SS-019, SS-044)",
-      "rule_ids": [
-        "SS-019",
-        "SS-044"
-      ],
-      "fingerprints": [
-        "5cdc6740236002705c69fda6050c99dc",
-        "eaf81a87f58710688ca1496570ccedee"
       ]
     },
     {
@@ -11726,20 +12750,6 @@
       "fingerprints": [
         "609fa930812061c84a9387e8e72f861e",
         "d54bae544db9a5f54f2f14127e3c7e22"
-      ]
-    },
-    {
-      "id": "group-60dcd6e6d8870acb998437dcc30148bb",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
-      "rule_ids": [
-        "SS-014",
-        "SS-019",
-        "SS-044"
-      ],
-      "fingerprints": [
-        "60dcd6e6d8870acb998437dcc30148bb",
-        "7868cde3c25c6fe4ad03ed928848d963",
-        "8b86f2b60e6a444b286971c481179811"
       ]
     },
     {
@@ -11781,15 +12791,15 @@
       ]
     },
     {
-      "id": "group-6b812ca2363af13c411c3fc45863afde",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019)",
+      "id": "group-6bdc32ed379f640b223fe0dab4f51ffa",
+      "explanation": "findings share overlapping spans and symbols: `probe` (rules: SS-019, SS-045)",
       "rule_ids": [
-        "SS-014",
-        "SS-019"
+        "SS-019",
+        "SS-045"
       ],
       "fingerprints": [
-        "6b812ca2363af13c411c3fc45863afde",
-        "b688629950a0d3b3e7227182ada171f8"
+        "6bdc32ed379f640b223fe0dab4f51ffa",
+        "78236bb0e6ca73b12e875e42afb81b96"
       ]
     },
     {
@@ -11843,6 +12853,20 @@
       ]
     },
     {
+      "id": "group-7992578d21c1ebbf70cc32dddd7e007d",
+      "explanation": "findings share an overlapping source span (rules: SS-019, SS-044, SS-045)",
+      "rule_ids": [
+        "SS-019",
+        "SS-044",
+        "SS-045"
+      ],
+      "fingerprints": [
+        "7992578d21c1ebbf70cc32dddd7e007d",
+        "ab3aa1676a7dc29ade3bb462a73fe0b8",
+        "d830436e31c7dae6ebcb77b6726f0a02"
+      ]
+    },
+    {
       "id": "group-7c0187710f5a7946468cee8f6eed300a",
       "explanation": "findings share an overlapping source span (rules: SS-001, SS-006)",
       "rule_ids": [
@@ -11868,14 +12892,16 @@
     },
     {
       "id": "group-7d4a08e424b4e0ffc20ef938ea5e2000",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
       "rule_ids": [
         "SS-014",
         "SS-019",
-        "SS-044"
+        "SS-044",
+        "SS-045"
       ],
       "fingerprints": [
         "7d4a08e424b4e0ffc20ef938ea5e2000",
+        "9e5c95f2359558ad02557940a2113ca4",
         "e5053eb8c254a77c84f95f7ecbd5026c",
         "eef1aae7728ff3da31ba5b3bb1fc3ca2"
       ]
@@ -11894,30 +12920,18 @@
     },
     {
       "id": "group-81e7b60122b5fd2c76f651276d06768a",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
+      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044, SS-045)",
       "rule_ids": [
         "SS-014",
         "SS-019",
-        "SS-044"
+        "SS-044",
+        "SS-045"
       ],
       "fingerprints": [
         "81e7b60122b5fd2c76f651276d06768a",
+        "876ccc895a51000a7b3ba76fc5f69a69",
         "cf8a4241f25d646a75abbf4a8ebb523e",
         "fd7ae9e1a00f6c952bc4f11d3045a6ca"
-      ]
-    },
-    {
-      "id": "group-830264a95828084109f5e7b0edffe357",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
-      "rule_ids": [
-        "SS-014",
-        "SS-019",
-        "SS-044"
-      ],
-      "fingerprints": [
-        "830264a95828084109f5e7b0edffe357",
-        "c24246d25d23e1c883acfad3de5e9585",
-        "dd7d962c7fe2636603c07cea1b7d90b6"
       ]
     },
     {
@@ -11956,32 +12970,6 @@
       "fingerprints": [
         "8a5f043f6501f9d291b36d7d1b4565e1",
         "a6833cca85cdefc6c3c3d976037c98b2"
-      ]
-    },
-    {
-      "id": "group-8ac6744f5fb6451bd7069bc548dbed20",
-      "explanation": "findings share an overlapping source span (rules: SS-019, SS-044)",
-      "rule_ids": [
-        "SS-019",
-        "SS-044"
-      ],
-      "fingerprints": [
-        "8ac6744f5fb6451bd7069bc548dbed20",
-        "f768e05ab79654785b73117762ee1540"
-      ]
-    },
-    {
-      "id": "group-8adc97c9ebea073ca91b1be726aadb3c",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
-      "rule_ids": [
-        "SS-014",
-        "SS-019",
-        "SS-044"
-      ],
-      "fingerprints": [
-        "8adc97c9ebea073ca91b1be726aadb3c",
-        "a362fd34490f0f54cfdbbb67ce42d6ee",
-        "acede228d48f4693b023d19b85fdff01"
       ]
     },
     {
@@ -12033,29 +13021,15 @@
       ]
     },
     {
-      "id": "group-a8f84b11be78a859620a1e96419831d2",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
-      "rule_ids": [
-        "SS-014",
-        "SS-019",
-        "SS-044"
-      ],
-      "fingerprints": [
-        "a8f84b11be78a859620a1e96419831d2",
-        "af85bf440d0340bcb30935ebaf8504cc",
-        "bdf3b0c31758e632a82f8f89d0082eb8"
-      ]
-    },
-    {
-      "id": "group-ab3aa1676a7dc29ade3bb462a73fe0b8",
-      "explanation": "findings share an overlapping source span (rules: SS-019, SS-044)",
+      "id": "group-9f1ac2f599da78da00f42a578d1b866c",
+      "explanation": "findings share an overlapping source span (rules: SS-019, SS-045)",
       "rule_ids": [
         "SS-019",
-        "SS-044"
+        "SS-045"
       ],
       "fingerprints": [
-        "ab3aa1676a7dc29ade3bb462a73fe0b8",
-        "d830436e31c7dae6ebcb77b6726f0a02"
+        "9f1ac2f599da78da00f42a578d1b866c",
+        "d3c34df38b542b7b7ba0b07015bd9c56"
       ]
     },
     {
@@ -12082,20 +13056,6 @@
         "b1e4cf218a5ed9689787bebd39412d3e",
         "bd762510cb052a4b83765d5ac6db8744",
         "dc609f3069ca74e4358813dadce5d9e4"
-      ]
-    },
-    {
-      "id": "group-b246a6af181e82c822350ad4e63a1c99",
-      "explanation": "findings share an overlapping source span (rules: SS-014, SS-019, SS-044)",
-      "rule_ids": [
-        "SS-014",
-        "SS-019",
-        "SS-044"
-      ],
-      "fingerprints": [
-        "b246a6af181e82c822350ad4e63a1c99",
-        "c1094608dc3ee75c4c8599a06d25a9b8",
-        "de6b286d5c77a9568c549f49d54db1b7"
       ]
     },
     {
