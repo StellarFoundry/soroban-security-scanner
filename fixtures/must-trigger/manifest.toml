@@ -160,6 +160,9 @@ why = "Reproduces the documented 'Unvalidated deployer usage' pattern; this samp
 file = "SS-042.rs"
 why = "The only authorization check follows an unconditional return, so the security check is unreachable and must always trigger SS-042."
 
+[SS-043]
+file = "SS-043.rs"
+why = "A canonical Stellar network passphrase is embedded in source and must always trigger SS-043."
 
 [SS-044]
 file = "SS-044.rs"
@@ -185,5 +188,4 @@ why = "An entry point publishes a caller-supplied Vec with no length bound, so S
 [SS-049]
 file = "SS-049.rs"
 why = "A public entry point unwraps a bytes-to-string conversion, so invalid UTF-8 panics; SS-049 must always trigger."
-
 

@@ -201,6 +201,10 @@ file = "SS-042/sample.rs"
 expect = "trigger"
 why = "A method call split across lines after an unconditional return is still an unreachable security check when the CFG is complete."
 
+[SS-043]
+file = "SS-043/sample.rs"
+expect = "trigger"
+why = "A raw-string literal and a whitespace-split, fully qualified Stellar network constant remain detectable."
 
 [SS-044]
 file = "SS-044/sample.rs"
@@ -233,4 +237,3 @@ why = "A publish chain split across lines still carries an unbounded Vec paramet
 file = "SS-049/sample.rs"
 expect = "trigger"
 why = "A from_utf8 result split across lines is still unwrapped, so invalid UTF-8 panics."
-

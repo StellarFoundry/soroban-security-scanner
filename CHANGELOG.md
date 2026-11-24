@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- SS-043 "Hardcoded Stellar network passphrase" (medium/high): detects exact
+  canonical Stellar passphrase strings and fully qualified Stellar SDK network
+  constants. Recommends deployment configuration to prevent environment/network
+  confusion (`#315`).
 - An immutable, span-aware type environment is available to rules through the
   analysis context. It records syntactically visible item, parameter, and local
   types, resolves shadowing, and returns `unknown` for missing or out-of-scope

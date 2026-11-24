@@ -91,6 +91,7 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-039](detectors/SS-039.md) | Persistent storage read without TTL management | medium | low | storage |
 | [SS-041](detectors/SS-041.md) | Authorization check inside a loop | medium | low | authorization |
 | [SS-042](detectors/SS-042.md) | Security check unreachable on every path | low | medium | authorization |
+| [SS-043](detectors/SS-043.md) | Hardcoded Stellar network passphrase | medium | high | configuration |
 | [SS-044](detectors/SS-044.md) | Cross-contract call with an unvalidated address argument | medium | low | cross-contract |
 | [SS-046](detectors/SS-046.md) | Duplicate storage key construction | medium | low | storage |
 | [SS-047](detectors/SS-047.md) | Unchecked ledger timestamp usage | medium | low | arithmetic |
