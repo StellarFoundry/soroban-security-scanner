@@ -1,13 +1,17 @@
+schema_version = 1
+
 [pack]
 name = "broken-expectations-pack"
 version = "0.1.0"
 description = "Fixture pack whose expected findings do not match the scanned target"
 min_scanner_version = "0.2.0"
+capabilities = ["rust_source_analysis"]
 
 [[rules]]
-id = "BROKEN-EXP-001"
+id = "BROKEN-001"
 title = "Missing expected finding fixture"
 category = "testing"
 default_severity = "high"
 default_confidence = "high"
 description = "Expects SS-999 which does not fire on the clean target."
+checksum = "sha256:78fcc7f795c4a860c68c6268f73905a4c2ca83def0d98873229c0e8defca7b3f"

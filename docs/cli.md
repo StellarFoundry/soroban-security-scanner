@@ -887,7 +887,10 @@ network access.
   settings used for the scan, excluding environment data and secrets. `stats`
   includes `files_parsed`, `files_failed`, and `files_skipped` so coverage gaps
   are visible, plus the effective `mode`, the opt-in `target` record, and the
-  `detection` manifest. When `--max-findings` omits findings, a `truncation` object
+  `detection` manifest. `stats.rule_stats` records one entry per rule that ran,
+  with a coarse duration bucket, its produced finding count, and a skip reason
+  when its output was discarded; rules that did not run have no entry. When
+  `--max-findings` omits findings, a `truncation` object
   reports the counts. The published JSON Schema is
   [`docs/integration/report.schema.json`](integration/report.schema.json); a
   CLI test validates a real report against it on every run.

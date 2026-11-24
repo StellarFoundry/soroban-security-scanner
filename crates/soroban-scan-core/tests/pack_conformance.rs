@@ -186,9 +186,13 @@ fn oversized_manifest_is_rejected() {
 fn duplicate_rule_ids_are_rejected() {
     let (keyring, sk_active) = setup_test_keyring();
     let dir = temp_dir("dup-rules");
-    let manifest = r#"[pack]
+    let manifest = r#"schema_version = 1
+
+[pack]
 name = "dup-rules-pack"
 version = "0.1.0"
+min_scanner_version = "0.2.0"
+capabilities = ["rust_source_analysis"]
 
 [[rules]]
 id = "DUP-001"
@@ -197,6 +201,7 @@ category = "testing"
 default_severity = "low"
 default_confidence = "low"
 description = "First rule"
+checksum = "sha256:3d08ad53d32bdebae9ec14a94a5261ee26f7bfda75e8a35dde73a5eb6cc674d3"
 
 [[rules]]
 id = "DUP-001"
@@ -205,6 +210,7 @@ category = "testing"
 default_severity = "low"
 default_confidence = "low"
 description = "Duplicate rule"
+checksum = "sha256:39143b33ecbaefbf4f5a11e266013b7b3dc64bd655d14a2428492c7b9d1ba2ed"
 "#;
     let sig = PackSigner::sign("stellar-foundry-active", &sk_active, manifest.as_bytes());
     std::fs::write(dir.join("pack.toml"), manifest).unwrap();
@@ -215,8 +221,8 @@ description = "Duplicate rule"
     let _ = std::fs::remove_dir_all(&dir);
 
     assert!(
-        matches!(err, PackLoadError::InvalidMetadata(ref msg) if msg.contains("duplicate rule id")),
-        "expected InvalidMetadata for duplicate rule id, got: {err:?}"
+        matches!(err, PackLoadError::InvalidManifest(ref msg) if msg.contains("duplicate rule id")),
+        "expected InvalidManifest for duplicate rule id, got: {err:?}"
     );
 }
 
@@ -224,9 +230,13 @@ description = "Duplicate rule"
 fn path_traversal_in_conformance_target_is_rejected() {
     let (keyring, sk_active) = setup_test_keyring();
     let dir = temp_dir("path-traversal");
-    let manifest = r#"[pack]
+    let manifest = r#"schema_version = 1
+
+[pack]
 name = "traversal-pack"
 version = "0.1.0"
+min_scanner_version = "0.2.0"
+capabilities = ["rust_source_analysis"]
 
 [[rules]]
 id = "TRAV-001"
@@ -235,6 +245,7 @@ category = "testing"
 default_severity = "low"
 default_confidence = "low"
 description = "Tests path traversal rejection."
+checksum = "sha256:cd3b8df86678b7b8e03c3e5d59f969f782f0be78e03d8cbdf52bff2c3bc1cdca"
 "#;
     let sig = PackSigner::sign("stellar-foundry-active", &sk_active, manifest.as_bytes());
     std::fs::write(dir.join("pack.toml"), manifest).unwrap();

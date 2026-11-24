@@ -111,6 +111,42 @@
           "type": "integer",
           "minimum": 0,
           "description": "Findings excluded from the gate by an inline suppression directive."
+        },
+        "rule_stats": {
+          "type": "array",
+          "maxItems": 256,
+          "description": "Per-rule execution statistics, sorted by rule id. An entry exists only when the rule ran; rules skipped by configuration, analysis mode, or the scan deadline have no entry. Durations are coarse deterministic buckets, never raw timings.",
+          "items": {
+            "type": "object",
+            "required": ["rule_id", "duration", "findings"],
+            "properties": {
+              "rule_id": {
+                "type": "string",
+                "description": "Rule identifier, for example `SS-001`."
+              },
+              "duration": {
+                "type": "string",
+                "enum": ["under_1s", "under_10s", "under_60s", "at_least_60s"],
+                "description": "Coarse wall-clock bucket. Observational only; never used for ordering or the gate."
+              },
+              "findings": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Findings produced before validation and filtering."
+              },
+              "skip_reason": {
+                "type": "string",
+                "enum": ["time_budget_exceeded", "panicked"],
+                "description": "Present only when the rule's produced findings were discarded."
+              }
+            },
+            "additionalProperties": true
+          }
+        },
+        "rule_stats_omitted": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Per-rule entries omitted because the 256-entry cap was reached."
         }
       },
       "additionalProperties": true

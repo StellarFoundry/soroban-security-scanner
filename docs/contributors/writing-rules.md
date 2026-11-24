@@ -6,7 +6,9 @@ semantics, then use the shared analysis primitives rather than re-deriving them:
 [the type model](../type-model.md) for type names and cast source types,
 [taint analysis](../taint-analysis.md) for caller-controlled data, and
 [control-flow graphs](../control-flow.md) for reachability. Finding order is
-defined in [finding ranking](../finding-ranking.md). The full proposal-to-release
+defined in [finding ranking](../finding-ranking.md), and the optional
+per-finding reachability context is defined in the
+[exploitability model](../exploitability-model.md). The full proposal-to-release
 path, including who approves each stage, is in the
 [rule review workflow](rule-review-workflow.md).
 semantics. For how a rule moves from proposal to release, including who

@@ -1,9 +1,12 @@
+schema_version = 1
+
 [pack]
 name = "soroban-conformance-pack"
 version = "0.1.0"
 description = "Conformance fixture pack with known findings for scanner compatibility testing"
 authors = ["Stellar Foundry <security@stellarfoundry.org>"]
 min_scanner_version = "0.2.0"
+capabilities = ["rust_source_analysis"]
 
 [[rules]]
 id = "CONF-001"
@@ -12,6 +15,7 @@ category = "authorization"
 default_severity = "high"
 default_confidence = "high"
 description = "Verifies that the scanner reports SS-001 on unguarded persistent storage writes."
+checksum = "sha256:acfcbac56dfb79b3258a41beab345e16151ac8c5f71f962d75f158fae598715b"
 
 [[rules]]
 id = "CONF-008"
@@ -20,3 +24,4 @@ category = "arithmetic"
 default_severity = "high"
 default_confidence = "medium"
 description = "Verifies that the scanner reports SS-008 on unchecked integer subtraction."
+checksum = "sha256:ce890fbf613ed8cdc48f655fba3bf5249ebcc4e440fd460c6ed415b53ee97860"
