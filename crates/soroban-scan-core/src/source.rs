@@ -584,6 +584,7 @@ fn make_function(
     visibility: Visibility,
     prefix: &str,
     impl_ctx: Option<&ImplContext>,
+    end_line: usize,
 ) -> FunctionSummary {
     let name = sig.ident.to_string();
     let qualified_name = qualified_name(&name, prefix, impl_ctx);
@@ -601,7 +602,7 @@ fn make_function(
         qualified_name,
         line,
         column,
-        end_line: span_end_line(sig),
+        end_line,
         visibility,
         is_async: sig.asyncness.is_some(),
         attributes: attribute_paths(attrs),
@@ -679,6 +680,7 @@ fn walk_items(
                     visibility_of(&f.vis),
                     prefix,
                     impl_ctx,
+                    span_end_line(f),
                 ));
             }
             syn::Item::Impl(imp) => {
@@ -720,6 +722,7 @@ fn walk_items(
                                 visibility_of(&f.vis),
                                 prefix,
                                 Some(&ctx),
+                                span_end_line(f),
                             ));
                         }
                         syn::ImplItem::Const(c) => {
@@ -771,6 +774,7 @@ fn walk_items(
                                 Visibility::Inherited,
                                 prefix,
                                 Some(&ctx),
+                                span_end_line(f),
                             ));
                         }
                         syn::TraitItem::Const(c) => {
