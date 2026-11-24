@@ -51,11 +51,18 @@ entry)` runs the same pass with privileged-token address arguments as sinks:
 - Arithmetic, method calls, field access, indexing, and free-function calls
   record a `Transformed` path with the rendered expression (bounded to 120
   bytes) when the expression still fits.
+- Calls to functions defined in the same file propagate taint through their
+  return value. Every `return` expression and the function's tail expression are
+  merged, so a caller binding inherits the union of the origins a helper can
+  return.
 - Intra-file helpers are followed, mapping caller arguments to helper parameters
   by position, up to `MAX_HELPER_DEPTH` and `MAX_HELPERS`. Each helper is visited
   at most once per entry point, using the first tainted call site.
 - If a value has more than one tainted origin, the path is `Unknown` with a
-  reason instead of picking one source. The value is still reported.
+  reason instead of picking one source. The value is still reported. The same
+  merge applies at control-flow joins: a value tainted on one branch, loop
+  iteration, or return path is still tainted, and incompatible origins become
+  `Unknown`.
 
 Paths are capped by `MAX_PATH_STEPS`. When a path would exceed the cap the
 result is `Unknown`, never a guessed longer path.
@@ -119,7 +126,9 @@ rule applies to amount and address sanitizers.
   that are expressions are outside the model.
 - The propagation pass is not path-sensitive: every branch is visited once and a
   fixed point is reached syntactically. Loops do not get an implicit second
-  tainted iteration.
+  tainted iteration. No path feasibility is claimed; a merged value at a
+  control-flow join records that taint *may* reach the sink, not that any
+  particular path executes. Ambiguous joins become `Unknown` and stay visible.
 - A bare comparison (`if amount > 0`) is not a sanitizer for this analysis;
   existing detector logic can still recognize such guards. Only the documented
   helper names stop taint.

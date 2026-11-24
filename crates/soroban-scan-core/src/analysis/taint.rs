@@ -613,31 +613,38 @@ fn callee_name(expr: &syn::Expr) -> Option<String> {
 }
 
 /// Computes the taint path of an expression against a set of tainted locals.
-fn taint_of_expr(
+///
+/// `depth` bounds recursive helper-return resolution. Path feasibility is not
+/// modelled: a value returned on any modelled path taints the call result.
+fn taint_of_expr<'b>(
     expr: &syn::Expr,
     tainted: &BTreeMap<String, TaintPath>,
     sanitizers: &[&str],
+    bodies: &BTreeMap<String, Body<'b>>,
+    depth: usize,
 ) -> Option<TaintPath> {
     match expr {
         syn::Expr::Path(path) => path
             .path
             .get_ident()
             .and_then(|ident| tainted.get(&ident.to_string()).cloned()),
-        syn::Expr::Reference(inner) => taint_of_expr(&inner.expr, tainted, sanitizers),
-        syn::Expr::Paren(inner) => taint_of_expr(&inner.expr, tainted, sanitizers),
-        syn::Expr::Group(inner) => taint_of_expr(&inner.expr, tainted, sanitizers),
-        syn::Expr::Cast(inner) => taint_of_expr(&inner.expr, tainted, sanitizers),
-        syn::Expr::Try(inner) => taint_of_expr(&inner.expr, tainted, sanitizers),
-        syn::Expr::Await(inner) => taint_of_expr(&inner.base, tainted, sanitizers),
-        syn::Expr::Unary(inner) => taint_of_expr(&inner.expr, tainted, sanitizers),
-        syn::Expr::Field(inner) => taint_of_expr(&inner.base, tainted, sanitizers)
+        syn::Expr::Reference(inner) => {
+            taint_of_expr(&inner.expr, tainted, sanitizers, bodies, depth)
+        }
+        syn::Expr::Paren(inner) => taint_of_expr(&inner.expr, tainted, sanitizers, bodies, depth),
+        syn::Expr::Group(inner) => taint_of_expr(&inner.expr, tainted, sanitizers, bodies, depth),
+        syn::Expr::Cast(inner) => taint_of_expr(&inner.expr, tainted, sanitizers, bodies, depth),
+        syn::Expr::Try(inner) => taint_of_expr(&inner.expr, tainted, sanitizers, bodies, depth),
+        syn::Expr::Await(inner) => taint_of_expr(&inner.base, tainted, sanitizers, bodies, depth),
+        syn::Expr::Unary(inner) => taint_of_expr(&inner.expr, tainted, sanitizers, bodies, depth),
+        syn::Expr::Field(inner) => taint_of_expr(&inner.base, tainted, sanitizers, bodies, depth)
             .map(|path| transformed(path, &inner.to_token_stream().to_string())),
-        syn::Expr::Index(inner) => taint_of_expr(&inner.expr, tainted, sanitizers)
+        syn::Expr::Index(inner) => taint_of_expr(&inner.expr, tainted, sanitizers, bodies, depth)
             .map(|path| transformed(path, &inner.to_token_stream().to_string())),
         syn::Expr::Binary(inner) => combine(
             [
-                taint_of_expr(&inner.left, tainted, sanitizers),
-                taint_of_expr(&inner.right, tainted, sanitizers),
+                taint_of_expr(&inner.left, tainted, sanitizers, bodies, depth),
+                taint_of_expr(&inner.right, tainted, sanitizers, bodies, depth),
             ],
             &inner.to_token_stream().to_string(),
         ),
@@ -646,11 +653,17 @@ fn taint_of_expr(
             if is_sanitizer(&name, sanitizers) {
                 return None;
             }
-            let mut paths = vec![taint_of_expr(&call.receiver, tainted, sanitizers)];
+            let mut paths = vec![taint_of_expr(
+                &call.receiver,
+                tainted,
+                sanitizers,
+                bodies,
+                depth,
+            )];
             paths.extend(
                 call.args
                     .iter()
-                    .map(|arg| taint_of_expr(arg, tainted, sanitizers)),
+                    .map(|arg| taint_of_expr(arg, tainted, sanitizers, bodies, depth)),
             );
             combine(paths, &call.to_token_stream().to_string())
         }
@@ -662,15 +675,114 @@ fn taint_of_expr(
             {
                 return None;
             }
+            // A call to a function defined in this file returns whatever that
+            // function's return expressions carry, so taint follows the value
+            // instead of stopping at the call boundary.
+            if let Some(helper) = name.as_deref().and_then(|name| bodies.get(name)) {
+                if depth < MAX_HELPER_DEPTH {
+                    return helper_return_taint(
+                        helper,
+                        call,
+                        tainted,
+                        sanitizers,
+                        bodies,
+                        depth + 1,
+                    );
+                }
+                let arg_paths = call
+                    .args
+                    .iter()
+                    .map(|arg| taint_of_expr(arg, tainted, sanitizers, bodies, depth));
+                let combined = combine(arg_paths, &call.to_token_stream().to_string());
+                return combined.or_else(|| {
+                    call.args
+                        .iter()
+                        .any(|arg| mentions_tainted(arg, tainted))
+                        .then(|| TaintPath::unknown("helper return exceeds the analysis depth"))
+                });
+            }
             let paths: Vec<_> = call
                 .args
                 .iter()
-                .map(|arg| taint_of_expr(arg, tainted, sanitizers))
+                .map(|arg| taint_of_expr(arg, tainted, sanitizers, bodies, depth))
                 .collect();
             combine(paths, &call.to_token_stream().to_string())
         }
         _ => None,
     }
+}
+
+/// Computes the taint carried by a helper's return value for one call site.
+///
+/// Every reachable `return` expression and the tail expression are merged. A
+/// value whose taint cannot be resolved from the helper body is recorded as
+/// [`TaintPath::Unknown`], never as untainted.
+fn helper_return_taint(
+    helper: &Body<'_>,
+    call: &syn::ExprCall,
+    caller_tainted: &BTreeMap<String, TaintPath>,
+    sanitizers: &[&str],
+    bodies: &BTreeMap<String, Body<'_>>,
+    depth: usize,
+) -> Option<TaintPath> {
+    let call_site = CallSite {
+        name: helper.name.clone(),
+        args: call.args.iter().collect(),
+        span: span_of(call),
+        is_method: false,
+    };
+    let seeds = helper_seeds(
+        helper,
+        &call_site,
+        caller_tainted,
+        sanitizers,
+        bodies,
+        depth,
+    );
+    if seeds.is_empty() {
+        return None;
+    }
+    let tainted = propagate(helper.block, &seeds, sanitizers, bodies, depth);
+    let paths = return_expressions(helper.block).into_iter().map(|expr| {
+        taint_of_expr(expr, &tainted, sanitizers, bodies, depth).or_else(|| {
+            mentions_tainted(expr, &tainted)
+                .then(|| TaintPath::unknown("helper return uses an unmodelled construct"))
+        })
+    });
+    combine(paths, &format!("return of {}", helper.name))
+}
+
+/// Collects `return` expressions and the block's tail expression.
+///
+/// Returns inside nested closures, async blocks, and nested items belong to a
+/// different body and are skipped.
+fn return_expressions(block: &syn::Block) -> Vec<&syn::Expr> {
+    struct ReturnVisitor<'a> {
+        returns: Vec<&'a syn::Expr>,
+    }
+
+    impl<'ast> Visit<'ast> for ReturnVisitor<'ast> {
+        fn visit_expr_return(&mut self, node: &'ast syn::ExprReturn) {
+            if let Some(value) = &node.expr {
+                self.returns.push(value);
+            }
+        }
+
+        fn visit_expr_closure(&mut self, _node: &'ast syn::ExprClosure) {}
+        fn visit_expr_async(&mut self, _node: &'ast syn::ExprAsync) {}
+        fn visit_item(&mut self, _node: &'ast syn::Item) {}
+    }
+
+    let mut visitor = ReturnVisitor {
+        returns: Vec::new(),
+    };
+    visitor.visit_block(block);
+    if let Some(syn::Stmt::Expr(expr, None)) = block.stmts.last() {
+        if !matches!(expr, syn::Expr::Return(_)) {
+            visitor.returns.push(expr);
+        }
+    }
+    visitor.returns
 }
 
 /// Merges taint from several operands. More than one distinct source is
@@ -749,13 +861,15 @@ fn seeds_for(params: &[ParamInfo]) -> BTreeMap<String, TaintPath> {
         .collect()
 }
 
-struct PropagationVisitor<'a> {
+struct PropagationVisitor<'a, 'b> {
     tainted: &'a mut BTreeMap<String, TaintPath>,
     sanitizers: &'a [&'a str],
+    bodies: &'a BTreeMap<String, Body<'b>>,
+    depth: usize,
     conditional_depth: usize,
 }
 
-impl PropagationVisitor<'_> {
+impl PropagationVisitor<'_, '_> {
     fn assign(&mut self, name: &str, value: Option<TaintPath>) {
         match value {
             Some(path) => {
@@ -809,7 +923,7 @@ macro_rules! visit_conditional {
     };
 }
 
-impl<'ast> Visit<'ast> for PropagationVisitor<'_> {
+impl<'ast> Visit<'ast> for PropagationVisitor<'_, '_> {
     visit_conditional!(visit_expr_if, syn::ExprIf);
     visit_conditional!(visit_expr_while, syn::ExprWhile);
     visit_conditional!(visit_expr_for_loop, syn::ExprForLoop);
@@ -818,7 +932,13 @@ impl<'ast> Visit<'ast> for PropagationVisitor<'_> {
 
     fn visit_local(&mut self, node: &'ast syn::Local) {
         if let (syn::Pat::Ident(pattern), Some(init)) = (&node.pat, &node.init) {
-            let value = taint_of_expr(&init.expr, self.tainted, self.sanitizers);
+            let value = taint_of_expr(
+                &init.expr,
+                self.tainted,
+                self.sanitizers,
+                self.bodies,
+                self.depth,
+            );
             self.assign(&pattern.ident.to_string(), value);
         }
         visit::visit_local(self, node);
@@ -826,7 +946,13 @@ impl<'ast> Visit<'ast> for PropagationVisitor<'_> {
 
     fn visit_expr_assign(&mut self, node: &'ast syn::ExprAssign) {
         if let Some(name) = path_name(&node.left) {
-            let value = taint_of_expr(&node.right, self.tainted, self.sanitizers);
+            let value = taint_of_expr(
+                &node.right,
+                self.tainted,
+                self.sanitizers,
+                self.bodies,
+                self.depth,
+            );
             self.assign(&name.to_string(), value);
         }
         visit::visit_expr_assign(self, node);
@@ -843,9 +969,23 @@ impl<'ast> Visit<'ast> for PropagationVisitor<'_> {
         );
         if compound {
             if let Some(name) = path_name(&node.left) {
-                let value = taint_of_expr(&node.right, self.tainted, self.sanitizers)
-                    .or_else(|| taint_of_expr(&node.left, self.tainted, self.sanitizers))
-                    .map(|path| transformed(path, &node.to_token_stream().to_string()));
+                let value = taint_of_expr(
+                    &node.right,
+                    self.tainted,
+                    self.sanitizers,
+                    self.bodies,
+                    self.depth,
+                )
+                .or_else(|| {
+                    taint_of_expr(
+                        &node.left,
+                        self.tainted,
+                        self.sanitizers,
+                        self.bodies,
+                        self.depth,
+                    )
+                })
+                .map(|path| transformed(path, &node.to_token_stream().to_string()));
                 self.assign(&name.to_string(), value);
             }
         }
@@ -854,10 +994,12 @@ impl<'ast> Visit<'ast> for PropagationVisitor<'_> {
 }
 
 /// Propagates taint through local bindings and assignments until stable.
-fn propagate(
+fn propagate<'b>(
     block: &syn::Block,
     seeds: &BTreeMap<String, TaintPath>,
     sanitizers: &[&str],
+    bodies: &BTreeMap<String, Body<'b>>,
+    depth: usize,
 ) -> BTreeMap<String, TaintPath> {
     let mut current = seeds.clone();
     for _ in 0..MAX_ITERATIONS {
@@ -865,6 +1007,8 @@ fn propagate(
         let mut visitor = PropagationVisitor {
             tainted: &mut next,
             sanitizers,
+            bodies,
+            depth,
             conditional_depth: 0,
         };
         visitor.visit_block(block);
@@ -880,15 +1024,17 @@ fn sink_span(expr: &syn::Expr) -> Span {
     span_of(expr)
 }
 
-struct SinkVisitor<'a> {
+struct SinkVisitor<'a, 'b> {
     tainted: &'a BTreeMap<String, TaintPath>,
     sanitizers: &'a [&'a str],
+    bodies: &'a BTreeMap<String, Body<'b>>,
+    depth: usize,
     kind: SinkKind,
     flows: Vec<(SinkDescriptor, TaintPath)>,
     limits: Vec<TaintLimit>,
 }
 
-impl SinkVisitor<'_> {
+impl SinkVisitor<'_, '_> {
     fn push(&mut self, name: &str, argument: Option<usize>, expr: &syn::Expr, path: TaintPath) {
         if self.flows.len() >= MAX_FLOWS {
             return;
@@ -907,7 +1053,7 @@ impl SinkVisitor<'_> {
     /// Resolves a sink argument, recording unsupported syntax when a tainted
     /// value is visible but cannot be followed.
     fn flow_or_limit(&mut self, expr: &syn::Expr) -> Option<TaintPath> {
-        let path = taint_of_expr(expr, self.tainted, self.sanitizers);
+        let path = taint_of_expr(expr, self.tainted, self.sanitizers, self.bodies, self.depth);
         if path.is_none() && mentions_tainted(expr, self.tainted) {
             self.limits.push(TaintLimit {
                 kind: TaintLimitKind::UnsupportedSyntax,
@@ -920,7 +1066,7 @@ impl SinkVisitor<'_> {
     }
 }
 
-impl<'ast> Visit<'ast> for SinkVisitor<'_> {
+impl<'ast> Visit<'ast> for SinkVisitor<'_, '_> {
     fn visit_expr_method_call(&mut self, node: &'ast syn::ExprMethodCall) {
         let name = node.method.to_string();
         match self.kind {
@@ -1039,15 +1185,19 @@ fn unsupported_construct(expr: &syn::Expr) -> &'static str {
     }
 }
 
-fn sinks_in_body(
+fn sinks_in_body<'b>(
     block: &syn::Block,
     tainted: &BTreeMap<String, TaintPath>,
     kind: SinkKind,
     sanitizers: &[&str],
+    bodies: &BTreeMap<String, Body<'b>>,
+    depth: usize,
 ) -> (Vec<(SinkDescriptor, TaintPath)>, Vec<TaintLimit>) {
     let mut visitor = SinkVisitor {
         tainted,
         sanitizers,
+        bodies,
+        depth,
         kind,
         flows: Vec::new(),
         limits: Vec::new(),
@@ -1098,11 +1248,13 @@ fn calls_in_body<'a>(block: &'a syn::Block) -> Vec<CallSite<'a>> {
     visitor.calls
 }
 
-fn helper_seeds(
+fn helper_seeds<'b>(
     helper: &Body<'_>,
     call: &CallSite<'_>,
     caller_tainted: &BTreeMap<String, TaintPath>,
     sanitizers: &[&str],
+    bodies: &BTreeMap<String, Body<'b>>,
+    depth: usize,
 ) -> BTreeMap<String, TaintPath> {
     let mut seeds = BTreeMap::new();
     if is_sanitizer(&call.name, sanitizers) {
@@ -1115,7 +1267,7 @@ fn helper_seeds(
         if is_env_type(&param.ty) {
             continue;
         }
-        if let Some(path) = taint_of_expr(arg, caller_tainted, sanitizers) {
+        if let Some(path) = taint_of_expr(arg, caller_tainted, sanitizers, bodies, depth) {
             let step = format!("{}::{}", call.name, param.name);
             seeds.insert(param.name.clone(), add_step(path, &step));
         }
@@ -1134,8 +1286,15 @@ struct Analyzer<'a, 'b> {
 
 impl<'a, 'b> Analyzer<'a, 'b> {
     fn run(&mut self, body: &Body<'_>, seeds: &BTreeMap<String, TaintPath>, depth: usize) {
-        let tainted = propagate(body.block, seeds, self.sanitizers);
-        let (flows, limits) = sinks_in_body(body.block, &tainted, self.kind, self.sanitizers);
+        let tainted = propagate(body.block, seeds, self.sanitizers, self.bodies, depth);
+        let (flows, limits) = sinks_in_body(
+            body.block,
+            &tainted,
+            self.kind,
+            self.sanitizers,
+            self.bodies,
+            depth,
+        );
         self.flows.extend(flows);
         self.limits.extend(limits);
 
@@ -1179,7 +1338,14 @@ impl<'a, 'b> Analyzer<'a, 'b> {
             if !self.visited.insert(helper.name.clone()) {
                 continue;
             }
-            let seeds = helper_seeds(&helper, &call, &tainted, self.sanitizers);
+            let seeds = helper_seeds(
+                &helper,
+                &call,
+                &tainted,
+                self.sanitizers,
+                self.bodies,
+                depth,
+            );
             if !seeds.is_empty() {
                 self.run(&helper, &seeds, depth + 1);
             }
@@ -1368,7 +1534,7 @@ pub fn source_descriptors(file: &syn::File, entry: &ContractFn<'_>) -> Vec<Sourc
     let bodies = collect_bodies(file);
     let body = entry_body(&bodies, entry);
     let seeds = seeds_for(&body.params);
-    let tainted = propagate(body.block, &seeds, &[]);
+    let tainted = propagate(body.block, &seeds, &[], &bodies, 0);
     let mut sources: Vec<SourceDescriptor> = body
         .params
         .iter()
