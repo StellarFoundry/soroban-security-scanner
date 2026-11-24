@@ -6,6 +6,12 @@ conclusion, which is more useful than ``::error`` workflow commands. The script
 caps annotations at GitHub's per-request limit (50); the complete result set
 remains available in the JSON report.
 
+With ``--gate``, the conclusion, title, and summary come from the scanner's
+policy status gate (``soroban-scan scan --status-gate FILE``) instead of a
+threshold recomputed here. The scanner has already applied the policy file,
+suppressions, waivers, and baselines, so the check reflects the policy exactly
+and can also be ``neutral`` when the gate is disabled or nothing was scanned.
+
 This script is intentionally CI-only: it calls ``gh api`` and therefore needs
 network access and a token with ``checks: write`` permission.
 """
@@ -31,6 +37,12 @@ SEVERITY_RANK = {
     "high": 3,
     "critical": 4,
 }
+
+GATE_CONCLUSIONS = ("success", "failure", "neutral")
+
+# GitHub rejects check-run titles over 255 characters and summaries over 65535.
+TITLE_LIMIT = 255
+SUMMARY_LIMIT = 65535
 
 ANNOTATION_LEVEL = {
     "critical": "failure",
@@ -145,6 +157,47 @@ def summary_markdown(
     return "\n".join(lines)
 
 
+def validate_gate(gate: Mapping[str, Any]) -> tuple[str, str, str]:
+    """Returns ``(conclusion, title, summary)`` from a status-gate record."""
+
+    if not isinstance(gate, Mapping):
+        raise ValueError("status gate must be a JSON object")
+    if gate.get("schema_version") != 1:
+        raise ValueError(
+            f"unsupported status gate schema_version: {gate.get('schema_version')!r}"
+        )
+    conclusion = gate.get("conclusion")
+    if conclusion not in GATE_CONCLUSIONS:
+        raise ValueError(f"unknown status gate conclusion: {conclusion!r}")
+    title = gate.get("title")
+    summary = gate.get("summary")
+    if not isinstance(title, str) or not title.strip():
+        raise ValueError("status gate is missing a title")
+    if not isinstance(summary, str):
+        raise ValueError("status gate is missing a summary")
+    return conclusion, title, summary
+
+
+def gate_summary_markdown(
+    gate_summary: str, *, annotation_count: int, omitted: int
+) -> str:
+    """Appends the annotation note to the scanner's status-gate summary."""
+
+    lines = [gate_summary, ""]
+    if annotation_count:
+        lines.append(f"Annotated {annotation_count} finding(s) inline.")
+    if omitted:
+        lines.append(
+            f"{omitted} finding(s) were not annotated because GitHub limits a "
+            f"single check-run request to {GITHUB_ANNOTATION_LIMIT} annotations; "
+            "the JSON report contains every finding."
+        )
+    text = "\n".join(lines).rstrip() + "\n"
+    if len(text) > SUMMARY_LIMIT:
+        text = text[: SUMMARY_LIMIT - 1] + "\n"
+    return text
+
+
 def build_payload(
     report: Mapping[str, Any],
     *,
@@ -153,6 +206,7 @@ def build_payload(
     fail_on: str = "high",
     details_url: str | None = None,
     max_annotations: int = GITHUB_ANNOTATION_LIMIT,
+    gate: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Builds the Checks API request body from a scanner JSON report."""
 
@@ -185,15 +239,24 @@ def build_payload(
     else:
         title = "No security findings"
 
-    output: dict[str, Any] = {
-        "title": title,
-        "summary": summary_markdown(
+    if gate is not None:
+        conclusion, gate_title, gate_summary = validate_gate(gate)
+        title = gate_title[:TITLE_LIMIT]
+        summary = gate_summary_markdown(
+            gate_summary, annotation_count=len(annotations), omitted=omitted
+        )
+    else:
+        summary = summary_markdown(
             findings,
             fail_on=fail_on,
             conclusion=conclusion,
             annotation_count=len(annotations),
             omitted=omitted,
-        ),
+        )
+
+    output: dict[str, Any] = {
+        "title": title,
+        "summary": summary,
         "annotations": annotations,
     }
     payload: dict[str, Any] = {
@@ -248,6 +311,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="severity that makes the check conclusion a failure (default: high)",
     )
     parser.add_argument(
+        "--gate",
+        type=Path,
+        default=None,
+        help=(
+            "status-gate record from `soroban-scan scan --status-gate FILE`; "
+            "its conclusion, title, and summary replace --fail-on"
+        ),
+    )
+    parser.add_argument(
         "--details-url",
         default=None,
         help="optional details link (default: the current workflow run)",
@@ -279,6 +351,13 @@ def main(argv: Sequence[str] | None = None) -> int:
     except (OSError, json.JSONDecodeError) as error:
         parser.error(f"cannot read {args.report}: {error}")
 
+    gate = None
+    if args.gate is not None:
+        try:
+            gate = json.loads(args.gate.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            parser.error(f"cannot read {args.gate}: {error}")
+
     try:
         payload = build_payload(
             report,
@@ -287,6 +366,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             fail_on=args.fail_on,
             details_url=args.details_url or default_details_url(args.repo),
             max_annotations=args.max_annotations,
+            gate=gate,
         )
     except (TypeError, ValueError) as error:
         print(f"error: {error}", file=sys.stderr)

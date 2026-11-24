@@ -62,6 +62,9 @@ The failure gate is separate from the severity filter:
 - `--min-severity` / `--min-confidence` decide which findings are **reported**.
 - `--fail-on` (default `high`) decides which reported findings **fail the run**
   with exit code `1`. `--fail-on none` disables the gate.
+- `--status-gate FILE` records that same decision as `success`, `failure`, or
+  `neutral` for a pull request check. See
+  [Policy status gate](cli.md#policy-status-gate).
 
 ## Precedence
 

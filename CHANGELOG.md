@@ -30,6 +30,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `soroban-scan baseline pull`) with fail-closed envelope verification, rule
   registry fingerprinting, safe key validation, overwrite protection, and token
   redaction (`#344`).
+- Opt-in policy status gate: `scan --status-gate FILE` records the effective
+  fail policy's decision as a `success`, `failure`, or `neutral` conclusion
+  with a concise summary, and `--report-url` links it to the report artifact.
+  Suppressed, waived, and baseline findings never fail it. `check_run.py
+  --gate` publishes it as the **Soroban Security Gate** check, enabled in the
+  PR workflow with `SOROBAN_SCAN_STATUS_GATE` (`#341`).
 - Findings carry an optional, additive `exploitability` context (`reachability`,
   `entry_point`, and reserved `taint`) when the control-flow graph covers the
   finding line. It is omitted when evidence is incomplete and never changes
@@ -193,6 +199,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `fail_on = "none"` in a `--policy-file` now disables the gate instead of
+  falling back to the default `high` threshold.
 - Compilation and TOML parsing were restored after the `syn` 3 and `toml` 1.x
   upgrades: `ItemImpl::trait_` is now a two-element tuple, and manifests and
   configs are parsed as TOML documents with `toml::from_str`.

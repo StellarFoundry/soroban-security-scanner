@@ -325,6 +325,41 @@ The workflow then runs
 Override the threshold with the `SOROBAN_SCAN_CHECK_RUN_FAIL_ON` repository
 variable (`none`, `info`, `low`, `medium`, `high`, or `critical`).
 
+## Policy status gate check
+
+The check run above recomputes a severity threshold from the report. The
+**policy status gate** instead publishes the scanner's own policy decision, so
+the check reflects `--policy-file`, suppressions, waivers, and baselines
+exactly. It is also opt-in and disabled by default:
+
+```bash
+gh variable set SOROBAN_SCAN_STATUS_GATE --body true
+# Optional: gate on a policy document instead of the default `high` threshold.
+gh variable set SOROBAN_SCAN_POLICY_FILE --body .github/soroban-scan-policy.toml
+```
+
+The bundled PR workflow then:
+
+1. Scans the changed files and uploads the JSON report as the
+   `soroban-scan-gate-report` artifact (kept for 30 days).
+2. Re-runs the deterministic scan with `--status-gate gate.json` and
+   `--report-url` set to that artifact, so the summary links to the report.
+3. Runs `check_run.py --gate gate.json`, which creates a completed check run
+   named **Soroban Security Gate** with the gate's conclusion, title, and
+   summary, plus the usual inline annotations.
+
+| Conclusion | Meaning |
+| ---------- | ------- |
+| `success` | The policy is enforced and no gated finding meets its threshold. |
+| `failure` | A gated finding meets the threshold, or a waiver has expired. |
+| `neutral` | The policy disables the gate (`fail_on = "none"`), or nothing was scanned. |
+
+Suppressed, waived, and baseline-accepted findings are counted in the summary
+but never fail the check. Make **Soroban Security Gate** a required status
+check in branch protection to block merges on a policy failure. The same
+fork-PR guard and `checks: write` permission apply as for check runs. See
+[Policy status gate](cli.md#policy-status-gate) for the record format.
+
 ## API retries and offline tests
 
 The shared `gh api` wrapper retries **read-only** requests up to three times on

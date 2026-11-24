@@ -157,6 +157,96 @@ class PayloadTests(unittest.TestCase):
             )
 
 
+def gate(conclusion: str, **overrides) -> dict:
+    record = {
+        "schema_version": 1,
+        "conclusion": conclusion,
+        "title": f"Policy gate {conclusion}",
+        "summary": f"**Policy gate {conclusion}**\n\n[Full scan report](https://example.test/report)",
+        "threshold": "high",
+        "gated": 1,
+        "blocking": 1 if conclusion == "failure" else 0,
+        "suppressed": 0,
+        "baseline_accepted": 0,
+        "expired_waivers": 0,
+    }
+    record.update(overrides)
+    return record
+
+
+class StatusGateTests(unittest.TestCase):
+    def payload(self, record, findings=None):
+        return check_run.build_payload(
+            {"findings": findings if findings is not None else [finding()]},
+            name="Soroban Security Gate",
+            head_sha="abc123",
+            gate=record,
+        )
+
+    def test_failure_gate_sets_a_failure_conclusion(self):
+        payload = self.payload(gate("failure"))
+        self.assertEqual(payload["conclusion"], "failure")
+        self.assertEqual(payload["output"]["title"], "Policy gate failure")
+
+    def test_success_gate_overrides_the_local_threshold(self):
+        # A high finding would fail the default threshold, but the scanner's
+        # policy gate (for example a baselined finding) says success.
+        payload = self.payload(gate("success"))
+        self.assertEqual(payload["conclusion"], "success")
+
+    def test_neutral_gate_is_published_as_neutral(self):
+        payload = self.payload(gate("neutral"), findings=[])
+        self.assertEqual(payload["conclusion"], "neutral")
+        self.assertEqual(payload["output"]["annotations"], [])
+
+    def test_summary_keeps_the_report_link_and_notes_annotations(self):
+        summary = self.payload(gate("failure"))["output"]["summary"]
+        self.assertIn("[Full scan report](https://example.test/report)", summary)
+        self.assertIn("Annotated 1 finding(s) inline.", summary)
+
+    def test_long_titles_are_truncated_to_the_github_limit(self):
+        payload = self.payload(gate("failure", title="x" * 400))
+        self.assertEqual(len(payload["output"]["title"]), check_run.TITLE_LIMIT)
+
+    def test_invalid_gate_records_are_rejected(self):
+        for record in (
+            gate("maybe"),
+            gate("success", schema_version=2),
+            gate("success", title=""),
+            gate("success", summary=None),
+        ):
+            with self.assertRaises(ValueError):
+                self.payload(record)
+
+    def test_cli_reads_the_gate_file(self):
+        import contextlib
+        import io
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as directory:
+            report = Path(directory) / "report.json"
+            gate_file = Path(directory) / "gate.json"
+            report.write_text(json.dumps({"findings": [finding()]}), encoding="utf-8")
+            gate_file.write_text(json.dumps(gate("neutral")), encoding="utf-8")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = check_run.main(
+                    [
+                        "--report",
+                        str(report),
+                        "--gate",
+                        str(gate_file),
+                        "--repo",
+                        "owner/repo",
+                        "--head-sha",
+                        "abc123",
+                        "--dry-run",
+                    ]
+                )
+            self.assertEqual(code, 0)
+            self.assertEqual(json.loads(stdout.getvalue())["conclusion"], "neutral")
+
+
 class CreateCheckRunTests(unittest.TestCase):
     def test_posts_the_payload_through_gh_api(self):
         calls = []
