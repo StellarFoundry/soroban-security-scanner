@@ -42,8 +42,8 @@ spec:
               type: RuntimeDefault
           containers:
             - name: soroban-scan
-              # Build this image from the release archive or a checkout and set
-              # the tag you deployed. The project does not publish an image.
+              # Build the image from docs/docker.md and set the tag you
+              # deployed. The project does not publish a registry image.
               image: soroban-scan:0.2.0
               imagePullPolicy: IfNotPresent
               command: ["/bin/sh", "-c"]

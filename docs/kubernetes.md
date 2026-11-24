@@ -73,16 +73,17 @@ not installed; CI installs Helm for the Python test job.
 
 ## Required image
 
-The project publishes release archives but **does not publish a container
-image**. Build one from a release archive or a checkout, push it where your
-cluster can pull it, and replace `image: soroban-scan:0.2.0` in `job.yaml` and
-`cronjob.yaml` with that reference. Pin a digest or an immutable tag in
-production.
+The project publishes release archives but **does not publish a registry
+image**. Build the opt-in image from a checkout or release archive as described
+in [Docker image](docker.md), push it where your cluster can pull it, and
+replace `image: soroban-scan:0.2.0` in `job.yaml` and `cronjob.yaml` with that
+reference. Pin a digest or an immutable tag in production.
 
-The example runs through `/bin/sh` to name the report after the pod. If your
-image has no shell (for example a distroless build), change `command`/`args` to
-invoke `soroban-scan` directly and write to a fixed filename such as
-`/reports/report.json`; adjust the retention process accordingly.
+The supplied image runs as `65532:65532`, matching the manifests' security
+context, and its Alpine base provides the `/bin/sh` used to name reports after
+the pod. If you replace it with a shell-less image (for example a distroless
+build), change `command`/`args` to invoke `soroban-scan` directly and write to a
+fixed filename such as `/reports/report.json`; adjust retention accordingly.
 
 ## Storage
 

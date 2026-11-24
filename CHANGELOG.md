@@ -107,6 +107,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   diagnostics when source files in other languages are skipped. Diagnostics are
   aggregated by language, capped at 8 kinds, and never read or include source
   text; the check is off by default (`#387`).
+- An opt-in multi-stage `Dockerfile` and `.dockerignore` build a static, non-root
+  (`65532:65532`) scanner image with pinned bases, a documented entry point, and
+  a binary health check; `docs/docker.md`, a structural test, and a CI build/smoke
+  scan cover image usage (`#390`).
 - Language detection evidence is recorded for the selected frontend and project
   type and exposed as `stats.detection` in JSON. Incomplete evidence is marked
   `weak`, and no language is guessed when nothing is recognized (`#384`).
