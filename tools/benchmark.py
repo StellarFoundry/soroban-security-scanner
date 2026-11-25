@@ -47,10 +47,13 @@ DASHBOARD_SCHEMA_VERSION = 1
 def summarize_samples(samples: list[float]) -> dict:
     """Return deterministic benchmark statistics for a list of millisecond samples."""
     ordered = sorted(samples)
+    n = len(ordered)
+    p95_index = max(0, min(n - 1, int(round(0.95 * (n - 1)))))
     return {
-        "runs": len(ordered),
+        "runs": n,
         "min_ms": round(ordered[0], 3),
         "median_ms": round(statistics.median(ordered), 3),
+        "p95_ms": round(ordered[p95_index], 3),
         "mean_ms": round(statistics.mean(ordered), 3),
         "max_ms": round(ordered[-1], 3),
     }
@@ -358,6 +361,55 @@ def run_once(target: Path) -> float:
     return time.perf_counter() - start
 
 
+PROJECT_SIZE_TARGETS = [
+    ("small", "fixtures/projects/generic-rust"),
+    ("medium", "fixtures/projects/soroban-confirmed"),
+    ("large", "fixtures/projects/monorepo"),
+]
+
+
+def run_benchmark_by_size(
+    runs: int,
+    artifact_dir: Path,
+    json_out: Path | None = None,
+) -> int:
+    """Benchmark scanner latency across small, medium, and large fixture projects.
+
+    Records median and p95 latency for each project tier.
+    """
+    ensure_binary()
+    print("Benchmarking scan latency by project size:")
+    results = {}
+    for size, target_rel in PROJECT_SIZE_TARGETS:
+        target_path = (ROOT / target_rel).resolve()
+        if not target_path.exists():
+            print(f"error: fixture target for {size} not found: {target_rel}", file=sys.stderr)
+            return 2
+        run_once(target_path)  # warm-up
+        samples = sorted(run_once(target_path) * 1000 for _ in range(runs))
+        stats = summarize_samples(samples)
+        results[size] = {
+            "target": target_rel,
+            "stats": stats,
+        }
+        print(
+            f"  {size:6} ({target_rel:35}): "
+            f"median {stats['median_ms']:.1f} ms | "
+            f"p95 {stats['p95_ms']:.1f} ms | "
+            f"min {stats['min_ms']:.1f} ms | "
+            f"max {stats['max_ms']:.1f} ms"
+        )
+
+    if json_out is not None:
+        json_out.parent.mkdir(parents=True, exist_ok=True)
+        json_out.write_text(
+            json.dumps(results, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        print(f"saved project size benchmark stats: {json_out}")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -400,7 +452,19 @@ def main() -> int:
         action="store_true",
         help="write the measured median into the baseline file (same runner only)",
     )
+    parser.add_argument(
+        "--by-project-size",
+        action="store_true",
+        help="benchmark across small, medium, and large fixture projects",
+    )
     args = parser.parse_args()
+
+    if args.by_project_size:
+        return run_benchmark_by_size(
+            runs=args.runs,
+            artifact_dir=args.artifact_dir,
+            json_out=args.json_out,
+        )
 
     target = (ROOT / args.target).resolve()
     target_label = relative_target_label(target)
