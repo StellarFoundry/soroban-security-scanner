@@ -55,6 +55,20 @@ is the non-default `ai-http` feature, which provides the provider transport in
 Network access is never enabled by a repository-provided configuration; it
 requires building the opt-in feature and naming an allowlisted provider.
 
+## GitHub integration boundary
+
+The GitHub Action, reusable workflow, and helper scripts may use a short-lived
+workflow token for the capabilities listed in the
+[permission catalogue](../github-integration.md#permissions-summary). Those
+capabilities are opt-in, job-scoped, and never available to fork pull requests.
+The scanner itself remains offline and read-only: it never reads a token from
+the scanned repository, never persists a credential, and never creates a
+comment, check, or issue unless the caller explicitly enables that side effect.
+Token storage, rotation, and revocation are documented in
+[GitHub Integration](../github-integration.md#token-storage-rotation-and-revocation),
+and the committed [least-privilege App manifest](../github-app-manifest.yml)
+requests no explicit repository permission.
+
 ## AI policy
 
 AI is optional and advisory. The deterministic engine remains authoritative.

@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   returns only the integer id, so no token or private key can be persisted by
   the helper. The permission matrix, installation flow, and no-token-storage
   contract are documented in `docs/github-integration.md` (`#340`).
+- A complete GitHub permission catalogue with per-permission rationale, token
+  storage/rotation/revocation guidance, and a committed least-privilege App
+  manifest in `docs/github-app-manifest.yml` (`#349`).
 - SS-043 "Hardcoded Stellar network passphrase" (medium/high): detects exact
   canonical Stellar passphrase strings and fully qualified Stellar SDK network
   constants. Recommends deployment configuration to prevent environment/network
