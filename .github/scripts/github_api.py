@@ -37,10 +37,17 @@ class GitHubApiError(RuntimeError):
 API_URL_ENV = "SOROBAN_SCAN_GITHUB_API_URL"
 _MAX_API_URL_LENGTH = 2048
 _ALLOWED_API_PATHS = ("", "/api/v3")
+_MAX_REPO_LENGTH = 200
+_REPO_PATTERN = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+_MAX_INSTALLATION_ID = 2**63 - 1
 
 
 class InvalidApiUrlError(GitHubApiError):
     """Raised when the configured GitHub API base URL is not acceptable."""
+
+
+class InvalidInstallationError(GitHubApiError):
+    """Raised when a GitHub App installation cannot be used safely."""
 
 
 def _is_loopback_host(hostname: str) -> bool:
@@ -204,6 +211,46 @@ def list_comments(repo: str, number: int, *, runner: Callable[..., str] = run_gh
     return comments
 
 
+def validate_repo(repo: object) -> str:
+    """Validates an ``OWNER/REPO`` name before it is used in an endpoint.
+
+    Bounds the length and character set so an untrusted value cannot smuggle a
+    query string, extra path segments, or control characters into ``gh api``.
+    Error messages never echo the input.
+    """
+
+    if not isinstance(repo, str):
+        raise GitHubApiError("repository must be a string")
+    value = repo.strip()
+    if (
+        not value
+        or len(value) > _MAX_REPO_LENGTH
+        or _REPO_PATTERN.fullmatch(value) is None
+    ):
+        raise GitHubApiError("repository must be OWNER/REPO")
+    return value
+
+
+def installation_id(value: object) -> int:
+    """Extracts a bounded installation id from an API response.
+
+    Only the numeric identifier is returned. Credentials, tokens, and any other
+    fields in the response are deliberately discarded so callers cannot persist
+    them by accident.
+    """
+
+    if not isinstance(value, dict):
+        raise InvalidInstallationError(
+            "unexpected response when reading an installation"
+        )
+    identifier = value.get("id")
+    if isinstance(identifier, bool) or not isinstance(identifier, int):
+        raise InvalidInstallationError("installation id must be a positive integer")
+    if not 0 < identifier <= _MAX_INSTALLATION_ID:
+        raise InvalidInstallationError("installation id is out of range")
+    return identifier
+
+
 def get_installation(
     repo: str,
     *,
@@ -212,14 +259,32 @@ def get_installation(
     """Returns the GitHub App installation that covers ``repo``.
 
     Workflows that use ``GITHUB_TOKEN`` do not need this lookup; it exists for
-    callers that install a GitHub App and need the installation id.
+    callers that install a GitHub App. Prefer :func:`get_installation_id`, which
+    returns only the identifier and discards every other response field.
     """
 
-    endpoint = f"repos/{repo}/installation"
+    endpoint = f"repos/{validate_repo(repo)}/installation"
     response = parse_json(runner([endpoint]))
     if not isinstance(response, dict):
         raise GitHubApiError("unexpected response when reading an installation")
     return response
+
+
+def get_installation_id(
+    repo: str,
+    *,
+    runner: Callable[..., str] = run_gh,
+) -> int:
+    """Returns the validated installation id covering ``repo``.
+
+    This is the only value callers need to persist. Installation access tokens
+    and user tokens must be minted just in time, kept in memory or the ``gh``
+    environment, and never written to configuration or reports. The lookup is a
+    read-only request and is opt-in: default workflows keep using
+    ``GITHUB_TOKEN``.
+    """
+
+    return installation_id(get_installation(repo, runner=runner))
 
 
 def create_comment(

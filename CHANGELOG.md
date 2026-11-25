@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Opt-in GitHub App installation support in the CI API helper:
+  `get_installation_id()` validates the repository name and installation id and
+  returns only the integer id, so no token or private key can be persisted by
+  the helper. The permission matrix, installation flow, and no-token-storage
+  contract are documented in `docs/github-integration.md` (`#340`).
 - SS-043 "Hardcoded Stellar network passphrase" (medium/high): detects exact
   canonical Stellar passphrase strings and fully qualified Stellar SDK network
   constants. Recommends deployment configuration to prevent environment/network
