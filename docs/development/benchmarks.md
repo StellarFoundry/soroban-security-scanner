@@ -76,6 +76,22 @@ python tools/benchmark.py --update-baseline
 The measurement and comparison logic is covered by
 `tests/tools/test_benchmark_threshold.py`.
 
+## Differential benchmark against previous release
+
+To compare the current build's performance against the previous release binary or a reference baseline,
+run `tools/differential_benchmark.py`:
+
+```bash
+python tools/differential_benchmark.py --baseline-binary /path/to/soroban-scan-v0.2.0 --runs 5
+```
+
+The script runs the same target corpus across both binaries and reports:
+- **Latency deltas:** Median and p95 latency changes (absolute ms and percentage).
+- **Finding counts:** Delta in reported vulnerabilities or security findings.
+- **Structured output:** Optional `--json-out <path>` export for automated evaluation.
+
+Tested by `tests/tools/test_differential_benchmark.py`.
+
 ## Dashboard artifact
 
 Every `tools/benchmark.py` run writes a static dashboard to
