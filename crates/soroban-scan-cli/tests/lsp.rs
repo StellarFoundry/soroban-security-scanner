@@ -280,6 +280,63 @@ fn language_server_handles_open_change_hover_symbols_and_shutdown() {
 }
 
 #[test]
+fn language_server_offers_a_documented_suppression_quick_fix() {
+    let uri = "file:///tmp/soroban-scan-code-action.rs";
+    let mut client = Client::spawn();
+
+    client.send(&request(
+        1,
+        "initialize",
+        json!({ "processId": null, "capabilities": {} }),
+    ));
+    let initialized = client.recv_until(|message| message["id"] == json!(1));
+    let capabilities = &initialized["result"]["capabilities"];
+    assert_eq!(
+        capabilities["codeActionProvider"]["resolveProvider"],
+        json!(false)
+    );
+    assert_eq!(
+        capabilities["codeActionProvider"]["codeActionKinds"][0],
+        json!("quickfix")
+    );
+
+    client.send(&notification("initialized", json!({})));
+    client.send(&did_open(uri, violation_source()));
+    let opened = client.recv_until(diagnostics_for(uri));
+    let finding = opened["params"]["diagnostics"]
+        .as_array()
+        .expect("diagnostics")
+        .iter()
+        .find(|diagnostic| diagnostic["code"] == json!("SS-001"))
+        .cloned()
+        .expect("SS-001 diagnostic");
+
+    client.send(&request(
+        2,
+        "textDocument/codeAction",
+        json!({
+            "textDocument": { "uri": uri },
+            "range": finding["range"],
+            "context": { "diagnostics": [finding] }
+        }),
+    ));
+    let replied = client.recv_until(|message| message["id"] == json!(2));
+    let actions = replied["result"].as_array().expect("code actions");
+    assert_eq!(actions.len(), 1);
+    assert_eq!(actions[0]["kind"], json!("quickfix"));
+    let edit = &actions[0]["edit"]["changes"][uri][0];
+    let inserted = edit["newText"].as_str().expect("inserted directive");
+    assert!(inserted.contains("soroban-scan: ignore SS-001 -- TODO:"));
+    assert_eq!(edit["range"]["start"]["character"], json!(0));
+
+    client.send(&request(3, "shutdown", Value::Null));
+    client.recv_until(|message| message["id"] == json!(3));
+    client.send(&notification("exit", Value::Null));
+    let status = client.wait_for_exit(Duration::from_secs(10));
+    assert!(status.success(), "language server exited with {status:?}");
+}
+
+#[test]
 fn standalone_binary_handshakes_and_publishes_saved_document_diagnostics() {
     let uri = "file:///soroban-scan-lsp-standalone.rs";
     let mut client = Client::spawn_standalone();

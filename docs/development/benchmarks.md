@@ -93,6 +93,21 @@ This benchmarks three representative fixture project tiers:
 It records the min, median, mean, max, and **p95** latency for each tier, helping
 evaluate performance budgets as projects scale. Optionally write the results to JSON
 using `--json-out <path>`.
+## Differential benchmark against previous release
+
+To compare the current build's performance against the previous release binary or a reference baseline,
+run `tools/differential_benchmark.py`:
+
+```bash
+python tools/differential_benchmark.py --baseline-binary /path/to/soroban-scan-v0.2.0 --runs 5
+```
+
+The script runs the same target corpus across both binaries and reports:
+- **Latency deltas:** Median and p95 latency changes (absolute ms and percentage).
+- **Finding counts:** Delta in reported vulnerabilities or security findings.
+- **Structured output:** Optional `--json-out <path>` export for automated evaluation.
+
+Tested by `tests/tools/test_differential_benchmark.py`.
 
 ## Dashboard artifact
 

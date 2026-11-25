@@ -16,6 +16,53 @@ and never post or create anything unless explicitly enabled.
 
 The scanner itself needs no token and makes no network requests.
 
+### GitHub App installation (opt-in)
+
+The default integration uses the workflow-provided `GITHUB_TOKEN`. Installing the
+scanner as a GitHub App is an **opt-in** alternative for organizations that want
+one installation to cover many repositories. It is not required by the action,
+the reusable workflow, or any bundled workflow.
+
+An App installation must request **no repository permissions beyond
+`Metadata: read-only`** for scan-only use. GitHub grants `Metadata: read-only`
+implicitly; do not request contents, issues, checks, or any other permission
+until the corresponding capability is explicitly enabled:
+
+| Capability | Additional App permission | Enabled by |
+| ---------- | ------------------------- | ---------- |
+| Scan-only (default) | none (`Metadata: read-only`) | always |
+| SARIF upload | `security-events: write` | caller's upload job |
+| PR comment | `pull-requests: write` | `SOROBAN_SCAN_PR_COMMENT` |
+| Check run / status gate | `checks: write` | `SOROBAN_SCAN_CHECK_RUN` / `SOROBAN_SCAN_STATUS_GATE` |
+| Issue creation | `issues: write` | manual, not enabled by default |
+
+No webhook events are needed. Fork pull requests remain excluded from every
+permission-bearing side effect, exactly as with `GITHUB_TOKEN`.
+
+Installation flow:
+
+1. A maintainer installs the App on the target organization or repositories
+   with the table above as the permission ceiling.
+2. A caller resolves the installation with
+   `get_installation_id("owner/repo")`. The helper reads
+   `GET repos/{owner}/{repo}/installation` through the existing `gh api`
+   wrapper, validates that the id is a positive bounded integer, and returns
+   **only that integer**.
+3. Persist only the installation id, keyed by repository (for example in CI
+   variables). Never persist an installation access token, user token, PAT,
+   OAuth refresh token, or App private key in repository files, reports,
+   artifacts, or logs.
+4. If an App-authenticated API call is required, mint a short-lived installation
+   token just in time and pass it only through the `gh` environment. Keep the
+   App private key in the platform's protected secret store; it is never part
+   of this repository's configuration.
+
+This mode stays bounded and secret-free at the repository level: no new files,
+tokens, or network calls are introduced unless a caller opts in. See the
+[integration script README](../.github/scripts/README.md#github-app-installations)
+for the helper contract and the [security model](security/security-model.md)
+for the guarantees that remain unchanged.
+
 ## Using the action
 
 ```yaml

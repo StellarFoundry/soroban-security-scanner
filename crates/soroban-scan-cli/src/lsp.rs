@@ -1,7 +1,8 @@
 //! Minimal stdio language server.
 //!
 //! Implements the subset of LSP that `docs/editors.md` promises: full document
-//! sync, diagnostics from the deterministic scanner, and document symbols.
+//! sync, diagnostics from the deterministic scanner, document symbols, and
+//! quick fixes that insert documented inline suppressions.
 //! JSON-RPC 2.0 framing is handled by hand with `serde_json`; there is no
 //! network access and no extra dependency.
 
@@ -31,6 +32,10 @@ const CONFIG_FILE: &str = "soroban-scan.toml";
 
 /// Stable diagnostic source shown for both scan findings and config errors.
 const SOURCE: &str = "soroban-scan";
+
+/// Reason placeholder inserted by the suppression quick fix. It is deliberately
+/// not a valid justification: the developer must replace it before committing.
+const REASON_PLACEHOLDER: &str = "TODO: explain why this finding is accepted";
 
 /// Effective workspace configuration and the last reload error, if any.
 struct WorkspaceConfig {
@@ -320,7 +325,11 @@ impl ServerState {
                         "capabilities": {
                             "textDocumentSync": { "openClose": true, "change": 1 },
                             "documentSymbolProvider": true,
-                            "hoverProvider": true
+                            "hoverProvider": true,
+                            "codeActionProvider": {
+                                "codeActionKinds": ["quickfix"],
+                                "resolveProvider": false
+                            }
                         },
                         "serverInfo": {
                             "name": "soroban-scan",
@@ -396,6 +405,18 @@ impl ServerState {
                         hover(&self.registry, text, line, character)
                     })
                     .unwrap_or(Value::Null);
+                respond(writer, id, result)?;
+            }
+            Some("textDocument/codeAction") => {
+                let result = params
+                    .pointer("/textDocument/uri")
+                    .and_then(Value::as_str)
+                    .and_then(|uri| {
+                        self.documents
+                            .get(uri)
+                            .map(|text| code_actions(uri, text, &params))
+                    })
+                    .unwrap_or_else(|| json!([]));
                 respond(writer, id, result)?;
             }
             Some(_) if id.is_some() => {
@@ -1105,6 +1126,100 @@ fn document_name(uri: &str) -> String {
         .to_string()
 }
 
+/// True only for the documented `SS-` plus three digits rule-id shape.
+fn is_rule_id(value: &str) -> bool {
+    let Some(digits) = value.strip_prefix("SS-") else {
+        return false;
+    };
+    digits.len() == 3 && digits.bytes().all(|byte| byte.is_ascii_digit())
+}
+
+/// Avoids offering a second directive for a rule that is already suppressed.
+fn has_suppression(text: &str, rule_id: &str) -> bool {
+    text.lines().any(|line| {
+        let lower = line.to_ascii_lowercase();
+        if !lower.contains("soroban-scan:") {
+            return false;
+        }
+        let Some(start) = lower.find("ignore") else {
+            return false;
+        };
+        let mut targets = lower[start + "ignore".len()..]
+            .split(|character: char| character.is_whitespace() || character == ',');
+        let rule_id = rule_id.to_ascii_lowercase();
+        targets.any(|word| word == rule_id.as_str() || word == "all")
+    })
+}
+
+/// Builds the directive text for an insertion at the start of `line`.
+///
+/// The leading whitespace of the target line is preserved so the comment lines
+/// up with the code it suppresses, and the document's line ending is reused.
+fn suppression_edit_text(text: &str, line: usize, rule_id: &str) -> Option<String> {
+    let line_text = text.lines().nth(line)?;
+    let indent: String = line_text
+        .chars()
+        .take_while(|character| character.is_whitespace())
+        .collect();
+    let newline = if text.contains("\r\n") { "\r\n" } else { "\n" };
+    Some(format!(
+        "{indent}// soroban-scan: ignore {rule_id} -- {REASON_PLACEHOLDER}{newline}"
+    ))
+}
+
+/// Returns at most one quick fix per scanner diagnostic in the request context.
+///
+/// The analysis is never rerun here: the client supplies the diagnostics it
+/// already received, and only diagnostics from this server with a valid rule id
+/// are offered. Config and truncation diagnostics have no rule id and are
+/// skipped, so a quick fix can never silently change scanner configuration.
+fn code_actions(uri: &str, text: &str, params: &Value) -> Value {
+    let Some(diagnostics) = params
+        .pointer("/context/diagnostics")
+        .and_then(Value::as_array)
+    else {
+        return json!([]);
+    };
+    let mut actions = Vec::new();
+    for diagnostic in diagnostics.iter().take(MAX_DIAGNOSTICS) {
+        if diagnostic["source"].as_str() != Some(SOURCE) {
+            continue;
+        }
+        let Some(rule_id) = diagnostic["code"].as_str() else {
+            continue;
+        };
+        if !is_rule_id(rule_id) || has_suppression(text, rule_id) {
+            continue;
+        }
+        let Some(line) = diagnostic["range"]["start"]["line"]
+            .as_u64()
+            .and_then(|line| usize::try_from(line).ok())
+        else {
+            continue;
+        };
+        let Some(new_text) = suppression_edit_text(text, line, rule_id) else {
+            continue;
+        };
+        actions.push(json!({
+            "title": format!("Suppress {rule_id} with a documented reason"),
+            "kind": "quickfix",
+            "diagnostics": [diagnostic],
+            "edit": {
+                "changes": {
+                    uri: [{
+                        "range": {
+                            "start": { "line": line, "character": 0 },
+                            "end": { "line": line, "character": 0 }
+                        },
+                        "newText": new_text
+                    }]
+                }
+            }
+        }));
+    }
+    Value::Array(actions)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1297,5 +1412,78 @@ impl Vault {
         assert!(byte_column > 46, "the prefix contains multi-byte text");
         assert_eq!(finding["range"]["start"]["character"].as_u64(), Some(46));
         assert_eq!(finding["data"]["confidence"], "low");
+    }
+
+    fn diagnostic(line: u64, source: &str, code: &str) -> Value {
+        json!({
+            "source": source,
+            "code": code,
+            "range": {
+                "start": { "line": line, "character": 4 },
+                "end": { "line": line, "character": 8 }
+            }
+        })
+    }
+
+    fn action_params(diagnostics: Vec<Value>) -> Value {
+        json!({
+            "textDocument": { "uri": "file:///vault.rs" },
+            "context": { "diagnostics": diagnostics }
+        })
+    }
+
+    #[test]
+    fn code_action_inserts_a_documented_suppression() {
+        let text = "impl Vault {\n    pub fn set() {}\n}\n";
+        let params = action_params(vec![diagnostic(1, SOURCE, "SS-001")]);
+        let actions = code_actions("file:///vault.rs", text, &params);
+        let actions = actions.as_array().expect("code actions");
+        assert_eq!(actions.len(), 1);
+        assert_eq!(actions[0]["kind"], "quickfix");
+        assert!(actions[0]["title"].as_str().unwrap().contains("SS-001"));
+        let edit = &actions[0]["edit"]["changes"]["file:///vault.rs"][0];
+        assert_eq!(
+            edit["newText"],
+            "    // soroban-scan: ignore SS-001 -- TODO: explain why this finding is accepted\n"
+        );
+        assert_eq!(edit["range"]["start"]["line"], 1);
+        assert_eq!(edit["range"]["start"]["character"], 0);
+        assert_eq!(actions[0]["diagnostics"][0]["code"], "SS-001");
+    }
+
+    #[test]
+    fn code_action_reuses_crlf_line_endings() {
+        let text = "impl Vault {\r\n    pub fn set() {}\r\n}\r\n";
+        let params = action_params(vec![diagnostic(1, SOURCE, "SS-043")]);
+        let actions = code_actions("file:///vault.rs", text, &params);
+        let new_text = &actions[0]["edit"]["changes"]["file:///vault.rs"][0]["newText"];
+        assert!(new_text.as_str().unwrap().ends_with("\r\n"));
+        assert!(new_text.as_str().unwrap().contains("SS-043"));
+    }
+
+    #[test]
+    fn code_action_skips_foreign_config_and_malformed_diagnostics() {
+        let diagnostics = vec![
+            diagnostic(1, "rust-analyzer", "SS-001"),
+            diagnostic(1, SOURCE, "LSP-CONFIG-001"),
+            diagnostic(1, SOURCE, "SS-1"),
+            diagnostic(1, SOURCE, "SS-001x"),
+            diagnostic(99, SOURCE, "SS-001"),
+        ];
+        let text = "impl Vault {\n    pub fn set() {}\n}\n";
+        assert_eq!(
+            code_actions("file:///vault.rs", text, &action_params(diagnostics)),
+            json!([])
+        );
+    }
+
+    #[test]
+    fn code_action_skips_an_existing_suppression() {
+        let text = "// soroban-scan: ignore SS-001 -- reviewed\npub fn set() {}\n";
+        let params = action_params(vec![diagnostic(1, SOURCE, "SS-001")]);
+        assert_eq!(code_actions("file:///vault.rs", text, &params), json!([]));
+
+        let all = "// soroban-scan: ignore all -- generated file\npub fn set() {}\n";
+        assert_eq!(code_actions("file:///vault.rs", all, &params), json!([]));
     }
 }
