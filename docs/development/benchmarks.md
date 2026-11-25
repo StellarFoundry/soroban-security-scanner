@@ -76,6 +76,24 @@ python tools/benchmark.py --update-baseline
 The measurement and comparison logic is covered by
 `tests/tools/test_benchmark_threshold.py`.
 
+## Scan latency by project size
+
+To measure how scan latency scales across project sizes (small, medium, large), use
+the `--by-project-size` flag:
+
+```bash
+python tools/benchmark.py --by-project-size --runs 5
+```
+
+This benchmarks three representative fixture project tiers:
+- **Small:** `fixtures/projects/generic-rust` (single package, minimal entrypoints)
+- **Medium:** `fixtures/projects/soroban-confirmed` (Soroban contract with storage and auth checks)
+- **Large:** `fixtures/projects/monorepo` (multi-crate contract workspace with token, vault, adapter)
+
+It records the min, median, mean, max, and **p95** latency for each tier, helping
+evaluate performance budgets as projects scale. Optionally write the results to JSON
+using `--json-out <path>`.
+
 ## Dashboard artifact
 
 Every `tools/benchmark.py` run writes a static dashboard to

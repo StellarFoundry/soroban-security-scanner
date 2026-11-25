@@ -10,6 +10,8 @@
 //! creation order, and reachability is a deterministic graph search from the
 //! entry node, so the same body always produces the same graph.
 
+use std::collections::BTreeMap;
+
 use syn::spanned::Spanned;
 use syn::{Block, Expr, Stmt};
 
@@ -49,6 +51,43 @@ pub enum NodeKind {
     Unknown,
 }
 
+/// A construct the control-flow builder does not model.
+///
+/// Unknown constructs are counted per kind so the engine can report what the
+/// graph ignored without including source text or paths.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum UnmodelledKind {
+    /// An item declared inside a function body.
+    Item,
+    /// A macro invocation that was not expanded.
+    Macro,
+    /// A `break` whose destination is not resolved.
+    Break,
+    /// A `continue` whose destination is not resolved.
+    Continue,
+    /// A closure expression.
+    Closure,
+    /// An `async` block.
+    AsyncBlock,
+    /// A bare `loop` continuation whose `break` target is not resolved.
+    LoopExit,
+}
+
+impl UnmodelledKind {
+    /// Stable lowercase label used in diagnostics.
+    pub fn as_str(self) -> &'static str {
+        match self {
+            UnmodelledKind::Item => "item",
+            UnmodelledKind::Macro => "macro",
+            UnmodelledKind::Break => "break",
+            UnmodelledKind::Continue => "continue",
+            UnmodelledKind::Closure => "closure",
+            UnmodelledKind::AsyncBlock => "async",
+            UnmodelledKind::LoopExit => "loop_exit",
+        }
+    }
+}
+
 /// One node in a control-flow graph.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CfgNode {
@@ -82,6 +121,8 @@ pub struct ControlFlowGraph {
     pub exit: usize,
     /// True when a cap stopped the builder early.
     pub truncated: bool,
+    /// Counts of unmodelled constructs by kind, in stable kind order.
+    pub unmodelled: BTreeMap<UnmodelledKind, usize>,
     reachable: Vec<bool>,
 }
 
@@ -232,6 +273,7 @@ struct Builder {
     nodes: Vec<CfgNode>,
     edges: Vec<CfgEdge>,
     truncated: bool,
+    unmodelled: BTreeMap<UnmodelledKind, usize>,
 }
 
 impl Builder {
@@ -252,6 +294,7 @@ impl Builder {
             nodes: vec![entry, exit],
             edges: Vec::new(),
             truncated: false,
+            unmodelled: BTreeMap::new(),
         }
     }
 
@@ -267,6 +310,7 @@ impl Builder {
             entry: 0,
             exit: 1,
             truncated: self.truncated,
+            unmodelled: self.unmodelled,
             reachable,
         }
     }
@@ -312,6 +356,18 @@ impl Builder {
         vec![id]
     }
 
+    /// Records an unmodelled construct and emits its explicit `Unknown` node.
+    fn unknown(
+        &mut self,
+        kind: UnmodelledKind,
+        span: Span,
+        incoming: Vec<usize>,
+        depth: usize,
+    ) -> Vec<usize> {
+        *self.unmodelled.entry(kind).or_insert(0) += 1;
+        self.simple(NodeKind::Unknown, span, incoming, depth)
+    }
+
     fn build_block(&mut self, block: &Block, mut incoming: Vec<usize>, depth: usize) -> Vec<usize> {
         for stmt in &block.stmts {
             incoming = self.build_stmt(stmt, incoming, depth);
@@ -330,13 +386,16 @@ impl Builder {
                 self.simple(NodeKind::Statement, span_of(local), incoming, depth)
             }
             Stmt::Expr(expr, _) => self.build_expr(expr, incoming, depth),
-            Stmt::Item(item) => self.simple(NodeKind::Unknown, span_of(item), incoming, depth),
-            Stmt::Macro(mac) => self.simple(NodeKind::Unknown, span_of(mac), incoming, depth),
+            Stmt::Item(item) => self.unknown(UnmodelledKind::Item, span_of(item), incoming, depth),
+            Stmt::Macro(mac) => self.unknown(UnmodelledKind::Macro, span_of(mac), incoming, depth),
         }
     }
 
     fn build_expr(&mut self, expr: &Expr, incoming: Vec<usize>, depth: usize) -> Vec<usize> {
         if depth >= MAX_CFG_DEPTH {
+            // The nesting cap is a bound, not an unsupported construct: the
+            // graph is truncated and CFG-001 explains the gap.
+            self.truncated = true;
             return self.simple(NodeKind::Unknown, span_of(expr), incoming, depth);
         }
         match expr {
@@ -384,14 +443,21 @@ impl Builder {
                 }
                 Vec::new()
             }
-            Expr::Break(_) | Expr::Continue(_) => {
+            Expr::Break(_) => {
                 // Break/continue targets are not modelled. The node stays
                 // explicit so a reader knows the successor is not the source
                 // order default.
-                self.simple(NodeKind::Unknown, span_of(expr), incoming, depth)
+                self.unknown(UnmodelledKind::Break, span_of(expr), incoming, depth)
             }
-            Expr::Macro(_) | Expr::Closure(_) | Expr::Async(_) => {
-                self.simple(NodeKind::Unknown, span_of(expr), incoming, depth)
+            Expr::Continue(_) => {
+                self.unknown(UnmodelledKind::Continue, span_of(expr), incoming, depth)
+            }
+            Expr::Macro(_) => self.unknown(UnmodelledKind::Macro, span_of(expr), incoming, depth),
+            Expr::Closure(_) => {
+                self.unknown(UnmodelledKind::Closure, span_of(expr), incoming, depth)
+            }
+            Expr::Async(_) => {
+                self.unknown(UnmodelledKind::AsyncBlock, span_of(expr), incoming, depth)
             }
             _ => self.simple(NodeKind::Statement, span_of(expr), incoming, depth),
         }
@@ -418,13 +484,7 @@ impl Builder {
         // A bare `loop` only leaves through `break`, `return`, or a panic.
         // Those targets are not resolved, so the continuation is an explicit
         // Unknown node rather than an invented direct edge from the header.
-        match self.node(NodeKind::Unknown, span) {
-            Some(unknown) => {
-                self.edge(header, unknown);
-                vec![unknown]
-            }
-            None => vec![header],
-        }
+        self.unknown(UnmodelledKind::LoopExit, span, vec![header], depth)
     }
 }
 
@@ -541,6 +601,112 @@ mod tests {
     }
 
     #[test]
+    fn while_loop_shape_is_exact_and_deterministic() {
+        let body = "{ while ready { step(); } done(); }";
+        let graph = cfg(body);
+        assert_eq!(
+            kinds(&graph),
+            vec![
+                NodeKind::Entry,
+                NodeKind::Exit,
+                NodeKind::Loop,
+                NodeKind::Statement,
+                NodeKind::Statement,
+            ]
+        );
+        assert_eq!(graph.edges.len(), 5, "edges: {:?}", graph.edges);
+        assert!(graph.reachable_nodes().count() == graph.nodes.len());
+        assert_eq!(graph, cfg(body));
+    }
+
+    #[test]
+    fn for_loop_shape_matches_a_while_loop() {
+        let body = "{ for item in items { step(); } done(); }";
+        let graph = cfg(body);
+        assert_eq!(
+            kinds(&graph),
+            vec![
+                NodeKind::Entry,
+                NodeKind::Exit,
+                NodeKind::Loop,
+                NodeKind::Statement,
+                NodeKind::Statement,
+            ]
+        );
+        assert_eq!(graph.edges.len(), 5, "edges: {:?}", graph.edges);
+        let header = graph
+            .nodes
+            .iter()
+            .find(|node| node.kind == NodeKind::Loop)
+            .expect("for-loop header");
+        assert!(graph
+            .edges
+            .iter()
+            .any(|edge| edge.to == header.id && edge.from != graph.entry));
+        assert_eq!(graph, cfg(body));
+    }
+
+    #[test]
+    fn bare_loop_keeps_an_explicit_unknown_exit() {
+        let body = "{ loop { step(); } done(); }";
+        let graph = cfg(body);
+        assert_eq!(
+            kinds(&graph),
+            vec![
+                NodeKind::Entry,
+                NodeKind::Exit,
+                NodeKind::Loop,
+                NodeKind::Statement,
+                NodeKind::Unknown,
+                NodeKind::Statement,
+            ]
+        );
+        assert_eq!(graph.edges.len(), 6, "edges: {:?}", graph.edges);
+
+        let unknown = graph
+            .nodes
+            .iter()
+            .find(|node| node.kind == NodeKind::Unknown)
+            .expect("unresolved loop exit");
+        assert!(graph.is_reachable(unknown.id));
+        assert!(graph.is_reachable(graph.exit));
+        assert_eq!(graph.unmodelled.get(&UnmodelledKind::LoopExit), Some(&1));
+        assert_eq!(graph, cfg(body));
+    }
+
+    #[test]
+    fn match_arms_with_guards_keep_one_edge_per_arm() {
+        let body = "{ match value { n if n > 0 && n < 10 => a(), _ => b(), } done(); }";
+        let graph = cfg(body);
+        assert_eq!(
+            kinds(&graph),
+            vec![
+                NodeKind::Entry,
+                NodeKind::Exit,
+                NodeKind::Match,
+                NodeKind::Statement,
+                NodeKind::Statement,
+                NodeKind::Statement,
+            ],
+            "a guard does not add a node of its own"
+        );
+        let header = graph
+            .nodes
+            .iter()
+            .find(|node| node.kind == NodeKind::Match)
+            .expect("match node");
+        let arms = graph
+            .edges
+            .iter()
+            .filter(|edge| edge.from == header.id)
+            .count();
+        assert_eq!(arms, 2, "one edge per arm, guard or not");
+        assert_eq!(graph.edges.len(), 6, "edges: {:?}", graph.edges);
+        assert!(graph.nodes.iter().all(|node| graph.is_reachable(node.id)));
+        assert_eq!(graph, cfg(body));
+    }
+
+    #[test]
     fn bare_loop_exit_is_explicitly_unknown() {
         let graph = cfg("{\n loop {\n step();\n }\n after();\n}");
         assert!(graph
@@ -578,6 +744,22 @@ mod tests {
             .nodes
             .iter()
             .any(|node| node.kind == NodeKind::Unknown));
+    }
+
+    #[test]
+    fn unmodelled_constructs_are_counted_by_kind() {
+        let graph =
+            cfg("{\n some_macro!();\n other_macro!();\n fn nested() {}\n loop { break; }\n}");
+        assert_eq!(graph.unmodelled.get(&UnmodelledKind::Macro), Some(&2));
+        assert_eq!(graph.unmodelled.get(&UnmodelledKind::Item), Some(&1));
+        assert_eq!(graph.unmodelled.get(&UnmodelledKind::Break), Some(&1));
+        assert_eq!(graph.unmodelled.get(&UnmodelledKind::LoopExit), Some(&1));
+    }
+
+    #[test]
+    fn unmodelled_counts_are_deterministic() {
+        let body = "{ some_macro!(); async { 1 }; loop { break; } }";
+        assert_eq!(cfg(body).unmodelled, cfg(body).unmodelled);
     }
 
     #[test]

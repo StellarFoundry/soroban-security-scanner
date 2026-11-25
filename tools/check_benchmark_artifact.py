@@ -13,13 +13,14 @@ import argparse
 import json
 import re
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 SCHEMA_VERSION = 1
 JSON_NAME = "benchmark.json"
 HTML_NAME = "index.html"
 STATUSES = {"pass", "fail"}
 STAT_KEYS = ("runs", "min_ms", "median_ms", "mean_ms", "max_ms")
+OPTIONAL_STAT_KEYS = ("p95_ms",)
 BASELINE_KEYS = ("median_ms", "threshold_factor", "limit_ms")
 
 SCRIPT_RE = re.compile(r"<script\b", re.IGNORECASE)
@@ -63,7 +64,7 @@ def validate_payload(payload: dict) -> list[str]:
     target = payload.get("target")
     if not isinstance(target, str) or not target:
         problems.append(f"{JSON_NAME}: target must be a non-empty string")
-    elif Path(target).is_absolute():
+    elif Path(target).is_absolute() or PurePosixPath(target).is_absolute():
         problems.append(f"{JSON_NAME}: target must be repository-relative")
 
     runner = payload.get("runner")
@@ -83,6 +84,11 @@ def validate_payload(payload: dict) -> list[str]:
             value = stats.get(key)
             if not isinstance(value, (int, float)) or value < 0:
                 problems.append(f"{JSON_NAME}: stats.{key} must be a non-negative number")
+        for key in OPTIONAL_STAT_KEYS:
+            if key in stats:
+                value = stats.get(key)
+                if not isinstance(value, (int, float)) or value < 0:
+                    problems.append(f"{JSON_NAME}: stats.{key} must be a non-negative number")
 
     baseline = payload.get("baseline")
     if not isinstance(baseline, dict):

@@ -289,6 +289,9 @@ pub enum DiagnosticCode {
     /// A control-flow graph hit a size cap and was truncated.
     #[serde(rename = "CFG-001")]
     CfgTruncated,
+    /// A construct in a control-flow graph is not modelled.
+    #[serde(rename = "CFG-002")]
+    CfgUnmodelled,
     /// A taint flow could not be established or may be incomplete.
     #[serde(rename = "TAINT-001")]
     TaintIncomplete,
@@ -329,6 +332,7 @@ impl DiagnosticCode {
             DiagnosticCode::UnsupportedSdkVersion => "SDK-001",
             DiagnosticCode::ScanDeadlineExceeded => "SCAN-001",
             DiagnosticCode::CfgTruncated => "CFG-001",
+            DiagnosticCode::CfgUnmodelled => "CFG-002",
             DiagnosticCode::TaintIncomplete => "TAINT-001",
         }
     }

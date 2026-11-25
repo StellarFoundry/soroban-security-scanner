@@ -93,6 +93,7 @@ heuristically is reported as `severity: high, confidence: low`, never
 | [SS-042](detectors/SS-042.md) | Security check unreachable on every path | low | medium | authorization |
 | [SS-043](detectors/SS-043.md) | Hardcoded Stellar network passphrase | medium | high | configuration |
 | [SS-044](detectors/SS-044.md) | Cross-contract call with an unvalidated address argument | medium | low | cross-contract |
+| [SS-045](detectors/SS-045.md) | Cross-contract call without error handling | medium | medium | cross-contract |
 | [SS-046](detectors/SS-046.md) | Duplicate storage key construction | medium | low | storage |
 | [SS-047](detectors/SS-047.md) | Unchecked ledger timestamp usage | medium | low | arithmetic |
 | [SS-048](detectors/SS-048.md) | Unbounded event payload | medium | medium | events |
@@ -175,8 +176,9 @@ of done.
 
 For reusable analysis primitives, see [Taint Analysis](../taint-analysis.md)
 (sources, sinks, sanitizers, and limits), [Control-flow graphs](../control-flow.md),
-and [Finding ranking](../finding-ranking.md). For the limits of the analysis
-and the meaning of confidence, see
+and [Finding ranking](../finding-ranking.md). For the optional per-finding
+reachability context, see the [Exploitability model](../exploitability-model.md).
+For the limits of the analysis and the meaning of confidence, see
 [Analysis Methodology](../analysis-methodology.md).
 
 ## Rule documentation template

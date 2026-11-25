@@ -34,6 +34,15 @@ class SummarizeTests(unittest.TestCase):
         self.assertEqual(stats["median_ms"], 20.0)
         self.assertEqual(stats["max_ms"], 30.0)
         self.assertEqual(stats["runs"], 3)
+        self.assertIn("p95_ms", stats)
+        self.assertEqual(stats["p95_ms"], 30.0)
+
+    def test_project_size_targets_exist(self):
+        self.assertEqual(len(benchmark.PROJECT_SIZE_TARGETS), 3)
+        sizes = [s for s, _ in benchmark.PROJECT_SIZE_TARGETS]
+        self.assertEqual(sizes, ["small", "medium", "large"])
+        for size, target_rel in benchmark.PROJECT_SIZE_TARGETS:
+            self.assertTrue((benchmark.ROOT / target_rel).exists(), f"{size} target {target_rel} exists")
 
 
 class RegressionTests(unittest.TestCase):

@@ -189,3 +189,7 @@ why = "An entry point publishes a caller-supplied Vec with no length bound, so S
 file = "SS-049.rs"
 why = "A public entry point unwraps a bytes-to-string conversion, so invalid UTF-8 panics; SS-049 must always trigger."
 
+[SS-045]
+file = "SS-045.rs"
+why = "An entry point discards a cross-contract client call result into `_`, so SS-045 must always trigger."
+

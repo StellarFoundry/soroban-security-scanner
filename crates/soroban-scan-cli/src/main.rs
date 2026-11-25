@@ -30,8 +30,8 @@ use soroban_scan_core::fingerprint::FingerprintStrategy;
 use soroban_scan_core::frontend::{self, Frontend};
 use soroban_scan_core::model::DiagnosticCode;
 use soroban_scan_core::monorepo::{self, ScopeFilter};
-use soroban_scan_core::policy::PolicyDocument;
 use soroban_scan_core::openapi;
+use soroban_scan_core::policy::PolicyDocument;
 use soroban_scan_core::redaction;
 use soroban_scan_core::registry::RuleRegistry;
 use soroban_scan_core::report::{self, OutputFormat};
@@ -2100,6 +2100,8 @@ fn run_openapi(args: OpenapiArgs) -> CliResult<u8> {
         None => print!("{canonical_text}"),
     }
     Ok(EXIT_SUCCESS)
+}
+
 fn run_baseline(args: BaselineArgs, registry: &RuleRegistry) -> CliResult<u8> {
     match args.command {
         BaselineSubcommand::Push(push_args) => {
@@ -2317,6 +2319,8 @@ fn changed_files(root: &Path, reference: &str, list: Option<&Path>) -> CliResult
         files.push(path);
     }
     Ok(files)
+}
+
 /// Largest changed-file list read for monorepo filtering (8 MiB).
 const MAX_CHANGED_FILES_BYTES: u64 = 8 * 1024 * 1024;
 

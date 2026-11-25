@@ -359,7 +359,7 @@ fn generic_mode_is_opt_in_and_visible_in_output() {
     ]);
     let value: serde_json::Value = serde_json::from_str(&default.stdout).unwrap();
     assert_eq!(value["stats"]["mode"], "soroban");
-    assert_eq!(value["stats"]["rules_run"], 45);
+    assert_eq!(value["stats"]["rules_run"], 47);
 }
 
 #[test]
@@ -3050,6 +3050,9 @@ fn changed_since_scans_only_changed_rust_files() {
     assert_eq!(output.code, 0, "stderr: {}", output.stderr);
     let value: ::serde_json::Value = ::serde_json::from_str(&output.stdout).expect("json report");
     assert_eq!(value["stats"]["files_analyzed"], 1);
+}
+
+#[test]
 fn openapi_generates_and_checks_published_contract() {
     let out = run(&["openapi"]);
     assert_eq!(out.code, 0, "stderr: {}", out.stderr);
@@ -3094,6 +3097,8 @@ fn openapi_generates_and_checks_published_contract() {
     );
 
     let _ = std::fs::remove_dir_all(&dir);
+}
+
 struct TestDir(std::path::PathBuf);
 
 impl Drop for TestDir {

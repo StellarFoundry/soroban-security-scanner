@@ -1,4 +1,4 @@
 version = 1
 algorithm = "ed25519"
 key_id = "stellar-foundry-active"
-signature = "88dcf1cb5d27c1822bd832c046941ca1ca0bd723f2c6b0efc140ae5702395d75beb296fb7047ca65384c06eeac6cd4dc75be1b174aef4b8e8c8c3c54488e3e0d"
+signature = "08c34d241603f4fed4dc5d9774057413d6512a991a607ee4aa0b38df99eeda592e1d03e8a9ff53c37b0ce35a9deaa5425d238778fd92a4db22d4175a1cd89e06"

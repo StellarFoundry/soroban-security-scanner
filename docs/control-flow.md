@@ -47,6 +47,13 @@ instead of an invented edge; `while`/`for` can always skip the body and keep
 their header as the exit. Unknown nodes are explicit: the builder never
 fabricates an edge to make the graph look complete.
 
+Each `ControlFlowGraph` also records how many unmodelled constructs it created
+per `UnmodelledKind` in `unmodelled`. The engine aggregates those counts across
+the scan and emits one bounded `CFG-002` diagnostic per kind, with a count and a
+fixed label only. The diagnostic carries no path, line, function name, or source
+text, so it identifies the kind of gap without echoing the scanned code. A
+`CFG-002` diagnostic never changes a finding and is never a finding itself.
+
 ## Bounds
 
 - `MAX_CFG_NODES` (256) caps nodes.

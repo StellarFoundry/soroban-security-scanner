@@ -6,7 +6,9 @@ semantics, then use the shared analysis primitives rather than re-deriving them:
 [the type model](../type-model.md) for type names and cast source types,
 [taint analysis](../taint-analysis.md) for caller-controlled data, and
 [control-flow graphs](../control-flow.md) for reachability. Finding order is
-defined in [finding ranking](../finding-ranking.md). The full proposal-to-release
+defined in [finding ranking](../finding-ranking.md), and the optional
+per-finding reachability context is defined in the
+[exploitability model](../exploitability-model.md). The full proposal-to-release
 path, including who approves each stage, is in the
 [rule review workflow](rule-review-workflow.md).
 semantics. For how a rule moves from proposal to release, including who
@@ -111,16 +113,39 @@ Fixtures are parsed, not compiled. Keep them minimal and readable.
 
 ## 4. Add tests
 
-Add unit tests in your rule module using
-`crate::rules::test_support::scan_rule`:
+Add unit tests in your rule module using the test-only
+`crate::rules::test_support::RuleHarness`. It runs one rule against inline
+sources through the real engine, so there is no mocked scan path, and reports
+every failed case at once with the case name, expected outcome, actual findings,
+and a line-numbered copy of the source:
 
 ```rust
-#[test]
-fn flags_the_bad_case() {
-    let findings = scan_rule(SRC, Box::new(MyRule));
-    assert_eq!(findings.len(), 1);
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::rules::test_support::RuleHarness;
+
+    #[test]
+    fn classifies_inline_sources() {
+        let mut harness = RuleHarness::new(Box::new(MyRule));
+        // Must produce exactly one finding.
+        harness.positive("bare call", SRC_VULNERABLE, 1);
+        // Must produce no findings.
+        harness.negative("handled with ?", SRC_HANDLED);
+        // The rule cannot decide. It must not guess, so it must not fire.
+        harness.ambiguous(
+            "callee is not defined in this file",
+            SRC_UNKNOWN_CALLEE,
+            "the helper body is unavailable",
+        );
+        harness.run();
+    }
 }
 ```
+
+Use `scan_rule` / `scan_all` from the same module when a test needs the raw
+`FindingSummary` list. The harness is behind `#[cfg(test)]`, so it is available
+to unit tests inside the crate, not to integration tests.
 
 The repository-level corpus test (`tests/corpus.rs`) and quality test
 (`tests/rule_quality.rs`) automatically pick up new rules.

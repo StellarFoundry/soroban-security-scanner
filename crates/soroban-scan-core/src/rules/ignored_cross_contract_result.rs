@@ -171,101 +171,88 @@ fn truncate(text: &str, max: usize) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::rules::test_support::scan_rule;
+    use crate::rules::test_support::RuleHarness;
 
     const CLIENT: &str = "token::Client::new(&env, TOKEN)";
 
-    #[test]
-    fn flags_bare_client_call_statement() {
-        let src = format!(
+    fn source(signature: &str, body: &str) -> String {
+        format!(
             r#"
             #[contractimpl]
             impl Vault {{
-                pub fn probe(env: Env, who: Address) {{
+                pub fn probe{signature} {{
                     let client = {CLIENT};
-                    client.balance(&who);
+                    {body}
                 }}
             }}
             "#
-        );
-        let findings = scan_rule(&src, Box::new(IgnoredCrossContractResult));
-        assert_eq!(findings.len(), 1);
-        assert_eq!(findings[0].rule_id, "SS-019");
-        assert!(findings[0].evidence.contains("discarded"));
+        )
     }
 
     #[test]
-    fn flags_call_discarded_into_wildcard() {
-        let src = format!(
-            r#"
-            #[contractimpl]
-            impl Vault {{
-                pub fn probe(env: Env, who: Address) {{
-                    let client = {CLIENT};
-                    let _ = client.balance(&who);
-                }}
-            }}
-            "#
+    fn flags_discarded_results() {
+        let mut harness = RuleHarness::new(Box::new(IgnoredCrossContractResult));
+        harness.positive(
+            "bare client call statement",
+            &source("(env: Env, who: Address)", "client.balance(&who);"),
+            1,
         );
-        let findings = scan_rule(&src, Box::new(IgnoredCrossContractResult));
-        assert_eq!(findings.len(), 1);
+        harness.positive(
+            "wildcard binding",
+            &source("(env: Env, who: Address)", "let _ = client.balance(&who);"),
+            1,
+        );
+        harness.run();
     }
 
     #[test]
     fn does_not_flag_assigned_or_returned_calls() {
-        let src = format!(
-            r#"
-            #[contractimpl]
-            impl Vault {{
-                pub fn probe(env: Env, who: Address) -> i128 {{
-                    let client = {CLIENT};
-                    let value = client.balance(&who);
-                    value
-                }}
-            }}
-            "#
+        let mut harness = RuleHarness::new(Box::new(IgnoredCrossContractResult));
+        harness.negative(
+            "named binding",
+            &source(
+                "(env: Env, who: Address) -> i128",
+                "let value = client.balance(&who); value",
+            ),
         );
-        let findings = scan_rule(&src, Box::new(IgnoredCrossContractResult));
-        assert!(findings.is_empty(), "got: {findings:#?}");
+        harness.negative(
+            "tail expression",
+            &source("(env: Env, who: Address) -> i128", "client.balance(&who)"),
+        );
+        harness.run();
     }
 
     #[test]
-    fn does_not_flag_try_or_match_handling() {
-        let src = format!(
-            r#"
-            #[contractimpl]
-            impl Vault {{
-                pub fn probe(env: Env, who: Address) {{
-                    let client = {CLIENT};
-                    let _ = client.try_balance(&who)?;
-                    match client.try_balance(&who) {{
-                        Ok(Ok(_)) => {{}}
-                        _ => {{}}
-                    }}
-                }}
-            }}
-            "#
+    fn does_not_flag_handled_results() {
+        let mut harness = RuleHarness::new(Box::new(IgnoredCrossContractResult));
+        harness.negative(
+            "propagated with ?",
+            &source(
+                "(env: Env, who: Address)",
+                "let _ = client.try_balance(&who)?;",
+            ),
         );
-        let findings = scan_rule(&src, Box::new(IgnoredCrossContractResult));
-        assert!(findings.is_empty(), "got: {findings:#?}");
+        harness.negative(
+            "matched",
+            &source(
+                "(env: Env, who: Address)",
+                "match client.try_balance(&who) { Ok(_) => {}, Err(_) => {} }",
+            ),
+        );
+        harness.run();
     }
 
     #[test]
-    fn does_not_flag_non_client_receiver() {
-        let src = format!(
-            r#"
-            #[contractimpl]
-            impl Vault {{
-                pub fn probe(env: Env, who: Address) {{
-                    let client = {CLIENT};
-                    let helper = client.balance(&who);
-                    helper.log(&who);
-                    let _ = helper;
-                }}
-            }}
-            "#
+    fn does_not_guess_ambiguous_receivers() {
+        let mut harness = RuleHarness::new(Box::new(IgnoredCrossContractResult));
+        harness.ambiguous(
+            "helper receiver",
+            &source(
+                "(env: Env, who: Address)",
+                "let helper = client.balance(&who); helper.log(&who);",
+            ),
+            "the receiver is no longer a tracked client variable",
         );
-        let findings = scan_rule(&src, Box::new(IgnoredCrossContractResult));
-        assert!(findings.is_empty(), "got: {findings:#?}");
+        harness.run();
     }
 }

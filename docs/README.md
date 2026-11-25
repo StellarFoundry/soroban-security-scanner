@@ -19,6 +19,7 @@ Start here.
 - [Type Model](type-model.md) — which type names and cast source types are modeled, and their limits.
 - [Taint Analysis](taint-analysis.md) — source/sink descriptors, propagation, sanitizers, and limits.
 - [Control-flow graphs](control-flow.md) — per-function nodes, edges, spans, and reachability.
+- [Exploitability model](exploitability-model.md) — reachability, entry points, taint, and unknown states on findings.
 - [Finding ranking](finding-ranking.md) — how severity, confidence, reachability, and span order output.
 - [Baselines](baselines.md) - track new vs. known findings.
 - [Policy and Reporting](policy.md) - policy schema, precedence, waivers, and report formats.

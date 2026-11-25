@@ -1367,6 +1367,34 @@
                 "level": "warning"
               },
               "fullDescription": {
+                "text": "A source file embeds a canonical Stellar network passphrase or selects a known network constant. Pinning a network in code can cause signing or submission against an unintended network when the same deployment is used in multiple environments."
+              },
+              "help": {
+                "markdown": "## Hardcoded Stellar network passphrase\n\nA source file embeds a canonical Stellar network passphrase or selects a known network constant. Pinning a network in code can cause signing or submission against an unintended network when the same deployment is used in multiple environments.\n\n### Remediation\n\nRead the network passphrase from deployment configuration or an environment variable, validate it against the intended network, and keep environment-specific values out of shared source.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/network\n- https://developers.stellar.org/docs/tools/stellar-cli",
+                "text": "A source file embeds a canonical Stellar network passphrase or selects a known network constant. Pinning a network in code can cause signing or submission against an unintended network when the same deployment is used in multiple environments.\n\nRemediation: Read the network passphrase from deployment configuration or an environment variable, validate it against the intended network, and keep environment-specific values out of shared source."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/network",
+              "id": "SS-043",
+              "name": "Hardcoded Stellar network passphrase",
+              "properties": {
+                "category": "configuration",
+                "confidence": "high",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/network",
+                  "https://developers.stellar.org/docs/tools/stellar-cli"
+                ],
+                "remediation": "Read the network passphrase from deployment configuration or an environment variable, validate it against the intended network, and keep environment-specific values out of shared source.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Hardcoded Stellar network passphrase"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
                 "text": "A cross-contract token call receives an address argument that originates from a caller-supplied parameter and was not passed through a documented address-validation helper. The scanner cannot prove the address is the expected account or contract, so a caller may direct a transfer, approval, mint, or burn at an unintended destination. Flows with more than one origin, or validation that happens only on some paths, are recorded as ambiguous by the taint analysis and are not reported."
               },
               "help": {
@@ -1388,6 +1416,34 @@
               },
               "shortDescription": {
                 "text": "Cross-contract call with an unvalidated address argument"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported."
+              },
+              "help": {
+                "markdown": "## Cross-contract call without error handling\n\nA cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.\n\n### Remediation\n\nPropagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.\n\n### References\n\n- https://developers.stellar.org/docs/learn/encyclopedia/security\n- https://developers.stellar.org/docs/build/guides/contract-errors",
+                "text": "A cross-contract client call result inside an entry point is neither propagated with `?` nor explicitly handled with `match`, `if let`, or a documented `unwrap`/`unwrap_or*`/`expect`/`map_err` combination. A failed call then looks successful, which can leave accounting or balances inconsistent. Ambiguous uses are not reported.\n\nRemediation: Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why."
+              },
+              "helpUri": "https://developers.stellar.org/docs/learn/encyclopedia/security",
+              "id": "SS-045",
+              "name": "Cross-contract call without error handling",
+              "properties": {
+                "category": "cross-contract",
+                "confidence": "medium",
+                "references": [
+                  "https://developers.stellar.org/docs/learn/encyclopedia/security",
+                  "https://developers.stellar.org/docs/build/guides/contract-errors"
+                ],
+                "remediation": "Propagate the result with `?`, match on the error, use `if let`, or explicitly map the failure to a contract error. If a result is intentionally ignored, bind it to a name starting with `_` and document why.",
+                "severity": "medium"
+              },
+              "shortDescription": {
+                "text": "Cross-contract call without error handling"
               }
             },
             {
