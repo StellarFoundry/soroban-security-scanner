@@ -19,6 +19,20 @@ failures (HTTP 429/5xx, timeouts, connection resets) up to three attempts.
 Mutating requests are never retried, because GitHub does not deduplicate
 comment or check-run creation.
 
+## GitHub App installations
+
+`get_installation_id(repo)` is the safe entry point for opt-in App callers. It
+validates the `OWNER/REPO` name, reads `GET repos/{owner}/{repo}/installation`,
+checks that `id` is a positive bounded integer, and returns **only** that
+integer. All other response fields, including any token-looking value, are
+discarded. Store just the id keyed by repository: never store user tokens,
+installation access tokens, PATs, refresh tokens, or private keys in files,
+reports, artifacts, or logs. App-authenticated calls mint short-lived tokens
+just in time and pass them only through the `gh` environment.
+
+See [GitHub Integration](../../docs/github-integration.md#github-app-installation-opt-in)
+for the permission matrix and installation flow.
+
 Tests use a deterministic in-memory mock instead of `gh`; they need no token
 and make no network calls. Run them with:
 

@@ -83,6 +83,49 @@ class InstallationTests(unittest.TestCase):
                 "owner/repo", runner=lambda *args, **kwargs: "[]"
             )
 
+    def test_reads_only_the_validated_installation_id(self):
+        mock_github = MockGitHub()
+        identifier = github_api.get_installation_id("owner/repo", runner=mock_github)
+        self.assertEqual(identifier, 7)
+        self.assertEqual(mock_github.last()[0], ["repos/owner/repo/installation"])
+
+    def test_discards_credentials_from_the_installation_response(self):
+        def runner(*args, **kwargs):
+            return json.dumps(
+                {"id": 42, "token": "must-not-persist", "account": {"login": "owner"}}
+            )
+
+        self.assertEqual(
+            github_api.get_installation_id("owner/repo", runner=runner), 42
+        )
+
+    def test_rejects_invalid_installation_ids(self):
+        for value in ("7", True, 0, -1, 2**63):
+            with self.subTest(value=value):
+                with self.assertRaises(github_api.InvalidInstallationError):
+                    github_api.installation_id({"id": value})
+        for response in ({}, [], "7", None):
+            with self.subTest(response=response):
+                with self.assertRaises(github_api.InvalidInstallationError):
+                    github_api.installation_id(response)
+
+    def test_rejects_untrusted_repository_names(self):
+        invalid = (
+            "",
+            "owner",
+            "owner/repo/branch",
+            "owner/repo?x=1",
+            "owner/repo\ninjected",
+            "a" * 201 + "/repo",
+            7,
+        )
+        for repo in invalid:
+            with self.subTest(repo=repo):
+                with self.assertRaises(github_api.GitHubApiError):
+                    github_api.get_installation_id(
+                        repo, runner=lambda *args, **kwargs: "{}"
+                    )
+
 
 class CheckRunTests(unittest.TestCase):
     def test_posts_the_exact_request_body(self):

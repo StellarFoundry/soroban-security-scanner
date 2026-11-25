@@ -82,6 +82,26 @@ Character literals are recognized as literals, so a quote or an apostrophe that
 they contain never turns the following lines into string text: a directive after
 `let quote = '"';` is still found.
 
+## Editor quick fix
+
+The language server offers a `quickfix` code action for each `SS-###` scanner
+diagnostic. Accepting it inserts a standalone directive immediately above the
+reported line, reusing that line's indentation and the document's line endings:
+
+```rust
+// soroban-scan: ignore SS-001 -- TODO: explain why this finding is accepted
+env.storage().persistent().set(&1u32, &value);
+```
+
+The rule id comes from the diagnostic and the reason is a **required
+placeholder**, not a real justification: a suppression is never created
+silently, and the inserted comment is visible in the editor and in the diff.
+Replace the placeholder with the actual reason before committing. The action is
+skipped when the document already contains a directive for that rule (or for
+`all`), and only scanner diagnostics are eligible: configuration and truncation
+diagnostics cannot be suppressed this way. The server returns a `WorkspaceEdit`
+and never writes files itself.
+
 ## Reporting
 
 Suppressions never hide findings. The scanner:
