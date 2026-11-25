@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- The opt-in language server advertises `textDocument/codeAction` and offers a
+  `quickfix` for scanner diagnostics that inserts the documented inline
+  suppression directive with the exact rule id and a required reason
+  placeholder. Duplicate suppressions and non-scanner diagnostics are skipped,
+  and the server only returns a `WorkspaceEdit` (`#332`).
 - Opt-in GitHub App installation support in the CI API helper:
   `get_installation_id()` validates the repository name and installation id and
   returns only the integer id, so no token or private key can be persisted by

@@ -21,7 +21,7 @@ soroban-scan-lsp  # standalone stdio server; press Ctrl+C to exit
 | Text document sync | Yes |
 | Document symbols (outline) | Yes |
 | Hover (rule ids) | Yes |
-| Code actions | No |
+| Code actions (suppression quick fixes) | Yes |
 | Completion | No |
 
 The outline lists contracts (`#[contract]` / `#[contractimpl]`), functions,
@@ -34,6 +34,13 @@ severity, confidence, category, description, and remediation. The text comes
 from the in-process rule registry: no network request, file read, or external
 documentation lookup is performed. An unregistered id shows a short fallback
 instead of an error.
+
+A `SS-###` diagnostic also offers a **quick fix** that inserts the documented
+inline suppression directive with the exact rule id and a required
+`TODO: explain why this finding is accepted` reason placeholder. The edit is
+returned to the editor as a normal `WorkspaceEdit`; the server never writes the
+file and never suppresses a finding by itself. Replace the placeholder with a
+real reason before committing. See [inline suppressions](suppressions.md#editor-quick-fix).
 
 ## Diagnostic ranges and severities
 
@@ -151,7 +158,8 @@ To use the main CLI instead, set `cmd = { 'soroban-scan', 'lsp' }`.
 ## Known limitations
 
 - Only Rust (`.rs`) files are analyzed.
-- Completion and code actions are not implemented.
+- Completion is not implemented. Code actions are limited to suppression quick
+  fixes for scanner diagnostics (no bulk fixes or rule autofixes).
 - Hover only recognizes `SS-###` tokens; hovering a symbol name or a diagnostic
   message body returns nothing.
 - The server uses full-document sync. Diagnostics refresh on open, change, and

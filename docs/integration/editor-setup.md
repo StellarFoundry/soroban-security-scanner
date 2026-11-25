@@ -86,7 +86,8 @@ The first milestone is a deliberately small diagnostics provider (option C in th
 | `textDocument/didOpen`, `didChange` (debounced), `didSave`, `didClose` | Yes |
 | `textDocument/publishDiagnostics` | Yes |
 | `workspace/didChangeConfiguration` | Planned, not in v1 |
-| Code actions and autofix | No |
+| `textDocument/codeAction` (suppression quick fixes only) | Yes |
+| Other code actions and autofix | No |
 | Hover, completion, formatting, rename, refactoring | No |
 
 Each diagnostic carries the rule id, severity, confidence, message, and an exact
@@ -97,8 +98,9 @@ do not drift. Suppressed findings are not published.
 ## Known limitations
 
 - **Not implemented yet.** See the status note at the top of this page.
-- **Diagnostics only.** There are no quick fixes, hover documentation, or
-  baseline-suppression actions in v1.
+- **Diagnostics plus suppression quick fixes.** The only code action inserts a
+  documented inline suppression directive for a scanner diagnostic. There are
+  no hover documentation or baseline-suppression actions in v1.
 - **Project context.** A single-file scan can disagree with a full project scan
   for rules that need project context. The server prefers a debounced project
   scan and falls back to a single-file scan for large or unloadable projects;
