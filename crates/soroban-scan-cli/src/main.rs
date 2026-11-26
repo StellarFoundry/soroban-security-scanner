@@ -14,6 +14,7 @@ use std::time::Instant;
 
 use clap::{Args, Parser, Subcommand, ValueEnum};
 
+mod feedback_cli;
 mod lsp;
 mod pack_cli;
 mod server;
@@ -371,6 +372,8 @@ enum Command {
     Openapi(OpenapiArgs),
     /// Push or pull security baselines to or from an artifact store.
     Baseline(BaselineArgs),
+    /// Record false-positive feedback locally, without network access.
+    Feedback(feedback_cli::FeedbackArgs),
     /// Generate a shell completion script (bash, zsh, fish, powershell).
     #[command(hide = true)]
     Completions(CompletionsArgs),
@@ -982,6 +985,7 @@ fn run(cli: Cli) -> CliResult<u8> {
         Command::Pack(args) => pack_cli::run(args),
         Command::Openapi(args) => run_openapi(args),
         Command::Baseline(args) => run_baseline(args, &registry),
+        Command::Feedback(args) => feedback_cli::run(args, &registry),
         Command::Completions(args) => {
             let mut command = <Cli as clap::CommandFactory>::command();
             let name = command.get_name().to_string();

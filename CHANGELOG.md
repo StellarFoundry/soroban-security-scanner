@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A local-only `feedback` command records rule id, finding fingerprint
+  (`--span-hash`), and a bounded redacted reason in `.soroban-scan/feedback.json`.
+  It never uploads data, stores source text, or changes scan results (`#303`).
 - The opt-in language server advertises `textDocument/codeAction` and offers a
   `quickfix` for scanner diagnostics that inserts the documented inline
   suppression directive with the exact rule id and a required reason

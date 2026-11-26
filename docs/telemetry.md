@@ -19,7 +19,8 @@ and the default build contains no telemetry transport. See
 
 The module gives an embedding service a single, reviewable payload it may send
 to a collector it operates. The scanner never sends it on its own, and the
-default build performs no network access.
+default build performs no network access. The `feedback` command is also
+local-only: it writes a bounded JSON file and never transmits its contents.
 
 ## Enabling
 
