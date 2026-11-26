@@ -1,0 +1,61 @@
+schema_version = 1
+entry = "soroban-examples-liquidity-pool"
+verified_with = "soroban-scan 0.2.0; ScanConfig::default; RuleRegistry::with_default_rules"
+notes = "Findings generated from the pinned upstream source and reviewed; no edges or findings were invented."
+
+[[contracts]]
+file = "src/lib.rs"
+
+[[contracts.findings]]
+rule_id = "SS-001"
+count = 5
+severity = "high"
+confidence = "medium"
+
+[[contracts.findings]]
+rule_id = "SS-004"
+count = 8
+severity = "low"
+confidence = "medium"
+
+[[contracts.findings]]
+rule_id = "SS-006"
+count = 1
+severity = "low"
+confidence = "low"
+
+[[contracts.findings]]
+rule_id = "SS-008"
+count = 22
+severity = "medium"
+confidence = "low"
+
+[[contracts.findings]]
+rule_id = "SS-019"
+count = 3
+severity = "medium"
+confidence = "medium"
+
+[[contracts.findings]]
+rule_id = "SS-030"
+count = 2
+severity = "high"
+confidence = "low"
+
+[[contracts.findings]]
+rule_id = "SS-039"
+count = 1
+severity = "medium"
+confidence = "low"
+
+[[contracts.findings]]
+rule_id = "SS-044"
+count = 1
+severity = "medium"
+confidence = "low"
+
+[[contracts.findings]]
+rule_id = "SS-045"
+count = 3
+severity = "medium"
+confidence = "medium"

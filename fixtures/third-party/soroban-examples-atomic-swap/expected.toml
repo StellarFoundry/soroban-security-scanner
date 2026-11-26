@@ -1,0 +1,25 @@
+schema_version = 1
+entry = "soroban-examples-atomic-swap"
+verified_with = "soroban-scan 0.2.0; ScanConfig::default; RuleRegistry::with_default_rules"
+notes = "Findings generated from the pinned upstream source and reviewed; no edges or findings were invented."
+
+[[contracts]]
+file = "src/lib.rs"
+
+[[contracts.findings]]
+rule_id = "SS-004"
+count = 2
+severity = "low"
+confidence = "medium"
+
+[[contracts.findings]]
+rule_id = "SS-037"
+count = 1
+severity = "medium"
+confidence = "low"
+
+[[contracts.findings]]
+rule_id = "SS-044"
+count = 2
+severity = "medium"
+confidence = "low"
