@@ -11,6 +11,7 @@ use std::path::{Path, PathBuf};
 
 use soroban_scan_core::pack::{
     sha256_checksum, PackManifest, PackRegistry, PackRegistryEntry, MAX_PACK_MANIFEST_BYTES,
+    SCANNER_CAPABILITIES,
 };
 
 use super::{CliError, CliResult, PackArgs, PackCommand, EXIT_SUCCESS};
@@ -186,7 +187,12 @@ fn read_manifest_bytes(source: &Path) -> CliResult<Vec<u8>> {
 fn parse_manifest(bytes: &[u8]) -> CliResult<PackManifest> {
     let text = std::str::from_utf8(bytes)
         .map_err(|error| CliError::Usage(format!("pack manifest is not UTF-8: {error}")))?;
-    PackManifest::parse_str(text).map_err(|error| CliError::Usage(error.to_string()))
+    let manifest =
+        PackManifest::parse_str(text).map_err(|error| CliError::Usage(error.to_string()))?;
+    manifest
+        .check_compatibility(soroban_scan_core::VERSION, SCANNER_CAPABILITIES)
+        .map_err(|error| CliError::Usage(format!("incompatible rule pack: {error}")))?;
+    Ok(manifest)
 }
 
 fn copy_into(target: &Path, source: &Path, manifest: &[u8]) -> CliResult<()> {

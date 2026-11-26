@@ -1,0 +1,19 @@
+schema_version = 1
+entry = "soroban-examples-auth"
+verified_with = "soroban-scan 0.2.0; ScanConfig::default; RuleRegistry::with_default_rules"
+notes = "Findings generated from the pinned upstream source and reviewed; no edges or findings were invented."
+
+[[contracts]]
+file = "src/lib.rs"
+
+[[contracts.findings]]
+rule_id = "SS-006"
+count = 1
+severity = "low"
+confidence = "low"
+
+[[contracts.findings]]
+rule_id = "SS-039"
+count = 1
+severity = "medium"
+confidence = "low"

@@ -178,7 +178,7 @@ If a private key is leaked or compromised:
 
 ## Safe loading and conformance tests
 
-`PackLoader::load_dir` verifies signatures (fail-closed by default), rejects symlinks and oversized files, validates rule metadata, and enforces `pack.min_scanner_version <= current_version`.
+`PackLoader::load_dir` verifies signatures (fail-closed by default), rejects symlinks and oversized files, validates rule metadata, and enforces the full declared compatibility contract: `min_scanner_version <= current_version <= max_scanner_version` (when the maximum is present) and every required capability in `SCANNER_CAPABILITIES`. `soroban-scan pack install/update` performs the same check before writing a pack to the local store.
 
 To run the pack signing and conformance suites locally:
 

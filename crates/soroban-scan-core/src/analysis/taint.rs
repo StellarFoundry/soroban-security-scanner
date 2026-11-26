@@ -441,6 +441,280 @@ pub struct AddressFlow {
     pub path: TaintPath,
 }
 
+/// Maximum number of entries in a sanitizer registry.
+pub const MAX_SANITIZERS: usize = 64;
+
+/// Maximum length of a registered sanitizer name.
+pub const MAX_SANITIZER_NAME_LEN: usize = 64;
+
+/// The taint category a sanitizer is allowed to clear.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum SanitizerKind {
+    /// Authorization subjects (`require_auth` receivers).
+    AuthSubject,
+    /// Token transfer amounts.
+    TransferAmount,
+    /// Address arguments of privileged token calls.
+    PrivilegedAddress,
+}
+
+/// How a registered sanitizer is allowed to appear in source.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum SanitizerForm {
+    /// A recognized call whose return value is untainted.
+    Call,
+    /// A recognized predicate in an early-exit `if !predicate(..) { return; }`.
+    Guard,
+}
+
+/// One bounded, data-only sanitizer entry and the assumption it encodes.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Sanitizer {
+    /// Stable method or free-function name.
+    pub name: &'static str,
+    /// The only taint category this entry may clear.
+    pub kind: SanitizerKind,
+    /// The only source form in which this entry is recognized.
+    pub form: SanitizerForm,
+    /// Why clearing taint is justified; never inferred from a comment.
+    pub assumption: &'static str,
+}
+
+/// Errors raised while validating a [`SanitizerRegistry`].
+#[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
+pub enum SanitizerError {
+    #[error("sanitizer registry exceeds the {MAX_SANITIZERS}-entry limit")]
+    TooMany,
+    #[error("sanitizer name must be 1..={MAX_SANITIZER_NAME_LEN} printable ASCII characters")]
+    InvalidName,
+    #[error("sanitizer assumption must not be empty")]
+    EmptyAssumption,
+    #[error("duplicate sanitizer `{name}` for kind {kind:?}")]
+    Duplicate {
+        name: &'static str,
+        kind: SanitizerKind,
+    },
+}
+
+/// A bounded registry of sanitizers the analysis is allowed to recognize.
+///
+/// Only names present with the matching [`SanitizerKind`] and
+/// [`SanitizerForm`] clear taint. Unknown helpers, comments, and bare
+/// comparisons are never registered, so they cannot suppress a flow.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct SanitizerRegistry {
+    entries: &'static [Sanitizer],
+}
+
+impl SanitizerRegistry {
+    /// Builds a registry from a static slice. Call [`Self::validate`] before
+    /// relying on it; the built-in registry is validated by unit tests.
+    pub const fn from_static(entries: &'static [Sanitizer]) -> Self {
+        Self { entries }
+    }
+
+    /// All registered entries, in declaration order.
+    pub fn entries(&self) -> &'static [Sanitizer] {
+        self.entries
+    }
+
+    /// Checks size, names, assumptions, and uniqueness.
+    pub fn validate(&self) -> Result<(), SanitizerError> {
+        if self.entries.len() > MAX_SANITIZERS {
+            return Err(SanitizerError::TooMany);
+        }
+        let mut seen = BTreeSet::new();
+        for entry in self.entries {
+            if entry.name.is_empty()
+                || entry.name.len() > MAX_SANITIZER_NAME_LEN
+                || !entry.name.bytes().all(|byte| byte.is_ascii_graphic())
+            {
+                return Err(SanitizerError::InvalidName);
+            }
+            if entry.assumption.trim().is_empty() {
+                return Err(SanitizerError::EmptyAssumption);
+            }
+            if !seen.insert((entry.name, entry.kind, entry.form)) {
+                return Err(SanitizerError::Duplicate {
+                    name: entry.name,
+                    kind: entry.kind,
+                });
+            }
+        }
+        Ok(())
+    }
+
+    fn contains(&self, name: &str, kind: SanitizerKind, form: SanitizerForm) -> bool {
+        self.entries
+            .iter()
+            .any(|entry| entry.name == name && entry.kind == kind && entry.form == form)
+    }
+}
+
+const ADDRESS_CALL_ASSUMPTION: &str = "Assumes the named helper explicitly validates or normalizes address provenance; the scanner does not inspect the helper body.";
+const AMOUNT_CALL_ASSUMPTION: &str = "Assumes the named helper returns a checked, converted, or clamped amount; the scanner does not inspect the helper body.";
+const GUARD_ASSUMPTION: &str = "Assumes the predicate is total and true only for acceptable values, and that invalid values take the modeled early-return branch.";
+
+/// The authoritative sanitizer registry used by all taint flow APIs.
+pub const SANITIZER_REGISTRY: SanitizerRegistry = SanitizerRegistry::from_static(&[
+    Sanitizer {
+        name: "validate_address",
+        kind: SanitizerKind::AuthSubject,
+        form: SanitizerForm::Call,
+        assumption: ADDRESS_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "normalize_address",
+        kind: SanitizerKind::AuthSubject,
+        form: SanitizerForm::Call,
+        assumption: ADDRESS_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "checked_address",
+        kind: SanitizerKind::AuthSubject,
+        form: SanitizerForm::Call,
+        assumption: ADDRESS_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "verified_address",
+        kind: SanitizerKind::AuthSubject,
+        form: SanitizerForm::Call,
+        assumption: ADDRESS_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "sanitize_address",
+        kind: SanitizerKind::AuthSubject,
+        form: SanitizerForm::Call,
+        assumption: ADDRESS_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "validate_address",
+        kind: SanitizerKind::PrivilegedAddress,
+        form: SanitizerForm::Call,
+        assumption: ADDRESS_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "normalize_address",
+        kind: SanitizerKind::PrivilegedAddress,
+        form: SanitizerForm::Call,
+        assumption: ADDRESS_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "checked_address",
+        kind: SanitizerKind::PrivilegedAddress,
+        form: SanitizerForm::Call,
+        assumption: ADDRESS_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "verified_address",
+        kind: SanitizerKind::PrivilegedAddress,
+        form: SanitizerForm::Call,
+        assumption: ADDRESS_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "sanitize_address",
+        kind: SanitizerKind::PrivilegedAddress,
+        form: SanitizerForm::Call,
+        assumption: ADDRESS_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "checked_add",
+        kind: SanitizerKind::TransferAmount,
+        form: SanitizerForm::Call,
+        assumption: AMOUNT_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "checked_sub",
+        kind: SanitizerKind::TransferAmount,
+        form: SanitizerForm::Call,
+        assumption: AMOUNT_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "checked_mul",
+        kind: SanitizerKind::TransferAmount,
+        form: SanitizerForm::Call,
+        assumption: AMOUNT_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "checked_div",
+        kind: SanitizerKind::TransferAmount,
+        form: SanitizerForm::Call,
+        assumption: AMOUNT_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "checked_neg",
+        kind: SanitizerKind::TransferAmount,
+        form: SanitizerForm::Call,
+        assumption: AMOUNT_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "try_from",
+        kind: SanitizerKind::TransferAmount,
+        form: SanitizerForm::Call,
+        assumption: AMOUNT_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "try_into",
+        kind: SanitizerKind::TransferAmount,
+        form: SanitizerForm::Call,
+        assumption: AMOUNT_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "clamp",
+        kind: SanitizerKind::TransferAmount,
+        form: SanitizerForm::Call,
+        assumption: AMOUNT_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "min",
+        kind: SanitizerKind::TransferAmount,
+        form: SanitizerForm::Call,
+        assumption: AMOUNT_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "max",
+        kind: SanitizerKind::TransferAmount,
+        form: SanitizerForm::Call,
+        assumption: AMOUNT_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "validate_amount",
+        kind: SanitizerKind::TransferAmount,
+        form: SanitizerForm::Call,
+        assumption: AMOUNT_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "checked_amount",
+        kind: SanitizerKind::TransferAmount,
+        form: SanitizerForm::Call,
+        assumption: AMOUNT_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "verified_amount",
+        kind: SanitizerKind::TransferAmount,
+        form: SanitizerForm::Call,
+        assumption: AMOUNT_CALL_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "is_valid_address",
+        kind: SanitizerKind::AuthSubject,
+        form: SanitizerForm::Guard,
+        assumption: GUARD_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "is_valid_address",
+        kind: SanitizerKind::PrivilegedAddress,
+        form: SanitizerForm::Guard,
+        assumption: GUARD_ASSUMPTION,
+    },
+    Sanitizer {
+        name: "is_valid_amount",
+        kind: SanitizerKind::TransferAmount,
+        form: SanitizerForm::Guard,
+        assumption: GUARD_ASSUMPTION,
+    },
+]);
+
 /// Method/function names treated as documented sanitizers for authorization
 /// subjects.
 pub const AUTH_SANITIZERS: &[&str] = &[
@@ -597,8 +871,56 @@ fn is_env_type(type_text: &str) -> bool {
         .starts_with("Env")
 }
 
-fn is_sanitizer(name: &str, sanitizers: &[&str]) -> bool {
-    sanitizers.contains(&name)
+const EMPTY_SANITIZER_REGISTRY: SanitizerRegistry = SanitizerRegistry::from_static(&[]);
+
+#[derive(Debug, Clone, Copy)]
+struct SanitizerContext {
+    registry: &'static SanitizerRegistry,
+    kind: SanitizerKind,
+}
+
+impl SanitizerContext {
+    fn for_sink(kind: SinkKind) -> Self {
+        Self {
+            registry: &SANITIZER_REGISTRY,
+            kind: sanitizer_kind(kind),
+        }
+    }
+
+    fn none() -> Self {
+        Self {
+            registry: &EMPTY_SANITIZER_REGISTRY,
+            kind: SanitizerKind::AuthSubject,
+        }
+    }
+
+    fn is_call(&self, name: &str) -> bool {
+        self.registry.contains(name, self.kind, SanitizerForm::Call)
+    }
+
+    fn is_guard(&self, name: &str) -> bool {
+        self.registry
+            .contains(name, self.kind, SanitizerForm::Guard)
+    }
+
+    /// Recognizes only `if !guard(..) { early-exit }` forms. A comment, a bare
+    /// comparison, or an unregistered predicate never reaches this method.
+    fn guard_binding(
+        &self,
+        condition: &syn::Expr,
+        tainted: &BTreeMap<String, TaintPath>,
+    ) -> Option<String> {
+        let inner = negated_condition(condition)?;
+        guard_call_binding(*self, inner, tainted)
+    }
+}
+
+fn sanitizer_kind(kind: SinkKind) -> SanitizerKind {
+    match kind {
+        SinkKind::AuthSubject => SanitizerKind::AuthSubject,
+        SinkKind::TransferAmount => SanitizerKind::TransferAmount,
+        SinkKind::PrivilegedAddress => SanitizerKind::PrivilegedAddress,
+    }
 }
 
 fn callee_name(expr: &syn::Expr) -> Option<String> {
@@ -612,6 +934,100 @@ fn callee_name(expr: &syn::Expr) -> Option<String> {
     }
 }
 
+fn negated_condition(expr: &syn::Expr) -> Option<&syn::Expr> {
+    match expr {
+        syn::Expr::Unary(unary) if matches!(unary.op, syn::UnOp::Not(_)) => Some(&unary.expr),
+        syn::Expr::Paren(inner) => negated_condition(&inner.expr),
+        syn::Expr::Group(inner) => negated_condition(&inner.expr),
+        _ => None,
+    }
+}
+
+fn tainted_path_name(expr: &syn::Expr, tainted: &BTreeMap<String, TaintPath>) -> Option<String> {
+    match expr {
+        syn::Expr::Reference(inner) => tainted_path_name(&inner.expr, tainted),
+        syn::Expr::Paren(inner) => tainted_path_name(&inner.expr, tainted),
+        syn::Expr::Group(inner) => tainted_path_name(&inner.expr, tainted),
+        _ => path_name(expr)
+            .map(|ident| ident.to_string())
+            .filter(|name| tainted.contains_key(name)),
+    }
+}
+
+fn guard_call_binding(
+    ctx: SanitizerContext,
+    expr: &syn::Expr,
+    tainted: &BTreeMap<String, TaintPath>,
+) -> Option<String> {
+    match expr {
+        syn::Expr::Call(call) => {
+            let name = callee_name(&call.func)?;
+            if !ctx.is_guard(&name) {
+                return None;
+            }
+            call.args
+                .iter()
+                .find_map(|arg| tainted_path_name(arg, tainted))
+        }
+        syn::Expr::MethodCall(call) => {
+            let name = call.method.to_string();
+            if !ctx.is_guard(&name) {
+                return None;
+            }
+            tainted_path_name(&call.receiver, tainted).or_else(|| {
+                call.args
+                    .iter()
+                    .find_map(|arg| tainted_path_name(arg, tainted))
+            })
+        }
+        syn::Expr::Paren(inner) => guard_call_binding(ctx, &inner.expr, tainted),
+        syn::Expr::Group(inner) => guard_call_binding(ctx, &inner.expr, tainted),
+        _ => None,
+    }
+}
+
+fn has_early_exit(block: &syn::Block) -> bool {
+    struct EarlyExit {
+        found: bool,
+    }
+
+    impl<'ast> Visit<'ast> for EarlyExit {
+        fn visit_expr_return(&mut self, _node: &'ast syn::ExprReturn) {
+            self.found = true;
+        }
+
+        fn visit_expr_macro(&mut self, node: &'ast syn::ExprMacro) {
+            if node.mac.path.segments.last().is_some_and(|segment| {
+                matches!(
+                    segment.ident.to_string().as_str(),
+                    "panic" | "unreachable" | "abort"
+                )
+            }) {
+                self.found = true;
+            }
+        }
+
+        fn visit_expr_call(&mut self, node: &'ast syn::ExprCall) {
+            if callee_name(&node.func)
+                .is_some_and(|name| matches!(name.as_str(), "panic" | "abort"))
+            {
+                self.found = true;
+            }
+            if !self.found {
+                visit::visit_expr_call(self, node);
+            }
+        }
+
+        fn visit_expr_closure(&mut self, _node: &'ast syn::ExprClosure) {}
+        fn visit_expr_async(&mut self, _node: &'ast syn::ExprAsync) {}
+        fn visit_item(&mut self, _node: &'ast syn::Item) {}
+    }
+
+    let mut visitor = EarlyExit { found: false };
+    visitor.visit_block(block);
+    visitor.found
+}
+
 /// Computes the taint path of an expression against a set of tainted locals.
 ///
 /// `depth` bounds recursive helper-return resolution. Path feasibility is not
@@ -619,7 +1035,7 @@ fn callee_name(expr: &syn::Expr) -> Option<String> {
 fn taint_of_expr<'b>(
     expr: &syn::Expr,
     tainted: &BTreeMap<String, TaintPath>,
-    sanitizers: &[&str],
+    ctx: SanitizerContext,
     bodies: &BTreeMap<String, Body<'b>>,
     depth: usize,
 ) -> Option<TaintPath> {
@@ -628,51 +1044,40 @@ fn taint_of_expr<'b>(
             .path
             .get_ident()
             .and_then(|ident| tainted.get(&ident.to_string()).cloned()),
-        syn::Expr::Reference(inner) => {
-            taint_of_expr(&inner.expr, tainted, sanitizers, bodies, depth)
-        }
-        syn::Expr::Paren(inner) => taint_of_expr(&inner.expr, tainted, sanitizers, bodies, depth),
-        syn::Expr::Group(inner) => taint_of_expr(&inner.expr, tainted, sanitizers, bodies, depth),
-        syn::Expr::Cast(inner) => taint_of_expr(&inner.expr, tainted, sanitizers, bodies, depth),
-        syn::Expr::Try(inner) => taint_of_expr(&inner.expr, tainted, sanitizers, bodies, depth),
-        syn::Expr::Await(inner) => taint_of_expr(&inner.base, tainted, sanitizers, bodies, depth),
-        syn::Expr::Unary(inner) => taint_of_expr(&inner.expr, tainted, sanitizers, bodies, depth),
-        syn::Expr::Field(inner) => taint_of_expr(&inner.base, tainted, sanitizers, bodies, depth)
+        syn::Expr::Reference(inner) => taint_of_expr(&inner.expr, tainted, ctx, bodies, depth),
+        syn::Expr::Paren(inner) => taint_of_expr(&inner.expr, tainted, ctx, bodies, depth),
+        syn::Expr::Group(inner) => taint_of_expr(&inner.expr, tainted, ctx, bodies, depth),
+        syn::Expr::Cast(inner) => taint_of_expr(&inner.expr, tainted, ctx, bodies, depth),
+        syn::Expr::Try(inner) => taint_of_expr(&inner.expr, tainted, ctx, bodies, depth),
+        syn::Expr::Await(inner) => taint_of_expr(&inner.base, tainted, ctx, bodies, depth),
+        syn::Expr::Unary(inner) => taint_of_expr(&inner.expr, tainted, ctx, bodies, depth),
+        syn::Expr::Field(inner) => taint_of_expr(&inner.base, tainted, ctx, bodies, depth)
             .map(|path| transformed(path, &inner.to_token_stream().to_string())),
-        syn::Expr::Index(inner) => taint_of_expr(&inner.expr, tainted, sanitizers, bodies, depth)
+        syn::Expr::Index(inner) => taint_of_expr(&inner.expr, tainted, ctx, bodies, depth)
             .map(|path| transformed(path, &inner.to_token_stream().to_string())),
         syn::Expr::Binary(inner) => combine(
             [
-                taint_of_expr(&inner.left, tainted, sanitizers, bodies, depth),
-                taint_of_expr(&inner.right, tainted, sanitizers, bodies, depth),
+                taint_of_expr(&inner.left, tainted, ctx, bodies, depth),
+                taint_of_expr(&inner.right, tainted, ctx, bodies, depth),
             ],
             &inner.to_token_stream().to_string(),
         ),
         syn::Expr::MethodCall(call) => {
             let name = call.method.to_string();
-            if is_sanitizer(&name, sanitizers) {
+            if ctx.is_call(&name) {
                 return None;
             }
-            let mut paths = vec![taint_of_expr(
-                &call.receiver,
-                tainted,
-                sanitizers,
-                bodies,
-                depth,
-            )];
+            let mut paths = vec![taint_of_expr(&call.receiver, tainted, ctx, bodies, depth)];
             paths.extend(
                 call.args
                     .iter()
-                    .map(|arg| taint_of_expr(arg, tainted, sanitizers, bodies, depth)),
+                    .map(|arg| taint_of_expr(arg, tainted, ctx, bodies, depth)),
             );
             combine(paths, &call.to_token_stream().to_string())
         }
         syn::Expr::Call(call) => {
             let name = callee_name(&call.func);
-            if name
-                .as_deref()
-                .is_some_and(|name| is_sanitizer(name, sanitizers))
-            {
+            if name.as_deref().is_some_and(|name| ctx.is_call(name)) {
                 return None;
             }
             // A call to a function defined in this file returns whatever that
@@ -680,19 +1085,12 @@ fn taint_of_expr<'b>(
             // instead of stopping at the call boundary.
             if let Some(helper) = name.as_deref().and_then(|name| bodies.get(name)) {
                 if depth < MAX_HELPER_DEPTH {
-                    return helper_return_taint(
-                        helper,
-                        call,
-                        tainted,
-                        sanitizers,
-                        bodies,
-                        depth + 1,
-                    );
+                    return helper_return_taint(helper, call, tainted, ctx, bodies, depth + 1);
                 }
                 let arg_paths = call
                     .args
                     .iter()
-                    .map(|arg| taint_of_expr(arg, tainted, sanitizers, bodies, depth));
+                    .map(|arg| taint_of_expr(arg, tainted, ctx, bodies, depth));
                 let combined = combine(arg_paths, &call.to_token_stream().to_string());
                 return combined.or_else(|| {
                     call.args
@@ -704,7 +1102,7 @@ fn taint_of_expr<'b>(
             let paths: Vec<_> = call
                 .args
                 .iter()
-                .map(|arg| taint_of_expr(arg, tainted, sanitizers, bodies, depth))
+                .map(|arg| taint_of_expr(arg, tainted, ctx, bodies, depth))
                 .collect();
             combine(paths, &call.to_token_stream().to_string())
         }
@@ -721,7 +1119,7 @@ fn helper_return_taint(
     helper: &Body<'_>,
     call: &syn::ExprCall,
     caller_tainted: &BTreeMap<String, TaintPath>,
-    sanitizers: &[&str],
+    ctx: SanitizerContext,
     bodies: &BTreeMap<String, Body<'_>>,
     depth: usize,
 ) -> Option<TaintPath> {
@@ -731,20 +1129,13 @@ fn helper_return_taint(
         span: span_of(call),
         is_method: false,
     };
-    let seeds = helper_seeds(
-        helper,
-        &call_site,
-        caller_tainted,
-        sanitizers,
-        bodies,
-        depth,
-    );
+    let seeds = helper_seeds(helper, &call_site, caller_tainted, ctx, bodies, depth);
     if seeds.is_empty() {
         return None;
     }
-    let tainted = propagate(helper.block, &seeds, sanitizers, bodies, depth);
+    let tainted = propagate(helper.block, &seeds, ctx, bodies, depth);
     let paths = return_expressions(helper.block).into_iter().map(|expr| {
-        taint_of_expr(expr, &tainted, sanitizers, bodies, depth).or_else(|| {
+        taint_of_expr(expr, &tainted, ctx, bodies, depth).or_else(|| {
             mentions_tainted(expr, &tainted)
                 .then(|| TaintPath::unknown("helper return uses an unmodelled construct"))
         })
@@ -863,7 +1254,7 @@ fn seeds_for(params: &[ParamInfo]) -> BTreeMap<String, TaintPath> {
 
 struct PropagationVisitor<'a, 'b> {
     tainted: &'a mut BTreeMap<String, TaintPath>,
-    sanitizers: &'a [&'a str],
+    ctx: SanitizerContext,
     bodies: &'a BTreeMap<String, Body<'b>>,
     depth: usize,
     conditional_depth: usize,
@@ -924,7 +1315,17 @@ macro_rules! visit_conditional {
 }
 
 impl<'ast> Visit<'ast> for PropagationVisitor<'_, '_> {
-    visit_conditional!(visit_expr_if, syn::ExprIf);
+    fn visit_expr_if(&mut self, node: &'ast syn::ExprIf) {
+        let guarded = self.ctx.guard_binding(&node.cond, self.tainted);
+        if has_early_exit(&node.then_branch) {
+            if let Some(name) = guarded {
+                self.tainted.remove(&name);
+            }
+        }
+        self.conditional_depth += 1;
+        visit::visit_expr_if(self, node);
+        self.conditional_depth -= 1;
+    }
     visit_conditional!(visit_expr_while, syn::ExprWhile);
     visit_conditional!(visit_expr_for_loop, syn::ExprForLoop);
     visit_conditional!(visit_expr_loop, syn::ExprLoop);
@@ -932,13 +1333,7 @@ impl<'ast> Visit<'ast> for PropagationVisitor<'_, '_> {
 
     fn visit_local(&mut self, node: &'ast syn::Local) {
         if let (syn::Pat::Ident(pattern), Some(init)) = (&node.pat, &node.init) {
-            let value = taint_of_expr(
-                &init.expr,
-                self.tainted,
-                self.sanitizers,
-                self.bodies,
-                self.depth,
-            );
+            let value = taint_of_expr(&init.expr, self.tainted, self.ctx, self.bodies, self.depth);
             self.assign(&pattern.ident.to_string(), value);
         }
         visit::visit_local(self, node);
@@ -946,13 +1341,7 @@ impl<'ast> Visit<'ast> for PropagationVisitor<'_, '_> {
 
     fn visit_expr_assign(&mut self, node: &'ast syn::ExprAssign) {
         if let Some(name) = path_name(&node.left) {
-            let value = taint_of_expr(
-                &node.right,
-                self.tainted,
-                self.sanitizers,
-                self.bodies,
-                self.depth,
-            );
+            let value = taint_of_expr(&node.right, self.tainted, self.ctx, self.bodies, self.depth);
             self.assign(&name.to_string(), value);
         }
         visit::visit_expr_assign(self, node);
@@ -969,23 +1358,18 @@ impl<'ast> Visit<'ast> for PropagationVisitor<'_, '_> {
         );
         if compound {
             if let Some(name) = path_name(&node.left) {
-                let value = taint_of_expr(
-                    &node.right,
-                    self.tainted,
-                    self.sanitizers,
-                    self.bodies,
-                    self.depth,
-                )
-                .or_else(|| {
-                    taint_of_expr(
-                        &node.left,
-                        self.tainted,
-                        self.sanitizers,
-                        self.bodies,
-                        self.depth,
-                    )
-                })
-                .map(|path| transformed(path, &node.to_token_stream().to_string()));
+                let value =
+                    taint_of_expr(&node.right, self.tainted, self.ctx, self.bodies, self.depth)
+                        .or_else(|| {
+                            taint_of_expr(
+                                &node.left,
+                                self.tainted,
+                                self.ctx,
+                                self.bodies,
+                                self.depth,
+                            )
+                        })
+                        .map(|path| transformed(path, &node.to_token_stream().to_string()));
                 self.assign(&name.to_string(), value);
             }
         }
@@ -997,7 +1381,7 @@ impl<'ast> Visit<'ast> for PropagationVisitor<'_, '_> {
 fn propagate<'b>(
     block: &syn::Block,
     seeds: &BTreeMap<String, TaintPath>,
-    sanitizers: &[&str],
+    ctx: SanitizerContext,
     bodies: &BTreeMap<String, Body<'b>>,
     depth: usize,
 ) -> BTreeMap<String, TaintPath> {
@@ -1006,7 +1390,7 @@ fn propagate<'b>(
         let mut next = seeds.clone();
         let mut visitor = PropagationVisitor {
             tainted: &mut next,
-            sanitizers,
+            ctx,
             bodies,
             depth,
             conditional_depth: 0,
@@ -1026,7 +1410,7 @@ fn sink_span(expr: &syn::Expr) -> Span {
 
 struct SinkVisitor<'a, 'b> {
     tainted: &'a BTreeMap<String, TaintPath>,
-    sanitizers: &'a [&'a str],
+    ctx: SanitizerContext,
     bodies: &'a BTreeMap<String, Body<'b>>,
     depth: usize,
     kind: SinkKind,
@@ -1053,7 +1437,7 @@ impl SinkVisitor<'_, '_> {
     /// Resolves a sink argument, recording unsupported syntax when a tainted
     /// value is visible but cannot be followed.
     fn flow_or_limit(&mut self, expr: &syn::Expr) -> Option<TaintPath> {
-        let path = taint_of_expr(expr, self.tainted, self.sanitizers, self.bodies, self.depth);
+        let path = taint_of_expr(expr, self.tainted, self.ctx, self.bodies, self.depth);
         if path.is_none() && mentions_tainted(expr, self.tainted) {
             self.limits.push(TaintLimit {
                 kind: TaintLimitKind::UnsupportedSyntax,
@@ -1189,13 +1573,13 @@ fn sinks_in_body<'b>(
     block: &syn::Block,
     tainted: &BTreeMap<String, TaintPath>,
     kind: SinkKind,
-    sanitizers: &[&str],
+    ctx: SanitizerContext,
     bodies: &BTreeMap<String, Body<'b>>,
     depth: usize,
 ) -> (Vec<(SinkDescriptor, TaintPath)>, Vec<TaintLimit>) {
     let mut visitor = SinkVisitor {
         tainted,
-        sanitizers,
+        ctx,
         bodies,
         depth,
         kind,
@@ -1252,12 +1636,12 @@ fn helper_seeds<'b>(
     helper: &Body<'_>,
     call: &CallSite<'_>,
     caller_tainted: &BTreeMap<String, TaintPath>,
-    sanitizers: &[&str],
+    ctx: SanitizerContext,
     bodies: &BTreeMap<String, Body<'b>>,
     depth: usize,
 ) -> BTreeMap<String, TaintPath> {
     let mut seeds = BTreeMap::new();
-    if is_sanitizer(&call.name, sanitizers) {
+    if ctx.is_call(&call.name) {
         return seeds;
     }
     for (index, arg) in call.args.iter().enumerate() {
@@ -1267,7 +1651,7 @@ fn helper_seeds<'b>(
         if is_env_type(&param.ty) {
             continue;
         }
-        if let Some(path) = taint_of_expr(arg, caller_tainted, sanitizers, bodies, depth) {
+        if let Some(path) = taint_of_expr(arg, caller_tainted, ctx, bodies, depth) {
             let step = format!("{}::{}", call.name, param.name);
             seeds.insert(param.name.clone(), add_step(path, &step));
         }
@@ -1278,7 +1662,7 @@ fn helper_seeds<'b>(
 struct Analyzer<'a, 'b> {
     bodies: &'a BTreeMap<String, Body<'b>>,
     kind: SinkKind,
-    sanitizers: &'a [&'a str],
+    ctx: SanitizerContext,
     visited: BTreeSet<String>,
     flows: Vec<(SinkDescriptor, TaintPath)>,
     limits: Vec<TaintLimit>,
@@ -1286,12 +1670,12 @@ struct Analyzer<'a, 'b> {
 
 impl<'a, 'b> Analyzer<'a, 'b> {
     fn run(&mut self, body: &Body<'_>, seeds: &BTreeMap<String, TaintPath>, depth: usize) {
-        let tainted = propagate(body.block, seeds, self.sanitizers, self.bodies, depth);
+        let tainted = propagate(body.block, seeds, self.ctx, self.bodies, depth);
         let (flows, limits) = sinks_in_body(
             body.block,
             &tainted,
             self.kind,
-            self.sanitizers,
+            self.ctx,
             self.bodies,
             depth,
         );
@@ -1313,7 +1697,7 @@ impl<'a, 'b> Analyzer<'a, 'b> {
             return;
         }
         for call in calls_in_body(body.block) {
-            if is_sanitizer(&call.name, self.sanitizers) {
+            if self.ctx.is_call(&call.name) {
                 continue;
             }
             let Some(helper) = self.bodies.get(&call.name).cloned() else {
@@ -1338,14 +1722,7 @@ impl<'a, 'b> Analyzer<'a, 'b> {
             if !self.visited.insert(helper.name.clone()) {
                 continue;
             }
-            let seeds = helper_seeds(
-                &helper,
-                &call,
-                &tainted,
-                self.sanitizers,
-                self.bodies,
-                depth,
-            );
+            let seeds = helper_seeds(&helper, &call, &tainted, self.ctx, self.bodies, depth);
             if !seeds.is_empty() {
                 self.run(&helper, &seeds, depth + 1);
             }
@@ -1427,7 +1804,6 @@ fn analyze_with_limits(
     file: &syn::File,
     entry: &ContractFn<'_>,
     kind: SinkKind,
-    sanitizers: &[&str],
 ) -> (Vec<(SinkDescriptor, TaintPath)>, Vec<TaintLimit>) {
     if !file_contains_sink(file, kind) {
         return (Vec::new(), Vec::new());
@@ -1438,7 +1814,7 @@ fn analyze_with_limits(
     let mut analyzer = Analyzer {
         bodies: &bodies,
         kind,
-        sanitizers,
+        ctx: SanitizerContext::for_sink(kind),
         visited: BTreeSet::from([entry.name.clone()]),
         flows: Vec::new(),
         limits: Vec::new(),
@@ -1476,22 +1852,16 @@ fn analyze(
     file: &syn::File,
     entry: &ContractFn<'_>,
     kind: SinkKind,
-    sanitizers: &[&str],
 ) -> Vec<(SinkDescriptor, TaintPath)> {
-    analyze_with_limits(file, entry, kind, sanitizers).0
+    analyze_with_limits(file, entry, kind).0
 }
 
 /// Limits that explain why a taint flow may be missing or incomplete.
 ///
 /// Bounded by [`MAX_FLOWS`], deterministic, and source-text-free: each record
 /// carries a fixed reason label and a span, never a rendered expression.
-pub fn taint_limits(
-    file: &syn::File,
-    entry: &ContractFn<'_>,
-    kind: SinkKind,
-    sanitizers: &[&str],
-) -> Vec<TaintLimit> {
-    analyze_with_limits(file, entry, kind, sanitizers).1
+pub fn taint_limits(file: &syn::File, entry: &ContractFn<'_>, kind: SinkKind) -> Vec<TaintLimit> {
+    analyze_with_limits(file, entry, kind).1
 }
 
 /// Authorization subjects derived from caller-controlled data in `entry`.
@@ -1499,7 +1869,7 @@ pub fn taint_limits(
 /// Values passed through a documented [`AUTH_SANITIZERS`] helper are omitted.
 /// Intra-file helpers are followed up to [`MAX_HELPER_DEPTH`].
 pub fn auth_subject_flows(file: &syn::File, entry: &ContractFn<'_>) -> Vec<AuthFlow> {
-    analyze(file, entry, SinkKind::AuthSubject, AUTH_SANITIZERS)
+    analyze(file, entry, SinkKind::AuthSubject)
         .into_iter()
         .map(|(sink, path)| AuthFlow { sink, path })
         .collect()
@@ -1510,7 +1880,7 @@ pub fn auth_subject_flows(file: &syn::File, entry: &ContractFn<'_>) -> Vec<AuthF
 /// Values passed through a documented [`AMOUNT_SANITIZERS`] helper are omitted.
 /// Arithmetic transformations remain visible in [`AmountFlow::transformation`].
 pub fn transfer_amount_flows(file: &syn::File, entry: &ContractFn<'_>) -> Vec<AmountFlow> {
-    analyze(file, entry, SinkKind::TransferAmount, AMOUNT_SANITIZERS)
+    analyze(file, entry, SinkKind::TransferAmount)
         .into_iter()
         .map(|(sink, path)| AmountFlow { sink, path })
         .collect()
@@ -1523,7 +1893,7 @@ pub fn transfer_amount_flows(file: &syn::File, entry: &ContractFn<'_>) -> Vec<Am
 /// The analysis never treats an `Address` type annotation as validation; only a
 /// documented helper name clears the flow.
 pub fn address_argument_flows(file: &syn::File, entry: &ContractFn<'_>) -> Vec<AddressFlow> {
-    analyze(file, entry, SinkKind::PrivilegedAddress, ADDRESS_SANITIZERS)
+    analyze(file, entry, SinkKind::PrivilegedAddress)
         .into_iter()
         .map(|(sink, path)| AddressFlow { sink, path })
         .collect()
@@ -1534,7 +1904,7 @@ pub fn source_descriptors(file: &syn::File, entry: &ContractFn<'_>) -> Vec<Sourc
     let bodies = collect_bodies(file);
     let body = entry_body(&bodies, entry);
     let seeds = seeds_for(&body.params);
-    let tainted = propagate(body.block, &seeds, &[], &bodies, 0);
+    let tainted = propagate(body.block, &seeds, SanitizerContext::none(), &bodies, 0);
     let mut sources: Vec<SourceDescriptor> = body
         .params
         .iter()
@@ -1575,13 +1945,13 @@ pub fn unresolved_flow_diagnostics(source: &ParsedSource, relative_path: &Path) 
         BTreeMap::new();
     // Presence is a file-level property. Checking it once avoids re-walking the
     // whole file for every entry point.
-    let active: Vec<(SinkKind, &[&str])> = [
-        (SinkKind::AuthSubject, AUTH_SANITIZERS),
-        (SinkKind::TransferAmount, AMOUNT_SANITIZERS),
-        (SinkKind::PrivilegedAddress, ADDRESS_SANITIZERS),
+    let active: Vec<SinkKind> = [
+        SinkKind::AuthSubject,
+        SinkKind::TransferAmount,
+        SinkKind::PrivilegedAddress,
     ]
     .into_iter()
-    .filter(|(kind, _)| file_contains_sink(file, *kind))
+    .filter(|kind| file_contains_sink(file, *kind))
     .collect();
     if active.is_empty() {
         return Vec::new();
@@ -1590,8 +1960,8 @@ pub fn unresolved_flow_diagnostics(source: &ParsedSource, relative_path: &Path) 
         if !entry.is_public {
             continue;
         }
-        for (kind, sanitizers) in &active {
-            for limit in taint_limits(file, &entry, *kind, sanitizers) {
+        for kind in &active {
+            for limit in taint_limits(file, &entry, *kind) {
                 let group = groups
                     .entry((limit.kind, limit.sink, limit.construct))
                     .or_insert((0, limit.span));

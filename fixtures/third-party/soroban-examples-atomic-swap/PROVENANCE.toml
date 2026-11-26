@@ -1,0 +1,6 @@
+license = "Apache-2.0"
+source_url = "https://github.com/stellar/soroban-examples/blob/03d42aa6b973dcf3a453a99d0c6a6e8d25a196e2/atomic_swap/src/lib.rs"
+source_file = "atomic_swap/src/lib.rs"
+license_file = "../LICENSE"
+expected_findings = "expected.toml"
+secret_review = "2026-11-26: no secrets, private keys, mnemonics, credentials, or tokens found in copied source"

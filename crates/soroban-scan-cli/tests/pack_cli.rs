@@ -193,6 +193,43 @@ fn install_copies_only_manifest_and_signature() {
 }
 
 #[test]
+fn install_rejects_packs_outside_the_scanner_range() {
+    let source = pack_dir("bounded-pack", "0.1.0");
+    let manifest = sample_manifest().replace(
+        "min_scanner_version = \"0.2.0\"",
+        "min_scanner_version = \"0.1.0\"\nmax_scanner_version = \"0.1.9\"",
+    );
+    std::fs::write(source.join("pack.toml"), manifest).expect("write bounded pack manifest");
+    let store = store_for("bounded");
+    cleanup(&store);
+
+    let result = run(&[
+        "pack",
+        "--dir",
+        store.to_str().unwrap(),
+        "install",
+        source.to_str().unwrap(),
+    ]);
+    assert_eq!(result.code, 2, "stderr: {}", result.stderr);
+    assert!(
+        result.stderr.contains("incompatible rule pack"),
+        "unexpected stderr: {}",
+        result.stderr
+    );
+    assert!(
+        result
+            .stderr
+            .contains("exceeds the supported maximum 0.1.9"),
+        "unexpected stderr: {}",
+        result.stderr
+    );
+    assert!(!store.join("packs/bounded-pack").exists());
+
+    cleanup(&store);
+    cleanup(source.parent().unwrap());
+}
+
+#[test]
 fn rejects_duplicate_and_invalid_manifests() {
     let source = pack_dir("alpha-pack", "0.1.0");
     let store = store_for("duplicate");
