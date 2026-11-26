@@ -192,10 +192,22 @@ Rule packs follow Semantic Versioning (`MAJOR.MINOR.PATCH`):
 
 ### Scanner Compatibility Verification
 
-The scanner checks pack compatibility before loading:
+Rule packs are opt-in: they are loaded only when a user explicitly installs one
+or a conformance runner opens a pack directory. Before a pack is accepted, the
+scanner checks the inclusive compatibility range and capability requirements:
+
 1. `scanner_version >= min_scanner_version`
 2. `scanner_version <= max_scanner_version` (if specified)
-3. Every capability in `pack.capabilities` must be natively supported by the scanner engine.
+3. Every capability in `pack.capabilities` must appear in the scanner's
+   `SCANNER_CAPABILITIES` list.
+
+The check is shared by `PackLoader` and `soroban-scan pack install/update`. A
+pack outside its declared range is rejected with a message naming the current
+scanner version and the unsupported bound; a pack requiring an unknown
+capability is rejected with the capability name. Compatibility is never
+inferred from a pack's own version or from rule text. Manifest size, rule
+count, and field validation remain bounded, and no secret or private key is
+needed to evaluate compatibility.
 
 ---
 

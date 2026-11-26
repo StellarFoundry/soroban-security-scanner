@@ -52,11 +52,27 @@ pub enum PackManifestError {
     Parse(String),
     #[error("invalid pack manifest: {0}")]
     Validation(String),
+    #[error("scanner version {current} is below the required minimum {required}")]
+    ScannerVersionBelowMinimum { current: String, required: String },
+    #[error("scanner version {current} exceeds the supported maximum {maximum}")]
+    ScannerVersionAboveMaximum { current: String, maximum: String },
+    #[error("scanner does not provide the required capability {capability}")]
+    MissingCapability { capability: String },
     #[error("pack manifest exceeds the 10485760-byte limit")]
     TooLarge,
     #[error("cannot read pack manifest at {path}: {message}")]
     Io { path: String, message: String },
 }
+
+/// Capabilities the running scanner provides to rule packs.
+///
+/// This is the authoritative list used by loader and CLI compatibility checks.
+/// It is deliberately small and data-only: v1 packs may require input support
+/// only, never execution, network, or arbitrary filesystem permissions.
+pub const SCANNER_CAPABILITIES: &[PackCapability] = &[
+    PackCapability::RustSourceAnalysis,
+    PackCapability::CargoManifestAnalysis,
+];
 
 /// Manifest defining a rule pack. Unknown fields are rejected for forward
 /// compatibility: a schema update is required before adding new semantics.
@@ -268,21 +284,19 @@ impl PackManifest {
         let min_version = parse_stable_version(&self.pack.min_scanner_version)
             .expect("validate checks the minimum version");
         if scanner_version < min_version {
-            return Err(PackManifestError::Validation(format!(
-                "scanner version {} is below required minimum {}",
-                format_version(scanner_version),
-                self.pack.min_scanner_version
-            )));
+            return Err(PackManifestError::ScannerVersionBelowMinimum {
+                current: format_version(scanner_version),
+                required: self.pack.min_scanner_version.clone(),
+            });
         }
         if let Some(max_version) = self.pack.max_scanner_version.as_deref() {
             let parsed_max =
                 parse_stable_version(max_version).expect("validate checks max version");
             if scanner_version > parsed_max {
-                return Err(PackManifestError::Validation(format!(
-                    "scanner version {} exceeds supported maximum {}",
-                    format_version(scanner_version),
-                    max_version
-                )));
+                return Err(PackManifestError::ScannerVersionAboveMaximum {
+                    current: format_version(scanner_version),
+                    maximum: max_version.to_string(),
+                });
             }
         }
         let available: HashSet<_> = available_capabilities.iter().copied().collect();
@@ -292,10 +306,9 @@ impl PackManifest {
             .iter()
             .find(|capability| !available.contains(capability))
         {
-            return Err(PackManifestError::Validation(format!(
-                "scanner does not provide required capability {}",
-                missing.as_str()
-            )));
+            return Err(PackManifestError::MissingCapability {
+                capability: missing.as_str().to_string(),
+            });
         }
         Ok(())
     }

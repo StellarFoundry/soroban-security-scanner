@@ -2,11 +2,15 @@
 
 use std::fs;
 use std::path::PathBuf;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 use soroban_scan_core::pack::{
-    KeyRing, PackCapability, PackManifest, PackManifestError, PackVerificationError, PackVerifier,
-    VerificationPolicy, MAX_PACK_MANIFEST_BYTES,
+    KeyRing, PackCapability, PackLoadError, PackLoader, PackManifest, PackManifestError,
+    PackVerificationError, PackVerifier, VerificationPolicy, MAX_PACK_MANIFEST_BYTES,
+    SCANNER_CAPABILITIES,
 };
+
+static NEXT_DIR: AtomicUsize = AtomicUsize::new(0);
 
 fn sample_manifest_path() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/rule-packs/sample/pack.toml")
@@ -77,18 +81,32 @@ fn rejects_unknown_capabilities_and_fields() {
 #[test]
 fn compatibility_checks_minimum_maximum_and_required_capabilities() {
     let manifest = PackManifest::parse_str(sample_manifest_text()).unwrap();
-    assert!(manifest
-        .check_compatibility("0.1.9", &[PackCapability::RustSourceAnalysis])
-        .is_err());
-    assert!(manifest
-        .check_compatibility("0.2.0", &[PackCapability::CargoManifestAnalysis])
-        .is_err());
+    assert_eq!(
+        manifest.check_compatibility("0.1.9", &[PackCapability::RustSourceAnalysis]),
+        Err(PackManifestError::ScannerVersionBelowMinimum {
+            current: "0.1.9".to_string(),
+            required: "0.2.0".to_string(),
+        })
+    );
+    assert_eq!(
+        manifest.check_compatibility("0.2.0", &[PackCapability::CargoManifestAnalysis]),
+        Err(PackManifestError::MissingCapability {
+            capability: "rust_source_analysis".to_string(),
+        })
+    );
 
     let mut bounded = manifest.clone();
     bounded.pack.max_scanner_version = Some("0.2.9".to_string());
+    assert_eq!(
+        bounded.check_compatibility("0.3.0", &[PackCapability::RustSourceAnalysis]),
+        Err(PackManifestError::ScannerVersionAboveMaximum {
+            current: "0.3.0".to_string(),
+            maximum: "0.2.9".to_string(),
+        })
+    );
     assert!(bounded
-        .check_compatibility("0.3.0", &[PackCapability::RustSourceAnalysis])
-        .is_err());
+        .check_compatibility("0.2.9", &[PackCapability::RustSourceAnalysis])
+        .is_ok());
 }
 
 #[test]
@@ -132,4 +150,84 @@ fn manifest_size_is_bounded_before_parsing() {
         PackManifest::parse_str(&oversized),
         Err(PackManifestError::TooLarge)
     );
+}
+
+fn temp_pack_dir(manifest: &str) -> PathBuf {
+    let dir = std::env::temp_dir().join(format!(
+        "soroban-pack-compat-{}-{}",
+        std::process::id(),
+        NEXT_DIR.fetch_add(1, Ordering::Relaxed)
+    ));
+    let _ = fs::remove_dir_all(&dir);
+    fs::create_dir_all(&dir).expect("create temporary pack directory");
+    fs::write(dir.join("pack.toml"), manifest).expect("write pack manifest");
+    dir
+}
+
+#[test]
+fn scanner_capability_list_is_explicit_and_bounded() {
+    assert_eq!(
+        SCANNER_CAPABILITIES,
+        &[
+            PackCapability::RustSourceAnalysis,
+            PackCapability::CargoManifestAnalysis,
+        ]
+    );
+}
+
+#[test]
+fn loader_enforces_the_declared_version_range() {
+    let bounded = sample_manifest_text().replace(
+        "min_scanner_version = \"0.2.0\"",
+        "min_scanner_version = \"0.2.0\"\nmax_scanner_version = \"0.2.9\"",
+    );
+    let dir = temp_pack_dir(&bounded);
+    let keyring = KeyRing::new();
+
+    let too_new = PackLoader::load_dir_for_version(
+        &dir,
+        &keyring,
+        VerificationPolicy::AllowUnsigned,
+        "0.3.0",
+    )
+    .expect_err("a scanner above the declared maximum must be rejected");
+    match too_new {
+        PackLoadError::IncompatibleScannerVersionMaximum { maximum, current } => {
+            assert_eq!(maximum, "0.2.9");
+            assert_eq!(current, "0.3.0");
+        }
+        other => panic!("expected IncompatibleScannerVersionMaximum, got {other:?}"),
+    }
+
+    let accepted = PackLoader::load_dir_for_version(
+        &dir,
+        &keyring,
+        VerificationPolicy::AllowUnsigned,
+        "0.2.5",
+    )
+    .expect("a scanner inside the declared range must load");
+    assert_eq!(accepted.manifest.pack.name, "soroban-defi-rules");
+
+    let _ = fs::remove_dir_all(&dir);
+}
+
+#[test]
+fn loader_rejects_below_minimum_with_the_existing_clear_error() {
+    let dir = temp_pack_dir(sample_manifest_text());
+    let keyring = KeyRing::new();
+    let too_old = PackLoader::load_dir_for_version(
+        &dir,
+        &keyring,
+        VerificationPolicy::AllowUnsigned,
+        "0.1.9",
+    )
+    .expect_err("a scanner below the declared minimum must be rejected");
+    assert_eq!(
+        too_old,
+        PackLoadError::IncompatibleScannerVersion {
+            required: "0.2.0".to_string(),
+            current: "0.1.9".to_string(),
+        }
+    );
+    let _ = fs::remove_dir_all(&dir);
 }

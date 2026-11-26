@@ -20,7 +20,7 @@ pub use loader::{
 };
 pub use manifest::{
     sha256_checksum, PackCapability, PackManifest, PackManifestError, PackMetadata,
-    PackRuleMetadata, MAX_PACK_MANIFEST_BYTES, PACK_MANIFEST_SCHEMA_VERSION,
+    PackRuleMetadata, MAX_PACK_MANIFEST_BYTES, PACK_MANIFEST_SCHEMA_VERSION, SCANNER_CAPABILITIES,
 };
 pub use registry::{
     PackRegistry, PackRegistryEntry, PackRegistryError, PACK_REGISTRY_SCHEMA_VERSION,

@@ -2,12 +2,13 @@
 //!
 //! Loading an external rule pack is opt-in, bounded in size and rule count,
 //! and fails closed when a pack is unsigned (unless explicitly allowed),
-//! tampered, malformed, unsafe on disk, or targets a newer scanner version.
+//! tampered, malformed, unsafe on disk, outside its declared scanner version
+//! range, or dependent on a capability the scanner does not provide.
 
 use std::collections::BTreeSet;
 use std::path::Path;
 
-use crate::pack::manifest::PackManifest;
+use crate::pack::manifest::{PackManifest, PackManifestError, SCANNER_CAPABILITIES};
 use crate::pack::signing::{
     DetachedSignature, KeyRing, PackVerificationError, PackVerifier, VerificationPolicy,
     VerificationResult,
@@ -66,6 +67,16 @@ pub enum PackLoadError {
         "incompatible scanner version: pack requires >= {required}, current scanner is {current}"
     )]
     IncompatibleScannerVersion { required: String, current: String },
+
+    /// Pack does not support the running scanner version.
+    #[error(
+        "incompatible scanner version: pack supports <= {maximum}, current scanner is {current}"
+    )]
+    IncompatibleScannerVersionMaximum { maximum: String, current: String },
+
+    /// Pack requires a capability the scanner does not provide.
+    #[error("unsupported rule pack capability: {capability}")]
+    UnsupportedCapability { capability: String },
 }
 
 /// Safe, bounded loader for rule pack directories.
@@ -205,23 +216,9 @@ pub fn validate_manifest(
         ))
     })?;
 
-    let required = &manifest.pack.min_scanner_version;
-    let req_ver = parse_semver(required).ok_or_else(|| {
-        PackLoadError::InvalidMetadata(format!(
-            "invalid pack.min_scanner_version '{required}' (expected MAJOR.MINOR.PATCH)"
-        ))
-    })?;
-    let cur_ver = parse_semver(scanner_version).ok_or_else(|| {
-        PackLoadError::InvalidMetadata(format!(
-            "invalid current scanner version '{scanner_version}'"
-        ))
-    })?;
-    if req_ver > cur_ver {
-        return Err(PackLoadError::IncompatibleScannerVersion {
-            required: required.clone(),
-            current: scanner_version.to_string(),
-        });
-    }
+    manifest
+        .check_compatibility(scanner_version, SCANNER_CAPABILITIES)
+        .map_err(compatibility_error)?;
 
     if manifest.rules.is_empty() {
         return Err(PackLoadError::InvalidMetadata(
@@ -273,6 +270,21 @@ pub fn validate_manifest(
     }
 
     Ok(())
+}
+
+fn compatibility_error(error: PackManifestError) -> PackLoadError {
+    match error {
+        PackManifestError::ScannerVersionBelowMinimum { current, required } => {
+            PackLoadError::IncompatibleScannerVersion { required, current }
+        }
+        PackManifestError::ScannerVersionAboveMaximum { current, maximum } => {
+            PackLoadError::IncompatibleScannerVersionMaximum { maximum, current }
+        }
+        PackManifestError::MissingCapability { capability } => {
+            PackLoadError::UnsupportedCapability { capability }
+        }
+        other => PackLoadError::InvalidMetadata(other.to_string()),
+    }
 }
 
 fn parse_semver(version: &str) -> Option<(u64, u64, u64)> {
