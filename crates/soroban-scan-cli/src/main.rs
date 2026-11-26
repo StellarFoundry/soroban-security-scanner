@@ -14,6 +14,7 @@ use std::time::Instant;
 
 use clap::{Args, Parser, Subcommand, ValueEnum};
 
+mod calibration_cli;
 mod feedback_cli;
 mod lsp;
 mod pack_cli;
@@ -374,6 +375,8 @@ enum Command {
     Baseline(BaselineArgs),
     /// Record false-positive feedback locally, without network access.
     Feedback(feedback_cli::FeedbackArgs),
+    /// Generate a deterministic corpus-based calibration report for every rule.
+    Calibrate(calibration_cli::CalibrateArgs),
     /// Generate a shell completion script (bash, zsh, fish, powershell).
     #[command(hide = true)]
     Completions(CompletionsArgs),
@@ -986,6 +989,7 @@ fn run(cli: Cli) -> CliResult<u8> {
         Command::Openapi(args) => run_openapi(args),
         Command::Baseline(args) => run_baseline(args, &registry),
         Command::Feedback(args) => feedback_cli::run(args, &registry),
+        Command::Calibrate(args) => calibration_cli::run(args, &registry),
         Command::Completions(args) => {
             let mut command = <Cli as clap::CommandFactory>::command();
             let name = command.get_name().to_string();
