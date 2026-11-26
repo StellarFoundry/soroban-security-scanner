@@ -67,32 +67,53 @@ entry)` runs the same pass with privileged-token address arguments as sinks:
 Paths are capped by `MAX_PATH_STEPS`. When a path would exceed the cap the
 result is `Unknown`, never a guessed longer path.
 
-## Documented sanitizers
+## Sanitizer registry
 
-An unconditionally assigned value passed through one of these names is treated
-as sanitized and is **not** reported as a flow.
+`SANITIZER_REGISTRY` is the authoritative, bounded set of validation patterns
+the analysis may recognize. A taint path is cleared only when source contains a
+registered **call** or a registered early-exit **guard** with the matching
+`SanitizerKind`. A comment, a typo, an unregistered helper, a bare comparison,
+or an `Address` type annotation never suppresses taint.
 
-Authorization subjects (`AUTH_SANITIZERS`):
+The registry is limited to `MAX_SANITIZERS` (64) entries, and a name is limited
+to `MAX_SANITIZER_NAME_LEN` (64) printable ASCII characters.
+`SanitizerRegistry::validate()` rejects invalid names, empty assumptions, and
+duplicate `(name, kind, form)` triples. Every entry carries a written
+assumption; the scanner does not inspect the callee body and does not prove the
+assumption holds.
 
-`validate_address`, `normalize_address`, `checked_address`,
-`verified_address`, `sanitize_address`.
+`AUTH_SANITIZERS`, `AMOUNT_SANITIZERS`, and `ADDRESS_SANITIZERS` remain as
+read-only compatibility views for rule authors. The flow APIs use the registry,
+not caller-provided slices.
 
-Token amounts (`AMOUNT_SANITIZERS`):
+### Call-form sanitizers
 
-`checked_add`, `checked_sub`, `checked_mul`, `checked_div`, `checked_neg`,
-`try_from`, `try_into`, `clamp`, `min`, `max`, `validate_amount`,
-`checked_amount`, `verified_amount`.
+A recognized call clears taint only for its registered kind. Matching is by
+free-function or method name; there is no receiver-type or argument check, and
+the sink span is still recorded by the caller.
 
-Privileged address arguments (`ADDRESS_SANITIZERS`) use the same documented
-address-validation names as `AUTH_SANITIZERS`: `validate_address`,
-`normalize_address`, `checked_address`, `verified_address`,
-`sanitize_address`. An `Address` type annotation alone is never treated as
-validation; only a documented helper name clears the flow.
+| Kind | Names | Assumption |
+| --- | --- | --- |
+| Authorization subject | `validate_address`, `normalize_address`, `checked_address`, `verified_address`, `sanitize_address` | The named helper explicitly validates or normalizes address provenance. |
+| Privileged address argument | `validate_address`, `normalize_address`, `checked_address`, `verified_address`, `sanitize_address` | The named helper explicitly validates or normalizes address provenance. |
+| Transfer amount | `checked_add`, `checked_sub`, `checked_mul`, `checked_div`, `checked_neg`, `try_from`, `try_into`, `clamp`, `min`, `max`, `validate_amount`, `checked_amount`, `verified_amount` | The named helper returns a checked, converted, or clamped amount. |
 
-The lists are explicit so a typo or an unrelated helper does not silently clear
-taint. Sanitizers are matched by method or free-function **name only**; there is
-no receiver-type or argument check. Extending a list is a security-relevant
-change and requires tests for the sanitized and unsanitized paths.
+The scanner does not inspect these helpers' bodies. If a project uses one of
+these names without the stated behavior, the flow is suppressed by contract;
+adding or removing a registry entry is a security-relevant change that requires
+both sanitized and unsanitized fixtures.
+
+### Guard-form sanitizers
+
+| Kind | Names | Recognized form | Assumption |
+| --- | --- | --- | --- |
+| Authorization subject | `is_valid_address` | `if !is_valid_address(&value) { return; }` | The predicate is total, true only for acceptable values, and invalid values take the modeled early-return branch. |
+| Privileged address argument | `is_valid_address` | `if !is_valid_address(&value) { return; }` | Same as above. |
+| Transfer amount | `is_valid_amount` | `if !is_valid_amount(&amount) { return; }` | Same as above. |
+
+`return`, `panic!`, `unreachable!`, and `abort` are treated as early exits. A
+guard that does not exit, a positive-form `if predicate { ... }`, and an
+unregistered predicate do not clear taint.
 
 ### Conditional sanitization
 
@@ -111,7 +132,9 @@ subject.require_auth(); // reported with an Unknown path
 ```
 
 An unconditional reassignment clears the taint normally. The same conservative
-rule applies to amount and address sanitizers.
+rule applies to amount and address sanitizers. A registered early-exit guard is
+the one conditional form that is modeled explicitly; its assumption is recorded
+in the registry rather than guessed.
 
 ## Limits
 
@@ -130,8 +153,8 @@ rule applies to amount and address sanitizers.
   control-flow join records that taint *may* reach the sink, not that any
   particular path executes. Ambiguous joins become `Unknown` and stay visible.
 - A bare comparison (`if amount > 0`) is not a sanitizer for this analysis;
-  existing detector logic can still recognize such guards. Only the documented
-  helper names stop taint.
+  existing detector logic can still recognize such guards. Only registered call
+  and early-exit guard names stop taint.
 - `transfer` and `transfer_from` are matched by method name, like SS-014, so an
   unrelated method with that name can produce a flow. The sink descriptor
   records the span, and the consumer decides whether to report it.
