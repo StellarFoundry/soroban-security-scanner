@@ -27,7 +27,8 @@ is enforced by the `api_stability` integration test.
   `unsupported` (bounded `SYNTAX-001` diagnostics for other languages).
 - `imports` (best-effort, per-file `use` resolution), `ai`, `baseline`,
   `baseline_sync`, `compare`, `correlation`, `context`, `error`, `fingerprint`, `pack`, `policy`,
-  `corpus`, `redaction`, `service`, and `telemetry` support modules.
+  `corpus`, `redaction`, `service`, `feedback`, and `telemetry` support modules.
+  `feedback` stores local-only false-positive reports and is not a stable API.
 - `imports` (best-effort, per-file `use` resolution), `lsp_severity`
   (LSP diagnostic severity mapping policy), `ai`, `baseline`,
   `compare`, `context`, `error`, and `redaction` support modules.

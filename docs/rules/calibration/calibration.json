@@ -1,0 +1,1661 @@
+{
+  "schema_version": "1",
+  "tool": "soroban-scan",
+  "corpus": "fixtures/corpus",
+  "scope": "built-in-defaults",
+  "rules": [
+    {
+      "rule_id": "SS-001",
+      "title": "State-changing entry point without caller authorization",
+      "category": "authorization",
+      "current_severity": "high",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "high",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-002",
+      "title": "Cross-contract call without caller authorization",
+      "category": "cross-contract",
+      "current_severity": "high",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "high",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-003",
+      "title": "Unbounded storage iteration in an entry point",
+      "category": "resource-usage",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-004",
+      "title": "Panic-prone construct in a contract entry point",
+      "category": "error-handling",
+      "current_severity": "low",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "low",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-005",
+      "title": "Unsafe code in a Soroban contract",
+      "category": "unsafe",
+      "current_severity": "medium",
+      "current_confidence": "high",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "high",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "no fixture-level evidence warrants a confidence change"
+        ]
+      },
+      "review_required": false
+    },
+    {
+      "rule_id": "SS-006",
+      "title": "Persistent storage write without TTL management",
+      "category": "storage",
+      "current_severity": "low",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "low",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-007",
+      "title": "Hardcoded Stellar account or contract address",
+      "category": "configuration",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-008",
+      "title": "Unchecked arithmetic in a contract entry point",
+      "category": "arithmetic",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-009",
+      "title": "Insecure randomness derived from ledger state",
+      "category": "arithmetic",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-010",
+      "title": "Privileged state change without an event",
+      "category": "events",
+      "current_severity": "low",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "low",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-011",
+      "title": "Initialization entry point without a re-initialization guard",
+      "category": "access-control",
+      "current_severity": "high",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "high",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-012",
+      "title": "Unbounded collection growth in an entry point",
+      "category": "resource-usage",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-013",
+      "title": "Cross-contract call before state update",
+      "category": "cross-contract",
+      "current_severity": "high",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "high",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-014",
+      "title": "Token transfer amount without validation",
+      "category": "token",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-015",
+      "title": "Deprecated Soroban SDK version",
+      "category": "dependencies",
+      "current_severity": "low",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "low",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-016",
+      "title": "Unbounded data stored in instance storage",
+      "category": "storage",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 3,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 3,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-017",
+      "title": "Authorization after state mutation",
+      "category": "authorization",
+      "current_severity": "medium",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-018",
+      "title": "Unchecked integer cast",
+      "category": "arithmetic",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-019",
+      "title": "Ignored cross-contract call result",
+      "category": "cross-contract",
+      "current_severity": "medium",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-020",
+      "title": "Unvalidated XDR or bytes deserialization",
+      "category": "error-handling",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-021",
+      "title": "Durable data written to temporary storage",
+      "category": "storage",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-022",
+      "title": "Unsafe symbol_short key",
+      "category": "storage",
+      "current_severity": "medium",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-023",
+      "title": "Sensitive-looking data published in events",
+      "category": "events",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-024",
+      "title": "Missing contracttype on boundary types",
+      "category": "configuration",
+      "current_severity": "medium",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-025",
+      "title": "Unbounded string/bytes persisted from caller input",
+      "category": "storage",
+      "current_severity": "medium",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-026",
+      "title": "TTL constant outside the expected range",
+      "category": "resource-usage",
+      "current_severity": "low",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "low",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-027",
+      "title": "Contract's own address used as an authorization subject",
+      "category": "authorization",
+      "current_severity": "high",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "high",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-028",
+      "title": "Cross-contract call without a reentrancy guard",
+      "category": "cross-contract",
+      "current_severity": "high",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "high",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-029",
+      "title": "Public test or debug hook in a contract entry point",
+      "category": "access-control",
+      "current_severity": "medium",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-030",
+      "title": "Token client built from an unvalidated caller address",
+      "category": "token",
+      "current_severity": "high",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "high",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-031",
+      "title": "Event topic derived from a caller-controlled parameter",
+      "category": "events",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-032",
+      "title": "Redundant require_auth in loop",
+      "category": "authorization",
+      "current_severity": "low",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "low",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-033",
+      "title": "Wildcard import from the Soroban SDK",
+      "category": "dependencies",
+      "current_severity": "low",
+      "current_confidence": "high",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "low",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "high",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "no fixture-level evidence warrants a confidence change"
+        ]
+      },
+      "review_required": false
+    },
+    {
+      "rule_id": "SS-034",
+      "title": "Unvalidated deployer usage",
+      "category": "access-control",
+      "current_severity": "high",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "high",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-035",
+      "title": "Ignored checked-arithmetic result",
+      "category": "arithmetic",
+      "current_severity": "high",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "high",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-036",
+      "title": "Deprecated SDK API usage",
+      "category": "dependencies",
+      "current_severity": "low",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "low",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-037",
+      "title": "Competing authorization calls",
+      "category": "authorization",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-039",
+      "title": "Persistent storage read without TTL management",
+      "category": "storage",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 4,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 4,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-041",
+      "title": "Authorization check inside a loop",
+      "category": "authorization",
+      "current_severity": "medium",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-042",
+      "title": "Security check unreachable on every path",
+      "category": "authorization",
+      "current_severity": "low",
+      "current_confidence": "medium",
+      "positive_fixtures": 2,
+      "negative_fixtures": 4,
+      "ambiguous_fixtures": 0,
+      "true_positives": 2,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 4,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "low",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-043",
+      "title": "Hardcoded Stellar network passphrase",
+      "category": "configuration",
+      "current_severity": "medium",
+      "current_confidence": "high",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "high",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "no fixture-level evidence warrants a confidence change"
+        ]
+      },
+      "review_required": false
+    },
+    {
+      "rule_id": "SS-044",
+      "title": "Cross-contract call with an unvalidated address argument",
+      "category": "cross-contract",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 4,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 4,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-045",
+      "title": "Cross-contract call without error handling",
+      "category": "cross-contract",
+      "current_severity": "medium",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 3,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 3,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-046",
+      "title": "Duplicate storage key construction",
+      "category": "storage",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 5,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 5,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-047",
+      "title": "Unchecked ledger timestamp usage",
+      "category": "arithmetic",
+      "current_severity": "medium",
+      "current_confidence": "low",
+      "positive_fixtures": 1,
+      "negative_fixtures": 5,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 5,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "low",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-048",
+      "title": "Unbounded event payload",
+      "category": "events",
+      "current_severity": "medium",
+      "current_confidence": "medium",
+      "positive_fixtures": 1,
+      "negative_fixtures": 5,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 5,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "medium",
+        "proposal": "high",
+        "decision": "review_candidate",
+        "reasons": [
+          "curated corpus shows no fixture-level errors; this is limited evidence and requires review before any change"
+        ]
+      },
+      "review_required": true
+    },
+    {
+      "rule_id": "SS-049",
+      "title": "Unchecked bytes-to-string conversion",
+      "category": "error-handling",
+      "current_severity": "medium",
+      "current_confidence": "high",
+      "positive_fixtures": 1,
+      "negative_fixtures": 5,
+      "ambiguous_fixtures": 0,
+      "true_positives": 1,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "true_negatives": 5,
+      "corpus_complete": true,
+      "severity_assessment": {
+        "field": "severity",
+        "current": "medium",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "severity measures impact; corpus counts measure detection evidence only",
+          "any severity change requires a human impact justification in the PR"
+        ]
+      },
+      "confidence_assessment": {
+        "field": "confidence",
+        "current": "high",
+        "proposal": null,
+        "decision": "no_change",
+        "reasons": [
+          "no fixture-level evidence warrants a confidence change"
+        ]
+      },
+      "review_required": false
+    }
+  ],
+  "totals": {
+    "rules": 47,
+    "review_required": 43,
+    "incomplete_corpus": 0,
+    "false_positives": 0,
+    "false_negatives": 0,
+    "ambiguous_fixtures": 0
+  }
+}

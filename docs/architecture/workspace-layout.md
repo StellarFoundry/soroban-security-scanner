@@ -103,6 +103,7 @@ pipeline: `config` feeds discovery/engine/report, `source` feeds `project` and
 | `monorepo` | Bounded, symlink-safe Cargo project discovery and include/exclude/changed-file path filtering for monorepo scans. | `discovery`, `error`. |
 | `ai` | Optional, advisory assistance; deterministic engine remains authoritative. | `category`, `finding`, `rule`, `severity`. |
 | `api_auth` | Framework-independent bearer token parsing and verification for API integrations. | Nothing in the crate. |
+| `feedback` | Bounded, local-only false-positive reports keyed by stable finding fingerprints; no source text, timestamps, or network access. | `ai`, `error`, `registry`. |
 | `corpus` | Read-only detector fixture, documentation, and must-trigger coverage reporting. | `registry`. |
 | `telemetry` | Opt-in, bounded telemetry and crash-event payloads with no source text or paths. | `config`, `engine`, `error`, `model`, `severity`. |
 | `service` | Transport-agnostic scan API adapter and bounded job storage for an embedding service. No listener or network access. | `api_auth`, `config`, `engine`, `error`, `registry`, `report`. |

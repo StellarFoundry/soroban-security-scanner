@@ -23,6 +23,8 @@ soroban-scan <COMMAND>
 | `pack` | Install, list, update, or remove local community rule packs. |
 | `openapi` | Generate or validate the OpenAPI 3.1.0 contract from the implemented routes. |
 | `baseline` | Synchronize baseline artifacts (push or pull) with envelope verification. |
+| `feedback` | Record false-positive feedback locally, without network access. |
+| `calibrate` | Generate a deterministic corpus-based calibration report. |
 | `config show` / `config validate` | Inspect or validate configuration. |
 
 ---
@@ -820,6 +822,56 @@ Fetches and verifies a baseline envelope by key, writing the validated baseline 
 | `--store-dir <DIR>` | `.soroban-scan-store` | Path to directory-backed artifact store. |
 
 If no baseline exists for the key, `baseline pull` prints `notice: no baseline found for key '<KEY>'` and exits `0` without creating a file.
+
+---
+
+## `feedback`
+
+```text
+soroban-scan feedback --rule <RULE-ID> --span-hash <HASH> [--reason <TEXT>] [--dir <DIR>]
+```
+
+Records a structured false-positive report in `<DIR>/feedback.json` (default:
+`.soroban-scan`). `--span-hash` is the stable finding fingerprint printed in
+CLI/SARIF reports; `--fingerprint` is accepted as an alias. `--rule` must name a
+registered rule, and `--span-hash` must be 32 hexadecimal characters (case is
+normalized).
+
+The command is **offline only**: it never makes a network request, never
+uploads feedback, and never changes findings or exit codes for scans. It stores
+only the rule id, normalized fingerprint, and an optional short reason. Reason
+text is bounded to 512 bytes and passed through deterministic secret redaction.
+Source text, evidence, absolute paths, timestamps, and user identifiers are
+never recorded. Entries are sorted and deduplicated so the local document is
+stable.
+
+Invalid arguments exit `2`; unreadable, oversized, or malformed local feedback
+documents exit `3`. Success exits `0`.
+
+---
+
+## `calibrate`
+
+```text
+soroban-scan calibrate [--root <DIR>] [--format <markdown|json>] [--output <FILE>] [--per-rule-dir <DIR>]
+```
+
+Generates a deterministic, advisory calibration report for every shipped rule
+from the labeled corpus, published rule metadata, and corpus coverage. The
+default root is the repository containing `fixtures/corpus`; the aggregate
+report is written to stdout unless `--output` is supplied. `--per-rule-dir`
+writes one Markdown report per rule into the named directory.
+
+The report records fixture-level true/false positives and negatives, ambiguous
+fixtures, coverage completeness, and review candidates. It never changes
+severity or confidence, never includes timing or absolute paths, and never
+infers severity from counts. Any rating change remains a human decision that
+must be justified in the pull request. See
+[calibration methodology](rules/calibration/calibration.md) and the committed
+[per-rule reports](rules/calibration/) for the generated evidence.
+
+Invalid arguments exit `2`; unreadable corpus data or unwritable outputs exit
+`3`. Success exits `0`.
 
 ---
 

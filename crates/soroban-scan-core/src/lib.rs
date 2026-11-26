@@ -32,6 +32,7 @@ pub mod detection;
 pub mod discovery;
 pub mod engine;
 pub mod error;
+pub mod feedback;
 pub mod finding;
 pub mod fingerprint;
 pub mod frontend;

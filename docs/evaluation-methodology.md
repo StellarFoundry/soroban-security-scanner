@@ -63,6 +63,31 @@ positive labels. The current test suite asserts fixture expectations and finding
 counts, but does not calculate aggregate TP/FP/FN/TN or publish a precision or
 recall number. Do not derive or claim a score from passing tests alone.
 
+## Calibration reports
+
+The `soroban-scan calibrate` command joins the labeled corpus metrics with
+coverage and published rule metadata. It writes one deterministic aggregate
+report and one reviewable report per rule; the committed artifacts are in
+[`docs/rules/calibration/`](rules/calibration/). Counts are fixture-level and
+are regenerated from the same inputs, so repeated output is byte-stable.
+
+Calibration is advisory:
+
+- Severity remains impact-based and is never inferred from true/false positive
+  counts.
+- Confidence candidates are review requests only. No built-in rating changes
+  are applied by the command or its generated artifacts.
+- Ambiguous fixtures are counted and excluded from rating decisions; they are
+  never guessed into labels or findings.
+- Reports contain no timing, absolute paths, environment values, source text,
+  or user identifiers.
+
+These fixtures are curated regression examples, not a representative labeled
+sample. A calibration report is not a real-world precision or recall estimate.
+Any rating change must be justified in the pull request with corpus evidence
+and an impact analysis. See the [CLI reference](cli.md#calibrate) for command
+usage.
+
 ## Performance benchmarks
 
 There are two distinct benchmarks. The in-process benchmark generates synthetic
