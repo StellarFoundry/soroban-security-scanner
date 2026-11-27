@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- A dependency-free typed Python API client (`clients/python`) covers the
+  documented service and OpenAPI endpoints with bearer auth, submit, poll and
+  report helpers, typed errors, and idempotent-only bounded retries. Redirects
+  are refused, secrets are redacted from errors, and mock-server tests run
+  offline (`#356`).
 - The opt-in language server advertises `textDocument/codeAction` and offers a
   `quickfix` for scanner diagnostics that inserts the documented inline
   suppression directive with the exact rule id and a required reason
