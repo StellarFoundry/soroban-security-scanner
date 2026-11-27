@@ -8,10 +8,13 @@ never executes or compiles the scanned project.
 
 - `AnalysisContext::cfg_for_function(source, function)` returns a cached
   `Arc<ControlFlowGraph>` for a function body.
+- `AnalysisContext::reachability_analysis()` returns the cached entry-point
+  call-graph result; `function_reachability` and `reachability_for_line` are
+  rule-facing helpers.
 - `build_function_cfg(block)` builds a graph directly from a `syn::Block`.
 - `function_for_line(file, line)` finds the function body containing a line.
-- `ControlFlowGraph` exposes `nodes`, `edges`, `entry`, `exit`, `truncated`, and
-  `reachability_at(line)`.
+- `ControlFlowGraph` exposes `nodes`, `edges`, `entry`, `exit`, `truncated`,
+  `is_complete()`, and `reachability_at(line)`.
 - `Reachability` is `Reachable`, `Unknown`, or `Unreachable`.
 
 Each `CfgNode` carries a stable `id`, a `NodeKind`, and a `Span`. Each
@@ -78,15 +81,39 @@ The CFG ranks findings and lets rules that require complete reachability decide
 whether to report. See [Finding ranking](finding-ranking.md).
 
 The same pass also derives optional exploitability context. When the graph
-covers a finding line, the finding records the reachability label and, if the
-line is inside a Soroban contract entry point, the qualified entry-point name.
-Incomplete evidence leaves the whole object absent. This context is additive
-report metadata; it does not alter the graph, detection, severity, or
-confidence.
+covers a finding line, the finding records the combined reachability label and,
+when a detected entry point reaches the enclosing function, the qualified
+entry-point name. An incomplete graph can preserve locally proven `reachable`
+but cannot prove `unreachable`; wholly missing evidence leaves the object absent.
+A proven-unreachable finding is retained but its confidence is lowered to `low`,
+because such code cannot be exercised from a detected entry point.
+
+## Entry-point reachability
+
+`analysis::reachability` adds a bounded, deterministic call graph on top of the
+per-function CFGs:
+
+- Roots are the detected contract entry points; there are no guessed roots.
+- An edge is added only for a same-file call whose name resolves to exactly one
+  local function and whose call line is reachable in a **complete** CFG.
+- A complete graph marks every unvisited function `Unreachable`; an ambiguous
+  one marks every unvisited function `Ambiguous` and never guesses an edge.
+- Function state is combined with line state. A locally reachable line keeps
+  that evidence even when the CFG has gaps; a complete CFG is required only to
+  prove a line locally dead. A complete call graph can additionally prove that
+  no entry point reaches the function. Ambiguity alone never yields
+  `unreachable` and never erases locally proven `reachable`.
+
+Ambiguities are counted by stable kind (`no_entry_point`, `unparsed_source`,
+`incomplete_cfg`, `ambiguous_call`, `uncovered_call`, `unmatched_function`,
+`limit_reached`) and surfaced as one aggregated `CFG-003` diagnostic with counts
+only. Rules may read the same cached analysis through `AnalysisContext`; they
+must not reinterpret `Ambiguous` as dead code.
 
 ## Limitations
 
-- The graph is per function and per file; there is no interprocedural CFG.
+- The CFG is per function; the call graph is same-file and syntactic, not a
+  whole-program interprocedural CFG. Calls into other files are not invented.
 - `break`/`continue` destinations are not resolved; loops are conservatively
   treated as able to exit.
 - Trait method signatures without bodies have no graph.

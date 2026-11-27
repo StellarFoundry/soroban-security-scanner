@@ -127,6 +127,14 @@ pub struct ControlFlowGraph {
 }
 
 impl ControlFlowGraph {
+    /// Whether the graph proves complete reachability for its whole body.
+    ///
+    /// A truncated graph or an explicit `Unknown` node leaves gaps, so such a
+    /// graph must never be used to claim that code is unreachable.
+    pub fn is_complete(&self) -> bool {
+        !self.truncated && !self.nodes.iter().any(|node| node.kind == NodeKind::Unknown)
+    }
+
     /// Whether a node id can be reached from the entry node.
     pub fn is_reachable(&self, id: usize) -> bool {
         self.reachable.get(id).copied().unwrap_or(false)
@@ -259,6 +267,13 @@ impl<'a> FunctionIndex<'a> {
         let index = self.entries.partition_point(|(start, _, _)| *start <= line);
         let (start, end, block) = self.entries.get(index.checked_sub(1)?)?;
         (*start <= line && line <= *end).then_some((*block, (*start, *end)))
+    }
+
+    /// Iterates over every indexed function body and its line range.
+    pub fn functions(&self) -> impl Iterator<Item = (&'a syn::Block, (usize, usize))> + '_ {
+        self.entries
+            .iter()
+            .map(|(start, end, block)| (*block, (*start, *end)))
     }
 }
 

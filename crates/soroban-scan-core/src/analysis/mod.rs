@@ -6,6 +6,7 @@
 //! instead of inventing a source, sink, or edge.
 
 pub mod cfg;
+pub mod reachability;
 pub mod storage;
 pub mod taint;
 pub mod type_env;

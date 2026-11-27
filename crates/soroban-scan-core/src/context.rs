@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, MutexGuard};
 
 use crate::analysis::cfg::{build_function_cfg, ControlFlowGraph};
+use crate::analysis::reachability::{FunctionKey, FunctionReachability, ReachabilityAnalysis};
 use crate::analysis::type_env::TypeEnvironment;
 use crate::model::Project;
 use crate::rules::util::{
@@ -27,6 +28,7 @@ struct FactsCache {
     cast_facts: BTreeMap<(PathBuf, usize, usize), Arc<Vec<CastFact>>>,
     cfg_facts: BTreeMap<(PathBuf, usize, usize), Arc<ControlFlowGraph>>,
     type_envs: BTreeMap<PathBuf, Arc<TypeEnvironment>>,
+    reachability: Option<Arc<ReachabilityAnalysis>>,
 }
 
 /// Lock a cache mutex, recovering the data if a previous holder panicked.
@@ -253,6 +255,41 @@ impl<'a> AnalysisContext<'a> {
             .cfg_facts
             .insert(key, Arc::clone(&computed));
         computed
+    }
+
+    /// Program reachability from detected entry points, computed once per scan.
+    ///
+    /// Rules can use this read-only view to ask whether a function is reachable
+    /// without rebuilding the call graph. Ambiguous results are explicit; rules
+    /// must not reinterpret them as proof of dead code.
+    pub fn reachability_analysis(&self) -> Arc<ReachabilityAnalysis> {
+        if let Some(cached) = lock_cache(&self.cache).reachability.as_ref().cloned() {
+            return cached;
+        }
+        let computed = Arc::new(ReachabilityAnalysis::new(self.sources));
+        lock_cache(&self.cache).reachability = Some(Arc::clone(&computed));
+        computed
+    }
+
+    /// Reachability of one function from a detected contract entry point.
+    pub fn function_reachability(
+        &self,
+        source: &ParsedSource,
+        function: &FunctionSummary,
+    ) -> FunctionReachability {
+        self.reachability_analysis()
+            .reachability_for_summary(source, function)
+            .unwrap_or(FunctionReachability::Ambiguous)
+    }
+
+    /// Reachability of the innermost function containing a 1-based line.
+    pub fn reachability_for_line(
+        &self,
+        path: &Path,
+        line: usize,
+    ) -> Option<(FunctionKey, FunctionReachability)> {
+        self.reachability_analysis()
+            .reachability_for_line(path, line)
     }
 
     /// The type environment for a source file, computed once and cached.

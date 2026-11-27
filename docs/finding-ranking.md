@@ -30,13 +30,19 @@ ranking, so the key reflects the effective values in the report.
 
 ## Reachability
 
-Reachability comes from the per-function [control-flow graph](control-flow.md)
-and is recorded per finding line:
+Reachability combines the per-function [control-flow graph](control-flow.md)
+with [entry-point reachability](control-flow.md#entry-point-reachability) and is
+recorded per finding line:
 
-- `reachable` — the line is covered by a reachable CFG node.
-- `unreachable` — the line is covered only by nodes the graph cannot reach.
-- `unknown` — the file did not parse, no function contains the line, or the
-  construct is not modelled.
+- `reachable` — the CFG shows the line can run from its function entry. An entry
+  point is named only when a complete call graph proves that it reaches the
+  function.
+- `unreachable` — a complete CFG proves the line locally dead, or a complete
+  call graph proves no entry point reaches the function.
+- `unknown` — the file did not parse, no function contains the line, or the graph
+  does not cover the line. An incomplete CFG cannot prove `unreachable`, but it
+  does not erase locally proven `reachable`. An ambiguous call graph never
+  produces `unreachable` on its own either.
 
 Unknown ranks between reachable and unreachable: a finding is treated as
 actionable until the analysis can prove otherwise. The internal `reachability`
@@ -56,14 +62,20 @@ When the CFG covers a finding line, the report also carries an optional
 ```
 
 `reachability` is `reachable` or `unreachable`. `entry_point` is the qualified
-name of the enclosing Soroban contract entry point when one can be identified;
-it is omitted otherwise. `taint` is reserved for a future source-to-sink
-description and is currently `None`, so it is omitted.
+name of a detected entry point that reaches the enclosing function when one can
+be identified; it is omitted otherwise. `taint` is reserved for a future
+source-to-sink description and is currently `None`, so it is omitted.
 
 The context is derived only from static evidence. If the file did not parse, no
-function contains the line, or the line has no CFG coverage, the entire field
-is omitted instead of guessed. It is additive and optional, so older reports
-and consumers remain valid, and it never changes severity or confidence.
+function contains the line, or the line has no CFG coverage, the entire field is
+omitted instead of guessed. An incomplete CFG cannot produce `unreachable`, and
+call-graph ambiguity only omits the `entry_point` field; neither fabricates an
+entry point or a dead-code verdict. The object is additive and optional, so older
+reports and consumers remain valid.
+
+Reachability changes ordering, never presence or severity. A finding proven
+unreachable is kept for auditability but its confidence is lowered to `low`
+before sorting; an ambiguous finding keeps its rule-assigned confidence.
 
 The full model, including the `unknown` state, the reserved taint field, and the
 fact that control dependence is not exposed, is defined in the

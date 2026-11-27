@@ -10529,96 +10529,6 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "SS-042/positive.rs"
-                },
-                "region": {
-                  "startColumn": 9,
-                  "startLine": 13
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "Security check unreachable on every path — `require_auth` check at line 13 in `set` is unreachable: every path leaves the function first (nearest `return` at line 12); CFG is complete (6 nodes, 5 edges, no unknown nodes)"
-          },
-          "partialFingerprints": {
-            "sorobanScanFingerprint": "15fd86a67b22f51108f81ae155a41eaa"
-          },
-          "properties": {
-            "category": "authorization",
-            "confidence": "medium",
-            "correlationAmbiguous": true,
-            "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
-            "severity": "low"
-          },
-          "ruleId": "SS-042"
-        },
-        {
-          "level": "note",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "SS-042/positive.rs"
-                },
-                "region": {
-                  "startColumn": 9,
-                  "startLine": 14
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "Security check unreachable on every path — `validate_amount` check at line 14 in `set` is unreachable: every path leaves the function first (nearest `return` at line 12); CFG is complete (6 nodes, 5 edges, no unknown nodes)"
-          },
-          "partialFingerprints": {
-            "sorobanScanFingerprint": "1c9f49f645679624ee11eeb95576bbff"
-          },
-          "properties": {
-            "category": "authorization",
-            "confidence": "medium",
-            "correlationAmbiguous": true,
-            "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
-            "severity": "low"
-          },
-          "ruleId": "SS-042"
-        },
-        {
-          "level": "note",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
-                  "uri": "SS-042/positive_conditional.rs"
-                },
-                "region": {
-                  "startColumn": 13,
-                  "startLine": 14
-                }
-              }
-            }
-          ],
-          "message": {
-            "text": "Security check unreachable on every path — `require_auth` check at line 14 in `set` is unreachable: every path leaves the function first (nearest `return` at line 13); CFG is complete (7 nodes, 7 edges, no unknown nodes)"
-          },
-          "partialFingerprints": {
-            "sorobanScanFingerprint": "12b5cbda33d1d0fab6e851b7b8db5f70"
-          },
-          "properties": {
-            "category": "authorization",
-            "confidence": "medium",
-            "correlationAmbiguous": true,
-            "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
-            "severity": "low"
-          },
-          "ruleId": "SS-042"
-        },
-        {
-          "level": "note",
-          "locations": [
-            {
-              "physicalLocation": {
-                "artifactLocation": {
                   "uri": "SS-001/negative.rs"
                 },
                 "region": {
@@ -13355,6 +13265,66 @@
                 },
                 "region": {
                   "startColumn": 9,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Security check unreachable on every path — `require_auth` check at line 13 in `set` is unreachable: every path leaves the function first (nearest `return` at line 12); CFG is complete (6 nodes, 5 edges, no unknown nodes)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "15fd86a67b22f51108f81ae155a41eaa"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
+            "severity": "low"
+          },
+          "ruleId": "SS-042"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-042/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Security check unreachable on every path — `validate_amount` check at line 14 in `set` is unreachable: every path leaves the function first (nearest `return` at line 12); CFG is complete (6 nodes, 5 edges, no unknown nodes)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "1c9f49f645679624ee11eeb95576bbff"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
+            "severity": "low"
+          },
+          "ruleId": "SS-042"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-042/positive.rs"
+                },
+                "region": {
+                  "startColumn": 9,
                   "startLine": 15
                 }
               }
@@ -13412,6 +13382,36 @@
             "severity": "low"
           },
           "ruleId": "SS-010"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "SS-042/positive_conditional.rs"
+                },
+                "region": {
+                  "startColumn": 13,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Security check unreachable on every path — `require_auth` check at line 14 in `set` is unreachable: every path leaves the function first (nearest `return` at line 13); CFG is complete (7 nodes, 7 edges, no unknown nodes)"
+          },
+          "partialFingerprints": {
+            "sorobanScanFingerprint": "12b5cbda33d1d0fab6e851b7b8db5f70"
+          },
+          "properties": {
+            "category": "authorization",
+            "confidence": "low",
+            "correlationAmbiguous": true,
+            "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
+            "severity": "low"
+          },
+          "ruleId": "SS-042"
         }
       ],
       "tool": {

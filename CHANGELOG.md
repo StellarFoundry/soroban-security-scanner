@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Bounded, deterministic entry-point reachability from detected contract entry
+  points is available to rules through `AnalysisContext` and combined with each
+  finding's CFG reachability. Ambiguity alone never marks code unreachable and
+  incomplete CFGs cannot prove dead code; proven-unreachable findings are
+  retained with low confidence instead of being dropped (`#291`).
+- A dependency-free typed Python API client (`clients/python`) covers the
+  documented service and OpenAPI endpoints with bearer auth, submit, poll and
+  report helpers, typed errors, and idempotent-only bounded retries. Redirects
+  are refused, secrets are redacted from errors, and mock-server tests run
+  offline (`#356`).
 - The opt-in language server advertises `textDocument/codeAction` and offers a
   `quickfix` for scanner diagnostics that inserts the documented inline
   suppression directive with the exact rule id and a required reason
@@ -58,8 +68,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Findings carry an optional, additive `exploitability` context (`reachability`,
   `entry_point`, and reserved `taint`) when the control-flow graph covers the
-  finding line. It is omitted when evidence is incomplete and never changes
-  severity or confidence; report schemas remain backward compatible (`#294`).
+  finding line. It is omitted when evidence is incomplete, never changes
+  severity, and only lowers confidence for proven-unreachable code; report
+  schemas remain backward compatible (`#294`, `#291`).
 - The language server loads `soroban-scan.toml` from the workspace root,
   applies it to diagnostics, reloads on configuration/watched-file changes, and
   publishes a `LSP-CONFIG-001` error on invalid configuration (`#333`).
