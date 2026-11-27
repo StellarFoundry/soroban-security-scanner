@@ -6,13 +6,21 @@ and never post or create anything unless explicitly enabled.
 
 ## Permissions summary
 
-| Capability | Permission | Notes |
-| ---------- | ---------- | ----- |
-| Read repository contents | `contents: read` | Always required. |
-| Upload SARIF | `security-events: write` | Required for code scanning. Not available to fork PRs. |
-| Comment on a PR | `pull-requests: write` | Only when opt-in commenting is enabled. |
-| Create a check run | `checks: write` | Only when opt-in check runs are enabled. Not available to fork PRs. |
-| Create issues | `issues: write` | Only for explicitly enabled issue creation; not enabled by default. |
+Every GitHub permission this integration can use is listed below. A scan-only
+setup needs no explicitly granted repository permission: GitHub always grants a
+GitHub App `Metadata: read-only`, and the workflow uses its short-lived
+`GITHUB_TOKEN`. All other permissions are opt-in and should be granted only to
+the job that needs them.
+
+| Permission | Why it is needed | When it is used |
+| ---------- | ---------------- | --------------- |
+| `metadata: read` | Identify the installation and repository; scope audit records and API calls. | Always; implicit for GitHub Apps and available to `GITHUB_TOKEN`. |
+| `contents: read` | Check out the repository so files can be scanned. | Always for the Action and reusable workflow. |
+| `security-events: write` | Upload the SARIF report to code scanning. | Only in the separate upload job; never on fork PRs. |
+| `pull-requests: write` | Update one sticky summary comment with findings. | Only with `SOROBAN_SCAN_PR_COMMENT`; never on fork PRs. |
+| `checks: write` | Publish a check run with inline annotations and a gate conclusion. | Only with `SOROBAN_SCAN_CHECK_RUN` or `SOROBAN_SCAN_STATUS_GATE`; never on fork PRs. |
+| `issues: write` | File confirmed findings, if a caller chooses to do so. | Manual/scheduled only; the scanner never creates issues itself. |
+| `actions: read` | Read the uploaded scan artifact for private/internal SARIF upload. | Private/internal repositories that use code scanning. |
 
 The scanner itself needs no token and makes no network requests.
 
@@ -62,6 +70,37 @@ tokens, or network calls are introduced unless a caller opts in. See the
 [integration script README](../.github/scripts/README.md#github-app-installations)
 for the helper contract and the [security model](security/security-model.md)
 for the guarantees that remain unchanged.
+
+### Least-privilege manifest
+
+The committed [GitHub App manifest](github-app-manifest.yml) is the canonical
+scan-only configuration: it requests no explicit repository permission and no
+webhook events, relying only on implicit `Metadata: read-only`. The optional
+permissions above are added to a caller's workflow or App configuration only
+when the matching capability is enabled. Do not grant `contents: write`,
+`workflows: write`, or organization-wide scopes; the scanner never needs them.
+
+```yaml
+permissions:
+  contents: read
+  # Add security-events: write only in the separate SARIF upload job.
+```
+
+### Token storage, rotation, and revocation
+
+| Credential | Storage | Rotation | Revocation |
+| ---------- | ------- | -------- | ---------- |
+| Workflow `GITHUB_TOKEN` | Runner-managed, short-lived; never copied to a file or artifact. | Automatically per job; scope it with `permissions:` at job level. | Ends with the job; tighten the workflow to remove a capability. |
+| Installation id | Plain CI variable keyed by `owner/repo`; it is an id, not a secret. | Re-resolve with `get_installation_id()` after reinstalling the App. | Uninstall the App; stored ids then stop resolving. |
+| Installation access token | Minted just in time and passed only through `gh` environment variables. | Short-lived by design; mint a fresh token for each call. | Uninstall the App or remove the permission that produced it. |
+| App private key | Platform secret store only; never in this repository, a report, an artifact, or logs. | Generate a new key in App settings, update the secret, then delete the old key. | Delete the key in App settings; uninstall the App to revoke all installations. |
+| Personal access token | Prefer a GitHub App instead; if unavoidable, store only in a secret manager and never commit it. | Rotate on a fixed schedule and immediately after suspected exposure. | Revoke the token in GitHub account settings and remove it from the secret store. |
+
+Never place a token in a URL, report, golden file, or committed configuration.
+The integration helpers never print or persist tokens; they read them from the
+environment through `gh`. After a suspected leak, rotate the credential first,
+then review App installations and workflow permissions to confirm the old value
+can no longer be used.
 
 ## Using the action
 

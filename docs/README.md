@@ -31,7 +31,8 @@ Start here.
 - [Report Retention](retention.md) - deterministic artifact names and retention guidance.
 - [In-process scan service](service-api.md) - bounded job storage for an embedding service.
 - [Deploying the scan API adapter](api-deployment.md) - configuration, TLS, storage, health checks, and public-exposure warnings.
-- [GitHub Integration](github-integration.md) — Action, SARIF, PR scanning.
+- [GitHub Integration](github-integration.md) — Action, SARIF, PR scanning, permissions, and token lifecycle.
+- [Least-privilege GitHub App manifest](github-app-manifest.yml) — scan-only permissions, no webhooks.
 - [GitHub Action](github-action.md) — inputs, outputs, and usage examples.
 - [CI Recipes](ci-recipes.md) — copy-paste snippets for common CI systems and hooks.
 - [Observatory Integration](integration/observatory.md) — the stable, versioned report contract.

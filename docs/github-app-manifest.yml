@@ -1,0 +1,13 @@
+# Least-privilege GitHub App manifest for scan-only use (#349).
+#
+# GitHub always grants Metadata: read-only and it cannot be disabled, so no
+# explicit repository permission is requested here. Keep this file in sync with
+# the permissions catalogue in docs/github-integration.md#permissions-summary.
+# Opt-in capabilities are granted by a caller's workflow or App configuration,
+# never by this baseline manifest.
+name: soroban-security-scanner
+url: https://github.com/StellarFoundry/soroban-security-scanner
+redirect_url: https://github.com/StellarFoundry/soroban-security-scanner
+public: true
+default_permissions: {}
+default_events: []
