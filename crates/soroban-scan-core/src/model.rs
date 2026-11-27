@@ -292,6 +292,9 @@ pub enum DiagnosticCode {
     /// A construct in a control-flow graph is not modelled.
     #[serde(rename = "CFG-002")]
     CfgUnmodelled,
+    /// Program reachability from entry points is ambiguous or incomplete.
+    #[serde(rename = "CFG-003")]
+    ReachabilityIncomplete,
     /// A taint flow could not be established or may be incomplete.
     #[serde(rename = "TAINT-001")]
     TaintIncomplete,
@@ -333,6 +336,7 @@ impl DiagnosticCode {
             DiagnosticCode::ScanDeadlineExceeded => "SCAN-001",
             DiagnosticCode::CfgTruncated => "CFG-001",
             DiagnosticCode::CfgUnmodelled => "CFG-002",
+            DiagnosticCode::ReachabilityIncomplete => "CFG-003",
             DiagnosticCode::TaintIncomplete => "TAINT-001",
         }
     }

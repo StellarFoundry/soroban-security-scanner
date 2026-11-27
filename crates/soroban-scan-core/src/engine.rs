@@ -8,13 +8,12 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use globset::Glob;
 use serde::Serialize;
 
-use crate::analysis::cfg::{self, ControlFlowGraph};
+use crate::analysis::cfg;
 use crate::confidence::Confidence;
 use crate::config::{AnalysisMode, ScanConfig, SuppressionRule, WaiverRule};
 use crate::context::AnalysisContext;
@@ -587,59 +586,53 @@ fn deduplicate_overlapping(findings: &mut Vec<Finding>) {
     *findings = kept;
 }
 
-/// Annotates each finding with the reachability of its line and, when the CFG
-/// covers the line, optional exploitability context.
+/// Annotates each finding with combined line and program reachability.
 ///
-/// Findings outside a parsed function keep `Unknown` and no exploitability
-/// context. Graphs are built once per function and cached by (file, line
-/// range), so a file with many findings in the same function is not
-/// re-analysed per finding.
-fn annotate_reachability(sources: &[ParsedSource], findings: &mut [Finding]) {
-    let indexes: BTreeMap<String, cfg::FunctionIndex<'_>> = sources
-        .iter()
-        .filter_map(|source| {
-            source
-                .syntax
-                .as_ref()
-                .map(|syntax| (normalize_rel(&source.path), cfg::FunctionIndex::new(syntax)))
-        })
-        .collect();
-    let sources_by_file: BTreeMap<String, &ParsedSource> = sources
+/// Line evidence comes from the per-function CFG; program evidence comes from
+/// the entry-point call graph cached on [`AnalysisContext`]. A line is marked
+/// unreachable only when a complete CFG proves it locally dead or when a
+/// complete call graph proves its function cannot be reached. An incomplete CFG
+/// cannot prove dead code but preserves locally proven `Reachable`; call-graph
+/// ambiguity only omits entry-point attribution. Proven-unreachable findings keep
+/// their severity and are retained, but their confidence is lowered to `Low`
+/// because the code cannot be exercised from a detected entry point.
+fn annotate_reachability(ctx: &AnalysisContext<'_>, findings: &mut [Finding]) {
+    let analysis = ctx.reachability_analysis();
+    let sources_by_file: BTreeMap<String, &ParsedSource> = ctx
+        .sources()
         .iter()
         .map(|source| (normalize_rel(&source.path), source))
         .collect();
-    let mut graphs: BTreeMap<(String, usize, usize), Arc<ControlFlowGraph>> = BTreeMap::new();
 
     for finding in findings {
         let file = normalize_rel(&finding.location.file);
-        let Some(index) = indexes.get(&file) else {
+        let Some(source) = sources_by_file.get(&file) else {
             continue;
         };
-        let Some((block, range)) = index.find(finding.location.line) else {
+        let Some((key, state)) =
+            analysis.reachability_for_line(&source.path, finding.location.line)
+        else {
             continue;
         };
-        let graph = graphs
-            .entry((file.clone(), range.0, range.1))
-            .or_insert_with(|| Arc::new(cfg::build_function_cfg(block)));
-        let reachability = graph.reachability_at(finding.location.line);
+        let Some(graph) = analysis.cfg_for(&key) else {
+            continue;
+        };
+        let reachability = analysis.line_reachability(
+            state,
+            graph.reachability_at(finding.location.line),
+            graph.is_complete(),
+        );
         finding.reachability = reachability;
 
-        if reachability == crate::analysis::cfg::Reachability::Unknown {
+        if reachability == cfg::Reachability::Unreachable {
+            finding.confidence = Confidence::Low;
+        }
+        if reachability == cfg::Reachability::Unknown {
             continue;
         }
-        let entry_point = sources_by_file.get(&file).and_then(|source| {
-            source
-                .functions
-                .iter()
-                .filter(|function| {
-                    // `FunctionSummary::end_line` covers the signature, while the
-                    // CFG range covers the body. Match the function by the CFG
-                    // start line so findings inside the body are attributed.
-                    function.is_contract_entry_point && function.line == range.0
-                })
-                .map(|function| function.qualified_name.clone())
-                .next()
-        });
+        let entry_point = analysis
+            .entry_point_for(&key)
+            .map(|entry| entry.qualified_name.clone());
         finding.exploitability = Some(ExploitabilityContext {
             reachability: reachability.as_str().to_string(),
             entry_point,
@@ -1036,6 +1029,31 @@ fn cfg_unmodelled_diagnostics(
     diagnostics
 }
 
+/// Reports why entry-point reachability could not be proven for every function.
+///
+/// The diagnostic is aggregated by stable ambiguity kind with counts only: no
+/// path, line, function name, or source text. An ambiguity means unvisited
+/// functions remain actionable rather than being labelled unreachable.
+fn reachability_diagnostics(ctx: &AnalysisContext<'_>) -> Vec<Diagnostic> {
+    let analysis = ctx.reachability_analysis();
+    if analysis.is_complete() {
+        return Vec::new();
+    }
+    let reasons: Vec<String> = analysis
+        .ambiguities()
+        .iter()
+        .map(|(kind, count)| format!("{count} x {kind}", kind = kind.as_str()))
+        .collect();
+    vec![Diagnostic::warning(
+        DiagnosticCode::ReachabilityIncomplete,
+        format!(
+            "entry-point reachability is ambiguous ({}); unproven functions remain actionable",
+            reasons.join(", ")
+        ),
+        None,
+    )]
+}
+
 /// Records one rule statistic, or counts it as omitted at the hard cap.
 fn record_rule_stat(stats: &mut ScanStats, stat: RuleStat) {
     if stats.rule_stats.len() >= MAX_RULE_STATS {
@@ -1145,6 +1163,7 @@ pub fn scan_with_hooks(
     if analysis_mode == AnalysisMode::Soroban {
         diagnostics.extend(cfg_truncation_diagnostics(&ctx, &loaded.sources));
         diagnostics.extend(cfg_unmodelled_diagnostics(&ctx, &loaded.sources));
+        diagnostics.extend(reachability_diagnostics(&ctx));
     }
 
     // Taint rules can decline to fire when a helper is undefined, a construct is
@@ -1391,8 +1410,9 @@ pub fn scan_with_hooks(
 
     stats.findings_rejected = rejected;
 
-    // Reachability only ranks findings; it never changes detection.
-    annotate_reachability(&loaded.sources, &mut findings);
+    // Reachability annotates and demotes proven-unreachable findings, but it
+    // never removes a finding that passed the configured thresholds.
+    annotate_reachability(&ctx, &mut findings);
 
     // Deterministic ordering, then overlap-aware de-duplication.
     findings.sort_by_key(Finding::sort_key);

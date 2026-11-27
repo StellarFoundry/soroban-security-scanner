@@ -74,10 +74,11 @@ impl SourceLocation {
 
 /// Best-effort exploitability context for a finding.
 ///
-/// This is additive report metadata. It is populated from static analysis only
-/// when the control-flow graph covers the finding's line; incomplete evidence
-/// leaves the whole context (or an individual field) absent. It never changes
-/// the finding's severity or confidence.
+/// This is additive report metadata. It is populated from static analysis when
+/// the control-flow graph covers the finding's line; an ambiguous call graph
+/// omits only `entry_point`, and missing line coverage leaves the whole context
+/// absent. Severity and presence never change; a proven `unreachable` verdict
+/// lowers confidence to `low` before sorting.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ExploitabilityContext {
     /// Reachability of the finding line: `reachable` or `unreachable`.

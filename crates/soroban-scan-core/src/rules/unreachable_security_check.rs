@@ -115,7 +115,7 @@ impl Rule for UnreachableSecurityCheck {
                     continue;
                 }
                 let graph = ctx.cfg_for_function(source, &func);
-                if !graph_is_complete(&graph) {
+                if !graph.is_complete() {
                     // An incomplete graph cannot prove unreachability. Record
                     // nothing instead of guessing.
                     continue;
@@ -136,16 +136,6 @@ impl Rule for UnreachableSecurityCheck {
             }
         }
     }
-}
-
-/// A graph proves unreachability only when the builder saw the whole body and
-/// nothing in it is an unmodelled construct.
-fn graph_is_complete(graph: &ControlFlowGraph) -> bool {
-    !graph.truncated
-        && !graph
-            .nodes
-            .iter()
-            .any(|node| node.kind == NodeKind::Unknown)
 }
 
 fn evidence(check: &CheckSite, func: &ContractFn<'_>, graph: &ControlFlowGraph) -> String {

@@ -1751,7 +1751,8 @@
       ],
       "fingerprint": "cce83633f0bb46623afc178954a61223",
       "exploitability": {
-        "reachability": "reachable"
+        "reachability": "reachable",
+        "entry_point": "Contract::load"
       },
       "related": [
         "4c1b130b1c40c0851bcc360e2ee36abe"
@@ -9297,81 +9298,6 @@
       "group_id": "group-2ab86cffaba4ec1209dce3d7d15d1726"
     },
     {
-      "rule_id": "SS-042",
-      "title": "Security check unreachable on every path",
-      "description": "A caller-authorization or validation check appears after a statement that always leaves the function, such as an unconditional `return`. No execution path reaches the check, so it provides a false sense of protection while the actual behaviour is unguarded. The detector reports only when the function's control-flow graph is complete: a truncated graph or one containing constructs the builder does not model suppresses the finding.",
-      "severity": "low",
-      "confidence": "medium",
-      "category": "authorization",
-      "location": {
-        "file": "SS-042/positive.rs",
-        "line": 13,
-        "column": 9
-      },
-      "evidence": "`require_auth` check at line 13 in `set` is unreachable: every path leaves the function first (nearest `return` at line 12); CFG is complete (6 nodes, 5 edges, no unknown nodes)",
-      "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
-      "references": [
-        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
-        "https://doc.rust-lang.org/reference/statements.html#unreachable-code"
-      ],
-      "fingerprint": "15fd86a67b22f51108f81ae155a41eaa",
-      "exploitability": {
-        "reachability": "unreachable",
-        "entry_point": "Contract::set"
-      },
-      "correlation_ambiguous": true
-    },
-    {
-      "rule_id": "SS-042",
-      "title": "Security check unreachable on every path",
-      "description": "A caller-authorization or validation check appears after a statement that always leaves the function, such as an unconditional `return`. No execution path reaches the check, so it provides a false sense of protection while the actual behaviour is unguarded. The detector reports only when the function's control-flow graph is complete: a truncated graph or one containing constructs the builder does not model suppresses the finding.",
-      "severity": "low",
-      "confidence": "medium",
-      "category": "authorization",
-      "location": {
-        "file": "SS-042/positive.rs",
-        "line": 14,
-        "column": 9
-      },
-      "evidence": "`validate_amount` check at line 14 in `set` is unreachable: every path leaves the function first (nearest `return` at line 12); CFG is complete (6 nodes, 5 edges, no unknown nodes)",
-      "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
-      "references": [
-        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
-        "https://doc.rust-lang.org/reference/statements.html#unreachable-code"
-      ],
-      "fingerprint": "1c9f49f645679624ee11eeb95576bbff",
-      "exploitability": {
-        "reachability": "unreachable",
-        "entry_point": "Contract::set"
-      },
-      "correlation_ambiguous": true
-    },
-    {
-      "rule_id": "SS-042",
-      "title": "Security check unreachable on every path",
-      "description": "A caller-authorization or validation check appears after a statement that always leaves the function, such as an unconditional `return`. No execution path reaches the check, so it provides a false sense of protection while the actual behaviour is unguarded. The detector reports only when the function's control-flow graph is complete: a truncated graph or one containing constructs the builder does not model suppresses the finding.",
-      "severity": "low",
-      "confidence": "medium",
-      "category": "authorization",
-      "location": {
-        "file": "SS-042/positive_conditional.rs",
-        "line": 14,
-        "column": 13
-      },
-      "evidence": "`require_auth` check at line 14 in `set` is unreachable: every path leaves the function first (nearest `return` at line 13); CFG is complete (7 nodes, 7 edges, no unknown nodes)",
-      "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
-      "references": [
-        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
-        "https://doc.rust-lang.org/reference/statements.html#unreachable-code"
-      ],
-      "fingerprint": "12b5cbda33d1d0fab6e851b7b8db5f70",
-      "exploitability": {
-        "reachability": "unreachable",
-        "entry_point": "Contract::set"
-      },
-      "correlation_ambiguous": true
-    },
-    {
       "rule_id": "SS-006",
       "title": "Persistent storage write without TTL management",
       "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
@@ -11607,6 +11533,56 @@
       "group_id": "group-b96662552bfb718088584f4870316f78"
     },
     {
+      "rule_id": "SS-042",
+      "title": "Security check unreachable on every path",
+      "description": "A caller-authorization or validation check appears after a statement that always leaves the function, such as an unconditional `return`. No execution path reaches the check, so it provides a false sense of protection while the actual behaviour is unguarded. The detector reports only when the function's control-flow graph is complete: a truncated graph or one containing constructs the builder does not model suppresses the finding.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "authorization",
+      "location": {
+        "file": "SS-042/positive.rs",
+        "line": 13,
+        "column": 9
+      },
+      "evidence": "`require_auth` check at line 13 in `set` is unreachable: every path leaves the function first (nearest `return` at line 12); CFG is complete (6 nodes, 5 edges, no unknown nodes)",
+      "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://doc.rust-lang.org/reference/statements.html#unreachable-code"
+      ],
+      "fingerprint": "15fd86a67b22f51108f81ae155a41eaa",
+      "exploitability": {
+        "reachability": "unreachable",
+        "entry_point": "Contract::set"
+      },
+      "correlation_ambiguous": true
+    },
+    {
+      "rule_id": "SS-042",
+      "title": "Security check unreachable on every path",
+      "description": "A caller-authorization or validation check appears after a statement that always leaves the function, such as an unconditional `return`. No execution path reaches the check, so it provides a false sense of protection while the actual behaviour is unguarded. The detector reports only when the function's control-flow graph is complete: a truncated graph or one containing constructs the builder does not model suppresses the finding.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "authorization",
+      "location": {
+        "file": "SS-042/positive.rs",
+        "line": 14,
+        "column": 9
+      },
+      "evidence": "`validate_amount` check at line 14 in `set` is unreachable: every path leaves the function first (nearest `return` at line 12); CFG is complete (6 nodes, 5 edges, no unknown nodes)",
+      "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://doc.rust-lang.org/reference/statements.html#unreachable-code"
+      ],
+      "fingerprint": "1c9f49f645679624ee11eeb95576bbff",
+      "exploitability": {
+        "reachability": "unreachable",
+        "entry_point": "Contract::set"
+      },
+      "correlation_ambiguous": true
+    },
+    {
       "rule_id": "SS-006",
       "title": "Persistent storage write without TTL management",
       "description": "A contract entry point writes to persistent storage but does not call `extend_ttl`, `set_ttl`, or `bump` in the same function or in the intra-file helpers it calls. Persistent entries have a time-to-live; if it is not extended, stored data can expire and be lost. TTL may legitimately be managed elsewhere (for example in a separate maintenance entry point), so this is a low-confidence signal.",
@@ -11661,6 +11637,31 @@
       ],
       "correlation_ambiguous": true,
       "group_id": "group-0e30207a5d2e79a79968079556b556e7"
+    },
+    {
+      "rule_id": "SS-042",
+      "title": "Security check unreachable on every path",
+      "description": "A caller-authorization or validation check appears after a statement that always leaves the function, such as an unconditional `return`. No execution path reaches the check, so it provides a false sense of protection while the actual behaviour is unguarded. The detector reports only when the function's control-flow graph is complete: a truncated graph or one containing constructs the builder does not model suppresses the finding.",
+      "severity": "low",
+      "confidence": "low",
+      "category": "authorization",
+      "location": {
+        "file": "SS-042/positive_conditional.rs",
+        "line": 14,
+        "column": 13
+      },
+      "evidence": "`require_auth` check at line 14 in `set` is unreachable: every path leaves the function first (nearest `return` at line 13); CFG is complete (7 nodes, 7 edges, no unknown nodes)",
+      "remediation": "Remove the dead check or move it before the early return so every path that performs the sensitive operation is guarded. If the early return is intentional, make the guard part of the condition that returns instead of leaving unreachable code behind.",
+      "references": [
+        "https://developers.stellar.org/docs/learn/encyclopedia/security/authorization",
+        "https://doc.rust-lang.org/reference/statements.html#unreachable-code"
+      ],
+      "fingerprint": "12b5cbda33d1d0fab6e851b7b8db5f70",
+      "exploitability": {
+        "reachability": "unreachable",
+        "entry_point": "Contract::set"
+      },
+      "correlation_ambiguous": true
     }
   ],
   "finding_groups": [
@@ -13203,6 +13204,13 @@
       "line": null
     },
     {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x incomplete_cfg); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
       "code": "MACRO-001",
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: symbol_short",
@@ -13266,6 +13274,13 @@
       "line": null
     },
     {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x incomplete_cfg); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
       "code": "MACRO-001",
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: panic",
@@ -13276,6 +13291,13 @@
       "code": "CFG-002",
       "level": "warning",
       "message": "1 control-flow construct(s) of kind `macro` are not modelled; reachability near them may be incomplete",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x incomplete_cfg); unproven functions remain actionable",
       "path": null,
       "line": null
     },
@@ -13294,6 +13316,20 @@
       "line": null
     },
     {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x incomplete_cfg); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x ambiguous_call); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
       "code": "MACRO-001",
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: panic",
@@ -13304,6 +13340,13 @@
       "code": "CFG-002",
       "level": "warning",
       "message": "1 control-flow construct(s) of kind `macro` are not modelled; reachability near them may be incomplete",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x incomplete_cfg); unproven functions remain actionable",
       "path": null,
       "line": null
     },
@@ -13322,6 +13365,13 @@
       "line": null
     },
     {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x incomplete_cfg); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
       "code": "MACRO-001",
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: panic",
@@ -13332,6 +13382,48 @@
       "code": "CFG-002",
       "level": "warning",
       "message": "1 control-flow construct(s) of kind `macro` are not modelled; reachability near them may be incomplete",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x incomplete_cfg); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x ambiguous_call); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x ambiguous_call); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x ambiguous_call); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x ambiguous_call); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x no_entry_point); unproven functions remain actionable",
       "path": null,
       "line": null
     },
@@ -13378,6 +13470,13 @@
       "line": null
     },
     {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x no_entry_point); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
       "code": "MACRO-001",
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: symbol_short",
@@ -13399,6 +13498,27 @@
       "line": null
     },
     {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x incomplete_cfg); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x no_entry_point); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x no_entry_point); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
       "code": "MACRO-001",
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: panic",
@@ -13413,6 +13533,20 @@
       "line": null
     },
     {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x incomplete_cfg); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x no_entry_point); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
       "code": "MACRO-001",
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: panic",
@@ -13423,6 +13557,20 @@
       "code": "CFG-002",
       "level": "warning",
       "message": "1 control-flow construct(s) of kind `macro` are not modelled; reachability near them may be incomplete",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x incomplete_cfg); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x no_entry_point); unproven functions remain actionable",
       "path": null,
       "line": null
     },
@@ -13462,6 +13610,13 @@
       "line": null
     },
     {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x incomplete_cfg); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
       "code": "MACRO-001",
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: symbol_short",
@@ -13484,6 +13639,13 @@
       "line": null
     },
     {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x incomplete_cfg); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
       "code": "MACRO-001",
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: symbol_short",
@@ -13498,10 +13660,52 @@
       "line": null
     },
     {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x incomplete_cfg); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x no_entry_point); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
       "code": "MACRO-001",
       "level": "info",
       "message": "1 macro invocation(s) were not expanded: symbol_short",
       "path": "SS-036/negative.rs",
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x ambiguous_call); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x ambiguous_call); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x ambiguous_call); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x ambiguous_call); unproven functions remain actionable",
+      "path": null,
       "line": null
     },
     {
@@ -13515,6 +13719,69 @@
       "code": "CFG-002",
       "level": "warning",
       "message": "1 control-flow construct(s) of kind `macro` are not modelled; reachability near them may be incomplete",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x incomplete_cfg); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x ambiguous_call); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x ambiguous_call, 1 x uncovered_call); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x ambiguous_call); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x no_entry_point); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x no_entry_point); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x no_entry_point); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x no_entry_point); unproven functions remain actionable",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x ambiguous_call); unproven functions remain actionable",
       "path": null,
       "line": null
     },
@@ -13537,6 +13804,13 @@
       "code": "CFG-002",
       "level": "warning",
       "message": "1 control-flow construct(s) of kind `macro` are not modelled; reachability near them may be incomplete",
+      "path": null,
+      "line": null
+    },
+    {
+      "code": "CFG-003",
+      "level": "warning",
+      "message": "entry-point reachability is ambiguous (1 x incomplete_cfg); unproven functions remain actionable",
       "path": null,
       "line": null
     },
